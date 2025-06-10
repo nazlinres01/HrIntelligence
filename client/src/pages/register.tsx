@@ -5,6 +5,7 @@ import { Label } from "@/components/ui/label";
 import { Checkbox } from "@/components/ui/checkbox";
 import { Eye, EyeOff, Mail, Lock, Building2, User, Phone, Users, BarChart3, Calendar, CreditCard } from "lucide-react";
 import { Link } from "wouter";
+import { queryClient } from "@/lib/queryClient";
 
 export default function Register() {
   const [showPassword, setShowPassword] = useState(false);
@@ -53,8 +54,13 @@ export default function Register() {
       const data = await response.json();
 
       if (response.ok) {
+        // Invalidate auth cache to trigger re-fetch
+        queryClient.invalidateQueries({ queryKey: ["/api/auth/user"] });
         alert("Kayıt başarılı! Dashboard'a yönlendiriliyorsunuz...");
-        window.location.href = "/";
+        // Small delay to ensure cache is updated
+        setTimeout(() => {
+          window.location.href = "/";
+        }, 100);
       } else {
         alert(data.message || "Kayıt sırasında hata oluştu");
       }
