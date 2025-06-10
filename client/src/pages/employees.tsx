@@ -148,19 +148,121 @@ export default function Employees() {
     },
   });
 
-  const filteredEmployees = employees?.filter((employee: Employee) => {
-    const matchesSearch = 
-      employee.firstName.toLowerCase().includes(searchTerm.toLowerCase()) ||
-      employee.lastName.toLowerCase().includes(searchTerm.toLowerCase()) ||
-      employee.email.toLowerCase().includes(searchTerm.toLowerCase()) ||
-      employee.department.toLowerCase().includes(searchTerm.toLowerCase()) ||
-      employee.position.toLowerCase().includes(searchTerm.toLowerCase());
+  // Advanced filter configuration
+  const filterConfig = [
+    {
+      key: "firstName",
+      label: "Ad",
+      type: "text" as const
+    },
+    {
+      key: "lastName", 
+      label: "Soyad",
+      type: "text" as const
+    },
+    {
+      key: "email",
+      label: "E-posta",
+      type: "text" as const
+    },
+    {
+      key: "department",
+      label: "Departman",
+      type: "select" as const,
+      options: [
+        { value: "Yazılım Geliştirme", label: "Yazılım Geliştirme" },
+        { value: "Pazarlama ve Satış", label: "Pazarlama ve Satış" },
+        { value: "İnsan Kaynakları", label: "İnsan Kaynakları" },
+        { value: "Finans ve Muhasebe", label: "Finans ve Muhasebe" },
+        { value: "Operasyon", label: "Operasyon" }
+      ]
+    },
+    {
+      key: "status",
+      label: "Durum",
+      type: "select" as const,
+      options: [
+        { value: "active", label: "Aktif" },
+        { value: "on_leave", label: "İzinli" },
+        { value: "inactive", label: "Pasif" }
+      ]
+    },
+    {
+      key: "salary",
+      label: "Maaş",
+      type: "number" as const
+    }
+  ];
 
-    const matchesStatus = statusFilter === "all" || employee.status === statusFilter;
-    const matchesDepartment = departmentFilter === "all" || employee.department === departmentFilter;
+  // Export field configuration
+  const exportFields = [
+    { key: "firstName", label: "Ad", required: true },
+    { key: "lastName", label: "Soyad", required: true },
+    { key: "email", label: "E-posta", required: true },
+    { key: "phone", label: "Telefon" },
+    { key: "department", label: "Departman", required: true },
+    { key: "position", label: "Pozisyon", required: true },
+    { key: "salary", label: "Maaş" },
+    { key: "startDate", label: "İşe Başlama Tarihi" },
+    { key: "status", label: "Durum", required: true },
+    { key: "address", label: "Adres" },
+    { key: "emergencyContact", label: "Acil Durum İletişim" },
+    { key: "notes", label: "Notlar" }
+  ];
 
-    return matchesSearch && matchesStatus && matchesDepartment;
-  }) || [];
+  // Enhanced filtering with advanced filters
+  const filteredEmployees = useMemo(() => {
+    if (!employees) return [];
+    
+    return employees.filter((employee: Employee) => {
+      // Basic search filter
+      const matchesSearch = 
+        employee.firstName.toLowerCase().includes(searchTerm.toLowerCase()) ||
+        employee.lastName.toLowerCase().includes(searchTerm.toLowerCase()) ||
+        employee.email.toLowerCase().includes(searchTerm.toLowerCase()) ||
+        employee.department.toLowerCase().includes(searchTerm.toLowerCase()) ||
+        employee.position.toLowerCase().includes(searchTerm.toLowerCase());
+      
+      // Basic filters
+      const matchesStatus = statusFilter === "all" || employee.status === statusFilter;
+      const matchesDepartment = departmentFilter === "all" || employee.department === departmentFilter;
+      
+      // Advanced filters
+      let matchesAdvanced = true;
+      
+      if (advancedFilters.firstName) {
+        matchesAdvanced &&= employee.firstName.toLowerCase().includes(advancedFilters.firstName.toLowerCase());
+      }
+      
+      if (advancedFilters.lastName) {
+        matchesAdvanced &&= employee.lastName.toLowerCase().includes(advancedFilters.lastName.toLowerCase());
+      }
+      
+      if (advancedFilters.email) {
+        matchesAdvanced &&= employee.email.toLowerCase().includes(advancedFilters.email.toLowerCase());
+      }
+      
+      if (advancedFilters.department) {
+        matchesAdvanced &&= employee.department === advancedFilters.department;
+      }
+      
+      if (advancedFilters.status) {
+        matchesAdvanced &&= employee.status === advancedFilters.status;
+      }
+      
+      if (advancedFilters.salary_min) {
+        const salary = parseFloat(employee.salary?.toString() || "0");
+        matchesAdvanced &&= salary >= parseFloat(advancedFilters.salary_min);
+      }
+      
+      if (advancedFilters.salary_max) {
+        const salary = parseFloat(employee.salary?.toString() || "0");
+        matchesAdvanced &&= salary <= parseFloat(advancedFilters.salary_max);
+      }
+      
+      return matchesSearch && matchesStatus && matchesDepartment && matchesAdvanced;
+    });
+  }, [employees, searchTerm, statusFilter, departmentFilter, advancedFilters]);
 
   const departments = Array.from(new Set(employees?.map((emp: Employee) => emp.department) || []));
 
@@ -303,10 +405,19 @@ export default function Employees() {
             </div>
 
             <div className="flex gap-2">
-              <Button variant="outline" size="sm">
-                <Download className="h-4 w-4 mr-2" />
-                Dışa Aktar
-              </Button>
+              <AdvancedFilters
+                filters={filterConfig}
+                onFilterChange={setAdvancedFilters}
+                activeFilters={advancedFilters}
+              />
+              
+              <ExportReports
+                data={filteredEmployees || []}
+                filename="calisanlar"
+                fields={exportFields}
+                reportType="employees"
+              />
+              
               <Button variant="outline" size="sm">
                 <Upload className="h-4 w-4 mr-2" />
                 İçe Aktar
