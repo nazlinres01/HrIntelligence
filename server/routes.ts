@@ -381,6 +381,334 @@ export async function registerRoutes(app: Express): Promise<Server> {
     }
   });
 
+  // Import/Export endpoints with security
+  app.post("/api/employees/import", 
+    isAuthenticated,
+    auditLog('import', 'employees'),
+    requirePermission('employees:write'),
+    validateInput(z.object({
+      data: z.array(insertEmployeeSchema),
+      mode: z.enum(['create', 'update', 'upsert']).default('create'),
+      options: z.object({
+        validateOnly: z.boolean().default(false),
+        skipDuplicates: z.boolean().default(true),
+        updateOnConflict: z.boolean().default(false)
+      }).optional()
+    })),
+    async (req, res) => {
+      try {
+        const { data, mode, options = {} } = req.body;
+        
+        if (options.validateOnly) {
+          return res.json({
+            message: "Validation successful",
+            valid: true,
+            count: data.length
+          });
+        }
+
+        const results = [];
+        const errors = [];
+
+        for (const employeeData of data) {
+          try {
+            let employee;
+            
+            if (mode === 'create') {
+              employee = await storage.createEmployee(employeeData);
+            } else if (mode === 'update' && employeeData.email) {
+              const existing = await storage.getEmployeeByEmail(employeeData.email);
+              if (existing) {
+                employee = await storage.updateEmployee(existing.id, employeeData);
+              } else if (!options.skipDuplicates) {
+                employee = await storage.createEmployee(employeeData);
+              }
+            } else if (mode === 'upsert') {
+              const existing = employeeData.email ? await storage.getEmployeeByEmail(employeeData.email) : null;
+              if (existing) {
+                employee = await storage.updateEmployee(existing.id, employeeData);
+              } else {
+                employee = await storage.createEmployee(employeeData);
+              }
+            }
+
+            if (employee) {
+              results.push(employee);
+              await storage.createActivity({
+                type: 'employee_imported',
+                description: `${employeeData.firstName} ${employeeData.lastName} imported via bulk upload`,
+                metadata: JSON.stringify({ mode, employeeId: employee.id })
+              });
+            }
+          } catch (error: any) {
+            errors.push({
+              employee: employeeData,
+              error: error.message
+            });
+          }
+        }
+
+        res.json({
+          message: `Successfully imported ${results.length} employees`,
+          imported: results.length,
+          errors: errors.length,
+          results,
+          errors: errors.slice(0, 10) // Limit error details
+        });
+      } catch (error: any) {
+        console.error("Employee import error:", error);
+        res.status(500).json({ 
+          message: "Import failed", 
+          error: error.message 
+        });
+      }
+    }
+  );
+
+  app.post("/api/leaves/import",
+    isAuthenticated,
+    auditLog('import', 'leaves'),
+    requirePermission('leaves:write'),
+    validateInput(z.object({
+      data: z.array(insertLeaveSchema),
+      mode: z.enum(['create', 'update', 'upsert']).default('create')
+    })),
+    async (req, res) => {
+      try {
+        const { data, mode } = req.body;
+        const results = [];
+        const errors = [];
+
+        for (const leaveData of data) {
+          try {
+            const leave = await storage.createLeave(leaveData);
+            results.push(leave);
+            
+            await storage.createActivity({
+              type: 'leave_imported',
+              description: `Leave request imported for employee ${leaveData.employeeId}`,
+              metadata: JSON.stringify({ leaveId: leave.id, employeeId: leaveData.employeeId })
+            });
+          } catch (error: any) {
+            errors.push({
+              leave: leaveData,
+              error: error.message
+            });
+          }
+        }
+
+        res.json({
+          message: `Successfully imported ${results.length} leave records`,
+          imported: results.length,
+          errors: errors.length,
+          results,
+          errors: errors.slice(0, 10)
+        });
+      } catch (error: any) {
+        console.error("Leave import error:", error);
+        res.status(500).json({ 
+          message: "Import failed", 
+          error: error.message 
+        });
+      }
+    }
+  );
+
+  app.post("/api/payroll/import",
+    isAuthenticated,
+    auditLog('import', 'payroll'),
+    requirePermission('payroll:write'),
+    validateInput(z.object({
+      data: z.array(insertPayrollSchema),
+      mode: z.enum(['create', 'update', 'upsert']).default('create')
+    })),
+    async (req, res) => {
+      try {
+        const { data, mode } = req.body;
+        const results = [];
+        const errors = [];
+
+        for (const payrollData of data) {
+          try {
+            const payroll = await storage.createPayroll(payrollData);
+            results.push(payroll);
+            
+            await storage.createActivity({
+              type: 'payroll_imported',
+              description: `Payroll record imported for employee ${payrollData.employeeId}`,
+              metadata: JSON.stringify({ payrollId: payroll.id, employeeId: payrollData.employeeId })
+            });
+          } catch (error: any) {
+            errors.push({
+              payroll: payrollData,
+              error: error.message
+            });
+          }
+        }
+
+        res.json({
+          message: `Successfully imported ${results.length} payroll records`,
+          imported: results.length,
+          errors: errors.length,
+          results,
+          errors: errors.slice(0, 10)
+        });
+      } catch (error: any) {
+        console.error("Payroll import error:", error);
+        res.status(500).json({ 
+          message: "Import failed", 
+          error: error.message 
+        });
+      }
+    }
+  );
+
+  app.post("/api/performance/import",
+    isAuthenticated,
+    auditLog('import', 'performance'),
+    requirePermission('performance:write'),
+    validateInput(z.object({
+      data: z.array(insertPerformanceSchema),
+      mode: z.enum(['create', 'update', 'upsert']).default('create')
+    })),
+    async (req, res) => {
+      try {
+        const { data, mode } = req.body;
+        const results = [];
+        const errors = [];
+
+        for (const performanceData of data) {
+          try {
+            const performance = await storage.createPerformance(performanceData);
+            results.push(performance);
+            
+            await storage.createActivity({
+              type: 'performance_imported',
+              description: `Performance record imported for employee ${performanceData.employeeId}`,
+              metadata: { performanceId: performance.id, employeeId: performanceData.employeeId }
+            });
+          } catch (error: any) {
+            errors.push({
+              performance: performanceData,
+              error: error.message
+            });
+          }
+        }
+
+        res.json({
+          message: `Successfully imported ${results.length} performance records`,
+          imported: results.length,
+          errors: errors.length,
+          results,
+          errors: errors.slice(0, 10)
+        });
+      } catch (error: any) {
+        console.error("Performance import error:", error);
+        res.status(500).json({ 
+          message: "Import failed", 
+          error: error.message 
+        });
+      }
+    }
+  );
+
+  // Export endpoints with security
+  app.get("/api/employees/export",
+    isAuthenticated,
+    auditLog('export', 'employees'),
+    requirePermission('employees:read'),
+    async (req, res) => {
+      try {
+        const employees = await storage.getEmployees();
+        
+        // Security: Remove sensitive data from export
+        const sanitizedEmployees = employees.map(emp => ({
+          ...emp,
+          // Remove or mask sensitive fields for export
+          notes: emp.notes ? '***CONFIDENTIAL***' : null
+        }));
+
+        res.json({
+          data: sanitizedEmployees,
+          count: sanitizedEmployees.length,
+          exportedAt: new Date().toISOString()
+        });
+      } catch (error: any) {
+        console.error("Employee export error:", error);
+        res.status(500).json({ 
+          message: "Export failed", 
+          error: error.message 
+        });
+      }
+    }
+  );
+
+  app.get("/api/leaves/export",
+    isAuthenticated,
+    auditLog('export', 'leaves'),
+    requirePermission('leaves:read'),
+    async (req, res) => {
+      try {
+        const leaves = await storage.getLeaves();
+        res.json({
+          data: leaves,
+          count: leaves.length,
+          exportedAt: new Date().toISOString()
+        });
+      } catch (error: any) {
+        console.error("Leave export error:", error);
+        res.status(500).json({ 
+          message: "Export failed", 
+          error: error.message 
+        });
+      }
+    }
+  );
+
+  app.get("/api/payroll/export",
+    isAuthenticated,
+    auditLog('export', 'payroll'),
+    requirePermission('payroll:read'),
+    async (req, res) => {
+      try {
+        const payrolls = await storage.getPayrollRecords();
+        res.json({
+          data: payrolls,
+          count: payrolls.length,
+          exportedAt: new Date().toISOString()
+        });
+      } catch (error: any) {
+        console.error("Payroll export error:", error);
+        res.status(500).json({ 
+          message: "Export failed", 
+          error: error.message 
+        });
+      }
+    }
+  );
+
+  app.get("/api/performance/export",
+    isAuthenticated,
+    auditLog('export', 'performance'),
+    requirePermission('performance:read'),
+    async (req, res) => {
+      try {
+        const performance = await storage.getPerformanceRecords();
+        res.json({
+          data: performance,
+          count: performance.length,
+          exportedAt: new Date().toISOString()
+        });
+      } catch (error: any) {
+        console.error("Performance export error:", error);
+        res.status(500).json({ 
+          message: "Export failed", 
+          error: error.message 
+        });
+      }
+    }
+  );
+
   const httpServer = createServer(app);
   return httpServer;
 }

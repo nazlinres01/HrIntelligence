@@ -12,6 +12,7 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@
 import { Textarea } from "@/components/ui/textarea";
 import { AdvancedFilters } from "@/components/ui/advanced-filters";
 import { ExportReports } from "@/components/ui/export-reports";
+import { ImportData } from "@/components/ui/import-data";
 import { queryClient, apiRequest } from "@/lib/queryClient";
 import { 
   Users, 
@@ -426,10 +427,30 @@ export default function Employees() {
                 reportType="employees"
               />
               
-              <Button variant="outline" size="sm" className="flex-shrink-0">
-                <Upload className="h-4 w-4 mr-2" />
-                İçe Aktar
-              </Button>
+              <ImportData
+                endpoint="/api/employees/import"
+                onImportComplete={() => {
+                  queryClient.invalidateQueries({ queryKey: ["/api/employees"] });
+                  toast({
+                    title: "Başarılı",
+                    description: "Çalışan verileri başarıyla içe aktarıldı",
+                  });
+                }}
+                templateFields={[
+                  { key: 'firstName', label: 'Ad', required: true, type: 'text' },
+                  { key: 'lastName', label: 'Soyad', required: true, type: 'text' },
+                  { key: 'email', label: 'E-posta', required: true, type: 'email' },
+                  { key: 'phone', label: 'Telefon', required: false, type: 'text' },
+                  { key: 'department', label: 'Departman', required: true, type: 'select', options: ['İnsan Kaynakları', 'Yazılım Geliştirme', 'Pazarlama', 'Satış', 'Finans', 'Operasyon'] },
+                  { key: 'position', label: 'Pozisyon', required: true, type: 'text' },
+                  { key: 'startDate', label: 'İşe Başlama Tarihi', required: false, type: 'date' },
+                  { key: 'salary', label: 'Maaş', required: false, type: 'number' },
+                  { key: 'status', label: 'Durum', required: true, type: 'select', options: ['active', 'inactive', 'on_leave'] },
+                  { key: 'address', label: 'Adres', required: false, type: 'text' },
+                  { key: 'emergencyContact', label: 'Acil Durum İletişim', required: false, type: 'text' },
+                  { key: 'notes', label: 'Notlar', required: false, type: 'text' }
+                ]}
+              />
               <Dialog open={isAddModalOpen} onOpenChange={setIsAddModalOpen}>
                 <DialogTrigger asChild>
                   <Button className="bg-blue-600 hover:bg-blue-700">

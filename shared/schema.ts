@@ -96,6 +96,7 @@ export const activities = pgTable("activities", {
   description: text("description").notNull(),
   entityId: integer("entity_id"), // ID of related employee, leave, etc.
   performedBy: integer("performed_by").references(() => employees.id),
+  metadata: text("metadata"), // JSON string for additional data
   timestamp: timestamp("timestamp").defaultNow(),
 });
 
