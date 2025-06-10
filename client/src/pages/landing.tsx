@@ -1,7 +1,8 @@
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
-import { Building2, Users, BarChart3, Clock } from "lucide-react";
+import { Building2, Users, BarChart3, Clock, ArrowRight, Shield, Zap, Globe } from "lucide-react";
 import { useLanguage } from "@/hooks/use-language";
+import { Link } from "wouter";
 
 export default function Landing() {
   const { t } = useLanguage();
@@ -21,13 +22,38 @@ export default function Landing() {
           <p className="text-xl text-gray-600 dark:text-gray-300 mb-8">
             {t("Modern İnsan Kaynakları Yönetim Sistemi")}
           </p>
-          <Button 
-            onClick={handleLogin}
-            size="lg"
-            className="bg-blue-600 hover:bg-blue-700 text-white px-8 py-3 text-lg"
-          >
-            {t("Replit ile Giriş Yap")}
-          </Button>
+          <div className="flex flex-col sm:flex-row gap-4 justify-center items-center">
+            <Button 
+              onClick={handleLogin}
+              size="lg"
+              className="bg-blue-600 hover:bg-blue-700 text-white px-8 py-3 text-lg shadow-lg hover:shadow-xl transition-all duration-300"
+            >
+              <div className="flex items-center space-x-2">
+                <span>{t("Replit ile Giriş Yap")}</span>
+                <ArrowRight className="h-5 w-5" />
+              </div>
+            </Button>
+            <div className="flex space-x-3">
+              <Link href="/login">
+                <Button 
+                  variant="outline"
+                  size="lg"
+                  className="border-blue-200 text-blue-700 hover:bg-blue-50 px-6 py-3"
+                >
+                  {t("Giriş Yap")}
+                </Button>
+              </Link>
+              <Link href="/register">
+                <Button 
+                  variant="outline"
+                  size="lg"
+                  className="border-indigo-200 text-indigo-700 hover:bg-indigo-50 px-6 py-3"
+                >
+                  {t("Kayıt Ol")}
+                </Button>
+              </Link>
+            </div>
+          </div>
         </div>
 
         <div className="grid md:grid-cols-2 lg:grid-cols-4 gap-6 mb-16">
