@@ -115,6 +115,107 @@ export async function registerRoutes(app: Express): Promise<Server> {
       res.status(500).json({ message: "Çıkış sırasında hata oluştu" });
     }
   });
+
+  // Company routes
+  app.get('/api/company', async (req, res) => {
+    try {
+      const userId = (req.session as any)?.userId;
+      if (!userId) {
+        return res.status(401).json({ message: "Unauthorized" });
+      }
+      
+      const company = await storage.getCompanyByUser(userId);
+      res.json(company);
+    } catch (error) {
+      console.error("Error fetching company:", error);
+      res.status(500).json({ message: "Failed to fetch company" });
+    }
+  });
+
+  // Team management routes
+  app.get('/api/team', async (req, res) => {
+    try {
+      const userId = (req.session as any)?.userId;
+      if (!userId) {
+        return res.status(401).json({ message: "Unauthorized" });
+      }
+      
+      const user = await storage.getUser(userId);
+      if (!user?.companyId) {
+        return res.status(400).json({ message: "User not associated with a company" });
+      }
+      
+      const teamMembers = await storage.getTeamMembers(user.companyId);
+      res.json(teamMembers);
+    } catch (error) {
+      console.error("Error fetching team members:", error);
+      res.status(500).json({ message: "Failed to fetch team members" });
+    }
+  });
+
+  app.get('/api/team/stats', async (req, res) => {
+    try {
+      const userId = (req.session as any)?.userId;
+      if (!userId) {
+        return res.status(401).json({ message: "Unauthorized" });
+      }
+      
+      const user = await storage.getUser(userId);
+      if (!user?.companyId) {
+        return res.status(400).json({ message: "User not associated with a company" });
+      }
+      
+      const stats = await storage.getTeamStats(user.companyId);
+      res.json(stats);
+    } catch (error) {
+      console.error("Error fetching team stats:", error);
+      res.status(500).json({ message: "Failed to fetch team stats" });
+    }
+  });
+
+  app.post('/api/team/invite', async (req, res) => {
+    try {
+      const userId = (req.session as any)?.userId;
+      if (!userId) {
+        return res.status(401).json({ message: "Unauthorized" });
+      }
+      
+      const user = await storage.getUser(userId);
+      if (!user?.companyId) {
+        return res.status(400).json({ message: "User not associated with a company" });
+      }
+
+      const inviteData = {
+        ...req.body,
+        companyId: user.companyId,
+        id: `temp_${Date.now()}`,
+      };
+
+      const newTeamMember = await storage.inviteTeamMember(inviteData);
+      res.json(newTeamMember);
+    } catch (error) {
+      console.error("Error inviting team member:", error);
+      res.status(500).json({ message: "Failed to invite team member" });
+    }
+  });
+
+  app.patch('/api/team/:userId/status', async (req, res) => {
+    try {
+      const { userId: targetUserId } = req.params;
+      const { isActive } = req.body;
+
+      const success = await storage.updateUserStatus(targetUserId, isActive);
+      if (!success) {
+        return res.status(404).json({ message: "User not found" });
+      }
+
+      res.json({ success: true });
+    } catch (error) {
+      console.error("Error updating user status:", error);
+      res.status(500).json({ message: "Failed to update user status" });
+    }
+  });
+
   // Employee routes
   app.get("/api/employees", async (req, res) => {
     try {

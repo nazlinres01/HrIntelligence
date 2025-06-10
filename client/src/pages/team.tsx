@@ -55,15 +55,20 @@ export default function Team() {
   const { toast } = useToast();
   const [isInviteDialogOpen, setIsInviteDialogOpen] = useState(false);
 
-  const { data: company } = useQuery({
+  const { data: company } = useQuery<Company>({
     queryKey: ["/api/company"],
   });
 
-  const { data: teamMembers, isLoading } = useQuery({
+  const { data: teamMembers, isLoading } = useQuery<TeamMember[]>({
     queryKey: ["/api/team"],
   });
 
-  const { data: teamStats } = useQuery({
+  const { data: teamStats } = useQuery<{
+    totalMembers: number;
+    activeMembers: number;
+    managers: number;
+    specialists: number;
+  }>({
     queryKey: ["/api/team/stats"],
   });
 
@@ -80,10 +85,7 @@ export default function Team() {
 
   const inviteMutation = useMutation({
     mutationFn: async (data: InviteFormData) => {
-      return await apiRequest("/api/team/invite", {
-        method: "POST",
-        body: JSON.stringify(data),
-      });
+      return await apiRequest("/api/team/invite", "POST", data);
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ["/api/team"] });
@@ -106,10 +108,7 @@ export default function Team() {
 
   const updateStatusMutation = useMutation({
     mutationFn: async ({ userId, isActive }: { userId: string; isActive: boolean }) => {
-      return await apiRequest(`/api/team/${userId}/status`, {
-        method: "PATCH",
-        body: JSON.stringify({ isActive }),
-      });
+      return await apiRequest(`/api/team/${userId}/status`, "PATCH", { isActive });
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ["/api/team"] });
@@ -330,7 +329,7 @@ export default function Team() {
         </CardHeader>
         <CardContent>
           <div className="space-y-4">
-            {teamMembers?.map((member: TeamMember) => {
+            {teamMembers && teamMembers.map((member: TeamMember) => {
               const roleInfo = getRoleDisplay(member.role);
               return (
                 <div key={member.id} className="flex items-center justify-between p-4 border rounded-lg">
