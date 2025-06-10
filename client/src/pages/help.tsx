@@ -4,7 +4,13 @@ import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
+import { Switch } from "@/components/ui/switch";
+import { Label } from "@/components/ui/label";
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
+import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from "@/components/ui/accordion";
 import { useLanguage } from "@/hooks/use-language";
+import { useSettings, useUpdateSetting, useThemeSetting, useLanguageSetting, useNotificationSettings } from "@/hooks/useSettings";
+import { useState } from "react";
 import { 
   HelpCircle, 
   Users, 
@@ -18,31 +24,73 @@ import {
   Search,
   Phone,
   Mail,
-  MessageCircle
+  MessageCircle,
+  Globe,
+  Moon,
+  Sun,
+  Bell,
+  Lock,
+  User,
+  Database,
+  Shield,
+  AlertCircle,
+  CheckCircle,
+  Info
 } from "lucide-react";
-import { useState } from "react";
 
 export default function Help() {
-  const { t } = useLanguage();
+  const { t, language, setLanguage } = useLanguage();
   const [searchQuery, setSearchQuery] = useState("");
+  const { data: settings } = useSettings();
+  const updateSetting = useUpdateSetting();
+  const themeSetting = useThemeSetting();
+  const languageSetting = useLanguageSetting();
+  const notificationSettings = useNotificationSettings();
+
+  const handleSettingUpdate = (category: string, key: string, value: string) => {
+    updateSetting.mutate({ category, key, value });
+  };
 
   const helpSections = [
+    {
+      id: "getting-started",
+      title: "Başlangıç",
+      icon: User,
+      items: [
+        {
+          question: "İK360 sistemine nasıl giriş yaparım?",
+          answer: "Ana sayfada 'Giriş Yap' butonuna tıklayın ve e-posta adresiniz ile şifrenizi girin. Eğer hesabınız yoksa 'Kayıt Ol' butonunu kullanarak yeni hesap oluşturabilirsiniz."
+        },
+        {
+          question: "İlk kez kullanıyorum, nereden başlamalıyım?",
+          answer: "Sisteme ilk giriş yaptığınızda dashboard sayfasında genel bir bakış göreceksiniz. İlk olarak 'Çalışanlar' menüsünden çalışan bilgilerini ekleyebilir, sonra departmanları ve pozisyonları tanımlayabilirsiniz."
+        },
+        {
+          question: "Şifremi unuttum, ne yapmalıyım?",
+          answer: "Giriş sayfasında 'Şifremi Unuttum' linkine tıklayın. E-posta adresinizi girin ve size gönderilen link ile şifrenizi yenileyebilirsiniz."
+        }
+      ]
+    },
     {
       id: "employees",
       title: "Çalışan Yönetimi",
       icon: Users,
-      content: [
+      items: [
         {
-          question: "Yeni çalışan nasıl eklenir?",
-          answer: "Çalışanlar sayfasında 'Çalışan Ekle' butonuna tıklayın. Gerekli bilgileri doldurun ve kaydedin."
+          question: "Yeni çalışan nasıl eklerim?",
+          answer: "Çalışanlar sayfasında 'Yeni Çalışan Ekle' butonuna tıklayın. Gerekli bilgileri doldurun: ad, soyad, e-posta, telefon, departman, pozisyon, başlangıç tarihi ve maaş bilgileri."
         },
         {
-          question: "Çalışan bilgileri nasıl güncellenir?",
-          answer: "Çalışan listesinde düzenlemek istediğiniz çalışanın yanındaki düzenle ikonuna tıklayın."
+          question: "Çalışan bilgilerini nasıl düzenlerim?",
+          answer: "Çalışanlar listesinde ilgili çalışanın satırındaki 'Düzenle' butonuna tıklayın. Bilgileri güncelledikten sonra 'Kaydet' butonuna basın."
         },
         {
-          question: "Toplu çalışan verisi nasıl yüklenir?",
-          answer: "Excel şablonunu indirin, verileri doldurun ve 'Veri Yükle' özelliğini kullanın."
+          question: "Çalışanları nasıl filtreleyebilirim?",
+          answer: "Çalışanlar sayfasında arama kutusunu kullanarak ad, departman veya pozisyona göre arama yapabilirsiniz. Ayrıca durum filtreleri ile aktif, pasif veya izinli çalışanları görebilirsiniz."
+        },
+        {
+          question: "Çalışan verilerini nasıl dışa aktarırım?",
+          answer: "Çalışanlar sayfasında 'Dışa Aktar' butonuna tıklayın. Excel formatında tüm çalışan bilgilerini indirebilirsiniz."
         }
       ]
     },
@@ -50,18 +98,22 @@ export default function Help() {
       id: "leaves",
       title: "İzin Yönetimi",
       icon: Calendar,
-      content: [
+      items: [
         {
-          question: "İzin talebi nasıl oluşturulur?",
-          answer: "İzinler sayfasında 'İzin Ekle' butonuna tıklayın. İzin türü, tarih aralığı ve sebep bilgilerini girin."
+          question: "İzin talebi nasıl oluştururum?",
+          answer: "İzinler sayfasında 'Yeni İzin Talebi' butonuna tıklayın. Çalışanı seçin, izin türünü belirleyin, başlangıç ve bitiş tarihlerini girin, gerekçeyi yazın."
         },
         {
-          question: "İzin durumu nasıl güncellenir?",
-          answer: "İzin listesinde durumu değiştirmek istediğiniz izni seçin ve onay/red işlemini yapın."
+          question: "İzin taleplerini nasıl onaylarım?",
+          answer: "İzinler listesinde 'Beklemede' durumundaki talepleri görebilirsiniz. İlgili talebin yanındaki 'Onayla' veya 'Reddet' butonlarını kullanın."
         },
         {
-          question: "İzin raporları nasıl alınır?",
-          answer: "Raporlar sayfasında izin raporlarını filtreleyebilir ve Excel formatında dışa aktarabilirsiniz."
+          question: "İzin türleri nelerdir?",
+          answer: "Sistem standart olarak Yıllık İzin, Hastalık İzni, Doğum İzni, Evlilik İzni, Vefat İzni türlerini destekler. Yönetici yetkisiyle yeni izin türleri eklenebilir."
+        },
+        {
+          question: "İzin bakiyelerini nasıl takip ederim?",
+          answer: "Her çalışanın profil sayfasında mevcut izin bakiyeleri görüntülenir. Dashboard'da da genel izin istatistikleri bulunur."
         }
       ]
     },
@@ -69,18 +121,18 @@ export default function Help() {
       id: "payroll",
       title: "Bordro Yönetimi",
       icon: DollarSign,
-      content: [
+      items: [
         {
-          question: "Bordro nasıl hesaplanır?",
-          answer: "Bordro sayfasında çalışan seçin, dönem belirleyin ve maaş bilgilerini girin. Sistem otomatik hesaplama yapar."
+          question: "Bordro nasıl oluştururum?",
+          answer: "Bordro sayfasında 'Yeni Bordro' butonuna tıklayın. Çalışanı seçin, dönem belirleyin, temel maaş ve ek ödemeleri girin."
         },
         {
-          question: "Toplu bordro işlemi nasıl yapılır?",
-          answer: "Tüm çalışanlar için aynı anda bordro oluşturmak için 'Toplu İşlem' özelliğini kullanın."
+          question: "Toplu bordro nasıl hazırlarım?",
+          answer: "Bordro sayfasında 'Toplu İşlem' seçeneğini kullanarak tüm aktif çalışanlar için aynı dönemde bordro oluşturabilirsiniz."
         },
         {
-          question: "Bordro raporları nasıl dışa aktarılır?",
-          answer: "Raporlar bölümünden bordro verilerini Excel formatında indirebilirsiniz."
+          question: "Bordro raporlarını nasıl alırım?",
+          answer: "Raporlar sayfasından bordro raporlarını seçebilir, dönem filtresi uygulayarak Excel veya PDF formatında indirebilirsiniz."
         }
       ]
     },
@@ -88,18 +140,18 @@ export default function Help() {
       id: "performance",
       title: "Performans Değerlendirme",
       icon: TrendingUp,
-      content: [
+      items: [
         {
           question: "Performans değerlendirmesi nasıl yapılır?",
-          answer: "Performans sayfasında çalışan seçin, değerlendirme kriterlerini puanlayın ve yorumlar ekleyin."
+          answer: "Performans sayfasında 'Yeni Değerlendirme' butonuna tıklayın. Çalışanı seçin, dönem belirleyin ve kriterler üzerinden puanlama yapın."
         },
         {
           question: "Performans hedefleri nasıl belirlenir?",
-          answer: "Her çalışan için SMART hedefler belirleyin ve düzenli takip yapın."
+          answer: "Her çalışan için bireysel hedefler tanımlanabilir. Değerlendirme sırasında bu hedeflere ulaşım oranı değerlendirilir."
         },
         {
-          question: "Performans raporları nasıl oluşturulur?",
-          answer: "Raporlar sayfasından performans analizlerini görüntüleyebilir ve dışa aktarabilirsiniz."
+          question: "Performans raporları nasıl görüntülenir?",
+          answer: "Dashboard'daki performans grafikleri ile genel durumu, detaylı raporlar için Raporlar sayfasını kullanabilirsiniz."
         }
       ]
     },
@@ -107,234 +159,392 @@ export default function Help() {
       id: "reports",
       title: "Raporlama",
       icon: FileText,
-      content: [
+      items: [
         {
-          question: "Hangi raporlar mevcut?",
-          answer: "Çalışan, izin, bordro ve performans raporları mevcuttur. Tümü Excel formatında dışa aktarılabilir."
+          question: "Hangi raporları alabilirim?",
+          answer: "Çalışan listesi, bordro özetleri, izin raporları, performans analizi, departman bazlı istatistikler gibi kapsamlı raporlar mevcuttur."
         },
         {
-          question: "Özel filtreler nasıl uygulanır?",
-          answer: "Her rapor sayfasında tarih aralığı, departman ve durum filtrelerini kullanabilirsiniz."
+          question: "Raporları nasıl filtreleyebilirim?",
+          answer: "Tarih aralığı, departman, çalışan grubu gibi kriterlere göre raporları filtreleyebilir ve özelleştirebilirsiniz."
         },
         {
-          question: "Otomatik raporlar nasıl ayarlanır?",
-          answer: "Ayarlar sayfasından belirli aralıklarla otomatik rapor oluşturma özelliğini aktifleştirebilirsiniz."
-        }
-      ]
-    },
-    {
-      id: "settings",
-      title: "Sistem Ayarları",
-      icon: Settings,
-      content: [
-        {
-          question: "Kullanıcı yetkileri nasıl yönetilir?",
-          answer: "Ayarlar sayfasından kullanıcı rollerini ve yetkilerini düzenleyebilirsiniz."
-        },
-        {
-          question: "Sistem yedekleme nasıl yapılır?",
-          answer: "Ayarlar > Veri Yönetimi bölümünden veritabanı yedeği alabilirsiniz."
-        },
-        {
-          question: "Bildirim ayarları nasıl yapılandırılır?",
-          answer: "Kişisel ayarlardan e-posta ve sistem bildirimlerini özelleştirebilirsiniz."
+          question: "Raporları hangi formatlarda indirebilirim?",
+          answer: "Tüm raporlar Excel (.xlsx) ve PDF formatlarında indirilebilir. Bazı raporlar için CSV seçeneği de mevcuttur."
         }
       ]
     }
   ];
 
-  const filteredSections = helpSections.filter(section =>
-    section.title.toLowerCase().includes(searchQuery.toLowerCase()) ||
-    section.content.some(item => 
+  const filteredSections = helpSections.map(section => ({
+    ...section,
+    items: section.items.filter(item =>
       item.question.toLowerCase().includes(searchQuery.toLowerCase()) ||
       item.answer.toLowerCase().includes(searchQuery.toLowerCase())
     )
-  );
+  })).filter(section => section.items.length > 0);
 
   return (
-    <div className="flex-1 space-y-6 p-6">
-      <div className="flex items-center justify-between">
-        <div>
-          <h1 className="text-3xl font-bold tracking-tight">Yardım ve Destek</h1>
-          <p className="text-muted-foreground">
-            İK360 sistemi hakkında detaylı bilgi ve kullanım kılavuzu
-          </p>
-        </div>
-        <Badge variant="secondary" className="text-sm">
-          v1.0.0
-        </Badge>
+    <div className="container mx-auto px-4 py-6 max-w-6xl">
+      <div className="mb-6">
+        <h1 className="text-3xl font-bold text-gray-900 dark:text-white mb-2">
+          Yardım & Ayarlar
+        </h1>
+        <p className="text-gray-600 dark:text-gray-300">
+          İK360 sistemini kullanırken ihtiyacınız olan tüm bilgiler ve sistem ayarları
+        </p>
       </div>
 
-      {/* Arama */}
-      <Card>
-        <CardHeader>
-          <CardTitle className="flex items-center gap-2">
-            <Search className="h-5 w-5" />
-            Yardım Ara
-          </CardTitle>
-          <CardDescription>
-            Aradığınız konuyu hızlıca bulun
-          </CardDescription>
-        </CardHeader>
-        <CardContent>
-          <Input
-            placeholder="Arama yapın..."
-            value={searchQuery}
-            onChange={(e) => setSearchQuery(e.target.value)}
-            className="max-w-md"
-          />
-        </CardContent>
-      </Card>
-
-      <Tabs defaultValue="guide" className="space-y-4">
-        <TabsList>
-          <TabsTrigger value="guide">Kullanım Kılavuzu</TabsTrigger>
-          <TabsTrigger value="faq">Sık Sorulan Sorular</TabsTrigger>
-          <TabsTrigger value="contact">İletişim</TabsTrigger>
-          <TabsTrigger value="updates">Güncellemeler</TabsTrigger>
+      <Tabs defaultValue="help" className="w-full">
+        <TabsList className="grid w-full grid-cols-3 mb-6">
+          <TabsTrigger value="help" className="flex items-center gap-2">
+            <HelpCircle className="h-4 w-4" />
+            Yardım
+          </TabsTrigger>
+          <TabsTrigger value="settings" className="flex items-center gap-2">
+            <Settings className="h-4 w-4" />
+            Ayarlar
+          </TabsTrigger>
+          <TabsTrigger value="contact" className="flex items-center gap-2">
+            <MessageCircle className="h-4 w-4" />
+            İletişim
+          </TabsTrigger>
         </TabsList>
 
-        <TabsContent value="guide" className="space-y-4">
-          <div className="grid gap-4">
-            {filteredSections.map((section) => {
-              const Icon = section.icon;
-              return (
-                <Card key={section.id}>
-                  <CardHeader>
-                    <CardTitle className="flex items-center gap-2">
-                      <Icon className="h-5 w-5" />
-                      {section.title}
-                    </CardTitle>
-                  </CardHeader>
-                  <CardContent className="space-y-4">
-                    {section.content.map((item, index) => (
-                      <div key={index} className="border-l-2 border-primary/20 pl-4">
-                        <h4 className="font-medium text-sm mb-1">{item.question}</h4>
-                        <p className="text-sm text-muted-foreground">{item.answer}</p>
-                      </div>
-                    ))}
-                  </CardContent>
-                </Card>
-              );
-            })}
-          </div>
-        </TabsContent>
-
-        <TabsContent value="faq" className="space-y-4">
+        <TabsContent value="help" className="space-y-6">
           <Card>
             <CardHeader>
-              <CardTitle>Genel Sorular</CardTitle>
-              <CardDescription>En sık sorulan sorular ve yanıtları</CardDescription>
+              <CardTitle className="flex items-center gap-2">
+                <Search className="h-5 w-5 text-blue-600" />
+                Yardım Arama
+              </CardTitle>
+              <CardDescription>
+                Aradığınız konuyu hızlıca bulmak için aşağıdaki arama kutusunu kullanın
+              </CardDescription>
             </CardHeader>
-            <CardContent className="space-y-6">
-              <div className="space-y-4">
-                <div className="border-l-2 border-primary/20 pl-4">
-                  <h4 className="font-medium mb-1">Sistem ne kadar kullanıcıyı destekler?</h4>
-                  <p className="text-sm text-muted-foreground">
-                    İK360 sistemi sınırsız kullanıcı desteği sunar. Performans lisansınıza bağlıdır.
-                  </p>
-                </div>
-                <div className="border-l-2 border-primary/20 pl-4">
-                  <h4 className="font-medium mb-1">Verilerim güvende mi?</h4>
-                  <p className="text-sm text-muted-foreground">
-                    Evet, tüm veriler şifrelenmiş olarak saklanır ve düzenli yedekleme yapılır.
-                  </p>
-                </div>
-                <div className="border-l-2 border-primary/20 pl-4">
-                  <h4 className="font-medium mb-1">Mobil uygulaması var mı?</h4>
-                  <p className="text-sm text-muted-foreground">
-                    Web tabanlı sistem tüm cihazlarda responsive olarak çalışır. Mobil uygulama yakında gelecek.
-                  </p>
-                </div>
-                <div className="border-l-2 border-primary/20 pl-4">
-                  <h4 className="font-medium mb-1">API entegrasyonu mümkün mü?</h4>
-                  <p className="text-sm text-muted-foreground">
-                    Evet, REST API ile diğer sistemlerle entegrasyon sağlayabilirsiniz.
-                  </p>
-                </div>
+            <CardContent>
+              <div className="relative">
+                <Search className="absolute left-3 top-3 h-4 w-4 text-gray-400" />
+                <Input
+                  placeholder="Aradığınız konuyu yazın..."
+                  value={searchQuery}
+                  onChange={(e) => setSearchQuery(e.target.value)}
+                  className="pl-10"
+                />
               </div>
             </CardContent>
           </Card>
+
+          <div className="grid gap-6">
+            {filteredSections.map((section) => (
+              <Card key={section.id}>
+                <CardHeader>
+                  <CardTitle className="flex items-center gap-2">
+                    <section.icon className="h-5 w-5 text-blue-600" />
+                    {section.title}
+                  </CardTitle>
+                </CardHeader>
+                <CardContent>
+                  <Accordion type="single" collapsible className="w-full">
+                    {section.items.map((item, index) => (
+                      <AccordionItem key={index} value={`${section.id}-${index}`}>
+                        <AccordionTrigger className="text-left">
+                          {item.question}
+                        </AccordionTrigger>
+                        <AccordionContent className="text-gray-600 dark:text-gray-300">
+                          {item.answer}
+                        </AccordionContent>
+                      </AccordionItem>
+                    ))}
+                  </Accordion>
+                </CardContent>
+              </Card>
+            ))}
+          </div>
+
+          {searchQuery && filteredSections.length === 0 && (
+            <Card>
+              <CardContent className="text-center py-8">
+                <AlertCircle className="h-12 w-12 text-gray-400 mx-auto mb-4" />
+                <h3 className="text-lg font-medium text-gray-900 dark:text-white mb-2">
+                  Arama sonucu bulunamadı
+                </h3>
+                <p className="text-gray-600 dark:text-gray-300">
+                  "{searchQuery}" için sonuç bulunamadı. Lütfen farklı anahtar kelimeler deneyin.
+                </p>
+              </CardContent>
+            </Card>
+          )}
         </TabsContent>
 
-        <TabsContent value="contact" className="space-y-4">
-          <div className="grid md:grid-cols-2 gap-4">
+        <TabsContent value="settings" className="space-y-6">
+          <div className="grid gap-6">
             <Card>
               <CardHeader>
-                <CardTitle>İletişim Bilgileri</CardTitle>
-                <CardDescription>Bizimle iletişime geçin</CardDescription>
+                <CardTitle className="flex items-center gap-2">
+                  <Globe className="h-5 w-5 text-blue-600" />
+                  Dil ve Bölge Ayarları
+                </CardTitle>
+                <CardDescription>
+                  Sistem dilini ve bölgesel ayarları değiştirin
+                </CardDescription>
               </CardHeader>
               <CardContent className="space-y-4">
-                <div className="flex items-center gap-3">
-                  <Phone className="h-4 w-4 text-primary" />
-                  <span className="text-sm">+90 (212) 555-0123</span>
-                </div>
-                <div className="flex items-center gap-3">
-                  <Mail className="h-4 w-4 text-primary" />
-                  <span className="text-sm">destek@ik360.com</span>
-                </div>
-                <div className="flex items-center gap-3">
-                  <MessageCircle className="h-4 w-4 text-primary" />
-                  <span className="text-sm">Canlı Destek (7/24)</span>
+                <div className="flex items-center justify-between">
+                  <Label htmlFor="language">Sistem Dili</Label>
+                  <Select value={language} onValueChange={setLanguage}>
+                    <SelectTrigger className="w-48">
+                      <SelectValue />
+                    </SelectTrigger>
+                    <SelectContent>
+                      <SelectItem value="tr">Türkçe</SelectItem>
+                      <SelectItem value="en">English</SelectItem>
+                    </SelectContent>
+                  </Select>
                 </div>
               </CardContent>
             </Card>
 
             <Card>
               <CardHeader>
-                <CardTitle>Destek Talebi</CardTitle>
-                <CardDescription>Sorunuz varsa bize yazın</CardDescription>
+                <CardTitle className="flex items-center gap-2">
+                  <Moon className="h-5 w-5 text-blue-600" />
+                  Görünüm Ayarları
+                </CardTitle>
+                <CardDescription>
+                  Tema ve görünüm tercihlerinizi ayarlayın
+                </CardDescription>
               </CardHeader>
               <CardContent className="space-y-4">
-                <Input placeholder="Konu" />
-                <Textarea placeholder="Mesajınız..." rows={4} />
+                <div className="flex items-center justify-between">
+                  <Label htmlFor="theme">Karanlık Mod</Label>
+                  <Switch
+                    id="theme"
+                    checked={themeSetting?.value === 'dark'}
+                    onCheckedChange={(checked) =>
+                      handleSettingUpdate('appearance', 'theme', checked ? 'dark' : 'light')
+                    }
+                  />
+                </div>
+              </CardContent>
+            </Card>
+
+            <Card>
+              <CardHeader>
+                <CardTitle className="flex items-center gap-2">
+                  <Bell className="h-5 w-5 text-blue-600" />
+                  Bildirim Ayarları
+                </CardTitle>
+                <CardDescription>
+                  Hangi bildirimleri almak istediğinizi seçin
+                </CardDescription>
+              </CardHeader>
+              <CardContent className="space-y-4">
+                <div className="flex items-center justify-between">
+                  <div>
+                    <Label htmlFor="email-notifications">E-posta Bildirimleri</Label>
+                    <p className="text-sm text-gray-600 dark:text-gray-400">
+                      Önemli güncellemeler için e-posta bildirimleri alın
+                    </p>
+                  </div>
+                  <Switch
+                    id="email-notifications"
+                    checked={notificationSettings?.some(s => s.key === 'email_enabled' && s.value === 'true')}
+                    onCheckedChange={(checked) =>
+                      handleSettingUpdate('notifications', 'email_enabled', checked.toString())
+                    }
+                  />
+                </div>
+                <div className="flex items-center justify-between">
+                  <div>
+                    <Label htmlFor="push-notifications">Anlık Bildirimler</Label>
+                    <p className="text-sm text-gray-600 dark:text-gray-400">
+                      Tarayıcıda anlık bildirimler göster
+                    </p>
+                  </div>
+                  <Switch
+                    id="push-notifications"
+                    checked={notificationSettings?.some(s => s.key === 'push_enabled' && s.value === 'true')}
+                    onCheckedChange={(checked) =>
+                      handleSettingUpdate('notifications', 'push_enabled', checked.toString())
+                    }
+                  />
+                </div>
+              </CardContent>
+            </Card>
+
+            <Card>
+              <CardHeader>
+                <CardTitle className="flex items-center gap-2">
+                  <Shield className="h-5 w-5 text-blue-600" />
+                  Güvenlik Ayarları
+                </CardTitle>
+                <CardDescription>
+                  Hesap güvenliğinizi yönetin
+                </CardDescription>
+              </CardHeader>
+              <CardContent className="space-y-4">
+                <div className="flex items-center justify-between">
+                  <div>
+                    <Label>Oturum Zaman Aşımı</Label>
+                    <p className="text-sm text-gray-600 dark:text-gray-400">
+                      İşlem yapılmadığında otomatik çıkış süresi
+                    </p>
+                  </div>
+                  <Select defaultValue="30">
+                    <SelectTrigger className="w-32">
+                      <SelectValue />
+                    </SelectTrigger>
+                    <SelectContent>
+                      <SelectItem value="15">15 dakika</SelectItem>
+                      <SelectItem value="30">30 dakika</SelectItem>
+                      <SelectItem value="60">1 saat</SelectItem>
+                      <SelectItem value="240">4 saat</SelectItem>
+                    </SelectContent>
+                  </Select>
+                </div>
+                <div className="pt-4">
+                  <Button variant="outline" className="w-full">
+                    <Lock className="h-4 w-4 mr-2" />
+                    Şifre Değiştir
+                  </Button>
+                </div>
+              </CardContent>
+            </Card>
+
+            <Card>
+              <CardHeader>
+                <CardTitle className="flex items-center gap-2">
+                  <Database className="h-5 w-5 text-blue-600" />
+                  Veri Yönetimi
+                </CardTitle>
+                <CardDescription>
+                  Veri dışa aktarma ve yedekleme seçenekleri
+                </CardDescription>
+              </CardHeader>
+              <CardContent className="space-y-4">
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                  <Button variant="outline" className="w-full">
+                    <Download className="h-4 w-4 mr-2" />
+                    Tüm Verileri İndir
+                  </Button>
+                  <Button variant="outline" className="w-full">
+                    <Upload className="h-4 w-4 mr-2" />
+                    Veri Yedekle
+                  </Button>
+                </div>
+              </CardContent>
+            </Card>
+          </div>
+        </TabsContent>
+
+        <TabsContent value="contact" className="space-y-6">
+          <div className="grid gap-6 md:grid-cols-2">
+            <Card>
+              <CardHeader>
+                <CardTitle className="flex items-center gap-2">
+                  <MessageCircle className="h-5 w-5 text-blue-600" />
+                  Teknik Destek
+                </CardTitle>
+                <CardDescription>
+                  Teknik sorunlarınız için bizimle iletişime geçin
+                </CardDescription>
+              </CardHeader>
+              <CardContent className="space-y-4">
+                <div className="flex items-center gap-3">
+                  <Mail className="h-5 w-5 text-gray-400" />
+                  <div>
+                    <p className="font-medium">E-posta</p>
+                    <p className="text-sm text-gray-600 dark:text-gray-400">destek@ik360.com</p>
+                  </div>
+                </div>
+                <div className="flex items-center gap-3">
+                  <Phone className="h-5 w-5 text-gray-400" />
+                  <div>
+                    <p className="font-medium">Telefon</p>
+                    <p className="text-sm text-gray-600 dark:text-gray-400">+90 (212) 555-0123</p>
+                  </div>
+                </div>
+                <div className="pt-4">
+                  <Button className="w-full">
+                    <MessageCircle className="h-4 w-4 mr-2" />
+                    Canlı Destek
+                  </Button>
+                </div>
+              </CardContent>
+            </Card>
+
+            <Card>
+              <CardHeader>
+                <CardTitle>Geri Bildirim Gönder</CardTitle>
+                <CardDescription>
+                  Önerileriniz ve geri bildirimleriniz bizim için değerli
+                </CardDescription>
+              </CardHeader>
+              <CardContent className="space-y-4">
+                <div>
+                  <Label htmlFor="feedback-type">Geri Bildirim Türü</Label>
+                  <Select>
+                    <SelectTrigger>
+                      <SelectValue placeholder="Seçiniz" />
+                    </SelectTrigger>
+                    <SelectContent>
+                      <SelectItem value="bug">Hata Bildirimi</SelectItem>
+                      <SelectItem value="feature">Özellik İsteği</SelectItem>
+                      <SelectItem value="improvement">İyileştirme Önerisi</SelectItem>
+                      <SelectItem value="other">Diğer</SelectItem>
+                    </SelectContent>
+                  </Select>
+                </div>
+                <div>
+                  <Label htmlFor="feedback-message">Mesajınız</Label>
+                  <Textarea
+                    id="feedback-message"
+                    placeholder="Geri bildiriminizi buraya yazın..."
+                    rows={4}
+                  />
+                </div>
                 <Button className="w-full">
                   Gönder
                 </Button>
               </CardContent>
             </Card>
           </div>
-        </TabsContent>
 
-        <TabsContent value="updates" className="space-y-4">
           <Card>
             <CardHeader>
-              <CardTitle>Son Güncellemeler</CardTitle>
-              <CardDescription>Sistem güncellemeleri ve yeni özellikler</CardDescription>
+              <CardTitle>Sık Sorulan Sorular</CardTitle>
             </CardHeader>
-            <CardContent className="space-y-4">
-              <div className="space-y-4">
-                <div className="border-l-2 border-green-500 pl-4">
-                  <div className="flex items-center gap-2 mb-1">
-                    <Badge variant="secondary">v1.0.0</Badge>
-                    <span className="text-xs text-muted-foreground">10 Haziran 2025</span>
-                  </div>
-                  <h4 className="font-medium mb-1">İlk Sürüm Yayınlandı</h4>
-                  <p className="text-sm text-muted-foreground">
-                    Çalışan yönetimi, izin takibi, bordro hesaplama ve performans değerlendirme özellikleri.
-                  </p>
-                </div>
-                <div className="border-l-2 border-blue-500 pl-4">
-                  <div className="flex items-center gap-2 mb-1">
-                    <Badge variant="outline">Yakında</Badge>
-                    <span className="text-xs text-muted-foreground">Temmuz 2025</span>
-                  </div>
-                  <h4 className="font-medium mb-1">Mobil Uygulama</h4>
-                  <p className="text-sm text-muted-foreground">
-                    iOS ve Android uygulamaları ile mobil erişim.
-                  </p>
-                </div>
-                <div className="border-l-2 border-purple-500 pl-4">
-                  <div className="flex items-center gap-2 mb-1">
-                    <Badge variant="outline">Planlanan</Badge>
-                    <span className="text-xs text-muted-foreground">Ağustos 2025</span>
-                  </div>
-                  <h4 className="font-medium mb-1">AI Destekli Analizler</h4>
-                  <p className="text-sm text-muted-foreground">
-                    Yapay zeka ile performans analizi ve öngörülü raporlama.
-                  </p>
-                </div>
-              </div>
+            <CardContent>
+              <Accordion type="single" collapsible>
+                <AccordionItem value="faq-1">
+                  <AccordionTrigger>
+                    Sistem güncellemeleri ne sıklıkla yapılır?
+                  </AccordionTrigger>
+                  <AccordionContent>
+                    İK360 sistemi aylık olarak güncellenir. Kritik güvenlik güncellemeleri gerektiğinde hemen uygulanır.
+                    Tüm güncellemeler önceden duyurulur ve sistem bakımı genellikle hafta sonları yapılır.
+                  </AccordionContent>
+                </AccordionItem>
+                <AccordionItem value="faq-2">
+                  <AccordionTrigger>
+                    Verilerim güvende mi?
+                  </AccordionTrigger>
+                  <AccordionContent>
+                    Evet, tüm verileriniz SSL şifreleme ile korunur ve düzenli olarak yedeklenir. 
+                    KVKK (Kişisel Verilerin Korunması Kanunu) gerekliliklerine tam uyum sağlanmaktadır.
+                  </AccordionContent>
+                </AccordionItem>
+                <AccordionItem value="faq-3">
+                  <AccordionTrigger>
+                    Mobil uygulama var mı?
+                  </AccordionTrigger>
+                  <AccordionContent>
+                    Şu anda mobil uygulamamız bulunmamaktadır, ancak sistem tamamen responsive tasarıma sahip olup 
+                    mobil cihazlarda sorunsuz çalışmaktadır. Mobil uygulama geliştirme sürecimiz devam etmektedir.
+                  </AccordionContent>
+                </AccordionItem>
+              </Accordion>
             </CardContent>
           </Card>
         </TabsContent>

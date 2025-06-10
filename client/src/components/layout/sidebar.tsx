@@ -71,8 +71,8 @@ const navigationItems = [
     bgColor: "bg-rose-50",
   },
   {
-    name: "Yardım",
-    nameKey: "Yardım",
+    name: "Yardım & Ayarlar",
+    nameKey: "Yardım & Ayarlar",
     href: "/help",
     icon: HelpCircle,
     color: "text-amber-600",

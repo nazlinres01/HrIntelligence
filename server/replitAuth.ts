@@ -130,7 +130,18 @@ export async function setupAuth(app: Express) {
 export const isAuthenticated: RequestHandler = async (req, res, next) => {
   const user = req.user as any;
 
-  if (!req.isAuthenticated || !req.isAuthenticated() || !user?.expires_at) {
+  // Check if user is authenticated
+  if (!req.isAuthenticated || typeof req.isAuthenticated !== 'function' || !req.isAuthenticated()) {
+    return res.status(401).json({ message: "Unauthorized" });
+  }
+
+  // For simple login system, just check if user exists
+  if (!user) {
+    return res.status(401).json({ message: "Unauthorized" });
+  }
+
+  // If user has claims (OAuth), check expiration
+  if (user.claims && !user.expires_at) {
     return res.status(401).json({ message: "Unauthorized" });
   }
 
