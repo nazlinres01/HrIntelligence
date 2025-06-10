@@ -151,7 +151,7 @@ export async function seedDatabase() {
       {
         employeeId: 1,
         reviewPeriod: "2024-Q1",
-        overallRating: 4.8,
+        score: "4.8",
         goals: "Yeni mikroservis mimarisini tamamlama ve takım mentorluğu",
         achievements: "3 kritik projeyi zamanında teslim etti, junior geliştiricilere mentorluk yaptı",
         feedback: "Olağanüstü teknik yetkinlik ve liderlik becerileri gösterdi"
@@ -159,7 +159,7 @@ export async function seedDatabase() {
       {
         employeeId: 2,
         reviewPeriod: "2024-Q1", 
-        overallRating: 4.5,
+        score: "4.5",
         goals: "Dijital pazarlama kampanyalarında %20 artış sağlama",
         achievements: "Müşteri kazanımında %25 artış, sosyal medya etkileşiminde %40 artış",
         feedback: "Hedefleri aştı, yaratıcı kampanyalar geliştirdi"
@@ -167,7 +167,7 @@ export async function seedDatabase() {
       {
         employeeId: 3,
         reviewPeriod: "2024-Q1",
-        overallRating: 4.2,
+        score: "4.2",
         goals: "Personel eğitim programlarını modernize etme",
         achievements: "Online eğitim platformu kurdu, çalışan memnuniyetini %15 artırdı",
         feedback: "İnovatif yaklaşımlar sergiliyor, gelişim potansiyeli yüksek"
@@ -175,7 +175,7 @@ export async function seedDatabase() {
       {
         employeeId: 4,
         reviewPeriod: "2024-Q1",
-        overallRating: 4.6,
+        score: "4.6",
         goals: "Mali raporlama süreçlerini otomatikleştirme",
         achievements: "Raporlama süresini %50 kısalttı, hata oranını minimize etti",
         feedback: "Analitik düşünce ve problem çözme becerileri mükemmel"
@@ -183,7 +183,7 @@ export async function seedDatabase() {
       {
         employeeId: 5,
         reviewPeriod: "2024-Q1",
-        overallRating: 4.0,
+        score: "4.0",
         goals: "Operasyonel verimliliği %10 artırma",
         achievements: "Süreç optimizasyonları ile %12 verimlilik artışı sağladı",
         feedback: "Sistematik yaklaşım, sürekli iyileştirme odaklı"
@@ -196,52 +196,52 @@ export async function seedDatabase() {
     const samplePayroll = [
       {
         employeeId: 1,
-        payPeriod: "2024-03",
-        basicSalary: 120000,
-        allowances: 8000,
-        deductions: 22000,
-        netSalary: 106000,
+        month: "2024-03",
+        baseSalary: "120000.00",
+        bonuses: "8000.00",
+        deductions: "22000.00",
+        netSalary: "106000.00",
         status: "paid",
-        processedAt: "2024-03-31"
+        paymentDate: "2024-03-31"
       },
       {
         employeeId: 2,
-        payPeriod: "2024-03",
-        basicSalary: 95000,
-        allowances: 6000,
-        deductions: 18000,
-        netSalary: 83000,
+        month: "2024-03",
+        baseSalary: "95000.00",
+        bonuses: "6000.00",
+        deductions: "18000.00",
+        netSalary: "83000.00",
         status: "paid",
-        processedAt: "2024-03-31"
+        paymentDate: "2024-03-31"
       },
       {
         employeeId: 3,
-        payPeriod: "2024-03",
-        basicSalary: 75000,
-        allowances: 4000,
-        deductions: 14000,
-        netSalary: 65000,
-        status: "processed",
-        processedAt: "2024-03-30"
+        month: "2024-03",
+        baseSalary: "75000.00",
+        bonuses: "4000.00",
+        deductions: "14000.00",
+        netSalary: "65000.00",
+        status: "paid",
+        paymentDate: "2024-03-30"
       },
       {
         employeeId: 4,
-        payPeriod: "2024-03",
-        basicSalary: 85000,
-        allowances: 5000,
-        deductions: 16000,
-        netSalary: 74000,
+        month: "2024-03",
+        baseSalary: "85000.00",
+        bonuses: "5000.00",
+        deductions: "16000.00",
+        netSalary: "74000.00",
         status: "paid",
-        processedAt: "2024-03-31"
+        paymentDate: "2024-03-31"
       },
       {
         employeeId: 5,
-        payPeriod: "2024-03",
-        basicSalary: 70000,
-        allowances: 3500,
-        deductions: 13000,
-        netSalary: 60500,
-        status: "draft"
+        month: "2024-03",
+        baseSalary: "70000.00",
+        bonuses: "3500.00",
+        deductions: "13000.00",
+        netSalary: "60500.00",
+        status: "pending"
       }
     ];
 
