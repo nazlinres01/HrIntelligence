@@ -40,7 +40,17 @@ export async function registerRoutes(app: Express): Promise<Server> {
         return res.status(400).json({ message: "Bu e-posta adresi zaten kullanımda" });
       }
 
-      // Create new user
+      // Create company first
+      const company = await storage.createCompany({
+        name: companyName,
+        description: `${companyName} - İK Yönetim Sistemi`,
+        website: null,
+        employeeCount: 1,
+        industry: "Genel",
+        location: "Türkiye"
+      });
+
+      // Create new user with company reference
       const userData = {
         id: `user-${Date.now()}`,
         email,
@@ -48,8 +58,10 @@ export async function registerRoutes(app: Express): Promise<Server> {
         lastName,
         profileImageUrl: null,
         phone,
-        companyName,
-        password // In production, this should be hashed
+        password, // In production, this should be hashed
+        role: "hr_manager", // First user becomes HR Manager
+        companyId: company.id,
+        isActive: true
       };
 
       const user = await storage.upsertUser(userData);
