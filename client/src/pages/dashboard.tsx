@@ -51,7 +51,7 @@ export default function Dashboard() {
   const statsCards = [
     {
       title: "Toplam Çalışan",
-      value: stats?.totalEmployees || 0,
+      value: (stats && typeof stats.totalEmployees === 'number') ? stats.totalEmployees : 0,
       change: "+2",
       changeType: "increase",
       icon: Users,
@@ -61,7 +61,7 @@ export default function Dashboard() {
     },
     {
       title: "Aktif İzinler",
-      value: stats?.activeLeaves || 0,
+      value: (stats && typeof stats.activeLeaves === 'number') ? stats.activeLeaves : 0,
       change: "-1",
       changeType: "decrease",
       icon: Calendar,
@@ -71,7 +71,7 @@ export default function Dashboard() {
     },
     {
       title: "Aylık Bordro",
-      value: stats?.monthlyPayroll || "₺0",
+      value: (stats && stats.monthlyPayroll) ? stats.monthlyPayroll : "₺0",
       change: "+5.2%",
       changeType: "increase",
       icon: CreditCard,
@@ -81,7 +81,7 @@ export default function Dashboard() {
     },
     {
       title: "Ortalama Performans",
-      value: stats?.avgPerformance || "0%",
+      value: (stats && stats.avgPerformance) ? stats.avgPerformance : "0%",
       change: "+1.8%",
       changeType: "increase",
       icon: BarChart3,

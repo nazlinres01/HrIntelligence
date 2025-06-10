@@ -152,13 +152,12 @@ export default function Payroll() {
     const netSalary = basicSalary + allowances - deductions;
 
     const payrollData = {
-      ...newPayroll,
       employeeId: parseInt(newPayroll.employeeId),
+      payPeriod: newPayroll.payPeriod,
       basicSalary,
       allowances,
       deductions,
-      netSalary,
-      status: 'draft' as const
+      netSalary
     };
     createPayrollMutation.mutate(payrollData);
   };

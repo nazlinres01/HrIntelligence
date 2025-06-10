@@ -268,9 +268,17 @@ export default function Employees() {
 
   const handleAddEmployee = () => {
     const employeeData = {
-      ...newEmployee,
+      firstName: newEmployee.firstName,
+      lastName: newEmployee.lastName,
+      email: newEmployee.email,
+      phone: newEmployee.phone,
+      department: newEmployee.department,
+      position: newEmployee.position,
       salary: parseFloat(newEmployee.salary) || 0,
-      status: 'active' as const
+      startDate: newEmployee.startDate,
+      address: newEmployee.address,
+      emergencyContact: newEmployee.emergencyContact,
+      notes: newEmployee.notes
     };
     createEmployeeMutation.mutate(employeeData);
   };

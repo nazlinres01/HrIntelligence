@@ -154,9 +154,11 @@ export default function Leaves() {
 
   const handleAddLeave = () => {
     const leaveData = {
-      ...newLeave,
       employeeId: parseInt(newLeave.employeeId),
-      status: 'pending' as const
+      leaveType: newLeave.leaveType,
+      startDate: newLeave.startDate,
+      endDate: newLeave.endDate,
+      reason: newLeave.reason
     };
     createLeaveMutation.mutate(leaveData);
   };
