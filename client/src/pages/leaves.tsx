@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useMemo } from "react";
 import { useQuery, useMutation } from "@tanstack/react-query";
 import { Header } from "@/components/layout/header";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
@@ -134,19 +134,23 @@ export default function Leaves() {
     },
   });
 
-  const filteredLeaves = leaves?.filter((leave: Leave) => {
-    const matchesStatus = statusFilter === "all" || leave.status === statusFilter;
-    const matchesType = typeFilter === "all" || leave.leaveType === typeFilter;
-    const matchesSearch = 
-      leave.employee?.firstName?.toLowerCase().includes(searchTerm.toLowerCase()) ||
-      leave.employee?.lastName?.toLowerCase().includes(searchTerm.toLowerCase()) ||
-      leave.employee?.department?.toLowerCase().includes(searchTerm.toLowerCase()) ||
-      leave.leaveType.toLowerCase().includes(searchTerm.toLowerCase());
+  const filteredLeaves = useMemo(() => {
+    if (!leaves || !Array.isArray(leaves)) return [];
+    
+    return leaves.filter((leave: Leave) => {
+      const matchesStatus = statusFilter === "all" || leave.status === statusFilter;
+      const matchesType = typeFilter === "all" || leave.leaveType === typeFilter;
+      const matchesSearch = !searchTerm || 
+        leave.employee?.firstName?.toLowerCase().includes(searchTerm.toLowerCase()) ||
+        leave.employee?.lastName?.toLowerCase().includes(searchTerm.toLowerCase()) ||
+        leave.employee?.department?.toLowerCase().includes(searchTerm.toLowerCase()) ||
+        leave.leaveType?.toLowerCase().includes(searchTerm.toLowerCase());
 
-    return matchesStatus && matchesType && matchesSearch;
-  }) || [];
+      return matchesStatus && matchesType && matchesSearch;
+    });
+  }, [leaves, statusFilter, typeFilter, searchTerm]);
 
-  const leaveTypes = Array.from(new Set(leaves?.map((leave: Leave) => leave.leaveType) || []));
+  const leaveTypes = Array.from(new Set((leaves || []).map((leave: Leave) => leave.leaveType).filter(Boolean)));
 
   const handleAddLeave = () => {
     const leaveData = {

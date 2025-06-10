@@ -212,16 +212,16 @@ export default function Employees() {
 
   // Enhanced filtering with advanced filters
   const filteredEmployees = useMemo(() => {
-    if (!employees) return [];
+    if (!employees || !Array.isArray(employees)) return [];
     
     return employees.filter((employee: Employee) => {
       // Basic search filter
-      const matchesSearch = 
-        employee.firstName.toLowerCase().includes(searchTerm.toLowerCase()) ||
-        employee.lastName.toLowerCase().includes(searchTerm.toLowerCase()) ||
-        employee.email.toLowerCase().includes(searchTerm.toLowerCase()) ||
-        employee.department.toLowerCase().includes(searchTerm.toLowerCase()) ||
-        employee.position.toLowerCase().includes(searchTerm.toLowerCase());
+      const matchesSearch = !searchTerm || 
+        employee.firstName?.toLowerCase().includes(searchTerm.toLowerCase()) ||
+        employee.lastName?.toLowerCase().includes(searchTerm.toLowerCase()) ||
+        employee.email?.toLowerCase().includes(searchTerm.toLowerCase()) ||
+        employee.department?.toLowerCase().includes(searchTerm.toLowerCase()) ||
+        employee.position?.toLowerCase().includes(searchTerm.toLowerCase());
       
       // Basic filters
       const matchesStatus = statusFilter === "all" || employee.status === statusFilter;
@@ -231,40 +231,40 @@ export default function Employees() {
       let matchesAdvanced = true;
       
       if (advancedFilters.firstName) {
-        matchesAdvanced &&= employee.firstName.toLowerCase().includes(advancedFilters.firstName.toLowerCase());
+        matchesAdvanced = matchesAdvanced && employee.firstName?.toLowerCase().includes(advancedFilters.firstName.toLowerCase());
       }
       
       if (advancedFilters.lastName) {
-        matchesAdvanced &&= employee.lastName.toLowerCase().includes(advancedFilters.lastName.toLowerCase());
+        matchesAdvanced = matchesAdvanced && employee.lastName?.toLowerCase().includes(advancedFilters.lastName.toLowerCase());
       }
       
       if (advancedFilters.email) {
-        matchesAdvanced &&= employee.email.toLowerCase().includes(advancedFilters.email.toLowerCase());
+        matchesAdvanced = matchesAdvanced && employee.email?.toLowerCase().includes(advancedFilters.email.toLowerCase());
       }
       
       if (advancedFilters.department) {
-        matchesAdvanced &&= employee.department === advancedFilters.department;
+        matchesAdvanced = matchesAdvanced && employee.department === advancedFilters.department;
       }
       
       if (advancedFilters.status) {
-        matchesAdvanced &&= employee.status === advancedFilters.status;
+        matchesAdvanced = matchesAdvanced && employee.status === advancedFilters.status;
       }
       
       if (advancedFilters.salary_min) {
         const salary = parseFloat(employee.salary?.toString() || "0");
-        matchesAdvanced &&= salary >= parseFloat(advancedFilters.salary_min);
+        matchesAdvanced = matchesAdvanced && salary >= parseFloat(advancedFilters.salary_min);
       }
       
       if (advancedFilters.salary_max) {
         const salary = parseFloat(employee.salary?.toString() || "0");
-        matchesAdvanced &&= salary <= parseFloat(advancedFilters.salary_max);
+        matchesAdvanced = matchesAdvanced && salary <= parseFloat(advancedFilters.salary_max);
       }
       
       return matchesSearch && matchesStatus && matchesDepartment && matchesAdvanced;
     });
   }, [employees, searchTerm, statusFilter, departmentFilter, advancedFilters]);
 
-  const departments = Array.from(new Set(employees?.map((emp: Employee) => emp.department) || []));
+  const departments = Array.from(new Set((employees || []).map((emp: Employee) => emp.department).filter(Boolean)));
 
   const handleAddEmployee = () => {
     const employeeData = {

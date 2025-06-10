@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useMemo } from "react";
 import { useQuery, useMutation } from "@tanstack/react-query";
 import { Header } from "@/components/layout/header";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
@@ -107,13 +107,17 @@ export default function Performance() {
     },
   });
 
-  const filteredPerformances = performances?.filter((perf: Performance) => {
-    const matchesPeriod = selectedPeriod === "all" || perf.reviewPeriod.includes(selectedPeriod);
-    const matchesDepartment = selectedDepartment === "all" || perf.employee?.department === selectedDepartment;
-    return matchesPeriod && matchesDepartment;
-  }) || [];
+  const filteredPerformances = useMemo(() => {
+    if (!performances || !Array.isArray(performances)) return [];
+    
+    return performances.filter((perf: Performance) => {
+      const matchesPeriod = selectedPeriod === "all" || perf.reviewPeriod?.includes(selectedPeriod);
+      const matchesDepartment = selectedDepartment === "all" || perf.employee?.department === selectedDepartment;
+      return matchesPeriod && matchesDepartment;
+    });
+  }, [performances, selectedPeriod, selectedDepartment]);
 
-  const departments = Array.from(new Set(performances?.map((perf: Performance) => perf.employee?.department).filter(Boolean) || []));
+  const departments = Array.from(new Set((performances || []).map((perf: Performance) => perf.employee?.department).filter(Boolean)));
 
   const averageRating = filteredPerformances.length > 0 
     ? (filteredPerformances.reduce((sum: number, perf: Performance) => sum + perf.overallRating, 0) / filteredPerformances.length).toFixed(1)
