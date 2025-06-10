@@ -7,6 +7,8 @@ import { Input } from "@/components/ui/input";
 import { Badge } from "@/components/ui/badge";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Progress } from "@/components/ui/progress";
+import { ExportReports } from "@/components/ui/export-reports";
+import { useToast } from "@/hooks/use-toast";
 import { 
   FileText,
   BarChart3,
@@ -30,6 +32,7 @@ export default function Reports() {
   const [selectedPeriod, setSelectedPeriod] = useState("2024");
   const [selectedDepartment, setSelectedDepartment] = useState("all");
   const [reportType, setReportType] = useState("overview");
+  const { toast } = useToast();
 
   const { data: employees } = useQuery({
     queryKey: ["/api/employees"],
@@ -216,6 +219,147 @@ export default function Reports() {
     }
   ];
 
+  // Export functions for different report types
+  const exportEmployeeReport = () => {
+    const data = employees || [];
+    const csvContent = [
+      ["Ad", "Soyad", "E-posta", "Departman", "Pozisyon", "Maaş", "Durum", "İşe Başlama Tarihi"].join(","),
+      ...data.map(emp => [
+        emp.firstName,
+        emp.lastName,
+        emp.email,
+        emp.department,
+        emp.position,
+        emp.salary,
+        emp.status === 'active' ? 'Aktif' : emp.status === 'on_leave' ? 'İzinli' : 'Pasif',
+        emp.startDate
+      ].join(","))
+    ].join("\n");
+    
+    downloadCSV(csvContent, "calisan-ozet-raporu");
+    toast({
+      title: "Rapor İndirildi",
+      description: "Çalışan özet raporu başarıyla indirildi",
+    });
+  };
+
+  const exportLeaveReport = () => {
+    const data = leaves || [];
+    const csvContent = [
+      ["Çalışan ID", "İzin Türü", "Başlangıç Tarihi", "Bitiş Tarihi", "Gün Sayısı", "Durum", "Sebep"].join(","),
+      ...data.map(leave => [
+        leave.employeeId,
+        leave.leaveType,
+        leave.startDate,
+        leave.endDate,
+        leave.days,
+        leave.status === 'approved' ? 'Onaylandı' : leave.status === 'pending' ? 'Bekliyor' : 'Reddedildi',
+        leave.reason
+      ].join(","))
+    ].join("\n");
+    
+    downloadCSV(csvContent, "izin-analiz-raporu");
+    toast({
+      title: "Rapor İndirildi",
+      description: "İzin analiz raporu başarıyla indirildi",
+    });
+  };
+
+  const exportPerformanceReport = () => {
+    const data = performance || [];
+    const csvContent = [
+      ["Çalışan ID", "Değerlendirme Dönemi", "Puan", "Hedefler", "Başarılar", "Geri Bildirim"].join(","),
+      ...data.map(perf => [
+        perf.employeeId,
+        perf.reviewPeriod,
+        perf.score,
+        `"${perf.goals}"`,
+        `"${perf.achievements}"`,
+        `"${perf.feedback}"`
+      ].join(","))
+    ].join("\n");
+    
+    downloadCSV(csvContent, "performans-degerlendirme-raporu");
+    toast({
+      title: "Rapor İndirildi",
+      description: "Performans değerlendirme raporu başarıyla indirildi",
+    });
+  };
+
+  const exportPayrollReport = () => {
+    const data = payroll || [];
+    const csvContent = [
+      ["Çalışan ID", "Ay", "Temel Maaş", "Primler", "Kesintiler", "Net Maaş", "Durum"].join(","),
+      ...data.map(pay => [
+        pay.employeeId,
+        pay.month,
+        pay.baseSalary,
+        pay.bonuses,
+        pay.deductions,
+        pay.netSalary,
+        pay.status === 'paid' ? 'Ödendi' : pay.status === 'pending' ? 'Bekliyor' : 'Taslak'
+      ].join(","))
+    ].join("\n");
+    
+    downloadCSV(csvContent, "bordro-ozet-raporu");
+    toast({
+      title: "Rapor İndirildi",
+      description: "Bordro özet raporu başarıyla indirildi",
+    });
+  };
+
+  const exportDashboardReport = () => {
+    const reportData = [
+      ["Metrik", "Değer", "Kategori"],
+      ["Toplam Çalışan", employeeAnalytics?.totalEmployees || 0, "Çalışan"],
+      ["Aktif Çalışan", employeeAnalytics?.activeEmployees || 0, "Çalışan"],
+      ["İzinli Çalışan", employeeAnalytics?.onLeaveEmployees || 0, "Çalışan"],
+      ["Toplam İzin", leaveAnalytics?.totalLeaves || 0, "İzin"],
+      ["Onaylanan İzin", leaveAnalytics?.approvedLeaves || 0, "İzin"],
+      ["Bekleyen İzin", leaveAnalytics?.pendingLeaves || 0, "İzin"],
+      ["Ortalama Performans", performanceAnalytics?.avgRating?.toFixed(2) || "0.00", "Performans"],
+      ["Toplam Bordro", payrollAnalytics?.totalPayroll?.toLocaleString('tr-TR') || "0", "Bordro"],
+      ["Ortalama Maaş", payrollAnalytics?.avgSalary?.toLocaleString('tr-TR') || "0", "Bordro"]
+    ];
+    
+    const csvContent = reportData.map(row => row.join(",")).join("\n");
+    downloadCSV(csvContent, "ik-dashboard-raporu");
+    toast({
+      title: "Rapor İndirildi",
+      description: "İK Dashboard raporu başarıyla indirildi",
+    });
+  };
+
+  const exportComplianceReport = () => {
+    const complianceData = [
+      ["Uyumluluk Alanı", "Durum", "Yüzde", "Açıklama"],
+      ["Çalışan Belgeleri", "Uyumlu", "95%", "Çalışan dosyaları ve belgeleri tam"],
+      ["İzin Politikaları", "Uyumlu", "100%", "İzin politikaları yasal mevzuata uygun"],
+      ["Bordro Uyumluluğu", "Uyumlu", "98%", "Bordro hesaplamaları yasal standartlarda"],
+      ["Performans Değerlendirme", "Kısmen Uyumlu", "85%", "Performans süreçleri geliştirilmeli"],
+      ["Çalışan Hakları", "Uyumlu", "100%", "Çalışan hakları tam korunuyor"]
+    ];
+    
+    const csvContent = complianceData.map(row => row.join(",")).join("\n");
+    downloadCSV(csvContent, "uyumluluk-raporu");
+    toast({
+      title: "Rapor İndirildi",
+      description: "Uyumluluk raporu başarıyla indirildi",
+    });
+  };
+
+  const downloadCSV = (content: string, filename: string) => {
+    const blob = new Blob([content], { type: "text/csv;charset=utf-8;" });
+    const link = document.createElement("a");
+    const url = URL.createObjectURL(blob);
+    link.setAttribute("href", url);
+    link.setAttribute("download", `${filename}-${new Date().toISOString().split('T')[0]}.csv`);
+    link.style.visibility = 'hidden';
+    document.body.appendChild(link);
+    link.click();
+    document.body.removeChild(link);
+  };
+
   const reportTemplates = [
     {
       id: "employee-summary",
@@ -223,7 +367,8 @@ export default function Reports() {
       description: "Çalışan sayıları, departman dağılımı ve genel istatistikler",
       icon: Users,
       color: "bg-blue-50 text-blue-700",
-      iconColor: "text-blue-600"
+      iconColor: "text-blue-600",
+      action: exportEmployeeReport
     },
     {
       id: "leave-analysis",
@@ -231,7 +376,8 @@ export default function Reports() {
       description: "İzin kullanım oranları, türleri ve onay durumları",
       icon: Calendar,
       color: "bg-orange-50 text-orange-700",
-      iconColor: "text-orange-600"
+      iconColor: "text-orange-600",
+      action: exportLeaveReport
     },
     {
       id: "performance-review",
@@ -239,7 +385,8 @@ export default function Reports() {
       description: "Çalışan performans skorları ve departman karşılaştırmaları",
       icon: BarChart3,
       color: "bg-green-50 text-green-700",
-      iconColor: "text-green-600"
+      iconColor: "text-green-600",
+      action: exportPerformanceReport
     },
     {
       id: "payroll-summary",
@@ -247,7 +394,8 @@ export default function Reports() {
       description: "Maaş dağılımları, departman maliyetleri ve bordro analizi",
       icon: DollarSign,
       color: "bg-purple-50 text-purple-700",
-      iconColor: "text-purple-600"
+      iconColor: "text-purple-600",
+      action: exportPayrollReport
     },
     {
       id: "hr-dashboard",
@@ -255,7 +403,8 @@ export default function Reports() {
       description: "Tüm İK metriklerini içeren kapsamlı dashboard raporu",
       icon: FileText,
       color: "bg-indigo-50 text-indigo-700",
-      iconColor: "text-indigo-600"
+      iconColor: "text-indigo-600",
+      action: exportDashboardReport
     },
     {
       id: "compliance-report",
@@ -263,7 +412,8 @@ export default function Reports() {
       description: "İş kanunu uyumluluğu ve yasal gereklilikler raporu",
       icon: CheckCircle,
       color: "bg-teal-50 text-teal-700",
-      iconColor: "text-teal-600"
+      iconColor: "text-teal-600",
+      action: exportComplianceReport
     }
   ];
 
@@ -390,11 +540,11 @@ export default function Reports() {
                             {template.description}
                           </p>
                           <div className="flex space-x-2">
-                            <Button size="sm" variant="outline">
-                              <Eye className="h-4 w-4 mr-1" />
-                              Görüntüle
-                            </Button>
-                            <Button size="sm" variant="outline">
+                            <Button 
+                              size="sm" 
+                              variant="outline"
+                              onClick={template.action}
+                            >
                               <Download className="h-4 w-4 mr-1" />
                               İndir
                             </Button>
