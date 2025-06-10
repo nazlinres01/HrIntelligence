@@ -1,7 +1,6 @@
 import type { Express } from "express";
 import { createServer, type Server } from "http";
 import { storage } from "./storage";
-import { setupAuth, isAuthenticated } from "./replitAuth";
 import { insertEmployeeSchema, insertLeaveSchema, insertPerformanceSchema, insertPayrollSchema } from "@shared/schema";
 import { 
   sanitizeInput, 
@@ -14,9 +13,16 @@ import {
 } from "./middleware/security";
 import { z } from "zod";
 
+// Simple authentication middleware
+const isAuthenticated = (req: any, res: any, next: any) => {
+  const userId = req.session?.userId;
+  if (!userId) {
+    return res.status(401).json({ message: "Unauthorized" });
+  }
+  next();
+};
+
 export async function registerRoutes(app: Express): Promise<Server> {
-  // Auth middleware setup first
-  await setupAuth(app);
 
   // Apply security middleware globally
   app.use(sanitizeInput);
