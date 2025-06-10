@@ -1,14 +1,13 @@
 import { db } from "./db";
-import { companies, employees, departments, leaves, performance, payroll, activities, notifications } from "@shared/schema";
+import { companies, users, employees, departments, leaves, performance, payroll, activities, notifications } from "@shared/schema";
 
 export async function seedDatabase() {
   try {
-    // Check if data already exists
-    const existingCompanies = await db.select().from(companies).limit(1);
-    if (existingCompanies.length > 0) {
-      console.log("Database already seeded");
-      return;
-    }
+    // Clear existing data first
+    await db.delete(employees);
+    await db.delete(departments);
+    await db.delete(users);
+    await db.delete(companies);
 
     console.log("Seeding database with comprehensive Turkish company data...");
 
@@ -34,9 +33,60 @@ export async function seedDatabase() {
 
     await db.insert(departments).values(sampleDepartments);
 
+    // Create HR team users for the company
+    const hrTeamUsers = [
+      {
+        id: "hr_manager_001",
+        email: "fatma.yilmaz@techcorp.com.tr",
+        firstName: "Fatma",
+        lastName: "Yılmaz",
+        phone: "+90 532 111 22 33",
+        companyId: sampleCompany.id,
+        role: "hr_manager",
+        password: "password123",
+        isActive: true
+      },
+      {
+        id: "hr_specialist_001", 
+        email: "mehmet.demir@techcorp.com.tr",
+        firstName: "Mehmet",
+        lastName: "Demir",
+        phone: "+90 533 444 55 66",
+        companyId: sampleCompany.id,
+        role: "hr_specialist",
+        password: "password123",
+        isActive: true
+      },
+      {
+        id: "hr_specialist_002",
+        email: "ayse.kaya@techcorp.com.tr", 
+        firstName: "Ayşe",
+        lastName: "Kaya",
+        phone: "+90 534 777 88 99",
+        companyId: sampleCompany.id,
+        role: "hr_specialist",
+        password: "password123",
+        isActive: true
+      },
+      {
+        id: "admin_001",
+        email: "admin@techcorp.com.tr",
+        firstName: "System",
+        lastName: "Admin",
+        phone: "+90 535 123 45 67",
+        companyId: sampleCompany.id,
+        role: "admin",
+        password: "password123",
+        isActive: true
+      }
+    ];
+
+    await db.insert(users).values(hrTeamUsers);
+
     // Create realistic employees with Turkish company structure
     const sampleEmployees = [
       {
+        companyId: sampleCompany.id,
         firstName: "Ahmet",
         lastName: "Özkan",
         email: "ahmet.ozkan@techcorp.com.tr",
@@ -52,6 +102,7 @@ export async function seedDatabase() {
         performanceScore: "4.8"
       },
       {
+        companyId: sampleCompany.id,
         firstName: "Zeynep",
         lastName: "Yılmaz", 
         email: "zeynep.yilmaz@techcorp.com.tr",
@@ -67,6 +118,7 @@ export async function seedDatabase() {
         performanceScore: "4.5"
       },
       {
+        companyId: sampleCompany.id,
         firstName: "Emre",
         lastName: "Kaya",
         email: "emre.kaya@techcorp.com.tr",
@@ -82,6 +134,7 @@ export async function seedDatabase() {
         performanceScore: "4.2"
       },
       {
+        companyId: sampleCompany.id,
         firstName: "Selin",
         lastName: "Demir",
         email: "selin.demir@techcorp.com.tr",
@@ -97,6 +150,7 @@ export async function seedDatabase() {
         performanceScore: "4.6"
       },
       {
+        companyId: sampleCompany.id,
         firstName: "Burak",
         lastName: "Şen",
         email: "burak.sen@techcorp.com.tr",
