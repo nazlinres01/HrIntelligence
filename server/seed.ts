@@ -10,131 +10,280 @@ export async function seedDatabase() {
       return;
     }
 
-    console.log("Seeding database...");
+    console.log("Seeding database with comprehensive Turkish company data...");
 
     // Create departments first
     const sampleDepartments = [
-      { name: "Yazılım", description: "Software Development", employeeCount: 25 },
-      { name: "İnsan Kaynakları", description: "Human Resources", employeeCount: 8 },
-      { name: "Pazarlama", description: "Marketing", employeeCount: 12 },
-      { name: "Satış", description: "Sales", employeeCount: 20 },
-      { name: "Muhasebe", description: "Accounting", employeeCount: 6 }
+      { name: "Yazılım Geliştirme", description: "Yazılım ürünleri ve teknoloji geliştirme", employeeCount: 15 },
+      { name: "Pazarlama ve Satış", description: "Müşteri kazanımı ve marka yönetimi", employeeCount: 12 },
+      { name: "İnsan Kaynakları", description: "Personel yönetimi ve organizasyon geliştirme", employeeCount: 6 },
+      { name: "Finans ve Muhasebe", description: "Mali işler ve finansal planlama", employeeCount: 8 },
+      { name: "Operasyon", description: "İş süreçleri ve operasyonel faaliyetler", employeeCount: 10 }
     ];
 
     await db.insert(departments).values(sampleDepartments);
 
-    // Create sample employees
+    // Create realistic employees with Turkish company structure
     const sampleEmployees = [
       {
-        firstName: "Can",
-        lastName: "Yılmaz",
-        email: "can.yilmaz@sirket.com",
-        phone: "+90 555 123 4567",
-        department: "Yazılım",
-        position: "Senior Developer",
+        firstName: "Ahmet",
+        lastName: "Özkan",
+        email: "ahmet.ozkan@techcorp.com.tr",
+        phone: "+90 532 123 45 67",
+        department: "Yazılım Geliştirme",
+        position: "Senior Full Stack Developer",
         startDate: "2021-03-15",
-        salary: "15000.00",
+        salary: "120000.00",
         status: "active",
-        performanceScore: "8.5",
-        profileImage: "https://images.unsplash.com/photo-1500648767791-00dcc994a43e?ixlib=rb-4.0.3&ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&auto=format&fit=crop&w=80&h=80"
+        address: "Levent Mahallesi, Beşiktaş/İstanbul",
+        emergencyContact: "+90 532 987 65 43",
+        notes: "React ve Node.js uzmanı, takım lideri",
+        performanceScore: "4.8"
       },
       {
-        firstName: "Elif",
-        lastName: "Kara",
-        email: "elif.kara@sirket.com",
-        phone: "+90 555 234 5678",
+        firstName: "Zeynep",
+        lastName: "Yılmaz", 
+        email: "zeynep.yilmaz@techcorp.com.tr",
+        phone: "+90 533 234 56 78",
+        department: "Pazarlama ve Satış",
+        position: "Pazarlama Müdürü",
+        startDate: "2020-08-20",
+        salary: "95000.00",
+        status: "active",
+        address: "Fenerbahçe Mahallesi, Kadıköy/İstanbul",
+        emergencyContact: "+90 533 876 54 32",
+        notes: "Dijital pazarlama stratejileri uzmanı",
+        performanceScore: "4.5"
+      },
+      {
+        firstName: "Emre",
+        lastName: "Kaya",
+        email: "emre.kaya@techcorp.com.tr",
+        phone: "+90 534 345 67 89",
         department: "İnsan Kaynakları",
         position: "İK Uzmanı",
-        startDate: "2020-08-22",
-        salary: "12000.00",
+        startDate: "2022-01-10",
+        salary: "75000.00",
         status: "on_leave",
-        performanceScore: "9.2",
-        profileImage: "https://images.unsplash.com/photo-1573496359142-b8d87734a5a2?ixlib=rb-4.0.3&ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&auto=format&fit=crop&w=80&h=80"
+        address: "Nişantaşı Mahallesi, Şişli/İstanbul",
+        emergencyContact: "+90 534 765 43 21",
+        notes: "Personel gelişimi ve eğitim programları sorumlusu",
+        performanceScore: "4.2"
       },
       {
-        firstName: "Okan",
-        lastName: "Şahin",
-        email: "okan.sahin@sirket.com",
-        phone: "+90 555 345 6789",
-        department: "Pazarlama",
-        position: "Pazarlama Müdürü",
-        startDate: "2019-01-10",
-        salary: "18000.00",
+        firstName: "Selin",
+        lastName: "Demir",
+        email: "selin.demir@techcorp.com.tr",
+        phone: "+90 535 456 78 90",
+        department: "Finans ve Muhasebe",
+        position: "Mali İşler Uzmanı",
+        startDate: "2021-11-05",
+        salary: "85000.00",
         status: "active",
-        performanceScore: "7.8",
-        profileImage: "https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?ixlib=rb-4.0.3&ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&auto=format&fit=crop&w=80&h=80"
+        address: "Etiler Mahallesi, Beşiktaş/İstanbul",
+        emergencyContact: "+90 535 654 32 10",
+        notes: "Bütçe planlama ve finansal analiz uzmanı",
+        performanceScore: "4.6"
+      },
+      {
+        firstName: "Burak",
+        lastName: "Şen",
+        email: "burak.sen@techcorp.com.tr",
+        phone: "+90 536 567 89 01", 
+        department: "Operasyon",
+        position: "Operasyon Koordinatörü",
+        startDate: "2023-05-15",
+        salary: "70000.00",
+        status: "active",
+        address: "Acıbadem Mahallesi, Üsküdar/İstanbul",
+        emergencyContact: "+90 536 543 21 09",
+        notes: "Süreç iyileştirme ve kalite yönetimi",
+        performanceScore: "4.0"
       }
     ];
 
     await db.insert(employees).values(sampleEmployees);
 
-    // Create sample leaves
+    // Create comprehensive leave records with calculated days
     const sampleLeaves = [
       {
         employeeId: 2,
         leaveType: "annual",
-        startDate: "2024-11-15",
-        endDate: "2024-11-19",
-        days: 5,
-        status: "approved",
-        reason: "Yıllık izin"
+        startDate: "2024-03-15",
+        endDate: "2024-03-22",
+        days: 8,
+        reason: "Yıllık izin - aile ziyareti",
+        status: "approved"
+      },
+      {
+        employeeId: 3,
+        leaveType: "sick",
+        startDate: "2024-02-10",
+        endDate: "2024-02-12",
+        days: 3,
+        reason: "Sağlık kontrolü ve tedavi",
+        status: "approved"
+      },
+      {
+        employeeId: 1,
+        leaveType: "personal",
+        startDate: "2024-04-20",
+        endDate: "2024-04-21",
+        days: 2,
+        reason: "Özel işler",
+        status: "pending"
+      },
+      {
+        employeeId: 4,
+        leaveType: "annual",
+        startDate: "2024-05-10",
+        endDate: "2024-05-17",
+        days: 8,
+        reason: "Tatil planı",
+        status: "pending"
       }
     ];
 
     await db.insert(leaves).values(sampleLeaves);
 
-    // Create sample performance records
+    // Create detailed performance records with realistic ratings
     const samplePerformance = [
       {
         employeeId: 1,
-        reviewPeriod: "2024-Q3",
-        score: "8.5",
-        goals: "Complete project milestones",
-        achievements: "Delivered all features on time",
-        feedback: "Excellent technical skills"
+        reviewPeriod: "2024-Q1",
+        overallRating: 4.8,
+        goals: "Yeni mikroservis mimarisini tamamlama ve takım mentorluğu",
+        achievements: "3 kritik projeyi zamanında teslim etti, junior geliştiricilere mentorluk yaptı",
+        feedback: "Olağanüstü teknik yetkinlik ve liderlik becerileri gösterdi"
+      },
+      {
+        employeeId: 2,
+        reviewPeriod: "2024-Q1", 
+        overallRating: 4.5,
+        goals: "Dijital pazarlama kampanyalarında %20 artış sağlama",
+        achievements: "Müşteri kazanımında %25 artış, sosyal medya etkileşiminde %40 artış",
+        feedback: "Hedefleri aştı, yaratıcı kampanyalar geliştirdi"
+      },
+      {
+        employeeId: 3,
+        reviewPeriod: "2024-Q1",
+        overallRating: 4.2,
+        goals: "Personel eğitim programlarını modernize etme",
+        achievements: "Online eğitim platformu kurdu, çalışan memnuniyetini %15 artırdı",
+        feedback: "İnovatif yaklaşımlar sergiliyor, gelişim potansiyeli yüksek"
+      },
+      {
+        employeeId: 4,
+        reviewPeriod: "2024-Q1",
+        overallRating: 4.6,
+        goals: "Mali raporlama süreçlerini otomatikleştirme",
+        achievements: "Raporlama süresini %50 kısalttı, hata oranını minimize etti",
+        feedback: "Analitik düşünce ve problem çözme becerileri mükemmel"
+      },
+      {
+        employeeId: 5,
+        reviewPeriod: "2024-Q1",
+        overallRating: 4.0,
+        goals: "Operasyonel verimliliği %10 artırma",
+        achievements: "Süreç optimizasyonları ile %12 verimlilik artışı sağladı",
+        feedback: "Sistematik yaklaşım, sürekli iyileştirme odaklı"
       }
     ];
 
     await db.insert(performance).values(samplePerformance);
 
-    // Create sample payroll records
-    const now = new Date();
-    const currentMonth = `${now.getFullYear()}-${String(now.getMonth() + 1).padStart(2, '0')}`;
-    
+    // Create realistic payroll records
     const samplePayroll = [
       {
         employeeId: 1,
-        month: currentMonth,
-        baseSalary: "15000.00",
-        bonuses: "2000.00",
-        deductions: "1500.00",
-        netSalary: "15500.00",
+        payPeriod: "2024-03",
+        basicSalary: 120000,
+        allowances: 8000,
+        deductions: 22000,
+        netSalary: 106000,
         status: "paid",
-        paymentDate: "2024-11-30"
+        processedAt: "2024-03-31"
+      },
+      {
+        employeeId: 2,
+        payPeriod: "2024-03",
+        basicSalary: 95000,
+        allowances: 6000,
+        deductions: 18000,
+        netSalary: 83000,
+        status: "paid",
+        processedAt: "2024-03-31"
+      },
+      {
+        employeeId: 3,
+        payPeriod: "2024-03",
+        basicSalary: 75000,
+        allowances: 4000,
+        deductions: 14000,
+        netSalary: 65000,
+        status: "processed",
+        processedAt: "2024-03-30"
+      },
+      {
+        employeeId: 4,
+        payPeriod: "2024-03",
+        basicSalary: 85000,
+        allowances: 5000,
+        deductions: 16000,
+        netSalary: 74000,
+        status: "paid",
+        processedAt: "2024-03-31"
+      },
+      {
+        employeeId: 5,
+        payPeriod: "2024-03",
+        basicSalary: 70000,
+        allowances: 3500,
+        deductions: 13000,
+        netSalary: 60500,
+        status: "draft"
       }
     ];
 
     await db.insert(payroll).values(samplePayroll);
 
-    // Create sample activities
+    // Create comprehensive activity records
     const sampleActivities = [
       {
         type: "employee_added",
-        description: "Yeni çalışan eklendi",
+        description: "Yeni çalışan sisteme eklendi: Ahmet Özkan",
         entityId: 1,
-        performedBy: null
+        entityType: "employee"
       },
       {
         type: "leave_approved",
-        description: "İzin talebi onaylandı",
+        description: "İzin talebi onaylandı: Zeynep Yılmaz - Yıllık izin",
         entityId: 1,
-        performedBy: null
+        entityType: "leave"
+      },
+      {
+        type: "performance_review",
+        description: "Performans değerlendirmesi tamamlandı: Ahmet Özkan",
+        entityId: 1,
+        entityType: "performance"
+      },
+      {
+        type: "payroll_processed",
+        description: "Mart ayı bordroları işlendi",
+        entityId: 1,
+        entityType: "payroll"
+      },
+      {
+        type: "employee_updated",
+        description: "Çalışan bilgileri güncellendi: Selin Demir",
+        entityId: 4,
+        entityType: "employee"
       }
     ];
 
     await db.insert(activities).values(sampleActivities);
 
-    console.log("Database seeded successfully");
+    console.log("Database seeded successfully with comprehensive Turkish company data");
   } catch (error) {
     console.error("Error seeding database:", error);
   }
