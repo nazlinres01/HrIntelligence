@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useMemo } from "react";
 import { useQuery, useMutation } from "@tanstack/react-query";
 import { Header } from "@/components/layout/header";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
@@ -10,6 +10,8 @@ import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from 
 import { Label } from "@/components/ui/label";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Textarea } from "@/components/ui/textarea";
+import { AdvancedFilters } from "@/components/ui/advanced-filters";
+import { ExportReports } from "@/components/ui/export-reports";
 import { queryClient, apiRequest } from "@/lib/queryClient";
 import { 
   Users, 
@@ -56,6 +58,7 @@ export default function Employees() {
   const [isEditModalOpen, setIsEditModalOpen] = useState(false);
   const [selectedEmployee, setSelectedEmployee] = useState<Employee | null>(null);
   const [isViewModalOpen, setIsViewModalOpen] = useState(false);
+  const [advancedFilters, setAdvancedFilters] = useState<Record<string, any>>({});
 
   const [newEmployee, setNewEmployee] = useState({
     firstName: "",
