@@ -9,7 +9,6 @@ import { Label } from "@/components/ui/label";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from "@/components/ui/accordion";
 import { useLanguage } from "@/hooks/use-language";
-import { useSettings, useUpdateSetting, useThemeSetting, useLanguageSetting, useNotificationSettings } from "@/hooks/useSettings";
 import { useState } from "react";
 import { 
   HelpCircle, 
@@ -41,15 +40,9 @@ import {
 export default function Help() {
   const { t, language, setLanguage } = useLanguage();
   const [searchQuery, setSearchQuery] = useState("");
-  const { data: settings } = useSettings();
-  const updateSetting = useUpdateSetting();
-  const themeSetting = useThemeSetting();
-  const languageSetting = useLanguageSetting();
-  const notificationSettings = useNotificationSettings();
-
-  const handleSettingUpdate = (category: string, key: string, value: string) => {
-    updateSetting.mutate({ category, key, value });
-  };
+  const [isDarkMode, setIsDarkMode] = useState(false);
+  const [emailNotifications, setEmailNotifications] = useState(true);
+  const [pushNotifications, setPushNotifications] = useState(true);
 
   const helpSections = [
     {
@@ -320,10 +313,8 @@ export default function Help() {
                   <Label htmlFor="theme">Karanlık Mod</Label>
                   <Switch
                     id="theme"
-                    checked={themeSetting?.value === 'dark'}
-                    onCheckedChange={(checked) =>
-                      handleSettingUpdate('appearance', 'theme', checked ? 'dark' : 'light')
-                    }
+                    checked={isDarkMode}
+                    onCheckedChange={setIsDarkMode}
                   />
                 </div>
               </CardContent>
@@ -349,10 +340,8 @@ export default function Help() {
                   </div>
                   <Switch
                     id="email-notifications"
-                    checked={notificationSettings?.some(s => s.key === 'email_enabled' && s.value === 'true')}
-                    onCheckedChange={(checked) =>
-                      handleSettingUpdate('notifications', 'email_enabled', checked.toString())
-                    }
+                    checked={emailNotifications}
+                    onCheckedChange={setEmailNotifications}
                   />
                 </div>
                 <div className="flex items-center justify-between">
@@ -364,10 +353,8 @@ export default function Help() {
                   </div>
                   <Switch
                     id="push-notifications"
-                    checked={notificationSettings?.some(s => s.key === 'push_enabled' && s.value === 'true')}
-                    onCheckedChange={(checked) =>
-                      handleSettingUpdate('notifications', 'push_enabled', checked.toString())
-                    }
+                    checked={pushNotifications}
+                    onCheckedChange={setPushNotifications}
                   />
                 </div>
               </CardContent>

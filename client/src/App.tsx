@@ -12,7 +12,6 @@ import Performance from "@/pages/performance";
 import Leaves from "@/pages/leaves";
 import Payroll from "@/pages/payroll";
 import Reports from "@/pages/reports";
-import Settings from "@/pages/settings";
 import Help from "@/pages/help";
 import Landing from "@/pages/landing";
 import Login from "@/pages/login";
@@ -42,7 +41,6 @@ function Router() {
       <Route path="/leaves" component={Leaves} />
       <Route path="/payroll" component={Payroll} />
       <Route path="/reports" component={Reports} />
-      <Route path="/settings" component={Settings} />
       <Route path="/help" component={Help} />
       <Route component={NotFound} />
     </Switch>
