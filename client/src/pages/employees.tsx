@@ -26,7 +26,7 @@ export default function Employees() {
     queryKey: ["/api/employees"],
   });
 
-  const filteredEmployees = employees.filter((employee: Employee) => {
+  const filteredEmployees = Array.isArray(employees) ? employees.filter((employee: Employee) => {
     const matchesSearch = 
       employee.firstName.toLowerCase().includes(searchTerm.toLowerCase()) ||
       employee.lastName.toLowerCase().includes(searchTerm.toLowerCase()) ||
@@ -38,9 +38,9 @@ export default function Employees() {
     const matchesDepartment = departmentFilter === 'all' || employee.department === departmentFilter;
     
     return matchesSearch && matchesStatus && matchesDepartment;
-  });
+  }) : [];
 
-  const departments = [...new Set(employees.map((emp: Employee) => emp.department))];
+  const departments = Array.isArray(employees) ? Array.from(new Set(employees.map((emp: Employee) => emp.department))) : [];
 
   const handleViewEmployee = (employee: Employee) => {
     setSelectedEmployee(employee);
@@ -172,9 +172,9 @@ export default function Employees() {
               </p>
               
               <div className="flex items-center space-x-4 text-sm text-gray-500">
-                <span>{t("Aktif")}: {employees.filter((emp: Employee) => emp.status === 'active').length}</span>
-                <span>{t("İzinli")}: {employees.filter((emp: Employee) => emp.status === 'on_leave').length}</span>
-                <span>{t("Pasif")}: {employees.filter((emp: Employee) => emp.status === 'inactive').length}</span>
+                <span>{t("Aktif")}: {Array.isArray(employees) ? employees.filter((emp: Employee) => emp.status === 'active').length : 0}</span>
+                <span>{t("İzinli")}: {Array.isArray(employees) ? employees.filter((emp: Employee) => emp.status === 'on_leave').length : 0}</span>
+                <span>{t("Pasif")}: {Array.isArray(employees) ? employees.filter((emp: Employee) => emp.status === 'inactive').length : 0}</span>
               </div>
             </div>
           </div>

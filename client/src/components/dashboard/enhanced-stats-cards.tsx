@@ -87,7 +87,7 @@ export function EnhancedStatsCards() {
     },
     {
       title: t("Aylık Bordro"),
-      value: stats?.monthlyPayroll || "₺0",
+      value: (stats as any)?.monthlyPayroll || "₺0",
       change: "+8.2%",
       changeType: "positive",
       icon: DollarSign,

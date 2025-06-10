@@ -39,16 +39,16 @@ export function Sidebar() {
         <div className="p-4 bg-gradient-to-r from-gray-50 to-blue-50 border-b border-gray-100">
           <div className="flex items-center space-x-3">
             <Avatar className="h-12 w-12 ring-2 ring-blue-100">
-              <AvatarImage src={user.profileImageUrl} alt={user.firstName} />
+              <AvatarImage src={(user as any).profileImageUrl} alt={(user as any).firstName} />
               <AvatarFallback className="bg-gradient-to-br from-blue-500 to-blue-600 text-white font-semibold">
-                {user.firstName?.[0]}{user.lastName?.[0]}
+                {(user as any).firstName?.[0]}{(user as any).lastName?.[0]}
               </AvatarFallback>
             </Avatar>
             <div className="flex-1 min-w-0">
               <p className="text-sm font-semibold text-gray-900 truncate">
-                {user.firstName} {user.lastName}
+                {(user as any).firstName} {(user as any).lastName}
               </p>
-              <p className="text-xs text-gray-600 truncate">{user.email}</p>
+              <p className="text-xs text-gray-600 truncate">{(user as any).email}</p>
               <div className="flex items-center mt-1">
                 <div className="w-2 h-2 bg-green-500 rounded-full mr-1"></div>
                 <span className="text-xs text-green-600 font-medium">Aktif</span>
