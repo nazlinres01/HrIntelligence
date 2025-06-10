@@ -314,13 +314,13 @@ export default function Register() {
                 />
                 <div className="text-sm text-gray-600">
                   <Label htmlFor="terms" className="cursor-pointer">
-                    <Link href="/terms" className="text-indigo-600 hover:text-indigo-700 font-medium">
+                    <button type="button" className="text-indigo-600 hover:text-indigo-700 font-medium underline">
                       Kullanım Şartları
-                    </Link>
+                    </button>
                     {" "}ve{" "}
-                    <Link href="/privacy" className="text-indigo-600 hover:text-indigo-700 font-medium">
+                    <button type="button" className="text-indigo-600 hover:text-indigo-700 font-medium underline">
                       Gizlilik Politikası
-                    </Link>
+                    </button>
                     'nı okudum ve kabul ediyorum.
                   </Label>
                 </div>
@@ -360,9 +360,9 @@ export default function Register() {
         <div className="text-center text-xs text-gray-500 space-y-2">
           <p>© 2024 İK360. Tüm hakları saklıdır.</p>
           <div className="flex justify-center space-x-4">
-            <Link href="/privacy" className="hover:text-gray-700">Gizlilik Politikası</Link>
-            <Link href="/terms" className="hover:text-gray-700">Kullanım Şartları</Link>
-            <Link href="/support" className="hover:text-gray-700">Destek</Link>
+            <button className="hover:text-gray-700">Gizlilik Politikası</button>
+            <button className="hover:text-gray-700">Kullanım Şartları</button>
+            <button className="hover:text-gray-700">Destek</button>
           </div>
         </div>
       </div>

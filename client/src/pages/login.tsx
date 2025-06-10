@@ -124,9 +124,9 @@ export default function Login() {
                   <input type="checkbox" className="rounded border-gray-300 text-blue-600 focus:ring-blue-500" />
                   <span className="text-gray-600">Beni hatırla</span>
                 </label>
-                <Link href="/forgot-password" className="text-blue-600 hover:text-blue-700 font-medium">
+                <button type="button" className="text-blue-600 hover:text-blue-700 font-medium">
                   Şifremi unuttum
-                </Link>
+                </button>
               </div>
 
               <Button 
@@ -163,8 +163,8 @@ export default function Login() {
         <div className="text-center text-xs text-gray-500 space-y-2">
           <p>© 2024 İK360. Tüm hakları saklıdır.</p>
           <div className="flex justify-center space-x-4">
-            <Link href="/privacy" className="hover:text-gray-700">Gizlilik Politikası</Link>
-            <Link href="/terms" className="hover:text-gray-700">Kullanım Şartları</Link>
+            <button className="hover:text-gray-700">Gizlilik Politikası</button>
+            <button className="hover:text-gray-700">Kullanım Şartları</button>
           </div>
         </div>
       </div>
