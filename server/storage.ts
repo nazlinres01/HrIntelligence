@@ -25,7 +25,7 @@ import {
   type InsertSetting,
 } from "@shared/schema";
 import { db } from "./db";
-import { eq, desc } from "drizzle-orm";
+import { eq, desc, and } from "drizzle-orm";
 
 export interface IStorage {
   // User operations for authentication
@@ -337,9 +337,11 @@ export class DatabaseStorage implements IStorage {
   async getUserSetting(userId: string, category: string, key: string): Promise<Setting | undefined> {
     const [setting] = await db.select()
       .from(settings)
-      .where(eq(settings.userId, userId))
-      .where(eq(settings.category, category))
-      .where(eq(settings.key, key));
+      .where(and(
+        eq(settings.userId, userId),
+        eq(settings.category, category),
+        eq(settings.key, key)
+      ));
     return setting;
   }
 
@@ -361,10 +363,12 @@ export class DatabaseStorage implements IStorage {
   async deleteUserSetting(userId: string, category: string, key: string): Promise<boolean> {
     const result = await db
       .delete(settings)
-      .where(eq(settings.userId, userId))
-      .where(eq(settings.category, category))
-      .where(eq(settings.key, key));
-    return result.rowCount > 0;
+      .where(and(
+        eq(settings.userId, userId),
+        eq(settings.category, category),
+        eq(settings.key, key)
+      ));
+    return (result.rowCount || 0) > 0;
   }
 }
 
