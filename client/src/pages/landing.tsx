@@ -190,19 +190,11 @@ export default function Landing() {
                 {isLoading ? "Giriş yapılıyor..." : "Giriş Yap"}
               </Button>
 
-              {/* Demo Accounts */}
+              {/* Info */}
               <div className="border-t pt-6">
-                <p className="text-sm text-gray-500 text-center mb-3">Demo hesaplar:</p>
-                <div className="space-y-2 text-xs text-gray-600">
-                  <div className="bg-gray-50 p-2 rounded cursor-pointer hover:bg-gray-100" 
-                       onClick={() => setLoginData({ email: "fatma@tekirdag.com", password: "123456" })}>
-                    <strong>İK Müdürü:</strong> fatma@tekirdag.com / 123456
-                  </div>
-                  <div className="bg-gray-50 p-2 rounded cursor-pointer hover:bg-gray-100"
-                       onClick={() => setLoginData({ email: "mehmet@tekirdag.com", password: "123456" })}>
-                    <strong>İK Uzmanı:</strong> mehmet@tekirdag.com / 123456
-                  </div>
-                </div>
+                <p className="text-xs text-gray-500 text-center">
+                  Hesabınız yok mu? Yukarıdaki "Kayıt Ol" sekmesini kullanarak ücretsiz hesap oluşturun.
+                </p>
               </div>
             </form>
           ) : (

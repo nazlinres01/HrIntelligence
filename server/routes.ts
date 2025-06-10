@@ -43,11 +43,14 @@ export async function registerRoutes(app: Express): Promise<Server> {
       // Create company first
       const company = await storage.createCompany({
         name: companyName,
-        description: `${companyName} - İK Yönetim Sistemi`,
-        website: null,
-        employeeCount: 1,
         industry: "Genel",
-        location: "Türkiye"
+        address: "Türkiye",
+        phone: phone,
+        email: email,
+        website: null,
+        taxNumber: null,
+        foundedYear: new Date().getFullYear(),
+        employeeCount: 1
       });
 
       // Create new user with company reference
