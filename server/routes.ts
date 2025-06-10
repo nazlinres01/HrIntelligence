@@ -199,6 +199,29 @@ export async function registerRoutes(app: Express): Promise<Server> {
     }
   });
 
+  app.patch('/api/team/:userId/password', async (req, res) => {
+    try {
+      const { userId: targetUserId } = req.params;
+      const { newPassword } = req.body;
+      
+      const currentUserId = (req.session as any)?.userId;
+      if (!currentUserId) {
+        return res.status(401).json({ message: "Unauthorized" });
+      }
+
+      // In a production system, you'd verify permissions here
+      const success = await storage.updateUserPassword(targetUserId, newPassword);
+      if (!success) {
+        return res.status(404).json({ message: "User not found" });
+      }
+
+      res.json({ success: true });
+    } catch (error) {
+      console.error("Error updating password:", error);
+      res.status(500).json({ message: "Failed to update password" });
+    }
+  });
+
   app.patch('/api/team/:userId/status', async (req, res) => {
     try {
       const { userId: targetUserId } = req.params;

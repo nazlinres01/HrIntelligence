@@ -28,10 +28,10 @@ function Router() {
   if (!isAuthenticated) {
     return (
       <Switch>
-        <Route path="/" component={TeamLogin} />
+        <Route path="/" component={Landing} />
         <Route path="/login" component={Login} />
-        <Route path="/team-login" component={TeamLogin} />
         <Route path="/register" component={Register} />
+        <Route path="/team-login" component={TeamLogin} />
         <Route component={NotFound} />
       </Switch>
     );
