@@ -128,18 +128,22 @@ export default function Payroll() {
     },
   });
 
-  const filteredPayrolls = payrolls?.filter((payroll: Payroll) => {
-    const matchesStatus = statusFilter === "all" || payroll.status === statusFilter;
-    const matchesPeriod = periodFilter === "all" || payroll.payPeriod.includes(periodFilter);
-    const matchesSearch = 
-      payroll.employee?.firstName?.toLowerCase().includes(searchTerm.toLowerCase()) ||
-      payroll.employee?.lastName?.toLowerCase().includes(searchTerm.toLowerCase()) ||
-      payroll.employee?.department?.toLowerCase().includes(searchTerm.toLowerCase());
+  const filteredPayrolls = useMemo(() => {
+    if (!payrolls || !Array.isArray(payrolls)) return [];
+    
+    return payrolls.filter((payroll: Payroll) => {
+      const matchesStatus = statusFilter === "all" || payroll.status === statusFilter;
+      const matchesPeriod = periodFilter === "all" || payroll.payPeriod?.includes(periodFilter);
+      const matchesSearch = !searchTerm || 
+        payroll.employee?.firstName?.toLowerCase().includes(searchTerm.toLowerCase()) ||
+        payroll.employee?.lastName?.toLowerCase().includes(searchTerm.toLowerCase()) ||
+        payroll.employee?.department?.toLowerCase().includes(searchTerm.toLowerCase());
 
-    return matchesStatus && matchesPeriod && matchesSearch;
-  }) || [];
+      return matchesStatus && matchesPeriod && matchesSearch;
+    });
+  }, [payrolls, statusFilter, periodFilter, searchTerm]);
 
-  const payPeriods = Array.from(new Set(payrolls?.map((payroll: Payroll) => payroll.payPeriod) || []));
+  const payPeriods = Array.from(new Set((payrolls || []).map((payroll: Payroll) => payroll.payPeriod).filter(Boolean)));
 
   const handleAddPayroll = () => {
     const basicSalary = parseFloat(newPayroll.basicSalary) || 0;

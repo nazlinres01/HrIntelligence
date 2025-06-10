@@ -56,34 +56,56 @@ export default function Reports() {
 
   // Calculate comprehensive analytics
   const getEmployeeAnalytics = () => {
-    if (!employees) return null;
+    if (!employees || !Array.isArray(employees)) {
+      return {
+        totalEmployees: 0,
+        activeEmployees: 0,
+        onLeaveEmployees: 0,
+        departmentCounts: {},
+        avgSalary: 0,
+        salaryRanges: { junior: 0, mid: 0, senior: 0 },
+        retentionRate: 0
+      };
+    }
 
     const totalEmployees = employees.length;
     const activeEmployees = employees.filter((emp: any) => emp.status === 'active').length;
+    const onLeaveEmployees = employees.filter((emp: any) => emp.status === 'on_leave').length;
     const departmentCounts = employees.reduce((acc: any, emp: any) => {
       acc[emp.department] = (acc[emp.department] || 0) + 1;
       return acc;
     }, {});
 
-    const avgSalary = employees.reduce((sum: number, emp: any) => sum + emp.salary, 0) / totalEmployees;
+    const avgSalary = totalEmployees > 0 ? employees.reduce((sum: number, emp: any) => sum + (emp.salary || 0), 0) / totalEmployees : 0;
     const salaryRanges = {
-      junior: employees.filter((emp: any) => emp.salary < 50000).length,
-      mid: employees.filter((emp: any) => emp.salary >= 50000 && emp.salary < 100000).length,
-      senior: employees.filter((emp: any) => emp.salary >= 100000).length,
+      junior: employees.filter((emp: any) => (emp.salary || 0) < 50000).length,
+      mid: employees.filter((emp: any) => (emp.salary || 0) >= 50000 && (emp.salary || 0) < 100000).length,
+      senior: employees.filter((emp: any) => (emp.salary || 0) >= 100000).length,
     };
 
     return {
       totalEmployees,
       activeEmployees,
+      onLeaveEmployees,
       departmentCounts,
       avgSalary,
       salaryRanges,
-      retentionRate: (activeEmployees / totalEmployees) * 100
+      retentionRate: totalEmployees > 0 ? (activeEmployees / totalEmployees) * 100 : 0
     };
   };
 
   const getLeaveAnalytics = () => {
-    if (!leaves) return null;
+    if (!leaves || !Array.isArray(leaves)) {
+      return {
+        totalLeaves: 0,
+        approvedLeaves: 0,
+        pendingLeaves: 0,
+        rejectedLeaves: 0,
+        leaveTypes: {},
+        avgLeaveDays: 0,
+        approvalRate: 0
+      };
+    }
 
     const totalLeaves = leaves.length;
     const approvedLeaves = leaves.filter((leave: any) => leave.status === 'approved').length;
@@ -95,12 +117,12 @@ export default function Reports() {
       return acc;
     }, {});
 
-    const avgLeaveDays = leaves.reduce((sum: number, leave: any) => {
+    const avgLeaveDays = totalLeaves > 0 ? leaves.reduce((sum: number, leave: any) => {
       const start = new Date(leave.startDate);
       const end = new Date(leave.endDate);
       const days = Math.ceil((end.getTime() - start.getTime()) / (1000 * 60 * 60 * 24)) + 1;
       return sum + days;
-    }, 0) / totalLeaves;
+    }, 0) / totalLeaves : 0;
 
     return {
       totalLeaves,
@@ -109,7 +131,7 @@ export default function Reports() {
       rejectedLeaves,
       leaveTypes,
       avgLeaveDays,
-      approvalRate: (approvedLeaves / totalLeaves) * 100
+      approvalRate: totalLeaves > 0 ? (approvedLeaves / totalLeaves) * 100 : 0
     };
   };
 
