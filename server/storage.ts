@@ -55,6 +55,7 @@ export interface IStorage {
   }>;
   inviteTeamMember(userData: UpsertUser): Promise<User>;
   updateUserStatus(userId: string, isActive: boolean): Promise<boolean>;
+  updateUserPassword(userId: string, newPassword: string): Promise<boolean>;
 
   // Employee operations
   getEmployees(): Promise<Employee[]>;
@@ -209,6 +210,14 @@ export class DatabaseStorage implements IStorage {
     const result = await db
       .update(users)
       .set({ isActive, updatedAt: new Date() })
+      .where(eq(users.id, userId));
+    return (result.rowCount ?? 0) > 0;
+  }
+
+  async updateUserPassword(userId: string, newPassword: string): Promise<boolean> {
+    const result = await db
+      .update(users)
+      .set({ password: newPassword, updatedAt: new Date() })
       .where(eq(users.id, userId));
     return (result.rowCount ?? 0) > 0;
   }
