@@ -8,7 +8,7 @@ export default function Landing() {
   const { t } = useLanguage();
 
   const handleLogin = () => {
-    window.location.href = "/api/login";
+    window.location.href = "/login";
   };
 
   return (
