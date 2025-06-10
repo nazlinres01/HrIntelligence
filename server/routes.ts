@@ -31,10 +31,22 @@ export async function registerRoutes(app: Express): Promise<Server> {
   app.use(preventXSS);
   app.use(requestLogger);
 
+  // Check if this is the first user
+  app.get('/api/check-first-user', async (req, res) => {
+    try {
+      const userCount = await db.select({ count: sql`COUNT(*)` }).from(users);
+      const isFirstUser = userCount[0].count === 0;
+      res.json({ isFirstUser });
+    } catch (error) {
+      console.error('First user check error:', error);
+      res.status(500).json({ message: "Sunucu hatası" });
+    }
+  });
+
   // Auth routes
   app.post('/api/register', async (req, res) => {
     try {
-      const { firstName, lastName, email, phone, companyName, password, role } = req.body;
+      const { firstName, lastName, email, phone, companyName, password, role, department, position } = req.body;
       
       // Check if user already exists
       const existingUser = await storage.getUserByEmail(email);
@@ -63,21 +75,26 @@ export async function registerRoutes(app: Express): Promise<Server> {
         return res.status(400).json({ message: "Patron rolü sadece ilk kullanıcı için mümkündür" });
       }
 
-      let company;
       let companyId = null;
 
       // Create company if this is the first user (owner)
       if (isFirstUser && userRole === "owner") {
-        company = await storage.createCompany({
+        const company = await storage.createCompany({
           name: companyName || `${firstName} ${lastName} Şirketi`,
           industry: "Genel",
           address: "Türkiye",
-          phone: phone,
-          email: email,
-          website: null,
-          taxNumber: null,
+          phone: phone || "",
+          email: email
         });
         companyId = company.id;
+      } else if (!isFirstUser) {
+        // Get the existing company for non-first users
+        const firstUserResult = await db.select().from(users).limit(1);
+        if (firstUserResult.length > 0) {
+          const firstUser = firstUserResult[0];
+          const company = await storage.getCompanyByUser(firstUser.id);
+          companyId = company?.id || null;
+        }
       }
 
       // Create new user
@@ -87,8 +104,8 @@ export async function registerRoutes(app: Express): Promise<Server> {
         firstName,
         lastName,
         profileImageUrl: null,
-        phone,
-        password, // In production, this should be hashed
+        phone: phone || null,
+        password, // Will be hashed in storage
         role: userRole,
         companyId,
         isActive: true
@@ -99,7 +116,10 @@ export async function registerRoutes(app: Express): Promise<Server> {
       // Store user in session
       (req.session as any).userId = user.id;
       
-      res.json({ ...user, password: undefined });
+      res.status(201).json({ 
+        message: "Kayıt başarılı",
+        user: { ...user, password: undefined }
+      });
     } catch (error) {
       console.error("Registration error:", error);
       res.status(500).json({ message: "Kayıt sırasında hata oluştu" });
