@@ -27,7 +27,7 @@ import {
 } from "lucide-react";
 import { Link } from "wouter";
 
-export default function Dashboard() {
+function Dashboard() {
   const { data: stats, isLoading: statsLoading } = useQuery({
     queryKey: ["/api/dashboard/stats"],
   });
@@ -167,7 +167,7 @@ export default function Dashboard() {
   };
 
   return (
-    <div className="flex-1 space-y-6 p-6">
+    <div className="flex-1 space-y-6 p-6 max-w-full overflow-x-hidden overflow-y-auto h-full">
       <Header 
         title="Dashboard" 
         subtitle="İnsan kaynakları sisteminizin genel görünümü" 
@@ -433,3 +433,5 @@ export default function Dashboard() {
     </div>
   );
 }
+
+export default Dashboard;

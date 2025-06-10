@@ -261,7 +261,7 @@ export default function Leaves() {
   ];
 
   return (
-    <div className="flex-1 space-y-6 p-6">
+    <div className="flex-1 space-y-6 p-6 max-w-full overflow-x-hidden overflow-y-auto h-full">
       <Header 
         title="İzin Yönetimi" 
         subtitle="Çalışan izin taleplerini yönetin ve takip edin" 
