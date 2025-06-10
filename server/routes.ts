@@ -744,11 +744,17 @@ export async function registerRoutes(app: Express): Promise<Server> {
 
   app.put("/api/settings",
     isAuthenticated,
-    auditLog('update', 'settings'),
     async (req: any, res) => {
       try {
         const userId = req.user.claims.sub;
-        const settingData = { ...req.body, userId };
+        const { category, key, value } = req.body;
+        
+        // Basic validation
+        if (!category || !key || value === undefined) {
+          return res.status(400).json({ message: "Category, key, and value are required" });
+        }
+        
+        const settingData = { category, key, value, userId };
         const setting = await storage.upsertUserSetting(settingData);
         res.json(setting);
       } catch (error: any) {
@@ -760,7 +766,6 @@ export async function registerRoutes(app: Express): Promise<Server> {
 
   app.delete("/api/settings/:category/:key",
     isAuthenticated,
-    auditLog('delete', 'settings'),
     async (req: any, res) => {
       try {
         const userId = req.user.claims.sub;
