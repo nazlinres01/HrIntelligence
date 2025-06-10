@@ -4,9 +4,6 @@ import { storage } from "./storage";
 import { insertEmployeeSchema, insertLeaveSchema, insertPerformanceSchema, insertPayrollSchema } from "@shared/schema";
 
 export async function registerRoutes(app: Express): Promise<Server> {
-  // Session storage for login state
-  const loggedInUsers = new Map();
-
   // Auth routes
   app.post('/api/register', async (req, res) => {
     try {
@@ -32,8 +29,8 @@ export async function registerRoutes(app: Express): Promise<Server> {
 
       const user = await storage.upsertUser(userData);
       
-      // Auto login after registration
-      loggedInUsers.set(req.sessionID || 'default', user);
+      // Store user in session
+      (req.session as any).userId = user.id;
       
       res.json({ message: "Kayıt başarılı", user: { ...user, password: undefined } });
     } catch (error) {
@@ -56,8 +53,8 @@ export async function registerRoutes(app: Express): Promise<Server> {
         return res.status(401).json({ message: "E-posta veya şifre hatalı" });
       }
 
-      // Store user session
-      loggedInUsers.set(req.sessionID || 'default', user);
+      // Store user in session
+      (req.session as any).userId = user.id;
       
       res.json({ message: "Giriş başarılı", user: { ...user, password: undefined } });
     } catch (error) {
@@ -68,10 +65,16 @@ export async function registerRoutes(app: Express): Promise<Server> {
 
   app.get('/api/auth/user', async (req, res) => {
     try {
-      const user = loggedInUsers.get(req.sessionID || 'default');
+      const userId = (req.session as any)?.userId;
+      if (!userId) {
+        return res.status(401).json({ message: "Unauthorized" });
+      }
+      
+      const user = await storage.getUser(userId);
       if (!user) {
         return res.status(401).json({ message: "Unauthorized" });
       }
+      
       res.json({ ...user, password: undefined });
     } catch (error) {
       console.error("Error fetching user:", error);
@@ -81,8 +84,13 @@ export async function registerRoutes(app: Express): Promise<Server> {
 
   app.post('/api/logout', async (req, res) => {
     try {
-      loggedInUsers.delete(req.sessionID || 'default');
-      res.json({ message: "Çıkış başarılı" });
+      req.session.destroy((err) => {
+        if (err) {
+          console.error("Session destroy error:", err);
+          return res.status(500).json({ message: "Çıkış sırasında hata oluştu" });
+        }
+        res.json({ message: "Çıkış başarılı" });
+      });
     } catch (error) {
       console.error("Logout error:", error);
       res.status(500).json({ message: "Çıkış sırasında hata oluştu" });

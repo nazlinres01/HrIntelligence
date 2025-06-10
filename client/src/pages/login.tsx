@@ -4,6 +4,7 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Eye, EyeOff, Mail, Lock, Building2, Users, BarChart3, Calendar, CreditCard } from "lucide-react";
 import { Link } from "wouter";
+import { queryClient } from "@/lib/queryClient";
 
 export default function Login() {
   const [showPassword, setShowPassword] = useState(false);
@@ -27,7 +28,12 @@ export default function Login() {
       const data = await response.json();
 
       if (response.ok) {
-        window.location.href = "/";
+        // Invalidate auth cache to trigger re-fetch
+        queryClient.invalidateQueries({ queryKey: ["/api/auth/user"] });
+        // Small delay to ensure cache is updated
+        setTimeout(() => {
+          window.location.href = "/";
+        }, 100);
       } else {
         alert(data.message || "Giriş sırasında hata oluştu");
       }
