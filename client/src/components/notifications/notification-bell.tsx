@@ -39,7 +39,7 @@ export function NotificationBell() {
   const markAllAsRead = useMarkAllAsRead();
   const deleteNotification = useDeleteNotification();
 
-  const unreadCount = unreadData?.count || 0;
+  const unreadCount = (unreadData as any)?.count || 0;
   const typedNotifications = notifications as Notification[];
 
   const getTypeIcon = (type: string) => {
