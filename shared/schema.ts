@@ -36,7 +36,7 @@ export const users = pgTable("users", {
   profileImageUrl: varchar("profile_image_url"),
   phone: varchar("phone"),
   companyId: integer("company_id").references(() => companies.id),
-  role: varchar("role").notNull().default("hr_specialist"), // hr_manager, hr_specialist, admin
+  role: varchar("role").notNull().default("employee"), // owner, hr_manager, hr_specialist, department_manager, employee
   password: varchar("password").notNull(),
   isActive: boolean("is_active").default(true),
   lastLoginAt: timestamp("last_login_at"),

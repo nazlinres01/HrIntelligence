@@ -49,8 +49,8 @@ export async function registerRoutes(app: Express): Promise<Server> {
         email: email,
         website: null,
         taxNumber: null,
-        foundedYear: new Date().getFullYear(),
-        employeeCount: 1
+
+
       });
 
       // Create new user with company reference
@@ -62,7 +62,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
         profileImageUrl: null,
         phone,
         password, // In production, this should be hashed
-        role: "hr_manager", // First user becomes HR Manager
+        role: "owner", // First user becomes Company Owner
         companyId: company.id,
         isActive: true
       };

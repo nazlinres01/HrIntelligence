@@ -5,6 +5,7 @@ import { cn } from "@/lib/utils";
 import { Button } from "@/components/ui/button";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Separator } from "@/components/ui/separator";
+import { getUserPermissions, roleLabels, type UserRole } from "@/lib/permissions";
 
 import { 
   Building2, 
@@ -21,80 +22,104 @@ import {
   HelpCircle
 } from "lucide-react";
 
-const navigationItems = [
-  {
-    name: "Dashboard",
-    nameKey: "Dashboard",
-    href: "/",
-    icon: LayoutDashboard,
-    color: "text-blue-600",
-    bgColor: "bg-blue-50",
-  },
-  {
-    name: "Çalışanlar",
-    nameKey: "Çalışanlar",
-    href: "/employees",
-    icon: Users,
-    color: "text-emerald-600",
-    bgColor: "bg-emerald-50",
-  },
-  {
-    name: "Performans",
-    nameKey: "Performans",
-    href: "/performance",
-    icon: BarChart3,
-    color: "text-purple-600",
-    bgColor: "bg-purple-50",
-  },
-  {
-    name: "İzinler",
-    nameKey: "İzinler",
-    href: "/leaves",
-    icon: Calendar,
-    color: "text-orange-600",
-    bgColor: "bg-orange-50",
-  },
-  {
-    name: "Bordro",
-    nameKey: "Bordro",
-    href: "/payroll",
-    icon: CreditCard,
-    color: "text-indigo-600",
-    bgColor: "bg-indigo-50",
-  },
-  {
-    name: "Raporlar",
-    nameKey: "Raporlar",
-    href: "/reports",
-    icon: FileText,
-    color: "text-rose-600",
-    bgColor: "bg-rose-50",
-  },
-  {
-    name: "Yardım",
-    nameKey: "Yardım",
-    href: "/help",
-    icon: HelpCircle,
-    color: "text-amber-600",
-    bgColor: "bg-amber-50",
-  },
-  {
-    name: "Bildirimler",
-    nameKey: "Bildirimler",
-    href: "/notifications",
-    icon: Bell,
-    color: "text-purple-600",
-    bgColor: "bg-purple-50",
-  },
-  {
-    name: "Ayarlar",
-    nameKey: "Ayarlar", 
-    href: "/settings",
-    icon: Settings,
-    color: "text-gray-600",
-    bgColor: "bg-gray-50",
-  },
-];
+const getNavigationItems = (userRole: UserRole) => {
+  const permissions = getUserPermissions(userRole);
+  
+  const allItems = [
+    {
+      name: "Dashboard",
+      nameKey: "Dashboard", 
+      href: "/",
+      icon: LayoutDashboard,
+      color: "text-blue-600",
+      bgColor: "bg-blue-50",
+      permission: permissions.canViewDashboard,
+    },
+    {
+      name: "Çalışanlar",
+      nameKey: "Çalışanlar",
+      href: "/employees", 
+      icon: Users,
+      color: "text-emerald-600",
+      bgColor: "bg-emerald-50",
+      permission: permissions.canManageEmployees,
+    },
+    {
+      name: "Performans",
+      nameKey: "Performans",
+      href: "/performance",
+      icon: BarChart3,
+      color: "text-purple-600", 
+      bgColor: "bg-purple-50",
+      permission: permissions.canManagePerformance,
+    },
+    {
+      name: "İzinler",
+      nameKey: "İzinler",
+      href: "/leaves",
+      icon: Calendar,
+      color: "text-orange-600",
+      bgColor: "bg-orange-50", 
+      permission: permissions.canManageLeaves || permissions.canRequestLeave,
+    },
+    {
+      name: "Bordro",
+      nameKey: "Bordro", 
+      href: "/payroll",
+      icon: CreditCard,
+      color: "text-indigo-600",
+      bgColor: "bg-indigo-50",
+      permission: permissions.canManagePayroll,
+    },
+    {
+      name: "Raporlar",
+      nameKey: "Raporlar",
+      href: "/reports",
+      icon: FileText,
+      color: "text-rose-600",
+      bgColor: "bg-rose-50",
+      permission: permissions.canViewReports,
+    },
+    {
+      name: "Takım",
+      nameKey: "Takım",
+      href: "/team",
+      icon: Users,
+      color: "text-green-600",
+      bgColor: "bg-green-50",
+      permission: permissions.canManageTeam,
+    },
+    {
+      name: "Şirket",
+      nameKey: "Şirket", 
+      href: "/company",
+      icon: Building2,
+      color: "text-cyan-600",
+      bgColor: "bg-cyan-50",
+      permission: permissions.canManageCompany,
+    },
+    {
+      name: "Bildirimler",
+      nameKey: "Bildirimler",
+      href: "/notifications",
+      icon: Bell,
+      color: "text-purple-600",
+      bgColor: "bg-purple-50",
+      permission: true,
+    },
+    {
+      name: "Profilim",
+      nameKey: "Profilim",
+      href: "/profile",
+      icon: Settings,
+      color: "text-gray-600",
+      bgColor: "bg-gray-50",
+      permission: permissions.canManageOwnProfile,
+    },
+  ];
+
+  return allItems.filter(item => item.permission);
+};
 
 export function Sidebar() {
   const [location] = useLocation();
