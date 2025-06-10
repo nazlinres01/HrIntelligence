@@ -132,13 +132,13 @@ export function EmployeeTable({ onAddEmployee, onViewEmployee, onEditEmployee }:
         <Table>
           <TableHeader>
             <TableRow>
-              <TableHead>Çalışan</TableHead>
-              <TableHead>Departman</TableHead>
-              <TableHead>Pozisyon</TableHead>
-              <TableHead>Başlama Tarihi</TableHead>
-              <TableHead>Performans</TableHead>
-              <TableHead>Durum</TableHead>
-              <TableHead>İşlemler</TableHead>
+              <TableHead className="min-w-[200px]">Çalışan</TableHead>
+              <TableHead className="min-w-[120px]">Departman</TableHead>
+              <TableHead className="min-w-[120px]">Pozisyon</TableHead>
+              <TableHead className="min-w-[100px]">Başlama Tarihi</TableHead>
+              <TableHead className="min-w-[120px]">Performans</TableHead>
+              <TableHead className="min-w-[80px]">Durum</TableHead>
+              <TableHead className="min-w-[100px]">İşlemler</TableHead>
             </TableRow>
           </TableHeader>
           <TableBody>
