@@ -1,24 +1,35 @@
 import { db } from "./db";
-import { employees, departments, leaves, performance, payroll, activities, notifications } from "@shared/schema";
+import { companies, employees, departments, leaves, performance, payroll, activities, notifications } from "@shared/schema";
 
 export async function seedDatabase() {
   try {
     // Check if data already exists
-    const existingEmployees = await db.select().from(employees).limit(1);
-    if (existingEmployees.length > 0) {
+    const existingCompanies = await db.select().from(companies).limit(1);
+    if (existingCompanies.length > 0) {
       console.log("Database already seeded");
       return;
     }
 
     console.log("Seeding database with comprehensive Turkish company data...");
 
-    // Create departments first
+    // Create sample company first
+    const [sampleCompany] = await db.insert(companies).values({
+      name: "TechCorp Yazılım A.Ş.",
+      industry: "Yazılım ve Teknoloji",
+      address: "Maslak Mahallesi, Büyükdere Cad. No:245 Sarıyer/İstanbul",
+      phone: "+90 212 456 78 90",
+      email: "info@techcorp.com.tr",
+      website: "https://www.techcorp.com.tr",
+      taxNumber: "1234567890"
+    }).returning();
+
+    // Create departments for the company
     const sampleDepartments = [
-      { name: "Yazılım Geliştirme", description: "Yazılım ürünleri ve teknoloji geliştirme", employeeCount: 15 },
-      { name: "Pazarlama ve Satış", description: "Müşteri kazanımı ve marka yönetimi", employeeCount: 12 },
-      { name: "İnsan Kaynakları", description: "Personel yönetimi ve organizasyon geliştirme", employeeCount: 6 },
-      { name: "Finans ve Muhasebe", description: "Mali işler ve finansal planlama", employeeCount: 8 },
-      { name: "Operasyon", description: "İş süreçleri ve operasyonel faaliyetler", employeeCount: 10 }
+      { companyId: sampleCompany.id, name: "Yazılım Geliştirme", description: "Yazılım ürünleri ve teknoloji geliştirme", employeeCount: 15 },
+      { companyId: sampleCompany.id, name: "Pazarlama ve Satış", description: "Müşteri kazanımı ve marka yönetimi", employeeCount: 12 },
+      { companyId: sampleCompany.id, name: "İnsan Kaynakları", description: "Personel yönetimi ve organizasyon geliştirme", employeeCount: 6 },
+      { companyId: sampleCompany.id, name: "Finans ve Muhasebe", description: "Mali işler ve finansal planlama", employeeCount: 8 },
+      { companyId: sampleCompany.id, name: "Operasyon", description: "İş süreçleri ve operasyonel faaliyetler", employeeCount: 10 }
     ];
 
     await db.insert(departments).values(sampleDepartments);

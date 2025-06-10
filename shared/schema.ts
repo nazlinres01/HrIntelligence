@@ -13,7 +13,21 @@ export const sessions = pgTable(
   (table) => [index("IDX_session_expire").on(table.expire)],
 );
 
-// User storage table for authentication
+// Company table for multi-tenancy
+export const companies = pgTable("companies", {
+  id: serial("id").primaryKey(),
+  name: varchar("name").notNull(),
+  industry: varchar("industry"),
+  address: text("address"),
+  phone: varchar("phone"),
+  email: varchar("email"),
+  website: varchar("website"),
+  taxNumber: varchar("tax_number"),
+  createdAt: timestamp("created_at").defaultNow(),
+  updatedAt: timestamp("updated_at").defaultNow(),
+});
+
+// User storage table for authentication with company association
 export const users = pgTable("users", {
   id: varchar("id").primaryKey().notNull(),
   email: varchar("email").unique().notNull(),
@@ -21,17 +35,21 @@ export const users = pgTable("users", {
   lastName: varchar("last_name"),
   profileImageUrl: varchar("profile_image_url"),
   phone: varchar("phone"),
-  companyName: varchar("company_name"),
+  companyId: integer("company_id").references(() => companies.id),
+  role: varchar("role").notNull().default("hr_specialist"), // hr_manager, hr_specialist, admin
   password: varchar("password").notNull(),
+  isActive: boolean("is_active").default(true),
+  lastLoginAt: timestamp("last_login_at"),
   createdAt: timestamp("created_at").defaultNow(),
   updatedAt: timestamp("updated_at").defaultNow(),
 });
 
 export const employees = pgTable("employees", {
   id: serial("id").primaryKey(),
+  companyId: integer("company_id").references(() => companies.id).notNull(),
   firstName: text("first_name").notNull(),
   lastName: text("last_name").notNull(),
-  email: text("email").notNull().unique(),
+  email: text("email").notNull(),
   phone: text("phone"),
   department: text("department").notNull(),
   position: text("position").notNull(),
@@ -49,11 +67,14 @@ export const employees = pgTable("employees", {
 
 export const departments = pgTable("departments", {
   id: serial("id").primaryKey(),
-  name: text("name").notNull().unique(),
+  companyId: integer("company_id").references(() => companies.id).notNull(),
+  name: text("name").notNull(),
   description: text("description"),
   managerId: integer("manager_id").references(() => employees.id),
   budget: decimal("budget", { precision: 12, scale: 2 }),
   employeeCount: integer("employee_count").default(0),
+  createdAt: timestamp("created_at").defaultNow(),
+  updatedAt: timestamp("updated_at").defaultNow(),
 });
 
 export const leaves = pgTable("leaves", {
@@ -172,6 +193,14 @@ export const insertNotificationSchema = createInsertSchema(notifications).omit({
 });
 
 // Types
+export const insertCompanySchema = createInsertSchema(companies).omit({
+  id: true,
+  createdAt: true,
+  updatedAt: true,
+});
+
+export type Company = typeof companies.$inferSelect;
+export type InsertCompany = z.infer<typeof insertCompanySchema>;
 export type User = typeof users.$inferSelect;
 export type UpsertUser = z.infer<typeof upsertUserSchema>;
 export type Employee = typeof employees.$inferSelect;
