@@ -709,6 +709,74 @@ export async function registerRoutes(app: Express): Promise<Server> {
     }
   );
 
+  // Settings endpoints for real-time persistence
+  app.get("/api/settings",
+    isAuthenticated,
+    async (req: any, res) => {
+      try {
+        const userId = req.user.claims.sub;
+        const settings = await storage.getUserSettings(userId);
+        res.json(settings);
+      } catch (error: any) {
+        console.error("Settings fetch error:", error);
+        res.status(500).json({ message: "Failed to fetch settings" });
+      }
+    }
+  );
+
+  app.get("/api/settings/:category/:key",
+    isAuthenticated,
+    async (req: any, res) => {
+      try {
+        const userId = req.user.claims.sub;
+        const { category, key } = req.params;
+        const setting = await storage.getUserSetting(userId, category, key);
+        if (!setting) {
+          return res.status(404).json({ message: "Setting not found" });
+        }
+        res.json(setting);
+      } catch (error: any) {
+        console.error("Setting fetch error:", error);
+        res.status(500).json({ message: "Failed to fetch setting" });
+      }
+    }
+  );
+
+  app.put("/api/settings",
+    isAuthenticated,
+    auditLog('update', 'settings'),
+    async (req: any, res) => {
+      try {
+        const userId = req.user.claims.sub;
+        const settingData = { ...req.body, userId };
+        const setting = await storage.upsertUserSetting(settingData);
+        res.json(setting);
+      } catch (error: any) {
+        console.error("Setting update error:", error);
+        res.status(500).json({ message: "Failed to update setting" });
+      }
+    }
+  );
+
+  app.delete("/api/settings/:category/:key",
+    isAuthenticated,
+    auditLog('delete', 'settings'),
+    async (req: any, res) => {
+      try {
+        const userId = req.user.claims.sub;
+        const { category, key } = req.params;
+        const deleted = await storage.deleteUserSetting(userId, category, key);
+        if (!deleted) {
+          return res.status(404).json({ message: "Setting not found" });
+        }
+        res.json({ message: "Setting deleted successfully" });
+      } catch (error: any) {
+        console.error("Setting deletion error:", error);
+        res.status(500).json({ message: "Failed to delete setting" });
+      }
+    }
+  );
+
   const httpServer = createServer(app);
   return httpServer;
 }

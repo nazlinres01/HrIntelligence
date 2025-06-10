@@ -6,6 +6,7 @@ import {
   performance,
   payroll,
   activities,
+  settings,
   type User,
   type UpsertUser,
   type Employee,
@@ -20,6 +21,8 @@ import {
   type InsertPayroll,
   type Activity,
   type InsertActivity,
+  type Setting,
+  type InsertSetting,
 } from "@shared/schema";
 import { db } from "./db";
 import { eq, desc } from "drizzle-orm";
@@ -74,6 +77,12 @@ export interface IStorage {
     monthlyPayroll: string;
     avgPerformance: string;
   }>;
+
+  // Settings operations for real-time persistence
+  getUserSettings(userId: string): Promise<Setting[]>;
+  getUserSetting(userId: string, category: string, key: string): Promise<Setting | undefined>;
+  upsertUserSetting(setting: InsertSetting): Promise<Setting>;
+  deleteUserSetting(userId: string, category: string, key: string): Promise<boolean>;
 }
 
 export class DatabaseStorage implements IStorage {
@@ -318,6 +327,44 @@ export class DatabaseStorage implements IStorage {
       monthlyPayroll: `₺${(totalSalary / 1000).toFixed(1)}K`,
       avgPerformance: avgPerformance.toFixed(1)
     };
+  }
+
+  // Settings operations for real-time persistence
+  async getUserSettings(userId: string): Promise<Setting[]> {
+    return await db.select().from(settings).where(eq(settings.userId, userId));
+  }
+
+  async getUserSetting(userId: string, category: string, key: string): Promise<Setting | undefined> {
+    const [setting] = await db.select()
+      .from(settings)
+      .where(eq(settings.userId, userId))
+      .where(eq(settings.category, category))
+      .where(eq(settings.key, key));
+    return setting;
+  }
+
+  async upsertUserSetting(settingData: InsertSetting): Promise<Setting> {
+    const [setting] = await db
+      .insert(settings)
+      .values(settingData)
+      .onConflictDoUpdate({
+        target: [settings.userId, settings.category, settings.key],
+        set: {
+          value: settingData.value,
+          updatedAt: new Date(),
+        },
+      })
+      .returning();
+    return setting;
+  }
+
+  async deleteUserSetting(userId: string, category: string, key: string): Promise<boolean> {
+    const result = await db
+      .delete(settings)
+      .where(eq(settings.userId, userId))
+      .where(eq(settings.category, category))
+      .where(eq(settings.key, key));
+    return result.rowCount > 0;
   }
 }
 
