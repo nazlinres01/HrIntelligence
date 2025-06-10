@@ -340,7 +340,7 @@ export default function Employees() {
   ];
 
   return (
-    <div className="flex-1 space-y-6 p-6">
+    <div className="flex-1 space-y-6 p-6 max-w-full overflow-x-hidden overflow-y-auto h-full">
       <Header 
         title="Çalışan Yönetimi" 
         subtitle="Çalışan bilgilerini görüntüleyin ve yönetin" 
@@ -412,7 +412,7 @@ export default function Employees() {
               </Select>
             </div>
 
-            <div className="flex gap-2">
+            <div className="flex flex-wrap gap-2 w-full lg:w-auto">
               <AdvancedFilters
                 filters={filterConfig}
                 onFilterChange={setAdvancedFilters}
@@ -426,7 +426,7 @@ export default function Employees() {
                 reportType="employees"
               />
               
-              <Button variant="outline" size="sm">
+              <Button variant="outline" size="sm" className="flex-shrink-0">
                 <Upload className="h-4 w-4 mr-2" />
                 İçe Aktar
               </Button>

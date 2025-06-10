@@ -1,9 +1,13 @@
 import type { Express } from "express";
 import { createServer, type Server } from "http";
 import { storage } from "./storage";
+import { setupAuth, isAuthenticated } from "./replitAuth";
 import { insertEmployeeSchema, insertLeaveSchema, insertPerformanceSchema, insertPayrollSchema } from "@shared/schema";
 
 export async function registerRoutes(app: Express): Promise<Server> {
+  // Auth middleware
+  await setupAuth(app);
+
   // Auth routes
   app.post('/api/register', async (req, res) => {
     try {
@@ -309,6 +313,56 @@ export async function registerRoutes(app: Express): Promise<Server> {
       res.json(chartData);
     } catch (error) {
       res.status(500).json({ message: "Failed to fetch performance chart data" });
+    }
+  });
+
+  // Settings routes
+  app.get("/api/profile", isAuthenticated, async (req, res) => {
+    try {
+      const userId = req.user?.claims?.sub;
+      const user = await storage.getUser(userId);
+      res.json(user);
+    } catch (error) {
+      res.status(500).json({ message: "Failed to fetch profile" });
+    }
+  });
+
+  app.put("/api/profile", isAuthenticated, async (req, res) => {
+    try {
+      const userId = req.user?.claims?.sub;
+      const userData = req.body;
+      const user = await storage.upsertUser({ id: userId, ...userData });
+      res.json(user);
+    } catch (error) {
+      res.status(500).json({ message: "Failed to update profile" });
+    }
+  });
+
+  app.get("/api/company", isAuthenticated, async (req, res) => {
+    try {
+      // Return mock company data for now
+      const companyData = {
+        name: "TechCorp Teknoloji A.Ş.",
+        address: "Maslak Mah. Büyükdere Cad. No: 123, Şişli/İstanbul",
+        phone: "+90 212 123 45 67",
+        email: "info@techcorp.com.tr",
+        website: "www.techcorp.com.tr",
+        taxNumber: "1234567890",
+        sector: "Teknoloji"
+      };
+      res.json(companyData);
+    } catch (error) {
+      res.status(500).json({ message: "Failed to fetch company data" });
+    }
+  });
+
+  app.put("/api/company", isAuthenticated, async (req, res) => {
+    try {
+      const companyData = req.body;
+      // In a real implementation, save to database
+      res.json({ message: "Company data updated successfully", ...companyData });
+    } catch (error) {
+      res.status(500).json({ message: "Failed to update company data" });
     }
   });
 

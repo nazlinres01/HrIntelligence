@@ -79,9 +79,9 @@ function AuthenticatedLayout() {
   }
 
   return (
-    <div className="flex h-screen bg-gray-50">
+    <div className="flex h-screen bg-gray-50 overflow-hidden">
       <Sidebar />
-      <div className="flex-1">
+      <div className="flex-1 overflow-hidden">
         <Router />
       </div>
     </div>
