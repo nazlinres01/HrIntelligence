@@ -825,7 +825,10 @@ export async function registerRoutes(app: Express): Promise<Server> {
     isAuthenticated,
     async (req: any, res) => {
       try {
-        const userId = req.user.claims.sub;
+        const userId = req.user?.claims?.sub || req.user?.id;
+        if (!userId) {
+          return res.status(401).json({ message: "User ID not found" });
+        }
         const { title, message, type, actionUrl } = req.body;
         
         if (!title || !message) {
@@ -846,7 +849,10 @@ export async function registerRoutes(app: Express): Promise<Server> {
     isAuthenticated,
     async (req: any, res) => {
       try {
-        const userId = req.user.claims.sub;
+        const userId = req.user?.claims?.sub || req.user?.id;
+        if (!userId) {
+          return res.status(401).json({ message: "User ID not found" });
+        }
         const id = parseInt(req.params.id);
         const updated = await storage.markNotificationAsRead(id, userId);
         
@@ -866,7 +872,10 @@ export async function registerRoutes(app: Express): Promise<Server> {
     isAuthenticated,
     async (req: any, res) => {
       try {
-        const userId = req.user.claims.sub;
+        const userId = req.user?.claims?.sub || req.user?.id;
+        if (!userId) {
+          return res.status(401).json({ message: "User ID not found" });
+        }
         await storage.markAllNotificationsAsRead(userId);
         res.json({ message: "All notifications marked as read" });
       } catch (error: any) {
@@ -880,7 +889,10 @@ export async function registerRoutes(app: Express): Promise<Server> {
     isAuthenticated,
     async (req: any, res) => {
       try {
-        const userId = req.user.claims.sub;
+        const userId = req.user?.claims?.sub || req.user?.id;
+        if (!userId) {
+          return res.status(401).json({ message: "User ID not found" });
+        }
         const id = parseInt(req.params.id);
         const deleted = await storage.deleteNotification(id, userId);
         
