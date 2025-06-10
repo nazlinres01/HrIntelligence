@@ -11,11 +11,11 @@ export function EnhancedStatsCards() {
     queryKey: ["/api/dashboard/stats"],
   });
 
-  const { data: employees } = useQuery({
+  const { data: employees = [] } = useQuery({
     queryKey: ["/api/employees"],
   });
 
-  const { data: leaves } = useQuery({
+  const { data: leaves = [] } = useQuery({
     queryKey: ["/api/leaves"],
   });
 
@@ -34,15 +34,15 @@ export function EnhancedStatsCards() {
     );
   }
 
-  const activeEmployees = employees?.filter(emp => emp.status === 'active')?.length || 0;
-  const onLeaveEmployees = employees?.filter(emp => emp.status === 'on_leave')?.length || 0;
-  const pendingLeaves = leaves?.filter(leave => leave.status === 'pending')?.length || 0;
-  const approvedLeaves = leaves?.filter(leave => leave.status === 'approved')?.length || 0;
+  const activeEmployees = Array.isArray(employees) ? employees.filter((emp: any) => emp.status === 'active').length : 0;
+  const onLeaveEmployees = Array.isArray(employees) ? employees.filter((emp: any) => emp.status === 'on_leave').length : 0;
+  const pendingLeaves = Array.isArray(leaves) ? leaves.filter((leave: any) => leave.status === 'pending').length : 0;
+  const approvedLeaves = Array.isArray(leaves) ? leaves.filter((leave: any) => leave.status === 'approved').length : 0;
   
   const statsCards = [
     {
       title: t("Toplam Çalışan"),
-      value: stats?.totalEmployees || 0,
+      value: (stats as any)?.totalEmployees || 0,
       change: "+2.5%",
       changeType: "positive",
       icon: Users,
@@ -78,7 +78,7 @@ export function EnhancedStatsCards() {
     },
     {
       title: t("Ortalama Performans"),
-      value: `${stats?.avgPerformance || 0}/10`,
+      value: `${(stats as any)?.avgPerformance || 0}/10`,
       change: "+0.3",
       changeType: "positive",
       icon: Target,
