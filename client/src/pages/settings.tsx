@@ -40,15 +40,15 @@ export default function Settings() {
         <div className="grid gap-6">
           <Card>
             <CardHeader>
-            <CardTitle className="flex items-center gap-2">
-              <User className="h-5 w-5 text-blue-600" />
-              Profil Ayarları
-            </CardTitle>
-            <CardDescription>
-              Kişisel profil bilgilerinizi güncelleyin
-            </CardDescription>
-          </CardHeader>
-          <CardContent className="space-y-4">
+              <CardTitle className="flex items-center gap-2">
+                <User className="h-5 w-5 text-blue-600" />
+                Profil Ayarları
+              </CardTitle>
+              <CardDescription>
+                Kişisel profil bilgilerinizi güncelleyin
+              </CardDescription>
+            </CardHeader>
+            <CardContent className="space-y-4">
             <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
               <Button variant="outline" className="w-full">
                 <User className="h-4 w-4 mr-2" />

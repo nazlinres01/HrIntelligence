@@ -25,7 +25,7 @@ export default function Notifications() {
   const [filterType, setFilterType] = useState("all");
   const [filterStatus, setFilterStatus] = useState("all");
   
-  const { data: notifications, isLoading } = useNotifications();
+  const { data: notifications = [], isLoading } = useNotifications();
   const markAsRead = useMarkAsRead();
   const markAllAsRead = useMarkAllAsRead();
   const deleteNotification = useDeleteNotification();
@@ -68,7 +68,7 @@ export default function Notifications() {
     }
   };
 
-  const filteredNotifications = notifications?.filter(notification => {
+  const filteredNotifications = notifications.filter((notification: any) => {
     const matchesSearch = 
       notification.title.toLowerCase().includes(searchQuery.toLowerCase()) ||
       notification.message.toLowerCase().includes(searchQuery.toLowerCase());
@@ -80,9 +80,9 @@ export default function Notifications() {
       (filterStatus === "unread" && !notification.isRead);
 
     return matchesSearch && matchesType && matchesStatus;
-  }) || [];
+  });
 
-  const unreadCount = notifications?.filter(n => !n.isRead).length || 0;
+  const unreadCount = notifications.filter((n: any) => !n.isRead).length;
 
   if (isLoading) {
     return (
@@ -101,17 +101,18 @@ export default function Notifications() {
   }
 
   return (
-    <div className="container mx-auto px-4 py-6 max-w-4xl">
-      <div className="mb-6">
-        <h1 className="text-3xl font-bold text-gray-900 dark:text-white mb-2">
-          Bildirimler
-        </h1>
-        <p className="text-gray-600 dark:text-gray-300">
-          Sistem bildirimleri ve güncellemelerinizi buradan takip edebilirsiniz
-        </p>
-      </div>
+    <div className="h-full overflow-y-auto">
+      <div className="container mx-auto px-4 py-6 max-w-4xl">
+        <div className="mb-6">
+          <h1 className="text-3xl font-bold text-gray-900 dark:text-white mb-2">
+            Bildirimler
+          </h1>
+          <p className="text-gray-600 dark:text-gray-300">
+            Sistem bildirimleri ve güncellemelerinizi buradan takip edebilirsiniz
+          </p>
+        </div>
 
-      <div className="grid gap-6">
+        <div className="grid gap-6">
         <Card>
           <CardHeader>
             <div className="flex items-center justify-between">
@@ -309,6 +310,7 @@ export default function Notifications() {
             </CardContent>
           </Card>
         )}
+        </div>
       </div>
     </div>
   );
