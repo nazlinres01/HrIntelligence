@@ -283,6 +283,48 @@ export async function seedDatabase() {
 
     await db.insert(activities).values(sampleActivities);
 
+    // Create sample notifications for testing
+    const sampleNotifications = [
+      {
+        userId: "user-1749570121228",
+        title: "Hoş Geldiniz!",
+        message: "İK360 sistemine hoş geldiniz. Tüm özelliklerimizi keşfetmek için yardım sayfasını ziyaret edebilirsiniz.",
+        type: "info",
+        isRead: false
+      },
+      {
+        userId: "user-1749570121228", 
+        title: "Yeni Çalışan Eklendi",
+        message: "Ahmet Özkan sisteme başarıyla eklendi ve Yazılım Geliştirme departmanına atandı.",
+        type: "success",
+        isRead: false
+      },
+      {
+        userId: "user-1749570121228",
+        title: "İzin Talebi Beklemede",
+        message: "1 izin talebi onayınızı bekliyor. Lütfen kontrol ediniz.",
+        type: "warning",
+        isRead: false,
+        actionUrl: "/leaves"
+      },
+      {
+        userId: "user-1749570121228",
+        title: "Bordro Hazırlandı",
+        message: "Aralık ayı bordroları hazırlandı ve çalışanlara gönderildi.",
+        type: "success",
+        isRead: true
+      },
+      {
+        userId: "user-1749570121228",
+        title: "Sistem Güncellemesi",
+        message: "İK360 sistemi başarıyla güncellendi. Yeni özellikler kullanıma hazır.",
+        type: "info",
+        isRead: true
+      }
+    ];
+
+    await db.insert(notifications).values(sampleNotifications);
+
     console.log("Database seeded successfully with comprehensive Turkish company data");
   } catch (error) {
     console.error("Error seeding database:", error);
