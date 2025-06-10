@@ -15,13 +15,28 @@ export default function Login() {
     e.preventDefault();
     setIsLoading(true);
     
-    // Simulate login process
-    setTimeout(() => {
-      console.log("Login attempted with:", { email, password });
+    try {
+      const response = await fetch('/api/login', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({ email, password }),
+      });
+
+      const data = await response.json();
+
+      if (response.ok) {
+        window.location.href = "/";
+      } else {
+        alert(data.message || "Giriş sırasında hata oluştu");
+      }
+    } catch (error) {
+      console.error("Login error:", error);
+      alert("Giriş sırasında hata oluştu");
+    } finally {
       setIsLoading(false);
-      // Redirect to dashboard after login
-      window.location.href = "/dashboard";
-    }, 1000);
+    }
   };
 
   return (

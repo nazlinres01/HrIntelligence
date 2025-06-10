@@ -19,11 +19,29 @@ import Register from "@/pages/register";
 import NotFound from "@/pages/not-found";
 
 function Router() {
+  const { isAuthenticated } = useAuth();
+
+  if (!isAuthenticated) {
+    return (
+      <Switch>
+        <Route path="/" component={Login} />
+        <Route path="/login" component={Login} />
+        <Route path="/register" component={Register} />
+        <Route component={NotFound} />
+      </Switch>
+    );
+  }
+
   return (
     <Switch>
-      <Route path="/" component={Login} />
-      <Route path="/login" component={Login} />
-      <Route path="/register" component={Register} />
+      <Route path="/" component={Dashboard} />
+      <Route path="/dashboard" component={Dashboard} />
+      <Route path="/employees" component={Employees} />
+      <Route path="/performance" component={Performance} />
+      <Route path="/leaves" component={Leaves} />
+      <Route path="/payroll" component={Payroll} />
+      <Route path="/reports" component={Reports} />
+      <Route path="/settings" component={Settings} />
       <Route component={NotFound} />
     </Switch>
   );

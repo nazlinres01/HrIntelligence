@@ -41,12 +41,29 @@ export default function Register() {
     
     setIsLoading(true);
     
-    // Simulate registration process
-    setTimeout(() => {
-      console.log("Registration attempted with:", formData);
+    try {
+      const response = await fetch('/api/register', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify(formData),
+      });
+
+      const data = await response.json();
+
+      if (response.ok) {
+        alert("Kayıt başarılı! Dashboard'a yönlendiriliyorsunuz...");
+        window.location.href = "/";
+      } else {
+        alert(data.message || "Kayıt sırasında hata oluştu");
+      }
+    } catch (error) {
+      console.error("Registration error:", error);
+      alert("Kayıt sırasında hata oluştu");
+    } finally {
       setIsLoading(false);
-      window.location.href = "/login";
-    }, 1500);
+    }
   };
 
   return (

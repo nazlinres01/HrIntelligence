@@ -4,21 +4,88 @@ import { storage } from "./storage";
 import { insertEmployeeSchema, insertLeaveSchema, insertPerformanceSchema, insertPayrollSchema } from "@shared/schema";
 
 export async function registerRoutes(app: Express): Promise<Server> {
-  // Simple mock auth for now - return a mock user
+  // Session storage for login state
+  const loggedInUsers = new Map();
+
+  // Auth routes
+  app.post('/api/register', async (req, res) => {
+    try {
+      const { firstName, lastName, email, phone, companyName, password } = req.body;
+      
+      // Check if user already exists
+      const existingUser = await storage.getUserByEmail(email);
+      if (existingUser) {
+        return res.status(400).json({ message: "Bu e-posta adresi zaten kullanımda" });
+      }
+
+      // Create new user
+      const userData = {
+        id: `user-${Date.now()}`,
+        email,
+        firstName,
+        lastName,
+        profileImageUrl: null,
+        phone,
+        companyName,
+        password // In production, this should be hashed
+      };
+
+      const user = await storage.upsertUser(userData);
+      
+      // Auto login after registration
+      loggedInUsers.set(req.sessionID || 'default', user);
+      
+      res.json({ message: "Kayıt başarılı", user: { ...user, password: undefined } });
+    } catch (error) {
+      console.error("Registration error:", error);
+      res.status(500).json({ message: "Kayıt sırasında hata oluştu" });
+    }
+  });
+
+  app.post('/api/login', async (req, res) => {
+    try {
+      const { email, password } = req.body;
+      
+      const user = await storage.getUserByEmail(email);
+      if (!user) {
+        return res.status(401).json({ message: "E-posta veya şifre hatalı" });
+      }
+
+      // In production, compare hashed password
+      if (user.password !== password) {
+        return res.status(401).json({ message: "E-posta veya şifre hatalı" });
+      }
+
+      // Store user session
+      loggedInUsers.set(req.sessionID || 'default', user);
+      
+      res.json({ message: "Giriş başarılı", user: { ...user, password: undefined } });
+    } catch (error) {
+      console.error("Login error:", error);
+      res.status(500).json({ message: "Giriş sırasında hata oluştu" });
+    }
+  });
+
   app.get('/api/auth/user', async (req, res) => {
     try {
-      // Return a mock user for development
-      const mockUser = {
-        id: "mock-user-1",
-        email: "admin@ik360.com",
-        firstName: "Admin",
-        lastName: "User",
-        profileImageUrl: "https://images.unsplash.com/photo-1472099645785-5658abf4ff4e?ixlib=rb-4.0.3&ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&auto=format&fit=crop&w=80&h=80"
-      };
-      res.json(mockUser);
+      const user = loggedInUsers.get(req.sessionID || 'default');
+      if (!user) {
+        return res.status(401).json({ message: "Unauthorized" });
+      }
+      res.json({ ...user, password: undefined });
     } catch (error) {
       console.error("Error fetching user:", error);
       res.status(500).json({ message: "Failed to fetch user" });
+    }
+  });
+
+  app.post('/api/logout', async (req, res) => {
+    try {
+      loggedInUsers.delete(req.sessionID || 'default');
+      res.json({ message: "Çıkış başarılı" });
+    } catch (error) {
+      console.error("Logout error:", error);
+      res.status(500).json({ message: "Çıkış sırasında hata oluştu" });
     }
   });
   // Employee routes

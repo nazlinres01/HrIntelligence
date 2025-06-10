@@ -1,10 +1,14 @@
 import { useQuery } from "@tanstack/react-query";
 
 export function useAuth() {
-  // Temporarily return false for authentication to show login pages
+  const { data: user, isLoading } = useQuery({
+    queryKey: ["/api/auth/user"],
+    retry: false,
+  });
+
   return {
-    user: null,
-    isLoading: false,
-    isAuthenticated: false,
+    user,
+    isLoading,
+    isAuthenticated: !!user,
   };
 }
