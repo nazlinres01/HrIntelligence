@@ -190,10 +190,37 @@ export default function Landing() {
                 {isLoading ? "Giriş yapılıyor..." : "Giriş Yap"}
               </Button>
 
-              {/* Info */}
+              {/* Role-based Login Links */}
               <div className="border-t pt-6">
-                <p className="text-xs text-gray-500 text-center">
-                  Hesabınız yok mu? Yukarıdaki "Kayıt Ol" sekmesini kullanarak ücretsiz hesap oluşturun.
+                <p className="text-xs text-gray-500 text-center mb-3">Rol bazlı giriş:</p>
+                <div className="grid grid-cols-2 gap-2 text-xs">
+                  <button 
+                    onClick={() => window.location.href = '/owner'}
+                    className="p-2 bg-purple-50 hover:bg-purple-100 rounded text-purple-700 font-medium transition-colors"
+                  >
+                    👑 Patron
+                  </button>
+                  <button 
+                    onClick={() => window.location.href = '/hr-manager'}
+                    className="p-2 bg-blue-50 hover:bg-blue-100 rounded text-blue-700 font-medium transition-colors"
+                  >
+                    🛡️ İK Müdürü
+                  </button>
+                  <button 
+                    onClick={() => window.location.href = '/hr-specialist'}
+                    className="p-2 bg-teal-50 hover:bg-teal-100 rounded text-teal-700 font-medium transition-colors"
+                  >
+                    👥 İK Uzmanı
+                  </button>
+                  <button 
+                    onClick={() => window.location.href = '/employee'}
+                    className="p-2 bg-green-50 hover:bg-green-100 rounded text-green-700 font-medium transition-colors"
+                  >
+                    👤 Çalışan
+                  </button>
+                </div>
+                <p className="text-xs text-gray-400 text-center mt-3">
+                  Hesabınız yok mu? "Kayıt Ol" sekmesini kullanın.
                 </p>
               </div>
             </form>
