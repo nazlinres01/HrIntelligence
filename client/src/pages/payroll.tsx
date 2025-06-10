@@ -256,7 +256,7 @@ export default function Payroll() {
   ];
 
   return (
-    <div className="flex-1 space-y-6 p-6">
+    <div className="flex-1 space-y-6 p-6 max-w-full overflow-x-hidden overflow-y-auto h-full">
       <Header 
         title="Bordro Yönetimi" 
         subtitle="Çalışan maaşlarını hesaplayın ve yönetin" 

@@ -177,7 +177,7 @@ export default function Settings() {
   ];
 
   return (
-    <div className="flex-1 space-y-6 p-6">
+    <div className="flex-1 space-y-6 p-6 max-w-full overflow-x-hidden overflow-y-auto h-full">
       <Header 
         title="Ayarlar" 
         subtitle="Hesap, şirket ve sistem ayarlarınızı yönetin" 

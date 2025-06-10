@@ -197,7 +197,7 @@ export default function Performance() {
   ];
 
   return (
-    <div className="flex-1 space-y-6 p-6">
+    <div className="flex-1 space-y-6 p-6 max-w-full overflow-x-hidden overflow-y-auto h-full">
       <Header 
         title="Performans Yönetimi" 
         subtitle="Çalışan performansını analiz edin ve değerlendirin" 
