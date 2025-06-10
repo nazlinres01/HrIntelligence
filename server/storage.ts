@@ -1,4 +1,5 @@
 import {
+  companies,
   users,
   employees,
   departments,
@@ -8,6 +9,8 @@ import {
   activities,
   settings,
   notifications,
+  type Company,
+  type InsertCompany,
   type User,
   type UpsertUser,
   type Employee,
@@ -35,6 +38,23 @@ export interface IStorage {
   getUser(id: string): Promise<User | undefined>;
   getUserByEmail(email: string): Promise<User | undefined>;
   upsertUser(user: UpsertUser): Promise<User>;
+
+  // Company operations
+  getCompany(id: number): Promise<Company | undefined>;
+  getCompanyByUser(userId: string): Promise<Company | undefined>;
+  createCompany(company: InsertCompany): Promise<Company>;
+  updateCompany(id: number, company: Partial<InsertCompany>): Promise<Company>;
+
+  // Team operations
+  getTeamMembers(companyId: number): Promise<User[]>;
+  getTeamStats(companyId: number): Promise<{
+    totalMembers: number;
+    activeMembers: number;
+    managers: number;
+    specialists: number;
+  }>;
+  inviteTeamMember(userData: UpsertUser): Promise<User>;
+  updateUserStatus(userId: string, isActive: boolean): Promise<boolean>;
 
   // Employee operations
   getEmployees(): Promise<Employee[]>;
@@ -121,6 +141,76 @@ export class DatabaseStorage implements IStorage {
       })
       .returning();
     return user;
+  }
+
+  // Company operations
+  async getCompany(id: number): Promise<Company | undefined> {
+    const [company] = await db.select().from(companies).where(eq(companies.id, id));
+    return company;
+  }
+
+  async getCompanyByUser(userId: string): Promise<Company | undefined> {
+    const [user] = await db.select().from(users).where(eq(users.id, userId));
+    if (!user || !user.companyId) return undefined;
+    return this.getCompany(user.companyId);
+  }
+
+  async createCompany(companyData: InsertCompany): Promise<Company> {
+    const [company] = await db
+      .insert(companies)
+      .values(companyData)
+      .returning();
+    return company;
+  }
+
+  async updateCompany(id: number, companyData: Partial<InsertCompany>): Promise<Company> {
+    const [company] = await db
+      .update(companies)
+      .set({ ...companyData, updatedAt: new Date() })
+      .where(eq(companies.id, id))
+      .returning();
+    return company;
+  }
+
+  // Team operations
+  async getTeamMembers(companyId: number): Promise<User[]> {
+    return await db.select().from(users).where(eq(users.companyId, companyId));
+  }
+
+  async getTeamStats(companyId: number): Promise<{
+    totalMembers: number;
+    activeMembers: number;
+    managers: number;
+    specialists: number;
+  }> {
+    const teamMembers = await this.getTeamMembers(companyId);
+    
+    return {
+      totalMembers: teamMembers.length,
+      activeMembers: teamMembers.filter(m => m.isActive).length,
+      managers: teamMembers.filter(m => m.role === 'hr_manager').length,
+      specialists: teamMembers.filter(m => m.role === 'hr_specialist').length,
+    };
+  }
+
+  async inviteTeamMember(userData: UpsertUser): Promise<User> {
+    const [user] = await db
+      .insert(users)
+      .values({
+        ...userData,
+        isActive: true,
+        password: 'temp_password_' + Date.now(), // Temporary password for invitation
+      })
+      .returning();
+    return user;
+  }
+
+  async updateUserStatus(userId: string, isActive: boolean): Promise<boolean> {
+    const result = await db
+      .update(users)
+      .set({ isActive, updatedAt: new Date() })
+      .where(eq(users.id, userId));
+    return (result.rowCount ?? 0) > 0;
   }
 
   // Employee operations

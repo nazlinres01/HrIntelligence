@@ -60,6 +60,11 @@ export const NAVIGATION_ITEMS = [
     icon: FileText
   },
   {
+    href: "/team",
+    label: "Takım Yönetimi",
+    icon: Users
+  },
+  {
     href: "/settings",
     label: "Ayarlar",
     icon: Settings
