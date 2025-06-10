@@ -82,9 +82,38 @@ export function ExportReports({ data, filename, fields, reportType }: ExportRepo
   };
 
   const exportToExcel = (customFields?: string[]) => {
-    // Excel export functionality would integrate with a library like xlsx
-    // For now, we'll use CSV format as fallback
-    exportToCSV(customFields);
+    import('xlsx').then((XLSX) => {
+      try {
+        const fieldsToExport = customFields || fields.map(f => f.key);
+        
+        // Prepare data with proper headers
+        const headers = fields
+          .filter(f => fieldsToExport.includes(f.key))
+          .map(f => f.label);
+        
+        const exportData = [
+          headers,
+          ...data.map(row => 
+            fieldsToExport.map(field => row[field] || "")
+          )
+        ];
+
+        // Create worksheet and workbook
+        const worksheet = XLSX.utils.aoa_to_sheet(exportData);
+        const workbook = XLSX.utils.book_new();
+        XLSX.utils.book_append_sheet(workbook, worksheet, "Veri");
+        
+        // Download file
+        XLSX.writeFile(workbook, `${filename}-${new Date().toISOString().split('T')[0]}.xlsx`);
+      } catch (error) {
+        console.error("Excel export error:", error);
+        // Fallback to CSV if Excel fails
+        exportToCSV(customFields);
+      }
+    }).catch(() => {
+      // Fallback to CSV if dynamic import fails
+      exportToCSV(customFields);
+    });
   };
 
   const exportToPDF = () => {
