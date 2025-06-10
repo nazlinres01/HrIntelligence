@@ -6,9 +6,10 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Card, CardHeader, CardTitle, CardContent } from "@/components/ui/card";
 import { Alert, AlertDescription } from "@/components/ui/alert";
+import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { useToast } from "@/hooks/use-toast";
 import { apiRequest } from "@/lib/queryClient";
-import { Building2, Crown, Shield, Users, User, Briefcase } from "lucide-react";
+import { Building2, Crown, Shield, Users, User, Briefcase, UserPlus } from "lucide-react";
 
 type RoleType = "owner" | "hr-manager" | "hr-specialist" | "department-manager" | "employee";
 
@@ -65,6 +66,14 @@ export default function RoleLogin() {
     email: "",
     password: "",
   });
+  const [registerData, setRegisterData] = useState({
+    email: "",
+    password: "",
+    firstName: "",
+    lastName: "",
+    phone: "",
+    companyName: "",
+  });
 
   // Extract role from URL
   const currentPath = window.location.pathname;
@@ -106,9 +115,40 @@ export default function RoleLogin() {
     },
   });
 
+  const registerMutation = useMutation({
+    mutationFn: async (data: typeof registerData) => {
+      const res = await apiRequest("POST", "/api/register", {
+        ...data,
+        role: roleConfig.expectedRole,
+      });
+      return res.json();
+    },
+    onSuccess: (data) => {
+      toast({
+        title: "Kayıt Başarılı",
+        description: `Hoş geldiniz, ${data.firstName} ${data.lastName}. ${roleConfig.title} olarak kaydoldunuz.`,
+      });
+      
+      // Redirect to role-specific dashboard
+      navigate(`/${roleFromPath}`);
+    },
+    onError: (error: Error) => {
+      toast({
+        title: "Kayıt Hatası",
+        description: error.message,
+        variant: "destructive",
+      });
+    },
+  });
+
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
     loginMutation.mutate(loginData);
+  };
+
+  const handleRegisterSubmit = (e: React.FormEvent) => {
+    e.preventDefault();
+    registerMutation.mutate(registerData);
   };
 
   const Icon = roleConfig.icon;
@@ -125,42 +165,138 @@ export default function RoleLogin() {
           <p className="text-sm opacity-90">{roleConfig.description}</p>
         </div>
 
-        {/* Login Form */}
+        {/* Login/Register Forms */}
         <Card className="rounded-t-none border-t-0">
           <CardContent className="p-6">
-            <form onSubmit={handleSubmit} className="space-y-4">
-              <div>
-                <Label htmlFor="email">E-posta</Label>
-                <Input
-                  id="email"
-                  type="email"
-                  value={loginData.email}
-                  onChange={(e) => setLoginData(prev => ({ ...prev, email: e.target.value }))}
-                  placeholder="kullanici@sirket.com"
-                  required
-                />
-              </div>
+            <Tabs defaultValue="login" className="w-full">
+              <TabsList className="grid w-full grid-cols-2">
+                <TabsTrigger value="login">Giriş Yap</TabsTrigger>
+                <TabsTrigger value="register">Kayıt Ol</TabsTrigger>
+              </TabsList>
               
-              <div>
-                <Label htmlFor="password">Şifre</Label>
-                <Input
-                  id="password"
-                  type="password"
-                  value={loginData.password}
-                  onChange={(e) => setLoginData(prev => ({ ...prev, password: e.target.value }))}
-                  placeholder="••••••••"
-                  required
-                />
-              </div>
+              <TabsContent value="login" className="space-y-4 mt-6">
+                <form onSubmit={handleSubmit} className="space-y-4">
+                  <div>
+                    <Label htmlFor="login-email">E-posta</Label>
+                    <Input
+                      id="login-email"
+                      type="email"
+                      value={loginData.email}
+                      onChange={(e) => setLoginData(prev => ({ ...prev, email: e.target.value }))}
+                      placeholder="kullanici@sirket.com"
+                      required
+                    />
+                  </div>
+                  
+                  <div>
+                    <Label htmlFor="login-password">Şifre</Label>
+                    <Input
+                      id="login-password"
+                      type="password"
+                      value={loginData.password}
+                      onChange={(e) => setLoginData(prev => ({ ...prev, password: e.target.value }))}
+                      placeholder="••••••••"
+                      required
+                    />
+                  </div>
 
-              <Button 
-                type="submit" 
-                className="w-full"
-                disabled={loginMutation.isPending}
-              >
-                {loginMutation.isPending ? "Giriş yapılıyor..." : "Giriş Yap"}
-              </Button>
-            </form>
+                  <Button 
+                    type="submit" 
+                    className="w-full"
+                    disabled={loginMutation.isPending}
+                  >
+                    {loginMutation.isPending ? "Giriş yapılıyor..." : "Giriş Yap"}
+                  </Button>
+                </form>
+              </TabsContent>
+
+              <TabsContent value="register" className="space-y-4 mt-6">
+                <form onSubmit={handleRegisterSubmit} className="space-y-4">
+                  <div className="grid grid-cols-2 gap-4">
+                    <div>
+                      <Label htmlFor="firstName">Ad</Label>
+                      <Input
+                        id="firstName"
+                        type="text"
+                        value={registerData.firstName}
+                        onChange={(e) => setRegisterData(prev => ({ ...prev, firstName: e.target.value }))}
+                        placeholder="Adınız"
+                        required
+                      />
+                    </div>
+                    <div>
+                      <Label htmlFor="lastName">Soyad</Label>
+                      <Input
+                        id="lastName"
+                        type="text"
+                        value={registerData.lastName}
+                        onChange={(e) => setRegisterData(prev => ({ ...prev, lastName: e.target.value }))}
+                        placeholder="Soyadınız"
+                        required
+                      />
+                    </div>
+                  </div>
+
+                  <div>
+                    <Label htmlFor="register-email">E-posta</Label>
+                    <Input
+                      id="register-email"
+                      type="email"
+                      value={registerData.email}
+                      onChange={(e) => setRegisterData(prev => ({ ...prev, email: e.target.value }))}
+                      placeholder="kullanici@sirket.com"
+                      required
+                    />
+                  </div>
+
+                  <div>
+                    <Label htmlFor="phone">Telefon</Label>
+                    <Input
+                      id="phone"
+                      type="tel"
+                      value={registerData.phone}
+                      onChange={(e) => setRegisterData(prev => ({ ...prev, phone: e.target.value }))}
+                      placeholder="+90 555 000 00 00"
+                    />
+                  </div>
+
+                  {roleFromPath === "owner" && (
+                    <div>
+                      <Label htmlFor="companyName">Şirket Adı</Label>
+                      <Input
+                        id="companyName"
+                        type="text"
+                        value={registerData.companyName}
+                        onChange={(e) => setRegisterData(prev => ({ ...prev, companyName: e.target.value }))}
+                        placeholder="Şirket adınız"
+                        required
+                      />
+                    </div>
+                  )}
+
+                  <div>
+                    <Label htmlFor="register-password">Şifre</Label>
+                    <Input
+                      id="register-password"
+                      type="password"
+                      value={registerData.password}
+                      onChange={(e) => setRegisterData(prev => ({ ...prev, password: e.target.value }))}
+                      placeholder="••••••••"
+                      required
+                      minLength={6}
+                    />
+                  </div>
+
+                  <Button 
+                    type="submit" 
+                    className="w-full"
+                    disabled={registerMutation.isPending}
+                  >
+                    {registerMutation.isPending ? "Kayıt yapılıyor..." : `${roleConfig.title.replace(' Girişi', '')} Olarak Kayıt Ol`}
+                  </Button>
+                </form>
+              </TabsContent>
+            </Tabs>
 
             {/* Role Info */}
             <Alert className="mt-6">
