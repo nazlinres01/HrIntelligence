@@ -5,7 +5,7 @@ import { Toaster } from "@/components/ui/toaster";
 import { TooltipProvider } from "@/components/ui/tooltip";
 import { LanguageProvider } from "@/hooks/use-language";
 import { useAuth } from "@/hooks/useAuth";
-import { Sidebar } from "@/components/layout/sidebar";
+import Sidebar from "@/components/layout/sidebar";
 import Dashboard from "@/pages/dashboard";
 import Employees from "@/pages/employees";
 import Performance from "@/pages/performance";

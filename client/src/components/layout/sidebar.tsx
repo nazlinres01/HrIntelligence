@@ -1,5 +1,4 @@
 import { Link, useLocation } from "wouter";
-import { useLanguage } from "@/hooks/use-language";
 import { useAuth } from "@/hooks/useAuth";
 import { cn } from "@/lib/utils";
 import { Button } from "@/components/ui/button";
@@ -17,242 +16,289 @@ import {
   Calendar,
   CreditCard,
   FileText,
-  ChevronRight,
   Bell,
-  HelpCircle
+  HelpCircle,
+  UserCircle
 } from "lucide-react";
 
-const getNavigationItems = (userRole: UserRole) => {
+const getRoleBasedNavigation = (userRole: UserRole) => {
   const permissions = getUserPermissions(userRole);
   
-  const allItems = [
+  const navigationItems = [
     {
       name: "Dashboard",
-      nameKey: "Dashboard", 
-      href: "/",
+      href: "/dashboard",
       icon: LayoutDashboard,
       color: "text-blue-600",
       bgColor: "bg-blue-50",
-      permission: permissions.canViewDashboard,
-    },
+      show: true
+    }
+  ];
+
+  // Patron - Tüm yetkiler
+  if (userRole === "owner") {
+    navigationItems.push(
+      {
+        name: "Çalışanlar",
+        href: "/employees",
+        icon: Users,
+        color: "text-emerald-600",
+        bgColor: "bg-emerald-50",
+        show: true
+      },
+      {
+        name: "Performans",
+        href: "/performance",
+        icon: BarChart3,
+        color: "text-purple-600",
+        bgColor: "bg-purple-50",
+        show: true
+      },
+      {
+        name: "İzinler",
+        href: "/leaves",
+        icon: Calendar,
+        color: "text-orange-600",
+        bgColor: "bg-orange-50",
+        show: true
+      },
+      {
+        name: "Bordro",
+        href: "/payroll",
+        icon: CreditCard,
+        color: "text-red-600",
+        bgColor: "bg-red-50",
+        show: true
+      },
+      {
+        name: "Raporlar",
+        href: "/reports",
+        icon: FileText,
+        color: "text-indigo-600",
+        bgColor: "bg-indigo-50",
+        show: true
+      },
+      {
+        name: "Takım",
+        href: "/team",
+        icon: Users,
+        color: "text-teal-600",
+        bgColor: "bg-teal-50",
+        show: true
+      }
+    );
+  }
+  
+  // İK Müdürü - İK işlemleri, çalışanlar, performans, raporlar
+  else if (userRole === "hr_manager") {
+    navigationItems.push(
+      {
+        name: "Çalışanlar",
+        href: "/employees",
+        icon: Users,
+        color: "text-emerald-600",
+        bgColor: "bg-emerald-50",
+        show: true
+      },
+      {
+        name: "Performans",
+        href: "/performance",
+        icon: BarChart3,
+        color: "text-purple-600",
+        bgColor: "bg-purple-50",
+        show: true
+      },
+      {
+        name: "İzinler",
+        href: "/leaves",
+        icon: Calendar,
+        color: "text-orange-600",
+        bgColor: "bg-orange-50",
+        show: true
+      },
+      {
+        name: "Raporlar",
+        href: "/reports",
+        icon: FileText,
+        color: "text-indigo-600",
+        bgColor: "bg-indigo-50",
+        show: true
+      }
+    );
+  }
+  
+  // İK Uzmanı - Sınırlı İK işlemleri, izin talepleri
+  else if (userRole === "hr_specialist") {
+    navigationItems.push(
+      {
+        name: "İzinler",
+        href: "/leaves",
+        icon: Calendar,
+        color: "text-orange-600",
+        bgColor: "bg-orange-50",
+        show: true
+      },
+      {
+        name: "Çalışanlar",
+        href: "/employees",
+        icon: Users,
+        color: "text-emerald-600",
+        bgColor: "bg-emerald-50",
+        show: true
+      }
+    );
+  }
+  
+  // Departman Müdürü - Departman çalışanları, performans
+  else if (userRole === "department_manager") {
+    navigationItems.push(
+      {
+        name: "Performans",
+        href: "/performance",
+        icon: BarChart3,
+        color: "text-purple-600",
+        bgColor: "bg-purple-50",
+        show: true
+      },
+      {
+        name: "İzinler",
+        href: "/leaves",
+        icon: Calendar,
+        color: "text-orange-600",
+        bgColor: "bg-orange-50",
+        show: true
+      }
+    );
+  }
+  
+  // Çalışan - Sadece kendi profili
+  // (Sadece dashboard görür)
+
+  // Her kullanıcı için ortak sayfalar
+  navigationItems.push(
     {
-      name: "Çalışanlar",
-      nameKey: "Çalışanlar",
-      href: "/employees", 
-      icon: Users,
-      color: "text-emerald-600",
-      bgColor: "bg-emerald-50",
-      permission: permissions.canManageEmployees,
-    },
-    {
-      name: "Performans",
-      nameKey: "Performans",
-      href: "/performance",
-      icon: BarChart3,
-      color: "text-purple-600", 
-      bgColor: "bg-purple-50",
-      permission: permissions.canManagePerformance,
-    },
-    {
-      name: "İzinler",
-      nameKey: "İzinler",
-      href: "/leaves",
-      icon: Calendar,
-      color: "text-orange-600",
-      bgColor: "bg-orange-50", 
-      permission: permissions.canManageLeaves || permissions.canRequestLeave,
-    },
-    {
-      name: "Bordro",
-      nameKey: "Bordro", 
-      href: "/payroll",
-      icon: CreditCard,
-      color: "text-indigo-600",
-      bgColor: "bg-indigo-50",
-      permission: permissions.canManagePayroll,
-    },
-    {
-      name: "Raporlar",
-      nameKey: "Raporlar",
-      href: "/reports",
-      icon: FileText,
-      color: "text-rose-600",
-      bgColor: "bg-rose-50",
-      permission: permissions.canViewReports,
-    },
-    {
-      name: "Takım",
-      nameKey: "Takım",
-      href: "/team",
-      icon: Users,
-      color: "text-green-600",
-      bgColor: "bg-green-50",
-      permission: permissions.canManageTeam,
-    },
-    {
-      name: "Şirket",
-      nameKey: "Şirket", 
-      href: "/company",
-      icon: Building2,
-      color: "text-cyan-600",
-      bgColor: "bg-cyan-50",
-      permission: permissions.canManageCompany,
+      name: "Profil",
+      href: "/profile",
+      icon: UserCircle,
+      color: "text-gray-600",
+      bgColor: "bg-gray-50",
+      show: true
     },
     {
       name: "Bildirimler",
-      nameKey: "Bildirimler",
       href: "/notifications",
       icon: Bell,
-      color: "text-purple-600",
-      bgColor: "bg-purple-50",
-      permission: true,
+      color: "text-yellow-600",
+      bgColor: "bg-yellow-50",
+      show: true
     },
     {
-      name: "Profilim",
-      nameKey: "Profilim",
-      href: "/profile",
+      name: "Ayarlar",
+      href: "/settings",
       icon: Settings,
       color: "text-gray-600",
       bgColor: "bg-gray-50",
-      permission: permissions.canManageOwnProfile,
+      show: true
     },
-  ];
+    {
+      name: "Yardım",
+      href: "/help",
+      icon: HelpCircle,
+      color: "text-blue-600",
+      bgColor: "bg-blue-50",
+      show: true
+    }
+  );
 
-  return allItems.filter(item => item.permission);
+  return navigationItems.filter(item => item.show);
 };
 
-export function Sidebar() {
-  const [location] = useLocation();
-  const { t } = useLanguage();
+export default function Sidebar() {
   const { user } = useAuth();
-  
+  const [location] = useLocation();
+
+  if (!user) return null;
+
   const userRole = (user as any)?.role as UserRole || "employee";
-  const navigationItems = getNavigationItems(userRole);
+  const navigationItems = getRoleBasedNavigation(userRole);
 
   const handleLogout = async () => {
     try {
-      await fetch('/api/logout', { method: 'POST' });
-      window.location.href = '/login';
+      await fetch("/api/logout", { method: "POST" });
+      window.location.reload();
     } catch (error) {
-      console.error('Logout error:', error);
+      console.error("Logout error:", error);
     }
   };
 
   return (
-    <div className="w-72 bg-white border-r border-gray-200 flex flex-col shadow-lg">
+    <div className="flex h-full w-64 flex-col bg-white border-r border-gray-200">
       {/* Header */}
-      <div className="p-6 border-b border-gray-100">
-        <div className="flex items-center justify-between">
-          <div className="flex items-center">
-            <div className="relative">
-              <div className="w-12 h-12 bg-gradient-to-br from-blue-600 via-blue-700 to-indigo-700 rounded-2xl flex items-center justify-center shadow-lg">
-                <Building2 className="h-6 w-6 text-white" />
-              </div>
-              <div className="absolute -top-1 -right-1 w-4 h-4 bg-gradient-to-r from-green-400 to-green-500 rounded-full border-2 border-white shadow-sm"></div>
-            </div>
-            <div className="ml-4">
-              <h1 className="text-2xl font-bold bg-gradient-to-r from-gray-900 via-gray-800 to-gray-700 bg-clip-text text-transparent">
-                İK360
-              </h1>
-              <p className="text-sm text-gray-500 font-medium">İnsan Kaynakları Sistemi</p>
-            </div>
+      <div className="flex items-center gap-3 px-6 py-4 border-b border-gray-200">
+        <div className="p-2 bg-blue-100 rounded-lg">
+          <Building2 className="h-6 w-6 text-blue-600" />
+        </div>
+        <div>
+          <h1 className="text-lg font-semibold text-gray-900">İK360</h1>
+          <p className="text-xs text-gray-500">İnsan Kaynakları Sistemi</p>
+        </div>
+      </div>
+
+      {/* User Info */}
+      <div className="p-4 border-b border-gray-200">
+        <div className="flex items-center gap-3">
+          <Avatar className="h-10 w-10">
+            <AvatarImage src={(user as any)?.profileImageUrl} />
+            <AvatarFallback className="bg-blue-100 text-blue-600">
+              {(user as any)?.firstName?.[0]}{(user as any)?.lastName?.[0]}
+            </AvatarFallback>
+          </Avatar>
+          <div className="flex-1 min-w-0">
+            <p className="text-sm font-medium text-gray-900 truncate">
+              {(user as any)?.firstName} {(user as any)?.lastName}
+            </p>
+            <p className="text-xs text-gray-500 truncate">
+              {roleLabels[userRole]}
+            </p>
           </div>
         </div>
       </div>
 
-      {/* User Profile */}
-      {user && (
-        <div className="p-4 bg-gradient-to-r from-gray-50 via-blue-50 to-indigo-50 border-b border-gray-100">
-          <div className="flex items-center space-x-3 p-3 rounded-xl bg-white/70 backdrop-blur-sm border border-white/20 shadow-sm">
-            <Avatar className="h-12 w-12 ring-2 ring-white shadow-md">
-              <AvatarImage src={(user as any).profileImageUrl} alt={(user as any).firstName} />
-              <AvatarFallback className="bg-gradient-to-br from-blue-500 via-blue-600 to-indigo-600 text-white font-semibold text-sm">
-                {(user as any).firstName?.[0]}{(user as any).lastName?.[0]}
-              </AvatarFallback>
-            </Avatar>
-            <div className="flex-1 min-w-0">
-              <p className="text-sm font-semibold text-gray-900 truncate">
-                {(user as any).firstName} {(user as any).lastName}
-              </p>
-              <p className="text-xs text-gray-500 truncate">{(user as any).email}</p>
-              <div className="flex items-center mt-1">
-                <div className="w-2 h-2 bg-green-400 rounded-full mr-2"></div>
-                <span className="text-xs text-green-600 font-medium">{roleLabels[userRole]}</span>
-              </div>
-            </div>
-            <ChevronRight className="h-4 w-4 text-gray-400" />
-          </div>
-        </div>
-      )}
-
       {/* Navigation */}
-      <nav className="flex-1 p-4 space-y-2">
-        <div className="mb-6">
-          <h2 className="text-xs font-semibold text-gray-500 uppercase tracking-wider mb-3 px-3">
-            Ana Menü
-          </h2>
-          {navigationItems.map((item) => {
-            const isActive = location === item.href || (item.href !== "/" && location.startsWith(item.href));
-            const Icon = item.icon;
-            
-            return (
-              <Link key={item.href} href={item.href}>
-                <div
-                  className={cn(
-                    "group flex items-center px-3 py-3 text-sm font-medium rounded-xl transition-all duration-200 cursor-pointer",
-                    isActive
-                      ? "bg-gradient-to-r from-blue-500 to-indigo-600 text-white shadow-lg shadow-blue-500/25"
-                      : "text-gray-700 hover:bg-gray-50 hover:text-gray-900"
-                  )}
-                >
-                  <div
-                    className={cn(
-                      "mr-3 h-6 w-6 flex items-center justify-center rounded-lg transition-colors",
-                      isActive
-                        ? "bg-white/20"
-                        : `${item.bgColor} group-hover:${item.bgColor}`
-                    )}
-                  >
-                    <Icon
-                      className={cn(
-                        "h-4 w-4 transition-colors",
-                        isActive ? "text-white" : item.color
-                      )}
-                    />
-                  </div>
-                  <span className="truncate">{t(item.nameKey)}</span>
-                  {isActive && (
-                    <div className="ml-auto">
-                      <div className="w-1.5 h-1.5 bg-white rounded-full"></div>
-                    </div>
-                  )}
-                </div>
-              </Link>
-            );
-          })}
-        </div>
-
-        <Separator className="my-4" />
-
-
+      <nav className="flex-1 px-4 py-4 space-y-1 overflow-y-auto">
+        {navigationItems.map((item) => {
+          const isActive = location === item.href || 
+            (item.href !== "/dashboard" && location.startsWith(item.href));
+          
+          return (
+            <Link key={item.name} href={item.href}>
+              <Button
+                variant="ghost"
+                className={cn(
+                  "w-full justify-start gap-3 h-10 px-3",
+                  isActive
+                    ? `${item.bgColor} ${item.color} font-medium`
+                    : "text-gray-600 hover:bg-gray-50 hover:text-gray-900"
+                )}
+              >
+                <item.icon className="h-4 w-4" />
+                {item.name}
+              </Button>
+            </Link>
+          );
+        })}
       </nav>
 
-      {/* Footer - Logout Button */}
-      <div className="p-4 border-t border-gray-100 bg-gray-50/50">
+      {/* Footer */}
+      <div className="p-4 border-t border-gray-200">
         <Button
-          variant="outline"
-          size="sm"
+          variant="ghost"
           onClick={handleLogout}
-          className="w-full justify-start text-gray-700 border-gray-200 hover:bg-red-50 hover:text-red-700 hover:border-red-200 transition-colors duration-200"
+          className="w-full justify-start gap-3 h-10 px-3 text-red-600 hover:bg-red-50 hover:text-red-700"
         >
-          <LogOut className="mr-2 h-4 w-4" />
+          <LogOut className="h-4 w-4" />
           Çıkış Yap
         </Button>
-        
-        <div className="mt-3 text-center">
-          <p className="text-xs text-gray-500">© 2024 İK360</p>
-          <p className="text-xs text-gray-400">v1.0.0</p>
-        </div>
       </div>
     </div>
   );
