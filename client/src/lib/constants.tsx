@@ -1,4 +1,4 @@
-import { Home, Users, TrendingUp, Calendar, DollarSign, FileText, Settings } from "lucide-react";
+import { Home, Users, TrendingUp, Calendar, DollarSign, FileText, Settings, HelpCircle } from "lucide-react";
 
 export const DEPARTMENTS = [
   "Yazılım",
@@ -63,6 +63,11 @@ export const NAVIGATION_ITEMS = [
     href: "/settings",
     label: "Ayarlar",
     icon: Settings
+  },
+  {
+    href: "/help",
+    label: "Yardım",
+    icon: HelpCircle
   }
 ] as const;
 
