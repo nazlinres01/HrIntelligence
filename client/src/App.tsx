@@ -17,6 +17,7 @@ import Settings from "@/pages/settings";
 import Notifications from "@/pages/notifications";
 import Team from "@/pages/team";
 import TeamLogin from "@/pages/team-login";
+import Profile from "@/pages/profile";
 import Landing from "@/pages/landing";
 import Login from "@/pages/login";
 import Register from "@/pages/register";
@@ -49,6 +50,7 @@ function Router() {
       <Route path="/help" component={Help} />
       <Route path="/notifications" component={Notifications} />
       <Route path="/team" component={Team} />
+      <Route path="/profile" component={Profile} />
       <Route path="/settings" component={Settings} />
       <Route component={NotFound} />
     </Switch>

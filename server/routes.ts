@@ -122,6 +122,37 @@ export async function registerRoutes(app: Express): Promise<Server> {
     }
   });
 
+  // Profile update endpoint
+  app.put('/api/profile', async (req, res) => {
+    try {
+      const userId = (req.session as any)?.userId;
+      if (!userId) {
+        return res.status(401).json({ message: "Unauthorized" });
+      }
+
+      const { firstName, lastName, phone } = req.body;
+      
+      // Get current user
+      const currentUser = await storage.getUser(userId);
+      if (!currentUser) {
+        return res.status(404).json({ message: "User not found" });
+      }
+
+      // Update user profile
+      const updatedUser = await storage.upsertUser({
+        ...currentUser,
+        firstName,
+        lastName,
+        phone,
+      });
+
+      res.json({ ...updatedUser, password: undefined });
+    } catch (error) {
+      console.error("Error updating profile:", error);
+      res.status(500).json({ message: "Failed to update profile" });
+    }
+  });
+
   app.post('/api/logout', async (req, res) => {
     try {
       req.session.destroy((err) => {

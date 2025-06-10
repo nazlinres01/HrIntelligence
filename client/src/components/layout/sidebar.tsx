@@ -125,6 +125,9 @@ export function Sidebar() {
   const [location] = useLocation();
   const { t } = useLanguage();
   const { user } = useAuth();
+  
+  const userRole = (user as any)?.role as UserRole || "employee";
+  const navigationItems = getNavigationItems(userRole);
 
   const handleLogout = async () => {
     try {
@@ -174,7 +177,7 @@ export function Sidebar() {
               <p className="text-xs text-gray-500 truncate">{(user as any).email}</p>
               <div className="flex items-center mt-1">
                 <div className="w-2 h-2 bg-green-400 rounded-full mr-2"></div>
-                <span className="text-xs text-green-600 font-medium">Aktif</span>
+                <span className="text-xs text-green-600 font-medium">{roleLabels[userRole]}</span>
               </div>
             </div>
             <ChevronRight className="h-4 w-4 text-gray-400" />
