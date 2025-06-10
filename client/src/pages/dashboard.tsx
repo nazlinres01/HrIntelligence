@@ -1,6 +1,6 @@
 import { useQuery } from "@tanstack/react-query";
 import { Header } from "@/components/layout/header";
-import { StatsCards } from "@/components/dashboard/stats-cards";
+import { EnhancedStatsCards } from "@/components/dashboard/enhanced-stats-cards";
 import { PerformanceChart } from "@/components/dashboard/performance-chart";
 import { LeaveCalendar } from "@/components/dashboard/leave-calendar";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
@@ -102,8 +102,8 @@ export default function Dashboard() {
       />
       
       <main className="flex-1 overflow-auto p-6">
-        {/* Stats Cards */}
-        <StatsCards />
+        {/* Enhanced Stats Cards */}
+        <EnhancedStatsCards />
 
         {/* Charts and Tables Row */}
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-8 mb-8">

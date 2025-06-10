@@ -1,3 +1,5 @@
+import { Home, Users, TrendingUp, Calendar, DollarSign, FileText, Settings } from "lucide-react";
+
 export const DEPARTMENTS = [
   "Yazılım",
   "İnsan Kaynakları", 
@@ -30,37 +32,37 @@ export const NAVIGATION_ITEMS = [
   {
     href: "/",
     label: "Dashboard",
-    icon: "fas fa-chart-pie"
+    icon: Home
   },
   {
     href: "/employees",
     label: "Çalışanlar",
-    icon: "fas fa-users"
+    icon: Users
   },
   {
     href: "/performance",
     label: "Performans",
-    icon: "fas fa-chart-line"
+    icon: TrendingUp
   },
   {
     href: "/leaves",
     label: "İzin Yönetimi",
-    icon: "fas fa-calendar-alt"
+    icon: Calendar
   },
   {
     href: "/payroll",
     label: "Bordro",
-    icon: "fas fa-money-bill-wave"
+    icon: DollarSign
   },
   {
     href: "/reports",
     label: "Raporlar",
-    icon: "fas fa-file-alt"
+    icon: FileText
   },
   {
     href: "/settings",
     label: "Ayarlar",
-    icon: "fas fa-cog"
+    icon: Settings
   }
 ] as const;
 
