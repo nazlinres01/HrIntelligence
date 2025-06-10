@@ -81,39 +81,57 @@ export function ExportReports({ data, filename, fields, reportType }: ExportRepo
     window.URL.revokeObjectURL(url);
   };
 
-  const exportToExcel = (customFields?: string[]) => {
-    import('xlsx').then((XLSX) => {
-      try {
-        const fieldsToExport = customFields || fields.map(f => f.key);
-        
-        // Prepare data with proper headers
-        const headers = fields
-          .filter(f => fieldsToExport.includes(f.key))
-          .map(f => f.label);
-        
-        const exportData = [
-          headers,
-          ...data.map(row => 
-            fieldsToExport.map(field => row[field] || "")
-          )
-        ];
+  const exportToExcel = async (customFields?: string[]) => {
+    try {
+      const XLSX = await import('xlsx');
+      const fieldsToExport = customFields || selectedFields;
+      
+      // Prepare data with proper headers
+      const headers = fields
+        .filter(f => fieldsToExport.includes(f.key))
+        .map(f => f.label);
+      
+      const exportData = [
+        headers,
+        ...data.map(row => 
+          fieldsToExport.map(field => {
+            const value = row[field];
+            // Handle different data types properly
+            if (value === null || value === undefined) return "";
+            if (typeof value === 'object') return JSON.stringify(value);
+            return String(value);
+          })
+        )
+      ];
 
-        // Create worksheet and workbook
-        const worksheet = XLSX.utils.aoa_to_sheet(exportData);
-        const workbook = XLSX.utils.book_new();
-        XLSX.utils.book_append_sheet(workbook, worksheet, "Veri");
-        
-        // Download file
-        XLSX.writeFile(workbook, `${filename}-${new Date().toISOString().split('T')[0]}.xlsx`);
-      } catch (error) {
-        console.error("Excel export error:", error);
-        // Fallback to CSV if Excel fails
-        exportToCSV(customFields);
-      }
-    }).catch(() => {
-      // Fallback to CSV if dynamic import fails
+      // Create worksheet with proper formatting
+      const worksheet = XLSX.utils.aoa_to_sheet(exportData);
+      
+      // Set column widths
+      const colWidths = headers.map(() => ({ wch: 15 }));
+      worksheet['!cols'] = colWidths;
+      
+      // Create workbook and add metadata
+      const workbook = XLSX.utils.book_new();
+      workbook.Props = {
+        Title: getReportTitle(),
+        Subject: `${reportType} verisi`,
+        Author: "İK360 Sistemi",
+        CreatedDate: new Date()
+      };
+      
+      XLSX.utils.book_append_sheet(workbook, worksheet, "Veri");
+      
+      // Download file with timestamp
+      const timestamp = new Date().toISOString().slice(0, 19).replace(/:/g, '-');
+      XLSX.writeFile(workbook, `${filename}-${timestamp}.xlsx`);
+      
+      return true;
+    } catch (error) {
+      console.error("Excel export error:", error);
       exportToCSV(customFields);
-    });
+      return false;
+    }
   };
 
   const exportToPDF = () => {

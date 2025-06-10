@@ -3,8 +3,23 @@ import { createServer, type Server } from "http";
 import { storage } from "./storage";
 import { setupAuth, isAuthenticated } from "./replitAuth";
 import { insertEmployeeSchema, insertLeaveSchema, insertPerformanceSchema, insertPayrollSchema } from "@shared/schema";
+import { 
+  sanitizeInput, 
+  preventXSS, 
+  requestLogger, 
+  validateInput,
+  requirePermission,
+  auditLog,
+  validateFileUpload
+} from "./middleware/security";
+import { z } from "zod";
 
 export async function registerRoutes(app: Express): Promise<Server> {
+  // Apply security middleware globally
+  app.use(sanitizeInput);
+  app.use(preventXSS);
+  app.use(requestLogger);
+
   // Auth routes
   app.post('/api/register', async (req, res) => {
     try {
