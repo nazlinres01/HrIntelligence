@@ -1,10 +1,13 @@
 import {
+  users,
   employees,
   departments,
   leaves,
   performance,
   payroll,
   activities,
+  type User,
+  type UpsertUser,
   type Employee,
   type InsertEmployee,
   type Department,
@@ -18,8 +21,14 @@ import {
   type Activity,
   type InsertActivity,
 } from "@shared/schema";
+import { db } from "./db";
+import { eq, desc } from "drizzle-orm";
 
 export interface IStorage {
+  // User operations for authentication
+  getUser(id: string): Promise<User | undefined>;
+  upsertUser(user: UpsertUser): Promise<User>;
+
   // Employee operations
   getEmployees(): Promise<Employee[]>;
   getEmployee(id: number): Promise<Employee | undefined>;
@@ -66,293 +75,219 @@ export interface IStorage {
   }>;
 }
 
-export class MemStorage implements IStorage {
-  private employees: Map<number, Employee> = new Map();
-  private departments: Map<number, Department> = new Map();
-  private leaves: Map<number, Leave> = new Map();
-  private performance: Map<number, Performance> = new Map();
-  private payroll: Map<number, Payroll> = new Map();
-  private activities: Map<number, Activity> = new Map();
-  private currentId = 1;
-
-  constructor() {
-    this.seedData();
+export class DatabaseStorage implements IStorage {
+  // User operations for authentication
+  async getUser(id: string): Promise<User | undefined> {
+    const [user] = await db.select().from(users).where(eq(users.id, id));
+    return user || undefined;
   }
 
-  private seedData() {
-    // Seed initial data to match the design
-    const now = new Date();
-    const currentMonth = `${now.getFullYear()}-${String(now.getMonth() + 1).padStart(2, '0')}`;
-    
-    // Create employees
-    const sampleEmployees: InsertEmployee[] = [
-      {
-        firstName: "Can",
-        lastName: "Yılmaz",
-        email: "can.yilmaz@sirket.com",
-        phone: "+90 555 123 4567",
-        department: "Yazılım",
-        position: "Senior Developer",
-        startDate: "2021-03-15",
-        salary: "15000.00",
-        status: "active",
-        performanceScore: "8.5",
-        profileImage: "https://images.unsplash.com/photo-1500648767791-00dcc994a43e?ixlib=rb-4.0.3&ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&auto=format&fit=crop&w=80&h=80"
-      },
-      {
-        firstName: "Elif",
-        lastName: "Kara",
-        email: "elif.kara@sirket.com",
-        phone: "+90 555 234 5678",
-        department: "İnsan Kaynakları",
-        position: "İK Uzmanı",
-        startDate: "2020-08-22",
-        salary: "12000.00",
-        status: "on_leave",
-        performanceScore: "9.2",
-        profileImage: "https://images.unsplash.com/photo-1573496359142-b8d87734a5a2?ixlib=rb-4.0.3&ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&auto=format&fit=crop&w=80&h=80"
-      },
-      {
-        firstName: "Okan",
-        lastName: "Şahin",
-        email: "okan.sahin@sirket.com",
-        phone: "+90 555 345 6789",
-        department: "Pazarlama",
-        position: "Pazarlama Müdürü",
-        startDate: "2019-01-10",
-        salary: "18000.00",
-        status: "active",
-        performanceScore: "7.8",
-        profileImage: "https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?ixlib=rb-4.0.3&ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&auto=format&fit=crop&w=80&h=80"
-      }
-    ];
-
-    sampleEmployees.forEach(emp => this.createEmployee(emp));
-
-    // Create departments
-    const sampleDepartments: InsertDepartment[] = [
-      { name: "Yazılım", description: "Software Development", employeeCount: 25 },
-      { name: "İnsan Kaynakları", description: "Human Resources", employeeCount: 8 },
-      { name: "Pazarlama", description: "Marketing", employeeCount: 12 },
-      { name: "Satış", description: "Sales", employeeCount: 20 },
-      { name: "Muhasebe", description: "Accounting", employeeCount: 6 }
-    ];
-
-    sampleDepartments.forEach(dept => this.createDepartment(dept));
-
-    // Create sample leaves
-    const sampleLeaves: InsertLeave[] = [
-      {
-        employeeId: 2,
-        leaveType: "annual",
-        startDate: "2024-11-15",
-        endDate: "2024-11-19",
-        days: 5,
-        status: "approved",
-        reason: "Yıllık izin"
-      }
-    ];
-
-    sampleLeaves.forEach(leave => this.createLeave(leave));
-
-    // Create activities
-    const sampleActivities: InsertActivity[] = [
-      {
-        type: "employee_added",
-        description: "Yeni çalışan eklendi",
-        entityId: 1,
-        performedBy: 1
-      },
-      {
-        type: "leave_approved",
-        description: "İzin talebi onaylandı",
-        entityId: 1,
-        performedBy: 1
-      }
-    ];
-
-    sampleActivities.forEach(activity => this.createActivity(activity));
+  async upsertUser(userData: UpsertUser): Promise<User> {
+    const [user] = await db
+      .insert(users)
+      .values(userData)
+      .onConflictDoUpdate({
+        target: users.id,
+        set: {
+          ...userData,
+          updatedAt: new Date(),
+        },
+      })
+      .returning();
+    return user;
   }
 
   // Employee operations
   async getEmployees(): Promise<Employee[]> {
-    return Array.from(this.employees.values());
+    return await db.select().from(employees);
   }
 
   async getEmployee(id: number): Promise<Employee | undefined> {
-    return this.employees.get(id);
+    const [employee] = await db.select().from(employees).where(eq(employees.id, id));
+    return employee || undefined;
   }
 
   async getEmployeeByEmail(email: string): Promise<Employee | undefined> {
-    return Array.from(this.employees.values()).find(emp => emp.email === email);
+    const [employee] = await db.select().from(employees).where(eq(employees.email, email));
+    return employee || undefined;
   }
 
   async createEmployee(employee: InsertEmployee): Promise<Employee> {
-    const id = this.currentId++;
-    const now = new Date();
-    const newEmployee: Employee = {
+    const [newEmployee] = await db.insert(employees).values({
       ...employee,
-      id,
-      createdAt: now,
-      updatedAt: now,
-    };
-    this.employees.set(id, newEmployee);
+      phone: employee.phone || null,
+      status: employee.status || "active",
+      performanceScore: employee.performanceScore || "0.0",
+      profileImage: employee.profileImage || null,
+    }).returning();
     
     // Create activity
     await this.createActivity({
       type: "employee_added",
       description: `${employee.firstName} ${employee.lastName} eklendi`,
-      entityId: id,
-      performedBy: 1
+      entityId: newEmployee.id,
+      performedBy: null
     });
     
     return newEmployee;
   }
 
   async updateEmployee(id: number, employee: Partial<InsertEmployee>): Promise<Employee> {
-    const existing = this.employees.get(id);
-    if (!existing) throw new Error("Employee not found");
+    const [updated] = await db.update(employees)
+      .set({
+        ...employee,
+        updatedAt: new Date(),
+      })
+      .where(eq(employees.id, id))
+      .returning();
     
-    const updated: Employee = {
-      ...existing,
-      ...employee,
-      updatedAt: new Date(),
-    };
-    this.employees.set(id, updated);
+    if (!updated) throw new Error("Employee not found");
     return updated;
   }
 
   async deleteEmployee(id: number): Promise<boolean> {
-    return this.employees.delete(id);
+    const result = await db.delete(employees).where(eq(employees.id, id));
+    return (result.rowCount || 0) > 0;
   }
 
   // Department operations
   async getDepartments(): Promise<Department[]> {
-    return Array.from(this.departments.values());
+    return await db.select().from(departments);
   }
 
   async getDepartment(id: number): Promise<Department | undefined> {
-    return this.departments.get(id);
+    const [department] = await db.select().from(departments).where(eq(departments.id, id));
+    return department || undefined;
   }
 
   async createDepartment(department: InsertDepartment): Promise<Department> {
-    const id = this.currentId++;
-    const newDepartment: Department = { ...department, id };
-    this.departments.set(id, newDepartment);
+    const [newDepartment] = await db.insert(departments).values({
+      ...department,
+      description: department.description || null,
+      managerId: department.managerId || null,
+      budget: department.budget || null,
+      employeeCount: department.employeeCount || null,
+    }).returning();
     return newDepartment;
   }
 
   async updateDepartment(id: number, department: Partial<InsertDepartment>): Promise<Department> {
-    const existing = this.departments.get(id);
-    if (!existing) throw new Error("Department not found");
+    const [updated] = await db.update(departments)
+      .set(department)
+      .where(eq(departments.id, id))
+      .returning();
     
-    const updated: Department = { ...existing, ...department };
-    this.departments.set(id, updated);
+    if (!updated) throw new Error("Department not found");
     return updated;
   }
 
   // Leave operations
   async getLeaves(): Promise<Leave[]> {
-    return Array.from(this.leaves.values());
+    return await db.select().from(leaves);
   }
 
   async getLeavesByEmployee(employeeId: number): Promise<Leave[]> {
-    return Array.from(this.leaves.values()).filter(leave => leave.employeeId === employeeId);
+    return await db.select().from(leaves).where(eq(leaves.employeeId, employeeId));
   }
 
   async getLeave(id: number): Promise<Leave | undefined> {
-    return this.leaves.get(id);
+    const [leave] = await db.select().from(leaves).where(eq(leaves.id, id));
+    return leave || undefined;
   }
 
   async createLeave(leave: InsertLeave): Promise<Leave> {
-    const id = this.currentId++;
-    const newLeave: Leave = {
+    const [newLeave] = await db.insert(leaves).values({
       ...leave,
-      id,
-      appliedAt: new Date(),
-    };
-    this.leaves.set(id, newLeave);
+      status: leave.status || "pending",
+      reason: leave.reason || null,
+      approvedBy: leave.approvedBy || null,
+    }).returning();
     return newLeave;
   }
 
   async updateLeave(id: number, leave: Partial<InsertLeave>): Promise<Leave> {
-    const existing = this.leaves.get(id);
-    if (!existing) throw new Error("Leave not found");
+    const [updated] = await db.update(leaves)
+      .set(leave)
+      .where(eq(leaves.id, id))
+      .returning();
     
-    const updated: Leave = { ...existing, ...leave };
-    this.leaves.set(id, updated);
+    if (!updated) throw new Error("Leave not found");
     return updated;
   }
 
   // Performance operations
   async getPerformanceRecords(): Promise<Performance[]> {
-    return Array.from(this.performance.values());
+    return await db.select().from(performance);
   }
 
   async getPerformanceByEmployee(employeeId: number): Promise<Performance[]> {
-    return Array.from(this.performance.values()).filter(perf => perf.employeeId === employeeId);
+    return await db.select().from(performance).where(eq(performance.employeeId, employeeId));
   }
 
-  async createPerformance(performance: InsertPerformance): Promise<Performance> {
-    const id = this.currentId++;
-    const newPerformance: Performance = {
-      ...performance,
-      id,
-      reviewDate: new Date(),
-    };
-    this.performance.set(id, newPerformance);
+  async createPerformance(performanceData: InsertPerformance): Promise<Performance> {
+    const [newPerformance] = await db.insert(performance).values({
+      ...performanceData,
+      goals: performanceData.goals || null,
+      achievements: performanceData.achievements || null,
+      feedback: performanceData.feedback || null,
+      reviewedBy: performanceData.reviewedBy || null,
+    }).returning();
     return newPerformance;
   }
 
-  async updatePerformance(id: number, performance: Partial<InsertPerformance>): Promise<Performance> {
-    const existing = this.performance.get(id);
-    if (!existing) throw new Error("Performance record not found");
+  async updatePerformance(id: number, performanceData: Partial<InsertPerformance>): Promise<Performance> {
+    const [updated] = await db.update(performance)
+      .set(performanceData)
+      .where(eq(performance.id, id))
+      .returning();
     
-    const updated: Performance = { ...existing, ...performance };
-    this.performance.set(id, updated);
+    if (!updated) throw new Error("Performance record not found");
     return updated;
   }
 
   // Payroll operations
   async getPayrollRecords(): Promise<Payroll[]> {
-    return Array.from(this.payroll.values());
+    return await db.select().from(payroll);
   }
 
   async getPayrollByEmployee(employeeId: number): Promise<Payroll[]> {
-    return Array.from(this.payroll.values()).filter(payroll => payroll.employeeId === employeeId);
+    return await db.select().from(payroll).where(eq(payroll.employeeId, employeeId));
   }
 
-  async createPayroll(payroll: InsertPayroll): Promise<Payroll> {
-    const id = this.currentId++;
-    const newPayroll: Payroll = { ...payroll, id };
-    this.payroll.set(id, newPayroll);
+  async createPayroll(payrollData: InsertPayroll): Promise<Payroll> {
+    const [newPayroll] = await db.insert(payroll).values({
+      ...payrollData,
+      status: payrollData.status || "pending",
+      bonuses: payrollData.bonuses || null,
+      deductions: payrollData.deductions || null,
+      paymentDate: payrollData.paymentDate || null,
+    }).returning();
     return newPayroll;
   }
 
-  async updatePayroll(id: number, payroll: Partial<InsertPayroll>): Promise<Payroll> {
-    const existing = this.payroll.get(id);
-    if (!existing) throw new Error("Payroll record not found");
+  async updatePayroll(id: number, payrollData: Partial<InsertPayroll>): Promise<Payroll> {
+    const [updated] = await db.update(payroll)
+      .set(payrollData)
+      .where(eq(payroll.id, id))
+      .returning();
     
-    const updated: Payroll = { ...existing, ...payroll };
-    this.payroll.set(id, updated);
+    if (!updated) throw new Error("Payroll record not found");
     return updated;
   }
 
   // Activity operations
   async getActivities(limit: number = 10): Promise<Activity[]> {
-    const activities = Array.from(this.activities.values())
-      .sort((a, b) => new Date(b.timestamp!).getTime() - new Date(a.timestamp!).getTime());
-    return activities.slice(0, limit);
+    return await db.select().from(activities)
+      .orderBy(desc(activities.timestamp))
+      .limit(limit);
   }
 
   async createActivity(activity: InsertActivity): Promise<Activity> {
-    const id = this.currentId++;
-    const newActivity: Activity = {
+    const [newActivity] = await db.insert(activities).values({
       ...activity,
-      id,
-      timestamp: new Date(),
-    };
-    this.activities.set(id, newActivity);
+      entityId: activity.entityId || null,
+      performedBy: activity.performedBy || null,
+    }).returning();
     return newActivity;
   }
 
@@ -363,16 +298,16 @@ export class MemStorage implements IStorage {
     monthlyPayroll: string;
     avgPerformance: string;
   }> {
-    const employees = await this.getEmployees();
-    const leaves = await this.getLeaves();
-    const activeLeaves = leaves.filter(leave => leave.status === "approved").length;
+    const allEmployees = await this.getEmployees();
+    const allLeaves = await this.getLeaves();
+    const activeLeaves = allLeaves.filter(leave => leave.status === "approved").length;
     
-    const totalSalary = employees.reduce((sum, emp) => sum + parseFloat(emp.salary), 0);
-    const avgPerformance = employees.reduce((sum, emp) => 
-      sum + parseFloat(emp.performanceScore || "0"), 0) / employees.length;
+    const totalSalary = allEmployees.reduce((sum, emp) => sum + parseFloat(emp.salary), 0);
+    const avgPerformance = allEmployees.reduce((sum, emp) => 
+      sum + parseFloat(emp.performanceScore || "0"), 0) / (allEmployees.length || 1);
 
     return {
-      totalEmployees: employees.length,
+      totalEmployees: allEmployees.length,
       activeLeaves,
       monthlyPayroll: `₺${(totalSalary / 1000).toFixed(1)}K`,
       avgPerformance: avgPerformance.toFixed(1)
@@ -380,4 +315,4 @@ export class MemStorage implements IStorage {
   }
 }
 
-export const storage = new MemStorage();
+export const storage = new DatabaseStorage();
