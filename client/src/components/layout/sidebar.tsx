@@ -5,6 +5,7 @@ import { cn } from "@/lib/utils";
 import { Button } from "@/components/ui/button";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Separator } from "@/components/ui/separator";
+import { NotificationBell } from "@/components/notifications/notification-bell";
 import { 
   Building2, 
   Settings, 
@@ -104,9 +105,7 @@ export function Sidebar() {
               <p className="text-sm text-gray-500 font-medium">İnsan Kaynakları Sistemi</p>
             </div>
           </div>
-          <Button variant="ghost" size="sm" className="h-8 w-8 p-0 hover:bg-gray-100 rounded-lg">
-            <Bell className="h-4 w-4 text-gray-600" />
-          </Button>
+          <NotificationBell />
         </div>
       </div>
 
