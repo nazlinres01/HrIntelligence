@@ -207,50 +207,10 @@ export function Sidebar() {
 
         <Separator className="my-4" />
 
-        {/* Secondary Navigation */}
-        <div className="space-y-1">
-          <h2 className="text-xs font-semibold text-gray-500 uppercase tracking-wider mb-3 px-3">
-            Diğer
-          </h2>
-          
-          <Link href="/settings">
-            <div
-              className={cn(
-                "group flex items-center px-3 py-3 text-sm font-medium rounded-xl transition-all duration-200 cursor-pointer",
-                location === "/settings"
-                  ? "bg-gradient-to-r from-gray-700 to-gray-800 text-white shadow-lg shadow-gray-500/25"
-                  : "text-gray-700 hover:bg-gray-50 hover:text-gray-900"
-              )}
-            >
-              <div
-                className={cn(
-                  "mr-3 h-6 w-6 flex items-center justify-center rounded-lg transition-colors",
-                  location === "/settings"
-                    ? "bg-white/20"
-                    : "bg-gray-100 group-hover:bg-gray-200"
-                )}
-              >
-                <Settings
-                  className={cn(
-                    "h-4 w-4 transition-colors",
-                    location === "/settings" ? "text-white" : "text-gray-600"
-                  )}
-                />
-              </div>
-              <span className="truncate">Ayarlar</span>
-            </div>
-          </Link>
 
-          <div className="group flex items-center px-3 py-3 text-sm font-medium rounded-xl transition-all duration-200 cursor-pointer text-gray-700 hover:bg-gray-50 hover:text-gray-900">
-            <div className="mr-3 h-6 w-6 flex items-center justify-center rounded-lg transition-colors bg-gray-100 group-hover:bg-gray-200">
-              <HelpCircle className="h-4 w-4 text-gray-600" />
-            </div>
-            <span className="truncate">Yardım</span>
-          </div>
-        </div>
       </nav>
 
-      {/* Footer */}
+      {/* Footer - Logout Button */}
       <div className="p-4 border-t border-gray-100 bg-gray-50/50">
         <Button
           variant="outline"
