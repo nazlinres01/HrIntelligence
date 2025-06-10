@@ -63,7 +63,9 @@ function AuthenticatedLayout() {
   return (
     <div className="flex h-screen bg-gray-50">
       <Sidebar />
-      <Router />
+      <div className="flex-1">
+        <Router />
+      </div>
     </div>
   );
 }
