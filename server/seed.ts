@@ -3,7 +3,12 @@ import { companies, users, employees, departments, leaves, performance, payroll,
 
 export async function seedDatabase() {
   try {
-    // Clear existing data first
+    // Clear existing data in correct order (child tables first)
+    await db.delete(notifications);
+    await db.delete(activities);
+    await db.delete(payroll);
+    await db.delete(performance);
+    await db.delete(leaves);
     await db.delete(employees);
     await db.delete(departments);
     await db.delete(users);

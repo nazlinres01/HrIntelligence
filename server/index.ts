@@ -52,7 +52,8 @@ app.use((req, res, next) => {
 
 (async () => {
   // Seed database with sample data
-  await seedDatabase();
+  const { seedSimpleDatabase } = await import("./seed-simple");
+  await seedSimpleDatabase();
   
   const server = await registerRoutes(app);
 
