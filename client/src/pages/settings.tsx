@@ -26,19 +26,20 @@ export default function Settings() {
   const [pushNotifications, setPushNotifications] = useState(true);
 
   return (
-    <div className="container mx-auto px-4 py-6 max-w-4xl">
-      <div className="mb-6">
-        <h1 className="text-3xl font-bold text-gray-900 dark:text-white mb-2">
-          Ayarlar
-        </h1>
-        <p className="text-gray-600 dark:text-gray-300">
-          İK360 sistem ayarlarınızı buradan yönetebilirsiniz
-        </p>
-      </div>
+    <div className="h-full overflow-y-auto">
+      <div className="container mx-auto px-4 py-6 max-w-4xl">
+        <div className="mb-6">
+          <h1 className="text-3xl font-bold text-gray-900 dark:text-white mb-2">
+            Ayarlar
+          </h1>
+          <p className="text-gray-600 dark:text-gray-300">
+            İK360 sistem ayarlarınızı buradan yönetebilirsiniz
+          </p>
+        </div>
 
-      <div className="grid gap-6">
-        <Card>
-          <CardHeader>
+        <div className="grid gap-6">
+          <Card>
+            <CardHeader>
             <CardTitle className="flex items-center gap-2">
               <User className="h-5 w-5 text-blue-600" />
               Profil Ayarları
@@ -224,6 +225,7 @@ export default function Settings() {
             </div>
           </CardContent>
         </Card>
+      </div>
       </div>
     </div>
   );
