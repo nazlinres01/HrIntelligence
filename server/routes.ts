@@ -1,7 +1,7 @@
 import type { Express } from "express";
 import { createServer, type Server } from "http";
 import { storage } from "./storage";
-import { insertEmployeeSchema, insertLeaveSchema, insertPerformanceSchema, insertPayrollSchema } from "@shared/schema";
+import { insertEmployeeSchema, insertLeaveSchema, insertPerformanceSchema, insertPayrollSchema, users } from "@shared/schema";
 import { 
   sanitizeInput, 
   preventXSS, 
@@ -12,6 +12,8 @@ import {
   validateFileUpload
 } from "./middleware/security";
 import { z } from "zod";
+import { db } from "./db";
+import { sql } from "drizzle-orm";
 
 // Simple authentication middleware
 const isAuthenticated = (req: any, res: any, next: any) => {
@@ -121,7 +123,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
       // Store user in session
       (req.session as any).userId = user.id;
       
-      res.json({ message: "Giriş başarılı", user: { ...user, password: undefined } });
+      res.json({ ...user, password: undefined });
     } catch (error) {
       console.error("Login error:", error);
       res.status(500).json({ message: "Giriş sırasında hata oluştu" });
