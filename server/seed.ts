@@ -1,5 +1,5 @@
 import { db } from "./db";
-import { employees, departments, leaves, performance, payroll, activities } from "@shared/schema";
+import { employees, departments, leaves, performance, payroll, activities, notifications } from "@shared/schema";
 
 export async function seedDatabase() {
   try {

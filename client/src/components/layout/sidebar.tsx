@@ -79,6 +79,14 @@ const navigationItems = [
     bgColor: "bg-amber-50",
   },
   {
+    name: "Bildirimler",
+    nameKey: "Bildirimler",
+    href: "/notifications",
+    icon: Bell,
+    color: "text-purple-600",
+    bgColor: "bg-purple-50",
+  },
+  {
     name: "Ayarlar",
     nameKey: "Ayarlar", 
     href: "/settings",

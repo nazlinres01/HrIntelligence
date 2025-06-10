@@ -14,6 +14,7 @@ import Payroll from "@/pages/payroll";
 import Reports from "@/pages/reports";
 import Help from "@/pages/help";
 import Settings from "@/pages/settings";
+import Notifications from "@/pages/notifications";
 import Landing from "@/pages/landing";
 import Login from "@/pages/login";
 import Register from "@/pages/register";
@@ -43,6 +44,7 @@ function Router() {
       <Route path="/payroll" component={Payroll} />
       <Route path="/reports" component={Reports} />
       <Route path="/help" component={Help} />
+      <Route path="/notifications" component={Notifications} />
       <Route path="/settings" component={Settings} />
       <Route component={NotFound} />
     </Switch>
