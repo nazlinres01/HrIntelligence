@@ -40,6 +40,9 @@ export const employees = pgTable("employees", {
   status: text("status").notNull().default("active"), // active, on_leave, inactive
   performanceScore: decimal("performance_score", { precision: 3, scale: 1 }).default("0.0"),
   profileImage: text("profile_image"),
+  address: text("address"),
+  emergencyContact: text("emergency_contact"),
+  notes: text("notes"),
   createdAt: timestamp("created_at").defaultNow(),
   updatedAt: timestamp("updated_at").defaultNow(),
 });

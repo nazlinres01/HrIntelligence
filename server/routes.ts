@@ -585,7 +585,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
             await storage.createActivity({
               type: 'performance_imported',
               description: `Performance record imported for employee ${performanceData.employeeId}`,
-              metadata: { performanceId: performance.id, employeeId: performanceData.employeeId }
+              metadata: JSON.stringify({ performanceId: performance.id, employeeId: performanceData.employeeId })
             });
           } catch (error: any) {
             errors.push({
