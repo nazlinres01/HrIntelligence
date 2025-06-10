@@ -70,6 +70,14 @@ const navigationItems = [
     color: "text-rose-600",
     bgColor: "bg-rose-50",
   },
+  {
+    name: "Yardım",
+    nameKey: "Yardım",
+    href: "/help",
+    icon: HelpCircle,
+    color: "text-amber-600",
+    bgColor: "bg-amber-50",
+  },
 ];
 
 export function Sidebar() {

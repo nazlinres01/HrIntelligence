@@ -15,6 +15,9 @@ import {
 import { z } from "zod";
 
 export async function registerRoutes(app: Express): Promise<Server> {
+  // Auth middleware setup first
+  await setupAuth(app);
+
   // Apply security middleware globally
   app.use(sanitizeInput);
   app.use(preventXSS);
@@ -787,7 +790,10 @@ export async function registerRoutes(app: Express): Promise<Server> {
     isAuthenticated,
     async (req: any, res) => {
       try {
-        const userId = req.user.claims.sub;
+        const userId = req.user?.claims?.sub || req.user?.id;
+        if (!userId) {
+          return res.status(401).json({ message: "User ID not found" });
+        }
         const limit = parseInt(req.query.limit as string) || 50;
         const notifications = await storage.getUserNotifications(userId, limit);
         res.json(notifications);
@@ -802,7 +808,10 @@ export async function registerRoutes(app: Express): Promise<Server> {
     isAuthenticated,
     async (req: any, res) => {
       try {
-        const userId = req.user.claims.sub;
+        const userId = req.user?.claims?.sub || req.user?.id;
+        if (!userId) {
+          return res.status(401).json({ message: "User ID not found" });
+        }
         const count = await storage.getUnreadNotificationCount(userId);
         res.json({ count });
       } catch (error: any) {
