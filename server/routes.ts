@@ -451,7 +451,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
         res.json({
           message: `Successfully imported ${results.length} employees`,
           imported: results.length,
-          errors: errors.length,
+          errorCount: errors.length,
           results,
           errors: errors.slice(0, 10) // Limit error details
         });
@@ -500,7 +500,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
         res.json({
           message: `Successfully imported ${results.length} leave records`,
           imported: results.length,
-          errors: errors.length,
+          errorCount: errors.length,
           results,
           errors: errors.slice(0, 10)
         });
@@ -549,7 +549,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
         res.json({
           message: `Successfully imported ${results.length} payroll records`,
           imported: results.length,
-          errors: errors.length,
+          errorCount: errors.length,
           results,
           errors: errors.slice(0, 10)
         });
@@ -598,9 +598,9 @@ export async function registerRoutes(app: Express): Promise<Server> {
         res.json({
           message: `Successfully imported ${results.length} performance records`,
           imported: results.length,
-          errors: errors.length,
+          errorCount: errors.length,
           results,
-          errors: errors.slice(0, 10)
+          errorDetails: errors.slice(0, 10)
         });
       } catch (error: any) {
         console.error("Performance import error:", error);

@@ -103,6 +103,16 @@ export const activities = pgTable("activities", {
   timestamp: timestamp("timestamp").defaultNow(),
 });
 
+// Settings storage for real-time persistence
+export const settings = pgTable("settings", {
+  id: serial("id").primaryKey(),
+  userId: varchar("user_id").notNull().references(() => users.id),
+  category: varchar("category", { length: 100 }).notNull(),
+  key: varchar("key", { length: 200 }).notNull(),
+  value: text("value").notNull(),
+  updatedAt: timestamp("updated_at").defaultNow(),
+});
+
 // Insert schemas
 export const upsertUserSchema = createInsertSchema(users).omit({
   createdAt: true,
@@ -136,6 +146,11 @@ export const insertPayrollSchema = createInsertSchema(payroll).omit({
 export const insertActivitySchema = createInsertSchema(activities).omit({
   id: true,
   timestamp: true,
+});
+
+export const insertSettingSchema = createInsertSchema(settings).omit({
+  id: true,
+  updatedAt: true,
 });
 
 // Types
