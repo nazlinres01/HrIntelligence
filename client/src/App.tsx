@@ -20,6 +20,8 @@ import TeamLogin from "@/pages/team-login";
 import Profile from "@/pages/profile";
 import OwnerDashboard from "@/pages/owner-dashboard";
 import HRManagerDashboard from "@/pages/hr-manager-dashboard";
+import HRSpecialistDashboard from "@/pages/hr-specialist-dashboard";
+import DepartmentManagerDashboard from "@/pages/department-manager-dashboard";
 import EmployeeDashboard from "@/pages/employee-dashboard";
 import RoleLogin from "@/pages/role-login";
 import Landing from "@/pages/landing";
@@ -59,9 +61,9 @@ function Router() {
       case "hr_manager":
         return HRManagerDashboard;
       case "hr_specialist":
-        return HRManagerDashboard; // Same as HR Manager for now
+        return HRSpecialistDashboard;
       case "department_manager":
-        return HRManagerDashboard; // Same as HR Manager for now
+        return DepartmentManagerDashboard;
       case "employee":
         return EmployeeDashboard;
       default:
@@ -79,8 +81,8 @@ function Router() {
       {/* Role-specific dashboard routes */}
       <Route path="/owner" component={OwnerDashboard} />
       <Route path="/hr-manager" component={HRManagerDashboard} />
-      <Route path="/hr-specialist" component={HRManagerDashboard} />
-      <Route path="/department-manager" component={HRManagerDashboard} />
+      <Route path="/hr-specialist" component={HRSpecialistDashboard} />
+      <Route path="/department-manager" component={DepartmentManagerDashboard} />
       <Route path="/employee" component={EmployeeDashboard} />
 
       {/* Conditional routes based on permissions */}

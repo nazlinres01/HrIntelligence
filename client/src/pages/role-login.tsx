@@ -77,7 +77,7 @@ export default function RoleLogin() {
       return res.json();
     },
     onSuccess: (data) => {
-      const userRole = data.user?.role;
+      const userRole = data?.role;
       
       // Check if user role matches expected role for this login page
       if (userRole !== roleConfig.expectedRole) {
@@ -91,7 +91,7 @@ export default function RoleLogin() {
 
       toast({
         title: "Giriş Başarılı",
-        description: `Hoş geldiniz, ${data.user.firstName} ${data.user.lastName}`,
+        description: `Hoş geldiniz, ${data.firstName} ${data.lastName}`,
       });
       
       // Redirect to role-specific dashboard
