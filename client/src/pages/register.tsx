@@ -50,20 +50,20 @@ export default function Register() {
   };
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-indigo-50 via-white to-purple-50 flex items-center justify-center p-4">
-      <div className="w-full max-w-md space-y-8">
-        {/* Logo */}
-        <div className="text-center">
-          <div className="inline-flex items-center justify-center w-16 h-16 bg-gradient-to-br from-blue-600 to-indigo-600 rounded-2xl shadow-lg mb-4">
-            <Building2 className="h-8 w-8 text-white" />
+    <div className="min-h-screen flex">
+      {/* Left Side - Registration Form */}
+      <div className="flex-1 flex items-center justify-center p-8 bg-white overflow-y-auto">
+        <div className="w-full max-w-md space-y-8">
+          {/* Logo */}
+          <div className="text-center">
+            <div className="inline-flex items-center justify-center w-16 h-16 bg-gradient-to-br from-blue-600 to-indigo-600 rounded-2xl shadow-lg mb-4">
+              <Building2 className="h-8 w-8 text-white" />
+            </div>
+            <h1 className="text-3xl font-bold text-gray-900">İK360</h1>
+            <p className="text-gray-600 mt-2">Ücretsiz hesap oluşturun</p>
           </div>
-          <h1 className="text-3xl font-bold text-gray-900">İK360</h1>
-          <p className="text-gray-600 mt-2">Ücretsiz hesap oluşturun</p>
-        </div>
 
-        {/* Registration Form */}
-        <div className="bg-white rounded-2xl shadow-xl p-8 border border-gray-100">
-          <h2 className="text-xl font-semibold text-gray-900 mb-6 text-center">Hesap Oluştur</h2>
+          {/* Registration Form */}
           <form onSubmit={handleSubmit} className="space-y-6">
             <div className="grid grid-cols-2 gap-4">
               <div className="space-y-2">
@@ -244,11 +244,72 @@ export default function Register() {
             </Button>
           </form>
 
-          <div className="text-center text-sm text-gray-600 mt-6">
+          <div className="text-center text-sm text-gray-600">
             Zaten hesabınız var mı?{" "}
             <Link href="/login" className="text-blue-600 hover:text-blue-700 font-medium">
               Giriş yapın
             </Link>
+          </div>
+        </div>
+      </div>
+
+      {/* Right Side - App Benefits */}
+      <div className="flex-1 bg-gradient-to-br from-indigo-600 via-purple-700 to-blue-800 flex items-center justify-center p-8">
+        <div className="max-w-lg text-white space-y-8">
+          <div className="space-y-4">
+            <h2 className="text-4xl font-bold">İK360 ile</h2>
+            <h3 className="text-3xl font-semibold">Hemen Başlayın</h3>
+            <p className="text-xl text-purple-100">
+              Dakikalar içinde kurum için modern İK sisteminizi kurun ve kullanmaya başlayın.
+            </p>
+          </div>
+
+          <div className="space-y-6">
+            <div className="flex items-center space-x-4">
+              <div className="flex-shrink-0 w-12 h-12 bg-purple-500 rounded-full flex items-center justify-center">
+                <Users className="h-6 w-6" />
+              </div>
+              <div>
+                <h4 className="font-semibold text-lg">Kolay Kurulum</h4>
+                <p className="text-purple-100">5 dakikada kurulum tamamlayın, hemen kullanmaya başlayın</p>
+              </div>
+            </div>
+
+            <div className="flex items-center space-x-4">
+              <div className="flex-shrink-0 w-12 h-12 bg-purple-500 rounded-full flex items-center justify-center">
+                <BarChart3 className="h-6 w-6" />
+              </div>
+              <div>
+                <h4 className="font-semibold text-lg">Güçlü Raporlama</h4>
+                <p className="text-purple-100">Detaylı analizler ve raporlarla karar verme sürecinizi hızlandırın</p>
+              </div>
+            </div>
+
+            <div className="flex items-center space-x-4">
+              <div className="flex-shrink-0 w-12 h-12 bg-purple-500 rounded-full flex items-center justify-center">
+                <Calendar className="h-6 w-6" />
+              </div>
+              <div>
+                <h4 className="font-semibold text-lg">Otomatik Süreçler</h4>
+                <p className="text-purple-100">İzin, bordro ve performans süreçlerini otomatikleştirin</p>
+              </div>
+            </div>
+
+            <div className="flex items-center space-x-4">
+              <div className="flex-shrink-0 w-12 h-12 bg-purple-500 rounded-full flex items-center justify-center">
+                <CreditCard className="h-6 w-6" />
+              </div>
+              <div>
+                <h4 className="font-semibold text-lg">Güvenli & Uyumlu</h4>
+                <p className="text-purple-100">KVKK uyumlu, güvenli altyapı ile verileriniz korunuyor</p>
+              </div>
+            </div>
+          </div>
+
+          <div className="pt-8 border-t border-purple-500/30">
+            <p className="text-purple-100 text-sm">
+              ✨ 14 gün ücretsiz deneme • Kredi kartı gerektirmez • İstediğiniz zaman iptal edebilirsiniz
+            </p>
           </div>
         </div>
       </div>
