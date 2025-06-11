@@ -70,15 +70,17 @@ export default function Dashboard() {
   });
 
   // Stats queries with proper error handling
-  const { data: employeeStats = {
+  const { data: employeeStats } = useQuery({
+    queryKey: ['/api/stats/dashboard'],
+  });
+
+  const stats = (employeeStats as any) || {
     totalEmployees: 0,
     newThisMonth: 0,
     activeLeaves: 0,
     monthlyPayroll: "0",
     avgPerformance: "0"
-  } } = useQuery({
-    queryKey: ['/api/stats/dashboard'],
-  });
+  };
 
   const { data: activities = [] } = useQuery({
     queryKey: ['/api/activities'],
@@ -259,9 +261,9 @@ export default function Dashboard() {
               <Users className="h-4 w-4 text-slate-500" />
             </CardHeader>
             <CardContent>
-              <div className="text-2xl font-bold text-slate-900 dark:text-white">{employeeStats.totalEmployees}</div>
+              <div className="text-2xl font-bold text-slate-900 dark:text-white">{stats.totalEmployees}</div>
               <p className="text-xs text-slate-600 dark:text-slate-400">
-                +{employeeStats.newThisMonth} bu ay
+                +{stats.newThisMonth} bu ay
               </p>
             </CardContent>
           </Card>
@@ -272,7 +274,7 @@ export default function Dashboard() {
               <Calendar className="h-4 w-4 text-slate-500" />
             </CardHeader>
             <CardContent>
-              <div className="text-2xl font-bold text-slate-900 dark:text-white">{employeeStats.activeLeaves}</div>
+              <div className="text-2xl font-bold text-slate-900 dark:text-white">{stats.activeLeaves}</div>
               <p className="text-xs text-slate-600 dark:text-slate-400">
                 Devam eden izinler
               </p>
@@ -285,7 +287,7 @@ export default function Dashboard() {
               <CreditCard className="h-4 w-4 text-slate-500" />
             </CardHeader>
             <CardContent>
-              <div className="text-2xl font-bold text-slate-900 dark:text-white">₺{employeeStats.monthlyPayroll}</div>
+              <div className="text-2xl font-bold text-slate-900 dark:text-white">₺{stats.monthlyPayroll}</div>
               <p className="text-xs text-slate-600 dark:text-slate-400">
                 Bu ay ödemeler
               </p>
@@ -298,7 +300,7 @@ export default function Dashboard() {
               <BarChart3 className="h-4 w-4 text-slate-500" />
             </CardHeader>
             <CardContent>
-              <div className="text-2xl font-bold text-slate-900 dark:text-white">{employeeStats.avgPerformance}/5</div>
+              <div className="text-2xl font-bold text-slate-900 dark:text-white">{stats.avgPerformance}/5</div>
               <p className="text-xs text-slate-600 dark:text-slate-400">
                 Genel performans skoru
               </p>
@@ -315,7 +317,7 @@ export default function Dashboard() {
             </CardHeader>
             <CardContent>
               <div className="space-y-4">
-                {Array.isArray(activities) && activities.slice(0, 5).map((activity: any, index: number) => (
+                {Array.isArray(activities) && (activities as any[]).slice(0, 5).map((activity: any, index: number) => (
                   <div key={index} className="flex items-center space-x-4 p-3 rounded-lg bg-slate-50 dark:bg-slate-750">
                     <div className="w-2 h-2 bg-blue-500 rounded-full"></div>
                     <div className="flex-1">
@@ -328,7 +330,7 @@ export default function Dashboard() {
                     </div>
                   </div>
                 ))}
-                {(!activities || activities.length === 0) && (
+                {(!activities || (activities as any[]).length === 0) && (
                   <div className="text-center py-8">
                     <p className="text-slate-600 dark:text-slate-400">Henüz aktivite bulunmuyor</p>
                   </div>

@@ -2,13 +2,21 @@ export type UserRole = "owner" | "admin" | "hr_manager" | "hr_specialist" | "dep
 
 export interface Permission {
   canViewDashboard: boolean;
+  canViewEmployees: boolean;
+  canEditEmployees: boolean;
+  canDeleteEmployees: boolean;
+  canViewPerformance: boolean;
+  canEditPerformance: boolean;
+  canViewPayroll: boolean;
+  canEditPayroll: boolean;
+  canViewReports: boolean;
+  canManageTeam: boolean;
+  canViewAuditLogs: boolean;
   canManageEmployees: boolean;
   canManagePayroll: boolean;
   canManageLeaves: boolean;
   canManagePerformance: boolean;
-  canManageTeam: boolean;
   canManageCompany: boolean;
-  canViewReports: boolean;
   canManageDepartments: boolean;
   canViewAllData: boolean;
   canManageOwnProfile: boolean;
@@ -18,13 +26,21 @@ export interface Permission {
 export const rolePermissions: Record<UserRole, Permission> = {
   owner: {
     canViewDashboard: true,
+    canViewEmployees: true,
+    canEditEmployees: true,
+    canDeleteEmployees: true,
+    canViewPerformance: true,
+    canEditPerformance: true,
+    canViewPayroll: true,
+    canEditPayroll: true,
+    canViewReports: true,
+    canManageTeam: true,
+    canViewAuditLogs: true,
     canManageEmployees: true,
     canManagePayroll: true,
     canManageLeaves: true,
     canManagePerformance: true,
-    canManageTeam: true,
     canManageCompany: true,
-    canViewReports: true,
     canManageDepartments: true,
     canViewAllData: true,
     canManageOwnProfile: true,
@@ -32,13 +48,21 @@ export const rolePermissions: Record<UserRole, Permission> = {
   },
   admin: {
     canViewDashboard: true,
+    canViewEmployees: true,
+    canEditEmployees: true,
+    canDeleteEmployees: true,
+    canViewPerformance: true,
+    canEditPerformance: true,
+    canViewPayroll: true,
+    canEditPayroll: true,
+    canViewReports: true,
+    canManageTeam: true,
+    canViewAuditLogs: true,
     canManageEmployees: true,
     canManagePayroll: true,
     canManageLeaves: true,
     canManagePerformance: true,
-    canManageTeam: true,
     canManageCompany: true,
-    canViewReports: true,
     canManageDepartments: true,
     canViewAllData: true,
     canManageOwnProfile: true,
@@ -46,13 +70,21 @@ export const rolePermissions: Record<UserRole, Permission> = {
   },
   hr_manager: {
     canViewDashboard: true,
+    canViewEmployees: true,
+    canEditEmployees: true,
+    canDeleteEmployees: true,
+    canViewPerformance: true,
+    canEditPerformance: true,
+    canViewPayroll: true,
+    canEditPayroll: true,
+    canViewReports: true,
+    canManageTeam: true,
+    canViewAuditLogs: true,
     canManageEmployees: true,
     canManagePayroll: true,
     canManageLeaves: true,
     canManagePerformance: true,
-    canManageTeam: true,
     canManageCompany: false,
-    canViewReports: true,
     canManageDepartments: true,
     canViewAllData: true,
     canManageOwnProfile: true,
@@ -60,13 +92,21 @@ export const rolePermissions: Record<UserRole, Permission> = {
   },
   hr_specialist: {
     canViewDashboard: true,
+    canViewEmployees: true,
+    canEditEmployees: true,
+    canDeleteEmployees: false,
+    canViewPerformance: true,
+    canEditPerformance: true,
+    canViewPayroll: false,
+    canEditPayroll: false,
+    canViewReports: true,
+    canManageTeam: false,
+    canViewAuditLogs: false,
     canManageEmployees: true,
     canManagePayroll: false,
     canManageLeaves: true,
     canManagePerformance: true,
-    canManageTeam: false,
     canManageCompany: false,
-    canViewReports: true,
     canManageDepartments: false,
     canViewAllData: true,
     canManageOwnProfile: true,
@@ -74,13 +114,21 @@ export const rolePermissions: Record<UserRole, Permission> = {
   },
   department_manager: {
     canViewDashboard: true,
+    canViewEmployees: true,
+    canEditEmployees: false,
+    canDeleteEmployees: false,
+    canViewPerformance: true,
+    canEditPerformance: true,
+    canViewPayroll: false,
+    canEditPayroll: false,
+    canViewReports: true,
+    canManageTeam: false,
+    canViewAuditLogs: false,
     canManageEmployees: false,
     canManagePayroll: false,
     canManageLeaves: true,
     canManagePerformance: true,
-    canManageTeam: false,
     canManageCompany: false,
-    canViewReports: true,
     canManageDepartments: false,
     canViewAllData: false,
     canManageOwnProfile: true,
@@ -88,13 +136,21 @@ export const rolePermissions: Record<UserRole, Permission> = {
   },
   employee: {
     canViewDashboard: false,
+    canViewEmployees: false,
+    canEditEmployees: false,
+    canDeleteEmployees: false,
+    canViewPerformance: false,
+    canEditPerformance: false,
+    canViewPayroll: false,
+    canEditPayroll: false,
+    canViewReports: false,
+    canManageTeam: false,
+    canViewAuditLogs: false,
     canManageEmployees: false,
     canManagePayroll: false,
     canManageLeaves: false,
     canManagePerformance: false,
-    canManageTeam: false,
     canManageCompany: false,
-    canViewReports: false,
     canManageDepartments: false,
     canViewAllData: false,
     canManageOwnProfile: true,
