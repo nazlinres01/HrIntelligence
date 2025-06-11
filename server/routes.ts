@@ -1379,34 +1379,23 @@ export async function registerRoutes(app: Express): Promise<Server> {
   });
 
   // Team members for department managers
-  app.get('/api/team/members', isAuthenticated, async (req, res) => {
+  app.get('/api/team/members', async (req, res) => {
     try {
-      res.json([
-        {
-          name: "Ahmet Yılmaz",
-          position: "Senior Developer",
-          performance: 92,
-          status: "active"
-        },
-        {
-          name: "Zeynep Demir",
-          position: "UX Designer",
-          performance: 88,
-          status: "active"
-        },
-        {
-          name: "Murat Kaya",
-          position: "Frontend Developer",
-          performance: 85,
-          status: "leave"
-        },
-        {
-          name: "Selin Öz",
-          position: "QA Engineer",
-          performance: 90,
-          status: "active"
-        }
-      ]);
+      const userId = (req.session as any)?.userId;
+      if (!userId) {
+        return res.status(401).json({ message: "Unauthorized" });
+      }
+
+      const user = await storage.getUser(userId);
+      if (!user) {
+        return res.status(404).json({ message: "User not found" });
+      }
+
+      if (!user.companyId) {
+        return res.status(400).json({ message: "Company ID not found" });
+      }
+      const members = await storage.getTeamMembers(user.companyId);
+      res.json(members);
     } catch (error) {
       console.error('Error fetching team members:', error);
       res.status(500).json({ message: 'Failed to fetch team members' });
@@ -1440,20 +1429,20 @@ export async function registerRoutes(app: Express): Promise<Server> {
   });
 
   // Audit log endpoints for patron oversight
-  app.get('/api/audit-logs', isAuthenticated, async (req: any, res) => {
+  app.get('/api/audit-logs', async (req, res) => {
     try {
-      const userId = req.user?.claims?.sub;
+      const userId = (req.session as any)?.userId;
+      if (!userId) {
+        return res.status(401).json({ message: "Unauthorized" });
+      }
+
       const user = await storage.getUser(userId);
-      
-      // Only allow owner/patron to view all audit logs
-      if (user?.role !== 'Patron') {
-        return res.status(403).json({ message: 'Unauthorized - Admin access required' });
+      if (!user || (user.role !== 'admin' && user.role !== 'owner')) {
+        return res.status(403).json({ message: "Unauthorized - Admin access required" });
       }
       
       const limit = parseInt(req.query.limit as string) || 100;
-      const companyId = req.query.companyId ? parseInt(req.query.companyId as string) : undefined;
-      
-      const logs = await storage.getAuditLogs(limit, companyId);
+      const logs = await storage.getAuditLogs(limit, user.companyId);
       res.json(logs);
     } catch (error) {
       console.error('Error fetching audit logs:', error);
