@@ -8,6 +8,7 @@ import { useLanguage } from "@/hooks/use-language";
 import { useAuth } from "@/hooks/useAuth";
 import { NotificationBell } from "@/components/notifications/notification-bell";
 import { Link } from "wouter";
+import { useToast } from "@/hooks/use-toast";
 
 interface HeaderProps {
   title: string;
@@ -18,7 +19,36 @@ export function Header({ title, subtitle }: HeaderProps) {
   const [searchQuery, setSearchQuery] = useState("");
   const [isDarkMode, setIsDarkMode] = useState(false);
   const { language, setLanguage, t } = useLanguage();
-  const { user, logout } = useAuth();
+  const { user } = useAuth();
+  const { toast } = useToast();
+
+  const handleLogout = async () => {
+    try {
+      const response = await fetch("/api/logout", {
+        method: "POST",
+        credentials: "include",
+        headers: {
+          "Content-Type": "application/json",
+        },
+      });
+      
+      if (response.ok) {
+        toast({
+          title: "Çıkış yapıldı",
+          description: "Güvenle çıkış yapıldı",
+        });
+        window.location.href = "/";
+      } else {
+        throw new Error("Logout failed");
+      }
+    } catch (error) {
+      toast({
+        title: "Çıkış hatası",
+        description: "Çıkış sırasında bir hata oluştu",
+        variant: "destructive",
+      });
+    }
+  };
 
   const toggleDarkMode = () => {
     setIsDarkMode(!isDarkMode);
@@ -90,7 +120,7 @@ export function Header({ title, subtitle }: HeaderProps) {
             <Button
               variant="outline"
               size="sm"
-              onClick={logout}
+              onClick={handleLogout}
               className="border-slate-300 dark:border-slate-600 text-slate-700 dark:text-slate-300 hover:bg-slate-50 dark:hover:bg-slate-750"
             >
               Çıkış Yap

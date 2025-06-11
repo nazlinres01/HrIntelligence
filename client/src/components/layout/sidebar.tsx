@@ -5,6 +5,7 @@ import { Button } from "@/components/ui/button";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Separator } from "@/components/ui/separator";
 import { getUserPermissions, roleLabels, type UserRole } from "@/lib/permissions";
+import { useToast } from "@/hooks/use-toast";
 
 import { 
   Building2, 
@@ -167,8 +168,37 @@ interface SidebarProps {
 }
 
 export default function Sidebar({ className }: SidebarProps) {
-  const { user, logout } = useAuth();
+  const { user } = useAuth();
   const [location] = useLocation();
+  const { toast } = useToast();
+
+  const handleLogout = async () => {
+    try {
+      const response = await fetch("/api/logout", {
+        method: "POST",
+        credentials: "include",
+        headers: {
+          "Content-Type": "application/json",
+        },
+      });
+      
+      if (response.ok) {
+        toast({
+          title: "Çıkış yapıldı",
+          description: "Güvenle çıkış yapıldı",
+        });
+        window.location.href = "/";
+      } else {
+        throw new Error("Logout failed");
+      }
+    } catch (error) {
+      toast({
+        title: "Çıkış hatası",
+        description: "Çıkış sırasında bir hata oluştu",
+        variant: "destructive",
+      });
+    }
+  };
 
   if (!user) return null;
 
@@ -267,7 +297,7 @@ export default function Sidebar({ className }: SidebarProps) {
         <Button
           variant="ghost"
           className="w-full justify-start px-3 py-2.5 h-auto text-sm font-medium text-slate-700 dark:text-slate-300 hover:bg-slate-50 dark:hover:bg-slate-750 hover:text-slate-900 dark:hover:text-white"
-          onClick={logout}
+          onClick={handleLogout}
         >
           <LogOut className="mr-3 h-5 w-5 flex-shrink-0" />
           Çıkış Yap
