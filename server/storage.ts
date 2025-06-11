@@ -579,6 +579,252 @@ export class DatabaseStorage implements IStorage {
       ));
     return (result.rowCount || 0) > 0;
   }
+
+  // Audit log operations
+  async createAuditLog(logData: InsertAuditLog): Promise<AuditLog> {
+    const [log] = await db.insert(auditLogs).values(logData).returning();
+    return log;
+  }
+
+  async getAuditLogs(limit: number = 100, companyId?: number): Promise<AuditLog[]> {
+    let query = db.select().from(auditLogs).orderBy(desc(auditLogs.createdAt)).limit(limit);
+    
+    if (companyId) {
+      query = query.where(eq(auditLogs.companyId, companyId)) as any;
+    }
+    
+    return await query;
+  }
+
+  async getUserAuditLogs(userId: string, limit: number = 50): Promise<AuditLog[]> {
+    return await db.select().from(auditLogs)
+      .where(eq(auditLogs.userId, userId))
+      .orderBy(desc(auditLogs.createdAt))
+      .limit(limit);
+  }
+
+  // Time entry operations
+  async createTimeEntry(entryData: InsertTimeEntry): Promise<TimeEntry> {
+    const [entry] = await db.insert(timeEntries).values(entryData).returning();
+    
+    // Create audit log
+    await this.createAuditLog({
+      userId: entryData.userId,
+      action: 'create_time_entry',
+      resource: 'time_entry',
+      resourceId: entry.id.toString(),
+      details: JSON.stringify({ date: entryData.date, hours: entryData.startTime + '-' + entryData.endTime })
+    });
+    
+    return entry;
+  }
+
+  async getUserTimeEntries(userId: string, limit: number = 30): Promise<TimeEntry[]> {
+    return await db.select().from(timeEntries)
+      .where(eq(timeEntries.userId, userId))
+      .orderBy(desc(timeEntries.date))
+      .limit(limit);
+  }
+
+  async getPendingTimeEntries(limit: number = 50): Promise<TimeEntry[]> {
+    return await db.select().from(timeEntries)
+      .where(eq(timeEntries.status, 'pending'))
+      .orderBy(desc(timeEntries.createdAt))
+      .limit(limit);
+  }
+
+  async approveTimeEntry(id: number, approvedBy: string): Promise<boolean> {
+    try {
+      const result = await db.update(timeEntries)
+        .set({ 
+          status: 'approved', 
+          approvedBy, 
+          approvedAt: new Date() 
+        })
+        .where(eq(timeEntries.id, id))
+        .returning();
+
+      if (result.length > 0) {
+        await this.createAuditLog({
+          userId: approvedBy,
+          action: 'approve_time_entry',
+          resource: 'time_entry',
+          resourceId: id.toString(),
+          details: JSON.stringify({ originalUserId: result[0].userId })
+        });
+        return true;
+      }
+      return false;
+    } catch (error) {
+      console.error("Error approving time entry:", error);
+      return false;
+    }
+  }
+
+  async rejectTimeEntry(id: number, approvedBy: string): Promise<boolean> {
+    try {
+      const result = await db.update(timeEntries)
+        .set({ 
+          status: 'rejected', 
+          approvedBy, 
+          approvedAt: new Date() 
+        })
+        .where(eq(timeEntries.id, id))
+        .returning();
+
+      if (result.length > 0) {
+        await this.createAuditLog({
+          userId: approvedBy,
+          action: 'reject_time_entry',
+          resource: 'time_entry',
+          resourceId: id.toString(),
+          details: JSON.stringify({ originalUserId: result[0].userId })
+        });
+        return true;
+      }
+      return false;
+    } catch (error) {
+      console.error("Error rejecting time entry:", error);
+      return false;
+    }
+  }
+
+  // Expense report operations
+  async createExpenseReport(reportData: InsertExpenseReport): Promise<ExpenseReport> {
+    const [report] = await db.insert(expenseReports).values(reportData).returning();
+    
+    // Create audit log
+    await this.createAuditLog({
+      userId: reportData.userId,
+      action: 'create_expense_report',
+      resource: 'expense_report',
+      resourceId: report.id.toString(),
+      details: JSON.stringify({ amount: reportData.amount, category: reportData.category })
+    });
+    
+    return report;
+  }
+
+  async getUserExpenseReports(userId: string, limit: number = 30): Promise<ExpenseReport[]> {
+    return await db.select().from(expenseReports)
+      .where(eq(expenseReports.userId, userId))
+      .orderBy(desc(expenseReports.createdAt))
+      .limit(limit);
+  }
+
+  async getPendingExpenseReports(limit: number = 50): Promise<ExpenseReport[]> {
+    return await db.select().from(expenseReports)
+      .where(eq(expenseReports.status, 'pending'))
+      .orderBy(desc(expenseReports.createdAt))
+      .limit(limit);
+  }
+
+  async approveExpenseReport(id: number, approvedBy: string): Promise<boolean> {
+    try {
+      const result = await db.update(expenseReports)
+        .set({ 
+          status: 'approved', 
+          approvedBy, 
+          approvedAt: new Date() 
+        })
+        .where(eq(expenseReports.id, id))
+        .returning();
+
+      if (result.length > 0) {
+        await this.createAuditLog({
+          userId: approvedBy,
+          action: 'approve_expense_report',
+          resource: 'expense_report',
+          resourceId: id.toString(),
+          details: JSON.stringify({ originalUserId: result[0].userId, amount: result[0].amount })
+        });
+        return true;
+      }
+      return false;
+    } catch (error) {
+      console.error("Error approving expense report:", error);
+      return false;
+    }
+  }
+
+  async rejectExpenseReport(id: number, approvedBy: string): Promise<boolean> {
+    try {
+      const result = await db.update(expenseReports)
+        .set({ 
+          status: 'rejected', 
+          approvedBy, 
+          approvedAt: new Date() 
+        })
+        .where(eq(expenseReports.id, id))
+        .returning();
+
+      if (result.length > 0) {
+        await this.createAuditLog({
+          userId: approvedBy,
+          action: 'reject_expense_report',
+          resource: 'expense_report',
+          resourceId: id.toString(),
+          details: JSON.stringify({ originalUserId: result[0].userId, amount: result[0].amount })
+        });
+        return true;
+      }
+      return false;
+    } catch (error) {
+      console.error("Error rejecting expense report:", error);
+      return false;
+    }
+  }
+
+  // Message operations
+  async createMessage(messageData: InsertMessage): Promise<Message> {
+    const [message] = await db.insert(messages).values(messageData).returning();
+    
+    // Create audit log
+    await this.createAuditLog({
+      userId: messageData.fromUserId,
+      action: 'send_message',
+      resource: 'message',
+      resourceId: message.id.toString(),
+      details: JSON.stringify({ toUserId: messageData.toUserId, subject: messageData.subject })
+    });
+    
+    return message;
+  }
+
+  async getUserMessages(userId: string, limit: number = 50): Promise<Message[]> {
+    return await db.select().from(messages)
+      .where(eq(messages.toUserId, userId))
+      .orderBy(desc(messages.createdAt))
+      .limit(limit);
+  }
+
+  async markMessageAsRead(id: number, userId: string): Promise<boolean> {
+    try {
+      const result = await db.update(messages)
+        .set({ 
+          isRead: true, 
+          readAt: new Date() 
+        })
+        .where(and(eq(messages.id, id), eq(messages.toUserId, userId)))
+        .returning();
+      return result.length > 0;
+    } catch (error) {
+      console.error("Error marking message as read:", error);
+      return false;
+    }
+  }
+
+  async deleteMessage(id: number, userId: string): Promise<boolean> {
+    try {
+      const result = await db.delete(messages)
+        .where(and(eq(messages.id, id), eq(messages.toUserId, userId)))
+        .returning();
+      return result.length > 0;
+    } catch (error) {
+      console.error("Error deleting message:", error);
+      return false;
+    }
+  }
 }
 
 export const storage = new DatabaseStorage();

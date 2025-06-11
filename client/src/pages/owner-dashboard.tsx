@@ -17,11 +17,16 @@ import {
 } from "lucide-react";
 
 export default function OwnerDashboard() {
-  const { data: stats } = useQuery({
-    queryKey: ['/api/stats/owner'],
+  const { data: stats = {
+    totalEmployees: 0,
+    activeLeaves: 0,
+    monthlyPayroll: '₺0K',
+    avgPerformance: '0.0'
+  } } = useQuery({
+    queryKey: ['/api/stats/employees'],
   });
 
-  const { data: recentActivities } = useQuery({
+  const { data: recentActivities = [] } = useQuery({
     queryKey: ['/api/activities'],
   });
 
@@ -58,7 +63,7 @@ export default function OwnerDashboard() {
             <Users className="h-4 w-4 text-muted-foreground" />
           </CardHeader>
           <CardContent>
-            <div className="text-2xl font-bold">{stats?.totalEmployees || 0}</div>
+            <div className="text-2xl font-bold">{stats.totalEmployees}</div>
             <p className="text-xs text-muted-foreground">
               +2 bu ay
             </p>

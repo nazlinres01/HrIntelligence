@@ -1439,6 +1439,252 @@ export async function registerRoutes(app: Express): Promise<Server> {
     }
   });
 
+  // Audit log endpoints for patron oversight
+  app.get('/api/audit-logs', isAuthenticated, async (req: any, res) => {
+    try {
+      const userId = req.user?.claims?.sub;
+      const user = await storage.getUser(userId);
+      
+      // Only allow owner/patron to view all audit logs
+      if (user?.role !== 'Patron') {
+        return res.status(403).json({ message: 'Unauthorized - Admin access required' });
+      }
+      
+      const limit = parseInt(req.query.limit as string) || 100;
+      const companyId = req.query.companyId ? parseInt(req.query.companyId as string) : undefined;
+      
+      const logs = await storage.getAuditLogs(limit, companyId);
+      res.json(logs);
+    } catch (error) {
+      console.error('Error fetching audit logs:', error);
+      res.status(500).json({ message: 'Failed to fetch audit logs' });
+    }
+  });
+
+  app.get('/api/audit-logs/user/:userId', isAuthenticated, async (req: any, res) => {
+    try {
+      const currentUserId = req.user?.claims?.sub;
+      const targetUserId = req.params.userId;
+      const user = await storage.getUser(currentUserId);
+      
+      // Allow users to view their own logs, or admin to view any user's logs
+      if (currentUserId !== targetUserId && user?.role !== 'Patron') {
+        return res.status(403).json({ message: 'Unauthorized' });
+      }
+      
+      const limit = parseInt(req.query.limit as string) || 50;
+      const logs = await storage.getUserAuditLogs(targetUserId, limit);
+      res.json(logs);
+    } catch (error) {
+      console.error('Error fetching user audit logs:', error);
+      res.status(500).json({ message: 'Failed to fetch user audit logs' });
+    }
+  });
+
+  // Time entry endpoints
+  app.post('/api/time-entries', isAuthenticated, async (req: any, res) => {
+    try {
+      const userId = req.user?.claims?.sub;
+      const timeEntryData = { ...req.body, userId };
+      
+      const timeEntry = await storage.createTimeEntry(timeEntryData);
+      
+      // Create notification for manager
+      await storage.createNotification({
+        userId: 'hr-manager', // In real app, get actual manager ID
+        title: 'Yeni Mesai Kaydı',
+        message: `${req.user?.email} tarafından mesai kaydı eklendi`,
+        type: 'info'
+      });
+      
+      res.status(201).json(timeEntry);
+    } catch (error) {
+      console.error('Error creating time entry:', error);
+      res.status(500).json({ message: 'Failed to create time entry' });
+    }
+  });
+
+  app.get('/api/time-entries/pending', isAuthenticated, async (req: any, res) => {
+    try {
+      const userId = req.user?.claims?.sub;
+      const user = await storage.getUser(userId);
+      
+      // Only HR managers and above can view pending entries
+      if (!['Patron', 'İK Müdürü', 'Departman Müdürü'].includes(user?.role || '')) {
+        return res.status(403).json({ message: 'Unauthorized' });
+      }
+      
+      const limit = parseInt(req.query.limit as string) || 50;
+      const entries = await storage.getPendingTimeEntries(limit);
+      res.json(entries);
+    } catch (error) {
+      console.error('Error fetching pending time entries:', error);
+      res.status(500).json({ message: 'Failed to fetch pending time entries' });
+    }
+  });
+
+  app.patch('/api/time-entries/:id/approve', isAuthenticated, async (req: any, res) => {
+    try {
+      const userId = req.user?.claims?.sub;
+      const user = await storage.getUser(userId);
+      const entryId = parseInt(req.params.id);
+      
+      if (!['Patron', 'İK Müdürü', 'Departman Müdürü'].includes(user?.role || '')) {
+        return res.status(403).json({ message: 'Unauthorized' });
+      }
+      
+      const success = await storage.approveTimeEntry(entryId, userId);
+      if (success) {
+        res.json({ message: 'Time entry approved successfully' });
+      } else {
+        res.status(404).json({ message: 'Time entry not found' });
+      }
+    } catch (error) {
+      console.error('Error approving time entry:', error);
+      res.status(500).json({ message: 'Failed to approve time entry' });
+    }
+  });
+
+  // Expense report endpoints
+  app.post('/api/expenses', isAuthenticated, async (req: any, res) => {
+    try {
+      const userId = req.user?.claims?.sub;
+      const expenseData = { ...req.body, userId };
+      
+      const expense = await storage.createExpenseReport(expenseData);
+      
+      // Create notification for manager
+      await storage.createNotification({
+        userId: 'hr-manager',
+        title: 'Yeni Gider Raporu',
+        message: `${req.user?.email} tarafından ${expense.amount}₺ tutarında gider raporu eklendi`,
+        type: 'info'
+      });
+      
+      res.status(201).json(expense);
+    } catch (error) {
+      console.error('Error creating expense report:', error);
+      res.status(500).json({ message: 'Failed to create expense report' });
+    }
+  });
+
+  app.get('/api/expenses/pending', isAuthenticated, async (req: any, res) => {
+    try {
+      const userId = req.user?.claims?.sub;
+      const user = await storage.getUser(userId);
+      
+      if (!['Patron', 'İK Müdürü', 'Departman Müdürü'].includes(user?.role || '')) {
+        return res.status(403).json({ message: 'Unauthorized' });
+      }
+      
+      const limit = parseInt(req.query.limit as string) || 50;
+      const expenses = await storage.getPendingExpenseReports(limit);
+      res.json(expenses);
+    } catch (error) {
+      console.error('Error fetching pending expenses:', error);
+      res.status(500).json({ message: 'Failed to fetch pending expenses' });
+    }
+  });
+
+  app.patch('/api/expenses/:id/approve', isAuthenticated, async (req: any, res) => {
+    try {
+      const userId = req.user?.claims?.sub;
+      const user = await storage.getUser(userId);
+      const expenseId = parseInt(req.params.id);
+      
+      if (!['Patron', 'İK Müdürü', 'Departman Müdürü'].includes(user?.role || '')) {
+        return res.status(403).json({ message: 'Unauthorized' });
+      }
+      
+      const success = await storage.approveExpenseReport(expenseId, userId);
+      if (success) {
+        res.json({ message: 'Expense report approved successfully' });
+      } else {
+        res.status(404).json({ message: 'Expense report not found' });
+      }
+    } catch (error) {
+      console.error('Error approving expense report:', error);
+      res.status(500).json({ message: 'Failed to approve expense report' });
+    }
+  });
+
+  // Message endpoints
+  app.post('/api/messages', isAuthenticated, async (req: any, res) => {
+    try {
+      const fromUserId = req.user?.claims?.sub;
+      const messageData = { ...req.body, fromUserId };
+      
+      const message = await storage.createMessage(messageData);
+      
+      // Create notification for recipient
+      await storage.createNotification({
+        userId: messageData.toUserId,
+        title: 'Yeni Mesaj',
+        message: `${req.user?.email} tarafından mesaj: ${messageData.subject}`,
+        type: 'info'
+      });
+      
+      res.status(201).json(message);
+    } catch (error) {
+      console.error('Error creating message:', error);
+      res.status(500).json({ message: 'Failed to create message' });
+    }
+  });
+
+  app.get('/api/messages', isAuthenticated, async (req: any, res) => {
+    try {
+      const userId = req.user?.claims?.sub;
+      const limit = parseInt(req.query.limit as string) || 50;
+      
+      const messages = await storage.getUserMessages(userId, limit);
+      res.json(messages);
+    } catch (error) {
+      console.error('Error fetching messages:', error);
+      res.status(500).json({ message: 'Failed to fetch messages' });
+    }
+  });
+
+  // Enhanced leave request with notifications
+  app.post('/api/leaves', isAuthenticated, async (req: any, res) => {
+    try {
+      const userId = req.user?.claims?.sub;
+      const user = await storage.getUser(userId);
+      const leaveData = { 
+        ...req.body, 
+        employeeId: parseInt(userId) || 1, // Fallback for demo
+        status: 'pending' 
+      };
+      
+      const leave = await storage.createLeave(leaveData);
+      
+      // Create audit log
+      await storage.createAuditLog({
+        userId,
+        action: 'create_leave_request',
+        resource: 'leave',
+        resourceId: leave.id.toString(),
+        details: JSON.stringify({ 
+          type: leaveData.type, 
+          startDate: leaveData.startDate,
+          endDate: leaveData.endDate 
+        })
+      });
+      
+      // Notify HR and managers
+      await storage.createNotification({
+        userId: 'hr-manager',
+        title: 'Yeni İzin Talebi',
+        message: `${user?.email} tarafından ${leaveData.type} talebi oluşturuldu`,
+        type: 'info'
+      });
+      
+      res.status(201).json(leave);
+    } catch (error) {
+      console.error('Error creating leave request:', error);
+      res.status(500).json({ message: 'Failed to create leave request' });
+    }
+  });
+
   const httpServer = createServer(app);
   return httpServer;
 }
