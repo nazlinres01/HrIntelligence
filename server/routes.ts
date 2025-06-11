@@ -1611,24 +1611,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
     }
   });
 
-  app.get('/api/time-entries/pending', isAuthenticated, async (req: any, res) => {
-    try {
-      const userId = req.user?.claims?.sub;
-      const user = await storage.getUser(userId);
-      
-      // Only HR managers and above can view pending entries
-      if (!['Patron', 'İK Müdürü', 'Departman Müdürü'].includes(user?.role || '')) {
-        return res.status(403).json({ message: 'Unauthorized' });
-      }
-      
-      const limit = parseInt(req.query.limit as string) || 50;
-      const entries = await storage.getPendingTimeEntries(limit);
-      res.json(entries);
-    } catch (error) {
-      console.error('Error fetching pending time entries:', error);
-      res.status(500).json({ message: 'Failed to fetch pending time entries' });
-    }
-  });
+
 
   app.patch('/api/time-entries/:id/approve', isAuthenticated, async (req: any, res) => {
     try {
@@ -1795,6 +1778,16 @@ export async function registerRoutes(app: Express): Promise<Server> {
   // Admin dashboard - pending time entries
   app.get('/api/time-entries/pending', async (req, res) => {
     try {
+      const userId = (req.session as any)?.userId;
+      if (!userId) {
+        return res.status(401).json({ message: "Unauthorized" });
+      }
+
+      const user = await storage.getUser(userId);
+      if (!user || !['admin', 'owner', 'hr_manager', 'department_manager'].includes(user.role || '')) {
+        return res.status(403).json({ message: "Unauthorized" });
+      }
+
       const pendingEntries = await storage.getPendingTimeEntries();
       res.json(pendingEntries);
     } catch (error) {
