@@ -129,14 +129,18 @@ export async function registerRoutes(app: Express): Promise<Server> {
   app.post('/api/login', async (req, res) => {
     try {
       const { email, password } = req.body;
+      console.log("Login attempt - Email:", email, "Password:", password);
       
       const user = await storage.getUserByEmail(email);
+      console.log("User found:", user ? `ID: ${user.id}, Email: ${user.email}, Password: ${user.password}` : "No user found");
+      
       if (!user) {
         return res.status(401).json({ message: "E-posta veya şifre hatalı" });
       }
 
       // In production, compare hashed password
       if (user.password !== password) {
+        console.log("Password mismatch - DB:", user.password, "Input:", password);
         return res.status(401).json({ message: "E-posta veya şifre hatalı" });
       }
 
