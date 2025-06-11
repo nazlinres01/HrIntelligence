@@ -455,7 +455,7 @@ export default function Dashboard() {
               </CardHeader>
               <CardContent>
                 <div className="space-y-4">
-                  {activities?.slice(0, 6).map((activity: any, index: number) => (
+                  {safeActivities.slice(0, 6).map((activity: any, index: number) => (
                     <div key={index} className="flex items-start space-x-3 text-sm">
                       <div className="mt-1">
                         <div className="w-2 h-2 bg-slate-400 rounded-full"></div>
