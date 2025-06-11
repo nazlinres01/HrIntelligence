@@ -13,7 +13,8 @@ import {
   Award,
   Globe,
   Zap,
-  Building2
+  Building2,
+  Clock
 } from "lucide-react";
 
 export default function Landing() {
@@ -81,113 +82,198 @@ export default function Landing() {
               </div>
             </div>
             
-            {/* Hero Visual - HR Process Illustration */}
-            <div className="relative">
-              {/* Main Visual Container */}
-              <div className="bg-white dark:bg-gray-800 rounded-2xl shadow-2xl border border-gray-200 dark:border-gray-700 p-8 transform hover:scale-105 transition-transform duration-500">
+            {/* Hero Visual - Modern HR Workspace */}
+            <div className="relative group">
+              {/* Main Visual Container - Microsoft Fluent Design */}
+              <div className="bg-gradient-to-br from-white to-gray-50 dark:from-gray-800 dark:to-gray-900 rounded-3xl shadow-2xl border border-gray-200/60 dark:border-gray-700/60 overflow-hidden backdrop-blur-sm transform hover:scale-105 transition-all duration-700 hover:shadow-3xl">
                 
-                {/* HR Process Flow */}
-                <div className="space-y-8">
-                  {/* Header */}
-                  <div className="text-center">
-                    <div className="inline-flex items-center justify-center w-16 h-16 bg-blue-100 dark:bg-blue-900/30 rounded-2xl mb-4">
-                      <Users className="h-8 w-8 text-blue-600 dark:text-blue-400" />
+                {/* Professional HR Workspace Illustration */}
+                <div className="relative h-96 bg-gradient-to-br from-blue-50 via-indigo-50 to-purple-50 dark:from-blue-950/30 dark:via-indigo-950/30 dark:to-purple-950/30 overflow-hidden">
+                  
+                  {/* Modern Office Background */}
+                  <div className="absolute inset-0">
+                    <svg className="w-full h-full" viewBox="0 0 400 300" fill="none">
+                      {/* Office Interior */}
+                      <rect width="400" height="300" fill="url(#office-gradient)"/>
+                      
+                      {/* Windows with City View */}
+                      <rect x="20" y="40" width="80" height="120" rx="8" fill="#E8F4FD" stroke="#93C5FD" strokeWidth="2"/>
+                      <rect x="120" y="40" width="80" height="120" rx="8" fill="#E8F4FD" stroke="#93C5FD" strokeWidth="2"/>
+                      <rect x="220" y="40" width="80" height="120" rx="8" fill="#E8F4FD" stroke="#93C5FD" strokeWidth="2"/>
+                      
+                      {/* City Skyline in Windows */}
+                      <g opacity="0.6">
+                        <rect x="30" y="80" width="8" height="60" fill="#3B82F6"/>
+                        <rect x="45" y="70" width="12" height="70" fill="#1E40AF"/>
+                        <rect x="65" y="90" width="10" height="50" fill="#2563EB"/>
+                        <rect x="130" y="75" width="15" height="65" fill="#1D4ED8"/>
+                        <rect x="155" y="85" width="8" height="55" fill="#3B82F6"/>
+                        <rect x="170" y="70" width="20" height="70" fill="#1E40AF"/>
+                      </g>
+                      
+                      {/* Modern Desk */}
+                      <ellipse cx="200" cy="240" rx="140" ry="40" fill="#F8FAFC" stroke="#CBD5E1" strokeWidth="2"/>
+                      
+                      {/* Laptop */}
+                      <rect x="160" y="200" width="80" height="50" rx="4" fill="#1F2937"/>
+                      <rect x="165" y="205" width="70" height="40" rx="2" fill="#3B82F6"/>
+                      <circle cx="200" cy="225" r="15" fill="#10B981" opacity="0.8"/>
+                      
+                      {/* Documents & Reports */}
+                      <rect x="270" y="210" width="40" height="30" rx="2" fill="white" stroke="#E5E7EB"/>
+                      <rect x="275" y="215" width="30" height="2" fill="#9CA3AF"/>
+                      <rect x="275" y="220" width="25" height="2" fill="#9CA3AF"/>
+                      <rect x="275" y="225" width="20" height="2" fill="#9CA3AF"/>
+                      
+                      {/* Coffee Cup */}
+                      <ellipse cx="130" cy="220" rx="12" ry="8" fill="#8B5CF6"/>
+                      <rect x="125" y="212" width="10" height="16" rx="2" fill="#A78BFA"/>
+                      
+                      {/* Plant */}
+                      <ellipse cx="320" cy="230" rx="15" ry="10" fill="#34D399"/>
+                      <rect x="315" y="225" width="10" height="15" rx="1" fill="#059669"/>
+                      
+                      <defs>
+                        <linearGradient id="office-gradient" x1="0%" y1="0%" x2="100%" y2="100%">
+                          <stop offset="0%" stopColor="#EFF6FF"/>
+                          <stop offset="50%" stopColor="#DBEAFE"/>
+                          <stop offset="100%" stopColor="#BFDBFE"/>
+                        </linearGradient>
+                      </defs>
+                    </svg>
+                  </div>
+
+                  {/* Floating Data Visualizations */}
+                  <div className="absolute top-8 right-8 bg-white/90 dark:bg-gray-800/90 backdrop-blur-sm rounded-2xl p-4 shadow-xl animate-float">
+                    <div className="flex items-center space-x-2 mb-3">
+                      <div className="w-3 h-3 bg-green-500 rounded-full animate-pulse"></div>
+                      <span className="text-sm font-medium text-gray-700 dark:text-gray-300">Live Analytics</span>
                     </div>
-                    <h3 className="text-xl font-semibold text-gray-900 dark:text-white mb-2">
-                      Entegre HR Süreçleri
+                    <div className="space-y-2">
+                      <div className="flex justify-between text-xs">
+                        <span className="text-gray-600 dark:text-gray-400">Çalışan Memnuniyeti</span>
+                        <span className="text-green-600 font-semibold">94%</span>
+                      </div>
+                      <div className="w-24 h-1.5 bg-gray-200 dark:bg-gray-700 rounded-full">
+                        <div className="w-[94%] h-full bg-gradient-to-r from-green-400 to-green-600 rounded-full"></div>
+                      </div>
+                    </div>
+                  </div>
+
+                  {/* HR Metrics Card */}
+                  <div className="absolute bottom-8 left-8 bg-white/90 dark:bg-gray-800/90 backdrop-blur-sm rounded-2xl p-4 shadow-xl animate-float" style={{animationDelay: '1s'}}>
+                    <div className="grid grid-cols-3 gap-3 text-center">
+                      <div>
+                        <div className="text-lg font-bold text-blue-600">247</div>
+                        <div className="text-xs text-gray-600 dark:text-gray-400">Aktif</div>
+                      </div>
+                      <div>
+                        <div className="text-lg font-bold text-green-600">98%</div>
+                        <div className="text-xs text-gray-600 dark:text-gray-400">Katılım</div>
+                      </div>
+                      <div>
+                        <div className="text-lg font-bold text-purple-600">15</div>
+                        <div className="text-xs text-gray-600 dark:text-gray-400">İzin</div>
+                      </div>
+                    </div>
+                  </div>
+
+                  {/* Notification Bubbles */}
+                  <div className="absolute top-1/2 right-4 space-y-2">
+                    <div className="bg-blue-500 text-white text-xs px-3 py-2 rounded-full shadow-lg animate-bounce">
+                      <span>Yeni başvuru</span>
+                    </div>
+                    <div className="bg-green-500 text-white text-xs px-3 py-2 rounded-full shadow-lg animate-bounce" style={{animationDelay: '0.5s'}}>
+                      <span>Onay bekliyor</span>
+                    </div>
+                  </div>
+
+                  {/* Productivity Icons */}
+                  <div className="absolute bottom-4 right-4 flex space-x-2">
+                    <div className="w-8 h-8 bg-blue-500 rounded-lg flex items-center justify-center shadow-lg">
+                      <Users className="h-4 w-4 text-white" />
+                    </div>
+                    <div className="w-8 h-8 bg-green-500 rounded-lg flex items-center justify-center shadow-lg">
+                      <BarChart3 className="h-4 w-4 text-white" />
+                    </div>
+                    <div className="w-8 h-8 bg-purple-500 rounded-lg flex items-center justify-center shadow-lg">
+                      <Calendar className="h-4 w-4 text-white" />
+                    </div>
+                  </div>
+                </div>
+
+                {/* Content Section */}
+                <div className="p-8 bg-white dark:bg-gray-800">
+                  <div className="text-center mb-6">
+                    <h3 className="text-2xl font-light text-gray-900 dark:text-white mb-2">
+                      Modern İK Ekosistemi
                     </h3>
-                    <p className="text-sm text-gray-600 dark:text-gray-400">
-                      Tüm işlemleriniz tek platformda
+                    <p className="text-gray-600 dark:text-gray-400 text-sm">
+                      Akıllı otomasyonlar ve veri odaklı kararlar
                     </p>
                   </div>
 
-                  {/* Process Steps */}
-                  <div className="space-y-6">
-                    {/* Step 1: Employee Management */}
-                    <div className="flex items-center space-x-4 p-4 bg-blue-50 dark:bg-blue-900/20 rounded-xl border border-blue-200 dark:border-blue-800">
-                      <div className="w-12 h-12 bg-blue-500 rounded-xl flex items-center justify-center">
-                        <Users className="h-6 w-6 text-white" />
+                  {/* Feature Grid */}
+                  <div className="grid grid-cols-2 gap-4">
+                    <div className="p-4 bg-gradient-to-br from-blue-50 to-blue-100 dark:from-blue-900/20 dark:to-blue-800/20 rounded-xl border border-blue-200 dark:border-blue-700">
+                      <div className="flex items-center space-x-3 mb-2">
+                        <div className="w-8 h-8 bg-blue-500 rounded-lg flex items-center justify-center">
+                          <Users className="h-4 w-4 text-white" />
+                        </div>
+                        <span className="font-medium text-gray-900 dark:text-white text-sm">Talent Management</span>
                       </div>
-                      <div className="flex-1">
-                        <div className="font-medium text-gray-900 dark:text-white">Çalışan Yönetimi</div>
-                        <div className="text-sm text-gray-600 dark:text-gray-400">Merkezi dosyalar ve profiller</div>
-                      </div>
-                      <div className="w-2 h-2 bg-green-500 rounded-full animate-pulse"></div>
+                      <p className="text-xs text-gray-600 dark:text-gray-400">Yetenek havuzunu optimize edin</p>
                     </div>
 
-                    {/* Step 2: Performance Tracking */}
-                    <div className="flex items-center space-x-4 p-4 bg-green-50 dark:bg-green-900/20 rounded-xl border border-green-200 dark:border-green-800">
-                      <div className="w-12 h-12 bg-green-500 rounded-xl flex items-center justify-center">
-                        <BarChart3 className="h-6 w-6 text-white" />
+                    <div className="p-4 bg-gradient-to-br from-green-50 to-green-100 dark:from-green-900/20 dark:to-green-800/20 rounded-xl border border-green-200 dark:border-green-700">
+                      <div className="flex items-center space-x-3 mb-2">
+                        <div className="w-8 h-8 bg-green-500 rounded-lg flex items-center justify-center">
+                          <TrendingUp className="h-4 w-4 text-white" />
+                        </div>
+                        <span className="font-medium text-gray-900 dark:text-white text-sm">Performance Analytics</span>
                       </div>
-                      <div className="flex-1">
-                        <div className="font-medium text-gray-900 dark:text-white">Performans Takibi</div>
-                        <div className="text-sm text-gray-600 dark:text-gray-400">360° değerlendirme sistemi</div>
-                      </div>
-                      <div className="w-2 h-2 bg-blue-500 rounded-full animate-pulse" style={{animationDelay: '0.5s'}}></div>
+                      <p className="text-xs text-gray-600 dark:text-gray-400">Veri destekli değerlendirme</p>
                     </div>
 
-                    {/* Step 3: Leave Management */}
-                    <div className="flex items-center space-x-4 p-4 bg-purple-50 dark:bg-purple-900/20 rounded-xl border border-purple-200 dark:border-purple-800">
-                      <div className="w-12 h-12 bg-purple-500 rounded-xl flex items-center justify-center">
-                        <Calendar className="h-6 w-6 text-white" />
+                    <div className="p-4 bg-gradient-to-br from-purple-50 to-purple-100 dark:from-purple-900/20 dark:to-purple-800/20 rounded-xl border border-purple-200 dark:border-purple-700">
+                      <div className="flex items-center space-x-3 mb-2">
+                        <div className="w-8 h-8 bg-purple-500 rounded-lg flex items-center justify-center">
+                          <Clock className="h-4 w-4 text-white" />
+                        </div>
+                        <span className="font-medium text-gray-900 dark:text-white text-sm">Time Intelligence</span>
                       </div>
-                      <div className="flex-1">
-                        <div className="font-medium text-gray-900 dark:text-white">İzin Yönetimi</div>
-                        <div className="text-sm text-gray-600 dark:text-gray-400">Otomatik onay süreçleri</div>
-                      </div>
-                      <div className="w-2 h-2 bg-orange-500 rounded-full animate-pulse" style={{animationDelay: '1s'}}></div>
+                      <p className="text-xs text-gray-600 dark:text-gray-400">Akıllı zaman yönetimi</p>
                     </div>
 
-                    {/* Step 4: Payroll */}
-                    <div className="flex items-center space-x-4 p-4 bg-orange-50 dark:bg-orange-900/20 rounded-xl border border-orange-200 dark:border-orange-800">
-                      <div className="w-12 h-12 bg-orange-500 rounded-xl flex items-center justify-center">
-                        <FileText className="h-6 w-6 text-white" />
+                    <div className="p-4 bg-gradient-to-br from-orange-50 to-orange-100 dark:from-orange-900/20 dark:to-orange-800/20 rounded-xl border border-orange-200 dark:border-orange-700">
+                      <div className="flex items-center space-x-3 mb-2">
+                        <div className="w-8 h-8 bg-orange-500 rounded-lg flex items-center justify-center">
+                          <Shield className="h-4 w-4 text-white" />
+                        </div>
+                        <span className="font-medium text-gray-900 dark:text-white text-sm">Compliance Hub</span>
                       </div>
-                      <div className="flex-1">
-                        <div className="font-medium text-gray-900 dark:text-white">Bordro Yönetimi</div>
-                        <div className="text-sm text-gray-600 dark:text-gray-400">Otomatik hesaplama</div>
-                      </div>
-                      <div className="w-2 h-2 bg-purple-500 rounded-full animate-pulse" style={{animationDelay: '1.5s'}}></div>
-                    </div>
-                  </div>
-
-                  {/* Stats Summary */}
-                  <div className="bg-gray-50 dark:bg-gray-700/50 rounded-xl p-6">
-                    <div className="grid grid-cols-3 gap-4 text-center">
-                      <div>
-                        <div className="text-2xl font-bold text-blue-600 dark:text-blue-400">95%</div>
-                        <div className="text-xs text-gray-600 dark:text-gray-400">Verimlilik Artışı</div>
-                      </div>
-                      <div>
-                        <div className="text-2xl font-bold text-green-600 dark:text-green-400">60%</div>
-                        <div className="text-xs text-gray-600 dark:text-gray-400">Zaman Tasarrufu</div>
-                      </div>
-                      <div>
-                        <div className="text-2xl font-bold text-purple-600 dark:text-purple-400">99%</div>
-                        <div className="text-xs text-gray-600 dark:text-gray-400">Memnuniyet</div>
-                      </div>
+                      <p className="text-xs text-gray-600 dark:text-gray-400">Otomatik uyumluluk takibi</p>
                     </div>
                   </div>
                 </div>
               </div>
 
-              {/* Floating HR Icons */}
-              <div className="absolute -top-6 -right-6 w-16 h-16 bg-gradient-to-br from-blue-500 to-indigo-600 rounded-2xl shadow-xl flex items-center justify-center animate-bounce">
-                <Award className="h-8 w-8 text-white" />
+              {/* Floating Achievement Badges */}
+              <div className="absolute -top-4 -right-4 w-12 h-12 bg-gradient-to-br from-blue-500 to-blue-600 rounded-2xl shadow-2xl flex items-center justify-center animate-bounce group-hover:animate-spin">
+                <Award className="h-6 w-6 text-white" />
               </div>
               
-              <div className="absolute -bottom-6 -left-6 w-14 h-14 bg-gradient-to-br from-green-500 to-emerald-600 rounded-xl shadow-xl flex items-center justify-center animate-pulse">
-                <CheckCircle className="h-7 w-7 text-white" />
+              <div className="absolute -bottom-4 -left-4 w-10 h-10 bg-gradient-to-br from-green-500 to-emerald-600 rounded-xl shadow-2xl flex items-center justify-center animate-pulse">
+                <CheckCircle className="h-5 w-5 text-white" />
               </div>
 
-              <div className="absolute top-1/2 -left-8 w-12 h-12 bg-gradient-to-br from-purple-500 to-pink-600 rounded-xl shadow-lg flex items-center justify-center animate-pulse" style={{animationDelay: '2s'}}>
-                <TrendingUp className="h-6 w-6 text-white" />
+              <div className="absolute top-1/3 -left-6 w-8 h-8 bg-gradient-to-br from-purple-500 to-pink-600 rounded-lg shadow-xl flex items-center justify-center animate-pulse" style={{animationDelay: '2s'}}>
+                <Zap className="h-4 w-4 text-white" />
               </div>
 
-              {/* Background Elements */}
-              <div className="absolute top-20 -right-20 w-32 h-32 bg-blue-200 dark:bg-blue-800 rounded-full blur-3xl opacity-20 animate-pulse"></div>
-              <div className="absolute -bottom-10 -left-10 w-24 h-24 bg-purple-200 dark:bg-purple-800 rounded-full blur-2xl opacity-30 animate-pulse" style={{animationDelay: '1s'}}></div>
+              {/* Ambient Background */}
+              <div className="absolute top-10 -right-20 w-40 h-40 bg-blue-200 dark:bg-blue-800 rounded-full blur-3xl opacity-20 animate-pulse"></div>
+              <div className="absolute -bottom-20 -left-20 w-32 h-32 bg-purple-200 dark:bg-purple-800 rounded-full blur-3xl opacity-30 animate-pulse" style={{animationDelay: '3s'}}></div>
             </div>
           </div>
         </div>

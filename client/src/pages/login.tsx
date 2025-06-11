@@ -299,61 +299,117 @@ export default function Login() {
         </div>
       </div>
 
-      {/* Right Panel - Visual */}
-      <div className="hidden lg:flex flex-1 bg-gradient-to-br from-blue-600 via-blue-700 to-purple-700 relative overflow-hidden">
-        {/* Background Elements */}
+      {/* Right Panel - HR Professional Visual */}
+      <div className="hidden lg:flex flex-1 gradient-corporate relative overflow-hidden">
+        {/* Ambient Background */}
         <div className="absolute inset-0">
-          <div className="absolute top-20 left-20 w-40 h-40 bg-white/10 rounded-full blur-3xl animate-pulse"></div>
-          <div className="absolute bottom-40 right-40 w-60 h-60 bg-white/5 rounded-full blur-3xl animate-pulse" style={{animationDelay: '2s'}}></div>
-          <div className="absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 w-80 h-80 bg-white/5 rounded-full blur-3xl animate-pulse" style={{animationDelay: '4s'}}></div>
+          <div className="absolute top-20 left-20 w-40 h-40 bg-white/10 rounded-full blur-3xl animate-float"></div>
+          <div className="absolute bottom-40 right-40 w-60 h-60 bg-white/5 rounded-full blur-3xl animate-float" style={{animationDelay: '2s'}}></div>
+          <div className="absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 w-80 h-80 bg-white/5 rounded-full blur-3xl animate-float" style={{animationDelay: '4s'}}></div>
         </div>
 
+        {/* Professional HR Illustration */}
+        <div className="absolute inset-0 opacity-20">
+          <svg className="w-full h-full" viewBox="0 0 800 600" fill="none">
+            {/* HR Office Scene */}
+            <g transform="translate(100, 100)">
+              {/* Conference Table */}
+              <ellipse cx="300" cy="400" rx="200" ry="80" fill="rgba(255,255,255,0.3)" stroke="rgba(255,255,255,0.5)" strokeWidth="2"/>
+              
+              {/* People Around Table */}
+              <g opacity="0.8">
+                {/* Person 1 */}
+                <circle cx="150" cy="350" r="25" fill="rgba(255,255,255,0.6)"/>
+                <rect x="135" y="375" width="30" height="50" rx="15" fill="rgba(255,255,255,0.4)"/>
+                
+                {/* Person 2 */}
+                <circle cx="300" cy="320" r="25" fill="rgba(255,255,255,0.6)"/>
+                <rect x="285" y="345" width="30" height="50" rx="15" fill="rgba(255,255,255,0.4)"/>
+                
+                {/* Person 3 */}
+                <circle cx="450" cy="350" r="25" fill="rgba(255,255,255,0.6)"/>
+                <rect x="435" y="375" width="30" height="50" rx="15" fill="rgba(255,255,255,0.4)"/>
+              </g>
+              
+              {/* Documents on Table */}
+              <rect x="250" y="370" width="40" height="30" rx="3" fill="rgba(255,255,255,0.7)" stroke="rgba(255,255,255,0.3)"/>
+              <rect x="310" y="370" width="40" height="30" rx="3" fill="rgba(255,255,255,0.7)" stroke="rgba(255,255,255,0.3)"/>
+              
+              {/* Laptop */}
+              <rect x="200" y="360" width="60" height="40" rx="5" fill="rgba(255,255,255,0.5)"/>
+              <rect x="205" y="365" width="50" height="30" rx="2" fill="rgba(255,255,255,0.3)"/>
+              
+              {/* Office Background */}
+              <rect x="0" y="0" width="600" height="300" fill="rgba(255,255,255,0.1)" rx="10"/>
+              
+              {/* Windows */}
+              <rect x="50" y="50" width="100" height="150" rx="5" fill="rgba(255,255,255,0.2)" stroke="rgba(255,255,255,0.3)"/>
+              <rect x="200" y="50" width="100" height="150" rx="5" fill="rgba(255,255,255,0.2)" stroke="rgba(255,255,255,0.3)"/>
+              
+              {/* Charts on Wall */}
+              <rect x="400" y="80" width="80" height="60" rx="5" fill="rgba(255,255,255,0.3)"/>
+              <polyline points="420,120 440,110 460,125 480,105" stroke="rgba(255,255,255,0.6)" strokeWidth="2" fill="none"/>
+              
+              {/* Plant */}
+              <ellipse cx="550" cy="250" rx="20" ry="15" fill="rgba(255,255,255,0.4)"/>
+              <rect x="545" y="235" width="10" height="30" fill="rgba(255,255,255,0.3)"/>
+            </g>
+          </svg>
+        </div>
+
+        {/* Content */}
         <div className="relative z-10 flex items-center justify-center p-12 text-white">
-          <div className="max-w-lg">
-            <h3 className="text-4xl font-light mb-6">
+          <div className="max-w-lg animate-fade-in-up">
+            <div className="inline-flex items-center px-4 py-2 bg-white/20 rounded-full text-white text-sm font-medium mb-6 glass-effect">
+              <Shield className="h-4 w-4 mr-2" />
+              Enterprise HR Platform
+            </div>
+
+            <h3 className="text-4xl font-light mb-6 animate-slide-in-left">
               İnsan kaynaklarında 
-              <span className="block font-semibold">dijital dönüşüm</span>
+              <span className="block font-semibold bg-gradient-to-r from-white to-blue-200 bg-clip-text text-transparent">dijital dönüşüm</span>
             </h3>
-            <p className="text-xl font-light text-blue-100 mb-8 leading-relaxed">
+            
+            <p className="text-xl font-light text-blue-100 mb-8 leading-relaxed animate-slide-in-left" style={{animationDelay: '0.2s'}}>
               Çalışan deneyimini iyileştirin, verimliliği artırın ve 
               stratejik HR kararlarınızı güçlendirin.
             </p>
 
-            {/* HR Process Highlights */}
-            <div className="space-y-6">
-              <div className="flex items-center space-x-4 p-4 bg-white/10 rounded-xl backdrop-blur-sm">
-                <div className="w-12 h-12 bg-white/20 rounded-xl flex items-center justify-center">
-                  <Users className="h-6 w-6" />
+            {/* HR Capabilities */}
+            <div className="space-y-4 animate-slide-in-left" style={{animationDelay: '0.4s'}}>
+              <div className="flex items-center space-x-4 p-4 glass-effect rounded-xl">
+                <div className="w-12 h-12 bg-gradient-to-br from-blue-400 to-blue-600 rounded-xl flex items-center justify-center shadow-lg">
+                  <Users className="h-6 w-6 text-white" />
                 </div>
                 <div>
-                  <div className="font-semibold">Çalışan Yaşam Döngüsü</div>
-                  <div className="text-sm text-blue-200">İşe alımdan ayrılığa kadar</div>
+                  <div className="font-semibold">Talent Acquisition</div>
+                  <div className="text-sm text-blue-200">AI destekli aday değerlendirme</div>
                 </div>
               </div>
               
-              <div className="flex items-center space-x-4 p-4 bg-white/10 rounded-xl backdrop-blur-sm">
-                <div className="w-12 h-12 bg-white/20 rounded-xl flex items-center justify-center">
-                  <BarChart3 className="h-6 w-6" />
+              <div className="flex items-center space-x-4 p-4 glass-effect rounded-xl">
+                <div className="w-12 h-12 bg-gradient-to-br from-green-400 to-green-600 rounded-xl flex items-center justify-center shadow-lg">
+                  <BarChart3 className="h-6 w-6 text-white" />
                 </div>
                 <div>
-                  <div className="font-semibold">Performans & Gelişim</div>
-                  <div className="text-sm text-blue-200">Sürekli değerlendirme sistemi</div>
+                  <div className="font-semibold">Performance Analytics</div>
+                  <div className="text-sm text-blue-200">360° değerlendirme ve OKR takibi</div>
                 </div>
               </div>
               
-              <div className="flex items-center space-x-4 p-4 bg-white/10 rounded-xl backdrop-blur-sm">
-                <div className="w-12 h-12 bg-white/20 rounded-xl flex items-center justify-center">
-                  <Calendar className="h-6 w-6" />
+              <div className="flex items-center space-x-4 p-4 glass-effect rounded-xl">
+                <div className="w-12 h-12 bg-gradient-to-br from-purple-400 to-purple-600 rounded-xl flex items-center justify-center shadow-lg">
+                  <Calendar className="h-6 w-6 text-white" />
                 </div>
                 <div>
-                  <div className="font-semibold">İzin & Devam Yönetimi</div>
-                  <div className="text-sm text-blue-200">Akıllı planlama araçları</div>
+                  <div className="font-semibold">Workforce Planning</div>
+                  <div className="text-sm text-blue-200">Stratejik iş gücü planlaması</div>
                 </div>
               </div>
             </div>
 
-            {/* Trust Indicators */}
-            <div className="grid grid-cols-2 gap-6 mt-12 pt-8 border-t border-white/20">
+            {/* Compliance & Security */}
+            <div className="grid grid-cols-3 gap-4 mt-12 pt-8 border-t border-white/20 animate-fade-in-up" style={{animationDelay: '0.6s'}}>
               <div className="text-center">
                 <div className="text-2xl font-bold">KVKK</div>
                 <div className="text-sm text-blue-200">Uyumlu</div>
@@ -362,16 +418,41 @@ export default function Login() {
                 <div className="text-2xl font-bold">ISO 27001</div>
                 <div className="text-sm text-blue-200">Sertifikalı</div>
               </div>
+              <div className="text-center">
+                <div className="text-2xl font-bold">SOC 2</div>
+                <div className="text-sm text-blue-200">Type II</div>
+              </div>
             </div>
           </div>
         </div>
 
-        {/* Floating Elements */}
-        <div className="absolute top-10 right-10 w-16 h-16 bg-white/10 rounded-2xl flex items-center justify-center animate-bounce">
+        {/* Floating Professional Icons */}
+        <div className="absolute top-10 right-10 w-16 h-16 glass-effect rounded-2xl flex items-center justify-center animate-bounce">
           <CheckCircle className="h-8 w-8 text-white" />
         </div>
-        <div className="absolute bottom-20 left-10 w-12 h-12 bg-white/10 rounded-xl flex items-center justify-center animate-pulse">
-          <Globe className="h-6 w-6 text-white" />
+        
+        <div className="absolute bottom-20 left-10 w-12 h-12 glass-effect rounded-xl flex items-center justify-center animate-float">
+          <Award className="h-6 w-6 text-white" />
+        </div>
+        
+        <div className="absolute top-1/2 right-4 w-10 h-10 glass-effect rounded-lg flex items-center justify-center animate-pulse">
+          <Globe className="h-5 w-5 text-white" />
+        </div>
+
+        {/* Real-time Activity Indicators */}
+        <div className="absolute bottom-1/4 right-8 space-y-2">
+          <div className="glass-effect text-white text-xs px-3 py-2 rounded-full shadow-lg animate-slide-in-right">
+            <div className="flex items-center space-x-2">
+              <div className="w-2 h-2 bg-green-400 rounded-full animate-pulse"></div>
+              <span>15 aktif kullanıcı</span>
+            </div>
+          </div>
+          <div className="glass-effect text-white text-xs px-3 py-2 rounded-full shadow-lg animate-slide-in-right" style={{animationDelay: '0.3s'}}>
+            <div className="flex items-center space-x-2">
+              <div className="w-2 h-2 bg-blue-400 rounded-full animate-pulse"></div>
+              <span>3 onay bekliyor</span>
+            </div>
+          </div>
         </div>
       </div>
     </div>
