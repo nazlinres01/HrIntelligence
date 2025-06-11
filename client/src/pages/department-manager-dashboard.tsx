@@ -16,16 +16,36 @@ import {
   MessageSquare
 } from "lucide-react";
 
+interface DepartmentStats {
+  totalMembers: number;
+  activeMembers: number;
+  targetCompletion: string;
+  pendingLeaves: number;
+  teamPerformance: string;
+}
+
+interface TeamRequests {
+  pending: any[];
+}
+
 export default function DepartmentManagerDashboard() {
-  const { data: teamStats } = useQuery({
+  const { data: teamStats = {
+    totalMembers: 0,
+    activeMembers: 0,
+    targetCompletion: '0%',
+    pendingLeaves: 0,
+    teamPerformance: '0%'
+  } } = useQuery<DepartmentStats>({
     queryKey: ['/api/stats/department'],
   });
 
-  const { data: teamMembers } = useQuery({
+  const { data: teamMembers = [] } = useQuery<any[]>({
     queryKey: ['/api/team/members'],
   });
 
-  const { data: departmentTasks } = useQuery({
+  const { data: departmentTasks = {
+    pending: []
+  } } = useQuery<TeamRequests>({
     queryKey: ['/api/tasks/department'],
   });
 
@@ -58,9 +78,9 @@ export default function DepartmentManagerDashboard() {
             <Users className="h-4 w-4 text-muted-foreground" />
           </CardHeader>
           <CardContent>
-            <div className="text-2xl font-bold">{teamStats?.totalMembers || 0}</div>
+            <div className="text-2xl font-bold">{teamStats.totalMembers}</div>
             <p className="text-xs text-muted-foreground">
-              {teamStats?.activeMembers || 0} aktif
+              {teamStats.activeMembers} aktif
             </p>
           </CardContent>
         </Card>
@@ -71,7 +91,7 @@ export default function DepartmentManagerDashboard() {
             <Target className="h-4 w-4 text-muted-foreground" />
           </CardHeader>
           <CardContent>
-            <div className="text-2xl font-bold">{teamStats?.targetCompletion || "78"}%</div>
+            <div className="text-2xl font-bold">{teamStats.targetCompletion}</div>
             <p className="text-xs text-muted-foreground">
               Bu ay
             </p>
@@ -84,7 +104,7 @@ export default function DepartmentManagerDashboard() {
             <Calendar className="h-4 w-4 text-muted-foreground" />
           </CardHeader>
           <CardContent>
-            <div className="text-2xl font-bold">{teamStats?.pendingLeaves || 0}</div>
+            <div className="text-2xl font-bold">{teamStats.pendingLeaves}</div>
             <p className="text-xs text-muted-foreground">
               Onay gereken
             </p>
@@ -97,7 +117,7 @@ export default function DepartmentManagerDashboard() {
             <TrendingUp className="h-4 w-4 text-muted-foreground" />
           </CardHeader>
           <CardContent>
-            <div className="text-2xl font-bold">{teamStats?.teamPerformance || "85"}%</div>
+            <div className="text-2xl font-bold">{teamStats.teamPerformance}</div>
             <p className="text-xs text-muted-foreground">
               +5% bu ay
             </p>
@@ -116,7 +136,7 @@ export default function DepartmentManagerDashboard() {
           </CardHeader>
           <CardContent>
             <div className="space-y-4">
-              {teamMembers?.slice(0, 5).map((member: any, index: number) => (
+              {teamMembers.slice(0, 5).map((member: any, index: number) => (
                 <div key={index} className="flex items-center justify-between p-3 border rounded-lg">
                   <div className="flex items-center space-x-3">
                     <div className="w-10 h-10 rounded-full bg-blue-100 flex items-center justify-center">
@@ -257,7 +277,7 @@ export default function DepartmentManagerDashboard() {
         </CardHeader>
         <CardContent>
           <div className="space-y-3">
-            {departmentTasks?.pending?.map((task: any, index: number) => (
+            {departmentTasks.pending.map((task: any, index: number) => (
               <div key={index} className="flex items-center justify-between p-3 border rounded-lg">
                 <div className="flex items-center space-x-3">
                   <div className={`w-2 h-2 rounded-full ${task.type === 'leave' ? 'bg-blue-500' : task.type === 'expense' ? 'bg-green-500' : 'bg-orange-500'}`}></div>
