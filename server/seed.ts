@@ -38,6 +38,23 @@ export async function seedDatabase() {
 
     await db.insert(departments).values(sampleDepartments);
 
+    // Create owner user first (Patron)
+    const ownerUser = {
+      id: "owner_001",
+      email: "patron@techcorp.com.tr",
+      password: "patron123", // Sabit patron şifresi
+      firstName: "Mehmet",
+      lastName: "Özkan",
+      phone: "+90 532 999 88 77",
+      companyId: sampleCompany.id,
+      role: "owner",
+      isActive: true,
+      createdAt: new Date(),
+      updatedAt: new Date()
+    };
+
+    await db.insert(users).values(ownerUser);
+
     // Create HR team users for the company
     const hrTeamUsers = [
       {
