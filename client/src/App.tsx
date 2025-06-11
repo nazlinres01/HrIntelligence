@@ -18,12 +18,6 @@ import Notifications from "@/pages/notifications";
 import Team from "@/pages/team";
 import TeamLogin from "@/pages/team-login";
 import Profile from "@/pages/profile";
-import OwnerDashboard from "@/pages/owner-dashboard";
-import HRManagerDashboard from "@/pages/hr-manager-dashboard";
-import HRSpecialistDashboard from "@/pages/hr-specialist-dashboard";
-import DepartmentManagerDashboard from "@/pages/department-manager-dashboard";
-import EmployeeDashboard from "@/pages/employee-dashboard";
-import RoleLogin from "@/pages/role-login";
 import Landing from "@/pages/landing";
 import Login from "@/pages/login";
 import Register from "@/pages/register";
@@ -39,12 +33,6 @@ function Router() {
         <Route path="/" component={Landing} />
         <Route path="/login" component={Login} />
         <Route path="/register" component={Register} />
-        <Route path="/team-login" component={TeamLogin} />
-        <Route path="/owner" component={RoleLogin} />
-        <Route path="/hr-manager" component={RoleLogin} />
-        <Route path="/hr-specialist" component={RoleLogin} />
-        <Route path="/department-manager" component={RoleLogin} />
-        <Route path="/employee" component={RoleLogin} />
         <Route component={NotFound} />
       </Switch>
     );
@@ -53,37 +41,10 @@ function Router() {
   const userRole = (user as any)?.role as UserRole || "employee";
   const permissions = getUserPermissions(userRole);
 
-  // Role-based dashboard component
-  const getDashboardComponent = () => {
-    switch (userRole) {
-      case "owner":
-        return OwnerDashboard;
-      case "hr_manager":
-        return HRManagerDashboard;
-      case "hr_specialist":
-        return HRSpecialistDashboard;
-      case "department_manager":
-        return DepartmentManagerDashboard;
-      case "employee":
-        return EmployeeDashboard;
-      default:
-        return EmployeeDashboard;
-    }
-  };
-
-  const DashboardComponent = getDashboardComponent();
-
   return (
     <Switch>
-      <Route path="/" component={DashboardComponent} />
-      <Route path="/dashboard" component={DashboardComponent} />
-      
-      {/* Role-specific dashboard routes */}
-      <Route path="/owner" component={OwnerDashboard} />
-      <Route path="/hr-manager" component={HRManagerDashboard} />
-      <Route path="/hr-specialist" component={HRSpecialistDashboard} />
-      <Route path="/department-manager" component={DepartmentManagerDashboard} />
-      <Route path="/employee" component={EmployeeDashboard} />
+      <Route path="/" component={Dashboard} />
+      <Route path="/dashboard" component={Dashboard} />
 
       {/* Conditional routes based on permissions */}
       {permissions.canManageEmployees && <Route path="/employees" component={Employees} />}
