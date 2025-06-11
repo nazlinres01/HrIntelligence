@@ -89,7 +89,7 @@ export default function Dashboard() {
     }
   });
 
-  // Corporate data queries
+  // Corporate data queries with default values
   const { data: employeeStats } = useQuery({
     queryKey: ['/api/stats/employees'],
   });
@@ -105,6 +105,18 @@ export default function Dashboard() {
   const { data: activities } = useQuery({
     queryKey: ['/api/activities'],
   });
+
+  // Provide default data when API calls return undefined
+  const safeEmployeeStats = employeeStats || {
+    totalEmployees: 0,
+    newThisMonth: 0,
+    activeLeaves: 0,
+    monthlyPayroll: "0",
+    avgPerformance: "0"
+  };
+
+  const safeTeamMembers = teamMembers || [];
+  const safeActivities = activities || [];
 
   // Corporate mutations
   const inviteUserMutation = useMutation({
@@ -329,9 +341,9 @@ export default function Dashboard() {
                 <Users className="h-4 w-4 text-slate-500" />
               </CardHeader>
               <CardContent>
-                <div className="text-2xl font-bold text-slate-900 dark:text-white">{employeeStats?.totalEmployees || 0}</div>
+                <div className="text-2xl font-bold text-slate-900 dark:text-white">{safeEmployeeStats.totalEmployees}</div>
                 <p className="text-xs text-slate-600 dark:text-slate-400">
-                  +{employeeStats?.newThisMonth || 0} bu ay
+                  +{safeEmployeeStats.newThisMonth} bu ay
                 </p>
               </CardContent>
             </Card>
@@ -342,7 +354,7 @@ export default function Dashboard() {
                 <Calendar className="h-4 w-4 text-slate-500" />
               </CardHeader>
               <CardContent>
-                <div className="text-2xl font-bold text-slate-900 dark:text-white">{employeeStats?.activeLeaves || 0}</div>
+                <div className="text-2xl font-bold text-slate-900 dark:text-white">{safeEmployeeStats.activeLeaves}</div>
                 <p className="text-xs text-slate-600 dark:text-slate-400">
                   Devam eden izinler
                 </p>
@@ -355,7 +367,7 @@ export default function Dashboard() {
                 <DollarSign className="h-4 w-4 text-slate-500" />
               </CardHeader>
               <CardContent>
-                <div className="text-2xl font-bold text-slate-900 dark:text-white">₺{employeeStats?.monthlyPayroll || "0"}</div>
+                <div className="text-2xl font-bold text-slate-900 dark:text-white">₺{safeEmployeeStats.monthlyPayroll}</div>
                 <p className="text-xs text-slate-600 dark:text-slate-400">
                   Toplam maliyet
                 </p>
@@ -368,7 +380,7 @@ export default function Dashboard() {
                 <BarChart3 className="h-4 w-4 text-slate-500" />
               </CardHeader>
               <CardContent>
-                <div className="text-2xl font-bold text-slate-900 dark:text-white">{employeeStats?.avgPerformance || "0"}%</div>
+                <div className="text-2xl font-bold text-slate-900 dark:text-white">{safeEmployeeStats.avgPerformance}%</div>
                 <p className="text-xs text-slate-600 dark:text-slate-400">
                   Genel başarı oranı
                 </p>
@@ -384,7 +396,7 @@ export default function Dashboard() {
               </CardHeader>
               <CardContent>
                 <div className="space-y-4">
-                  {teamMembers?.slice(0, 8).map((member: any) => (
+                  {safeTeamMembers.slice(0, 8).map((member: any) => (
                     <div key={member.id} className="flex items-center justify-between p-3 border border-slate-200 dark:border-slate-700 rounded-lg bg-slate-50 dark:bg-slate-750">
                       <div className="flex items-center space-x-3">
                         <Avatar className="h-8 w-8">
