@@ -140,7 +140,7 @@ export default function Register() {
 
   return (
     <div className="min-h-screen bg-white dark:bg-slate-900">
-      <div className="container mx-auto px-6 py-8 max-w-md">
+      <div className="container mx-auto px-6 py-8 max-w-2xl">
         {/* Header - Microsoft Style */}
         <div className="text-center mb-12">
           <Link href="/" className="inline-flex items-center space-x-2 mb-8">
@@ -189,7 +189,7 @@ export default function Register() {
                         <Input 
                           placeholder="Adınız" 
                           {...field}
-                          className="border-slate-300 dark:border-slate-600 h-12"
+                          className="border-slate-300 dark:border-slate-600 h-14 text-lg"
                         />
                       </FormControl>
                       <FormMessage />
@@ -209,7 +209,7 @@ export default function Register() {
                         <Input 
                           placeholder="Soyadınız" 
                           {...field}
-                          className="border-slate-300 dark:border-slate-600 h-12"
+                          className="border-slate-300 dark:border-slate-600 h-14 text-lg"
                         />
                       </FormControl>
                       <FormMessage />
@@ -231,7 +231,7 @@ export default function Register() {
                         type="email" 
                         placeholder="ornek@sirket.com" 
                         {...field}
-                        className="border-slate-300 dark:border-slate-600 h-12"
+                        className="border-slate-300 dark:border-slate-600 h-14 text-lg"
                       />
                     </FormControl>
                     <FormMessage />

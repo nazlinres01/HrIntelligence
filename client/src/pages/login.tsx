@@ -144,7 +144,7 @@ export default function Login() {
 
   return (
     <div className="min-h-screen bg-white dark:bg-slate-900">
-      <div className="container mx-auto px-6 py-8 max-w-md">
+      <div className="container mx-auto px-6 py-8 max-w-lg">
         {/* Header - Microsoft Style */}
         <div className="text-center mb-12">
           <Link href="/" className="inline-flex items-center space-x-2 mb-8">
@@ -223,7 +223,7 @@ export default function Login() {
                         placeholder="ornek@sirket.com" 
                         {...field}
                         disabled={isBlocked}
-                        className="border-slate-300 dark:border-slate-600 h-12"
+                        className="border-slate-300 dark:border-slate-600 h-14 text-lg"
                         autoComplete="email"
                       />
                     </FormControl>
@@ -252,7 +252,7 @@ export default function Login() {
                           placeholder="Şifrenizi girin"
                           {...field}
                           disabled={isBlocked}
-                          className="border-slate-300 dark:border-slate-600 h-12 pr-12"
+                          className="border-slate-300 dark:border-slate-600 h-14 text-lg pr-12"
                           autoComplete="current-password"
                         />
                         <Button
@@ -300,7 +300,7 @@ export default function Login() {
               <Button
                 type="submit"
                 disabled={isBlocked || loginMutation.isPending}
-                className="w-full bg-slate-900 hover:bg-slate-800 text-white h-12 font-medium"
+                className="w-full bg-slate-900 hover:bg-slate-800 text-white h-14 font-medium text-lg"
               >
                 {loginMutation.isPending ? (
                   <div className="flex items-center">
@@ -326,33 +326,9 @@ export default function Login() {
                 </div>
               )}
 
-              {/* External Login */}
-              <div className="text-center">
-                <div className="relative mb-6">
-                  <div className="absolute inset-0 flex items-center">
-                    <div className="w-full border-t border-slate-200 dark:border-slate-700"></div>
-                  </div>
-                  <div className="relative flex justify-center text-sm">
-                    <span className="px-2 bg-white dark:bg-slate-800 text-slate-500 dark:text-slate-400">
-                      veya
-                    </span>
-                  </div>
-                </div>
-                
-                <Button 
-                  type="button" 
-                  variant="outline" 
-                  className="w-full border-slate-300 dark:border-slate-600 h-12 font-medium"
-                  onClick={() => window.location.href = "/api/login"}
-                >
-                  <Building2 className="h-4 w-4 mr-2" />
-                  Replit ile giriş yap
-                </Button>
-              </div>
-
               {/* Sign Up Link */}
-              <div className="text-center mt-6">
-                <p className="text-sm text-slate-600 dark:text-slate-400">
+              <div className="text-center mt-8">
+                <p className="text-slate-600 dark:text-slate-400">
                   Hesabınız yok mu?{" "}
                   <Link href="/register" className="text-slate-900 dark:text-slate-100 hover:underline font-medium">
                     Kayıt olun
