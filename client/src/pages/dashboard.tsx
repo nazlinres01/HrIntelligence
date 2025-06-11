@@ -394,7 +394,7 @@ export default function Dashboard() {
           </CardHeader>
           <CardContent>
             <div className="space-y-4">
-              {Array.isArray(employees) && employees.slice(0, 5).map((employee: any, index: number) => (
+              {Array.isArray(employees) && (employees as any[]).slice(0, 5).map((employee: any, index: number) => (
                 <div key={index} className="flex items-center justify-between p-4 rounded-lg border border-slate-200 dark:border-slate-700">
                   <div className="flex items-center space-x-4">
                     <Avatar>
@@ -417,7 +417,7 @@ export default function Dashboard() {
                   </Badge>
                 </div>
               ))}
-              {(!employees || employees.length === 0) && (
+              {(!employees || (employees as any[]).length === 0) && (
                 <div className="text-center py-8">
                   <p className="text-slate-600 dark:text-slate-400">Henüz çalışan eklenmemiş</p>
                   <Link href="/employees">
