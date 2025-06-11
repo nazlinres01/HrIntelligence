@@ -151,7 +151,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
       await storage.createAuditLog({
         action: "employee_updated",
         resource: "employee", 
-        resourceId: parseInt(id),
+        resourceId: id,
         userId: userId,
         companyId: user?.companyId || 0,
         details: `Çalışan bilgileri güncellendi: ${employee.firstName} ${employee.lastName}`,
@@ -178,7 +178,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
         await storage.createAuditLog({
           action: "employee_deleted",
           resource: "employee",
-          resourceId: parseInt(id),
+          resourceId: id,
           userId: userId,
           companyId: user?.companyId || 0,
           details: `Çalışan silindi`,
@@ -259,7 +259,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
       await storage.createAuditLog({
         action: "leave_requested",
         resource: "leave",
-        resourceId: leave.id,
+        resourceId: leave.id.toString(),
         userId: userId,
         companyId: user?.companyId || 0,
         details: `İzin talebi oluşturuldu: ${leave.leaveType} (${leave.days} gün)`,
@@ -292,7 +292,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
       await storage.createAuditLog({
         action: "leave_updated",
         resource: "leave",
-        resourceId: parseInt(id),
+        resourceId: id,
         userId: userId,
         companyId: user?.companyId || 0,
         details: `İzin durumu güncellendi: ${status}`,
@@ -340,7 +340,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
       await storage.createAuditLog({
         action: "performance_created",
         resource: "performance",
-        resourceId: performance.id,
+        resourceId: performance.id.toString(),
         userId: userId,
         companyId: user?.companyId || 0,
         details: `Performans değerlendirmesi oluşturuldu: ${performance.reviewPeriod} (Puan: ${performance.score})`,
@@ -388,7 +388,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
       await storage.createAuditLog({
         action: "payroll_created",
         resource: "payroll",
-        resourceId: payroll.id,
+        resourceId: payroll.id.toString(),
         userId: userId,
         companyId: user?.companyId || 0,
         details: `Bordro oluşturuldu: ${payroll.month} (Net: ${payroll.netSalary})`,
@@ -671,7 +671,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
       const user = await storage.getUser(userId);
       const { limit = 100 } = req.query;
       
-      const logs = await storage.getAuditLogs(parseInt(limit as string), user?.companyId);
+      const logs = await storage.getAuditLogs(parseInt(limit as string), user?.companyId ?? undefined);
       res.json(logs);
     } catch (error) {
       console.error("Error fetching audit logs:", error);
