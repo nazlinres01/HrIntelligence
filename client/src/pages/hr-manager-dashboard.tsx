@@ -16,16 +16,30 @@ import {
   Target
 } from "lucide-react";
 
+interface HRStats {
+  activeEmployees: number;
+  newHires: number;
+  pendingLeaves: number;
+  absenteeismRate: string;
+  satisfaction: string;
+}
+
 export default function HRManagerDashboard() {
-  const { data: stats } = useQuery({
+  const { data: stats = {
+    activeEmployees: 0,
+    newHires: 0,
+    pendingLeaves: 0,
+    absenteeismRate: '0%',
+    satisfaction: '0%'
+  } } = useQuery<HRStats>({
     queryKey: ['/api/stats/hr-manager'],
   });
 
-  const { data: pendingLeaves } = useQuery({
+  const { data: pendingLeaves = [] } = useQuery<any[]>({
     queryKey: ['/api/leaves/pending'],
   });
 
-  const { data: hrActivities } = useQuery({
+  const { data: hrActivities = [] } = useQuery<any[]>({
     queryKey: ['/api/activities/hr'],
   });
 
@@ -58,9 +72,9 @@ export default function HRManagerDashboard() {
             <Users className="h-4 w-4 text-muted-foreground" />
           </CardHeader>
           <CardContent>
-            <div className="text-2xl font-bold">{stats?.activeEmployees || 0}</div>
+            <div className="text-2xl font-bold">{stats.activeEmployees}</div>
             <p className="text-xs text-muted-foreground">
-              {stats?.newHires || 0} yeni işe alım bu ay
+              {stats.newHires} yeni işe alım bu ay
             </p>
           </CardContent>
         </Card>
@@ -71,7 +85,7 @@ export default function HRManagerDashboard() {
             <Clock className="h-4 w-4 text-muted-foreground" />
           </CardHeader>
           <CardContent>
-            <div className="text-2xl font-bold">{stats?.pendingLeaves || 0}</div>
+            <div className="text-2xl font-bold">{stats.pendingLeaves}</div>
             <p className="text-xs text-muted-foreground">
               Onay bekleyen izin talepleri
             </p>
@@ -84,7 +98,7 @@ export default function HRManagerDashboard() {
             <AlertTriangle className="h-4 w-4 text-muted-foreground" />
           </CardHeader>
           <CardContent>
-            <div className="text-2xl font-bold">{stats?.absenteeismRate || "2.1"}%</div>
+            <div className="text-2xl font-bold">{stats.absenteeismRate}</div>
             <p className="text-xs text-muted-foreground">
               -0.5% geçen aya göre
             </p>
@@ -97,7 +111,7 @@ export default function HRManagerDashboard() {
             <Award className="h-4 w-4 text-muted-foreground" />
           </CardHeader>
           <CardContent>
-            <div className="text-2xl font-bold">{stats?.satisfaction || "87"}%</div>
+            <div className="text-2xl font-bold">{stats.satisfaction}</div>
             <p className="text-xs text-muted-foreground">
               +3% bu çeyrek
             </p>
