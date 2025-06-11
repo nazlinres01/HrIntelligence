@@ -9,6 +9,10 @@ import {
   activities,
   settings,
   notifications,
+  auditLogs,
+  timeEntries,
+  expenseReports,
+  messages,
   type Company,
   type InsertCompany,
   type User,
@@ -29,6 +33,14 @@ import {
   type InsertSetting,
   type Notification,
   type InsertNotification,
+  type AuditLog,
+  type InsertAuditLog,
+  type TimeEntry,
+  type InsertTimeEntry,
+  type ExpenseReport,
+  type InsertExpenseReport,
+  type Message,
+  type InsertMessage,
 } from "@shared/schema";
 import { db } from "./db";
 import { eq, desc, and } from "drizzle-orm";
@@ -115,6 +127,31 @@ export interface IStorage {
   markNotificationAsRead(id: number, userId: string): Promise<boolean>;
   markAllNotificationsAsRead(userId: string): Promise<boolean>;
   deleteNotification(id: number, userId: string): Promise<boolean>;
+
+  // Audit log operations
+  createAuditLog(log: InsertAuditLog): Promise<AuditLog>;
+  getAuditLogs(limit?: number, companyId?: number): Promise<AuditLog[]>;
+  getUserAuditLogs(userId: string, limit?: number): Promise<AuditLog[]>;
+
+  // Time entry operations
+  createTimeEntry(entry: InsertTimeEntry): Promise<TimeEntry>;
+  getUserTimeEntries(userId: string, limit?: number): Promise<TimeEntry[]>;
+  getPendingTimeEntries(limit?: number): Promise<TimeEntry[]>;
+  approveTimeEntry(id: number, approvedBy: string): Promise<boolean>;
+  rejectTimeEntry(id: number, approvedBy: string): Promise<boolean>;
+
+  // Expense report operations
+  createExpenseReport(report: InsertExpenseReport): Promise<ExpenseReport>;
+  getUserExpenseReports(userId: string, limit?: number): Promise<ExpenseReport[]>;
+  getPendingExpenseReports(limit?: number): Promise<ExpenseReport[]>;
+  approveExpenseReport(id: number, approvedBy: string): Promise<boolean>;
+  rejectExpenseReport(id: number, approvedBy: string): Promise<boolean>;
+
+  // Message operations
+  createMessage(message: InsertMessage): Promise<Message>;
+  getUserMessages(userId: string, limit?: number): Promise<Message[]>;
+  markMessageAsRead(id: number, userId: string): Promise<boolean>;
+  deleteMessage(id: number, userId: string): Promise<boolean>;
 }
 
 export class DatabaseStorage implements IStorage {

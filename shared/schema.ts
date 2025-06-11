@@ -1,4 +1,4 @@
-import { pgTable, text, serial, integer, boolean, date, decimal, timestamp, varchar, jsonb, index } from "drizzle-orm/pg-core";
+import { pgTable, text, serial, integer, boolean, date, decimal, timestamp, varchar, jsonb, index, time } from "drizzle-orm/pg-core";
 import { createInsertSchema } from "drizzle-zod";
 import { z } from "zod";
 
@@ -219,3 +219,90 @@ export type Setting = typeof settings.$inferSelect;
 export type InsertSetting = z.infer<typeof insertSettingSchema>;
 export type Notification = typeof notifications.$inferSelect;
 export type InsertNotification = z.infer<typeof insertNotificationSchema>;
+
+// Audit log table for tracking all user actions
+export const auditLogs = pgTable("audit_logs", {
+  id: serial("id").primaryKey(),
+  userId: varchar("user_id").notNull(),
+  action: varchar("action").notNull(), // login, logout, create_leave, approve_leave, etc.
+  resource: varchar("resource").notNull(), // user, leave, employee, etc.
+  resourceId: varchar("resource_id"), // ID of the affected resource
+  details: jsonb("details"), // Additional context about the action
+  ipAddress: varchar("ip_address"),
+  userAgent: varchar("user_agent"),
+  companyId: integer("company_id"),
+  createdAt: timestamp("created_at").defaultNow(),
+});
+
+// Time entries table for employee time tracking
+export const timeEntries = pgTable("time_entries", {
+  id: serial("id").primaryKey(),
+  userId: varchar("user_id").notNull(),
+  date: date("date").notNull(),
+  startTime: time("start_time").notNull(),
+  endTime: time("end_time").notNull(),
+  breakMinutes: integer("break_minutes").default(0),
+  description: text("description"),
+  status: varchar("status").default("pending"), // pending, approved, rejected
+  approvedBy: varchar("approved_by"),
+  approvedAt: timestamp("approved_at"),
+  createdAt: timestamp("created_at").defaultNow(),
+});
+
+// Expense reports table
+export const expenseReports = pgTable("expense_reports", {
+  id: serial("id").primaryKey(),
+  userId: varchar("user_id").notNull(),
+  description: varchar("description").notNull(),
+  amount: decimal("amount", { precision: 10, scale: 2 }).notNull(),
+  category: varchar("category").notNull(),
+  date: date("date").notNull(),
+  receiptUrl: varchar("receipt_url"),
+  status: varchar("status").default("pending"), // pending, approved, rejected
+  approvedBy: varchar("approved_by"),
+  approvedAt: timestamp("approved_at"),
+  createdAt: timestamp("created_at").defaultNow(),
+});
+
+// Messages table for internal communication
+export const messages = pgTable("messages", {
+  id: serial("id").primaryKey(),
+  fromUserId: varchar("from_user_id").notNull(),
+  toUserId: varchar("to_user_id").notNull(),
+  subject: varchar("subject").notNull(),
+  message: text("message").notNull(),
+  isRead: boolean("is_read").default(false),
+  readAt: timestamp("read_at"),
+  createdAt: timestamp("created_at").defaultNow(),
+});
+
+export const insertAuditLogSchema = createInsertSchema(auditLogs).omit({
+  id: true,
+  createdAt: true,
+});
+
+export const insertTimeEntrySchema = createInsertSchema(timeEntries).omit({
+  id: true,
+  createdAt: true,
+  approvedAt: true,
+});
+
+export const insertExpenseReportSchema = createInsertSchema(expenseReports).omit({
+  id: true,
+  createdAt: true,
+});
+
+export const insertMessageSchema = createInsertSchema(messages).omit({
+  id: true,
+  createdAt: true,
+  readAt: true,
+});
+
+export type AuditLog = typeof auditLogs.$inferSelect;
+export type InsertAuditLog = z.infer<typeof insertAuditLogSchema>;
+export type TimeEntry = typeof timeEntries.$inferSelect;
+export type InsertTimeEntry = z.infer<typeof insertTimeEntrySchema>;
+export type ExpenseReport = typeof expenseReports.$inferSelect;
+export type InsertExpenseReport = z.infer<typeof insertExpenseReportSchema>;
+export type Message = typeof messages.$inferSelect;
+export type InsertMessage = z.infer<typeof insertMessageSchema>;
