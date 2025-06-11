@@ -253,8 +253,8 @@ export default function Performance() {
                 </SelectTrigger>
                 <SelectContent>
                   <SelectItem value="all">Tüm Departmanlar</SelectItem>
-                  {departments.filter(dept => dept).map((dept) => (
-                    <SelectItem key={dept} value={dept}>{dept}</SelectItem>
+                  {departments.filter(dept => dept != null).map((dept) => (
+                    <SelectItem key={dept!} value={dept!}>{dept}</SelectItem>
                   ))}
                 </SelectContent>
               </Select>

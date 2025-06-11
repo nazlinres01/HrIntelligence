@@ -34,19 +34,19 @@ export default function Reports() {
   const [reportType, setReportType] = useState("overview");
   const { toast } = useToast();
 
-  const { data: employees = [] } = useQuery({
+  const { data: employees = [] } = useQuery<any[]>({
     queryKey: ["/api/employees"],
   });
 
-  const { data: leaves = [] } = useQuery({
+  const { data: leaves = [] } = useQuery<any[]>({
     queryKey: ["/api/leaves"],
   });
 
-  const { data: performance = [] } = useQuery({
+  const { data: performance = [] } = useQuery<any[]>({
     queryKey: ["/api/performance"],
   });
 
-  const { data: payroll = [] } = useQuery({
+  const { data: payroll = [] } = useQuery<any[]>({
     queryKey: ["/api/payroll"],
   });
 
@@ -136,10 +136,10 @@ export default function Reports() {
   };
 
   const getPerformanceAnalytics = () => {
-    if (!performance) return null;
+    if (!performance || !Array.isArray(performance)) return null;
 
     const totalReviews = performance.length;
-    const avgRating = performance.reduce((sum: number, perf: any) => sum + perf.overallRating, 0) / totalReviews;
+    const avgRating = totalReviews > 0 ? performance.reduce((sum: number, perf: any) => sum + perf.overallRating, 0) / totalReviews : 0;
     
     const ratingDistribution = {
       excellent: performance.filter((perf: any) => perf.overallRating >= 4.5).length,
