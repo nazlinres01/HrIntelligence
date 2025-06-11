@@ -1,33 +1,12 @@
-import React, { useState } from "react";
+import React from "react";
 import { Link } from "wouter";
 import { Button } from "@/components/ui/button";
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
-import { Badge } from "@/components/ui/badge";
 import { 
   Building2, 
   Users, 
-  Shield, 
-  BarChart3, 
-  Clock, 
   CreditCard,
-  CheckCircle,
   ArrowRight,
-  Star,
-  Globe,
-  Award,
-  TrendingUp,
-  Zap,
-  Lock,
-  Database,
-  Cloud,
-  HeadphonesIcon,
-  Mail,
-  Phone,
-  MapPin,
-  Facebook,
-  Twitter,
-  Linkedin,
-  Instagram
+  TrendingUp
 } from "lucide-react";
 
 export default function Landing() {
@@ -39,8 +18,7 @@ export default function Landing() {
       benefits: [
         "Merkezi çalışan veritabanı",
         "Organizasyon şeması görselleştirme",
-        "Rol ve yetki yönetimi",
-        "Çalışan self-servis portal"
+        "Rol ve yetki yönetimi"
       ]
     },
     {
@@ -50,8 +28,7 @@ export default function Landing() {
       benefits: [
         "Otomatik maaş hesaplama",
         "Vergi ve SGK entegrasyonu",
-        "Bordro raporlama",
-        "Avans ve prim yönetimi"
+        "Bordro raporlama"
       ]
     },
     {
@@ -61,33 +38,8 @@ export default function Landing() {
       benefits: [
         "Hedef belirleme ve takip",
         "360 derece geri bildirim",
-        "Performans raporları",
-        "Kariyer planlama"
+        "Performans raporları"
       ]
-    }
-  ];
-
-  const testimonials = [
-    {
-      name: "Ahmet Yılmaz",
-      position: "İK Direktörü",
-      company: "TechCorp A.Ş.",
-      content: "HRFlow Pro ile İK süreçlerimizi tamamen dijitalleştirdik. Zaman tasarrufu ve verimlilik artışı inanılmaz.",
-      rating: 5
-    },
-    {
-      name: "Elif Demir",
-      position: "Operasyon Müdürü", 
-      company: "InnovateLtd",
-      content: "500+ çalışanımızı kolayca yönetiyoruz. Sistem kullanımı çok sade ve anlaşılır.",
-      rating: 5
-    },
-    {
-      name: "Can Özkan",
-      position: "Kurucu",
-      company: "StartupCo",
-      content: "Küçük bir ekip olarak başladık, şimdi 100+ kişilik şirket olduk. HRFlow Pro ile büyüdük.",
-      rating: 5
     }
   ];
 
@@ -304,7 +256,7 @@ export default function Landing() {
                     {feature.description}
                   </p>
                   <div className="space-y-2">
-                    {feature.benefits.slice(0, 3).map((benefit, idx) => (
+                    {feature.benefits.map((benefit, idx) => (
                       <div key={idx} className="flex items-start text-sm text-slate-600 dark:text-slate-400">
                         <div className="w-1 h-1 bg-slate-400 rounded-full mt-2 mr-3 flex-shrink-0"></div>
                         {benefit}
@@ -368,56 +320,6 @@ export default function Landing() {
             
             <div>
               <h4 className="font-medium text-slate-900 dark:text-slate-100 mb-4">Ürün</h4>
-              <ul className="space-y-3 text-slate-600 dark:text-slate-400">
-                <li className="hover:text-slate-900 dark:hover:text-slate-100 cursor-pointer">Özellikler</li>
-                <li className="hover:text-slate-900 dark:hover:text-slate-100 cursor-pointer">Fiyatlandırma</li>
-                <li className="hover:text-slate-900 dark:hover:text-slate-100 cursor-pointer">Güvenlik</li>
-                <li className="hover:text-slate-900 dark:hover:text-slate-100 cursor-pointer">API</li>
-              </ul>
-            </div>
-            
-            <div>
-              <h4 className="font-medium text-slate-900 dark:text-slate-100 mb-4">Şirket</h4>
-              <ul className="space-y-3 text-slate-600 dark:text-slate-400">
-                <li className="hover:text-slate-900 dark:hover:text-slate-100 cursor-pointer">Hakkımızda</li>
-                <li className="hover:text-slate-900 dark:hover:text-slate-100 cursor-pointer">Kariyer</li>
-                <li className="hover:text-slate-900 dark:hover:text-slate-100 cursor-pointer">Blog</li>
-                <li className="hover:text-slate-900 dark:hover:text-slate-100 cursor-pointer">İletişim</li>
-              </ul>
-            </div>
-            
-            <div>
-              <h4 className="font-medium text-slate-900 dark:text-slate-100 mb-4">Destek</h4>
-              <ul className="space-y-3 text-slate-600 dark:text-slate-400">
-                <li className="hover:text-slate-900 dark:hover:text-slate-100 cursor-pointer">Yardım Merkezi</li>
-                <li className="hover:text-slate-900 dark:hover:text-slate-100 cursor-pointer">Dokümantasyon</li>
-                <li className="hover:text-slate-900 dark:hover:text-slate-100 cursor-pointer">Canlı Destek</li>
-                <li className="hover:text-slate-900 dark:hover:text-slate-100 cursor-pointer">Durum Sayfası</li>
-              </ul>
-            </div>
-          </div>
-          
-          <div className="pt-8 border-t border-slate-200 dark:border-slate-700 flex flex-col md:flex-row justify-between items-center">
-            <div className="text-slate-600 dark:text-slate-400 text-sm">
-              © 2024 HRFlow Pro. Tüm hakları saklıdır.
-            </div>
-            <div className="flex space-x-6 mt-4 md:mt-0">
-              <Link href="/privacy" className="text-slate-600 dark:text-slate-400 hover:text-slate-900 dark:hover:text-slate-100 text-sm">
-                Gizlilik
-              </Link>
-              <Link href="/terms" className="text-slate-600 dark:text-slate-400 hover:text-slate-900 dark:hover:text-slate-100 text-sm">
-                Şartlar
-              </Link>
-              <Link href="/cookies" className="text-slate-600 dark:text-slate-400 hover:text-slate-900 dark:hover:text-slate-100 text-sm">
-                Çerezler
-              </Link>
-            </div>
-          </div>
-        </div>
-      </footer>
-    </div>
-  );
-}
               <ul className="space-y-3 text-slate-600 dark:text-slate-400">
                 <li className="hover:text-slate-900 dark:hover:text-slate-100 cursor-pointer">Özellikler</li>
                 <li className="hover:text-slate-900 dark:hover:text-slate-100 cursor-pointer">Fiyatlandırma</li>
