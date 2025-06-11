@@ -130,120 +130,100 @@ export default function HRSpecialistDashboard() {
           <CardContent>
             <div className="text-2xl font-bold">{tasks?.completed || 0}</div>
             <p className="text-xs text-muted-foreground">
-                  <CheckCircle className="h-4 w-4 text-green-600 dark:text-green-400" />
-                  <span className="text-sm font-medium text-green-600 dark:text-green-400 ml-1">
-                    Bu hafta
-                  </span>
-                </div>
-              </div>
-              <div className="p-4 rounded-3xl bg-green-50 dark:bg-green-900/20 shadow-lg">
-                <CheckCircle className="h-10 w-10 text-green-600 dark:text-green-400" />
-              </div>
-            </div>
-            <div className="absolute inset-x-0 bottom-0 h-2 bg-gradient-to-r from-green-400 to-green-600 rounded-b-2xl"></div>
+              Bu hafta
+            </p>
           </CardContent>
         </Card>
       </div>
 
-      <div className="grid gap-8 md:grid-cols-2 lg:grid-cols-7">
-        {/* Enhanced Today's Interviews */}
-        <Card className="col-span-4 shadow-2xl border-0 bg-white/90 dark:bg-slate-800/90 backdrop-blur-xl rounded-3xl">
-          <CardHeader className="pb-6">
-            <CardTitle className="flex items-center text-2xl font-bold">
-              <div className="bg-gradient-to-r from-indigo-500 to-purple-600 rounded-2xl p-3 mr-4 shadow-lg">
-                <Users className="h-6 w-6 text-white" />
-              </div>
-              <span className="bg-gradient-to-r from-indigo-600 to-purple-600 bg-clip-text text-transparent">
-                Bugünkü Mülakatlar
-              </span>
+      <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-7">
+        {/* Corporate Today's Interviews */}
+        <Card className="col-span-4 bg-white dark:bg-slate-800 border">
+          <CardHeader>
+            <CardTitle className="flex items-center">
+              <Users className="h-5 w-5 text-indigo-600 mr-2" />
+              Bugünkü Mülakatlar
             </CardTitle>
-            <CardDescription className="text-slate-600 dark:text-slate-300 text-base">
+            <CardDescription>
               Planlanan mülakat takvimi ve adaylar
             </CardDescription>
           </CardHeader>
           <CardContent>
-            <div className="space-y-4">
+            <div className="space-y-3">
               {interviews.schedule && interviews.schedule.length > 0 ? interviews.schedule.slice(0, 4).map((interview: any, index: number) => (
-                <div key={index} className="group p-4 bg-gradient-to-r from-indigo-50 to-purple-50 dark:from-indigo-900/20 dark:to-purple-900/20 rounded-2xl border border-indigo-200 dark:border-indigo-700 hover:shadow-xl transition-all duration-300">
+                <div key={index} className="p-4 border rounded-lg hover:bg-gray-50 dark:hover:bg-slate-700 transition-colors">
                   <div className="flex items-center justify-between">
-                    <div className="flex items-center space-x-4">
-                      <div className="w-12 h-12 rounded-2xl bg-gradient-to-br from-indigo-500 to-purple-600 flex items-center justify-center shadow-lg group-hover:scale-110 transition-transform duration-300">
-                        <Users className="h-6 w-6 text-white" />
+                    <div className="flex items-center space-x-3">
+                      <div className="w-10 h-10 rounded-lg bg-indigo-100 dark:bg-indigo-900/30 flex items-center justify-center">
+                        <Users className="h-5 w-5 text-indigo-600" />
                       </div>
                       <div>
-                        <p className="text-base font-bold text-slate-900 dark:text-white">{interview.candidateName}</p>
-                        <p className="text-sm text-slate-600 dark:text-slate-300 font-medium">
+                        <p className="font-medium text-slate-900 dark:text-white">{interview.candidateName}</p>
+                        <p className="text-sm text-slate-600 dark:text-slate-300">
                           {interview.position} • {interview.time}
                         </p>
                       </div>
                     </div>
-                    <div className="flex space-x-3">
-                      <Button size="sm" className="bg-green-600 hover:bg-green-700 text-white shadow-lg hover:shadow-xl transition-all duration-300 rounded-xl">
-                        <Phone className="h-4 w-4 mr-2" />
+                    <div className="flex space-x-2">
+                      <Button size="sm" className="bg-green-600 hover:bg-green-700">
+                        <Phone className="h-4 w-4 mr-1" />
                         Ara
                       </Button>
-                      <Button size="sm" variant="outline" className="border-blue-300 text-blue-600 hover:bg-blue-50 dark:hover:bg-blue-900/20 rounded-xl">
-                        <Mail className="h-4 w-4 mr-2" />
+                      <Button size="sm" variant="outline">
+                        <Mail className="h-4 w-4 mr-1" />
                         Mail
                       </Button>
                     </div>
                   </div>
                 </div>
               )) : (
-                <div className="text-center py-12">
-                  <div className="bg-slate-100 dark:bg-slate-700 rounded-full w-20 h-20 flex items-center justify-center mx-auto mb-4">
-                    <Calendar className="h-10 w-10 text-slate-400" />
-                  </div>
-                  <p className="text-slate-600 dark:text-slate-300 font-medium text-lg">Bugün mülakat yok</p>
-                  <p className="text-sm text-slate-500 dark:text-slate-400 mt-2">Yeni mülakatlar planlandığında burada görünecek</p>
+                <div className="text-center py-6">
+                  <Calendar className="h-12 w-12 text-slate-400 mx-auto mb-2" />
+                  <p className="text-slate-600 dark:text-slate-300">Bugün mülakat yok</p>
                 </div>
               )}
             </div>
           </CardContent>
         </Card>
 
-        {/* Enhanced Quick Actions */}
-        <Card className="col-span-3 shadow-2xl border-0 bg-white/90 dark:bg-slate-800/90 backdrop-blur-xl rounded-3xl">
-          <CardHeader className="pb-6">
-            <CardTitle className="flex items-center text-2xl font-bold">
-              <div className="bg-gradient-to-r from-emerald-500 to-teal-600 rounded-2xl p-3 mr-4 shadow-lg">
-                <Briefcase className="h-6 w-6 text-white" />
-              </div>
-              <span className="bg-gradient-to-r from-emerald-600 to-teal-600 bg-clip-text text-transparent">
-                Hızlı İşlemler
-              </span>
+        {/* Corporate Quick Actions */}
+        <Card className="col-span-3 bg-white dark:bg-slate-800 border">
+          <CardHeader>
+            <CardTitle className="flex items-center">
+              <Briefcase className="h-5 w-5 text-emerald-600 mr-2" />
+              Hızlı İşlemler
             </CardTitle>
-            <CardDescription className="text-slate-600 dark:text-slate-300 text-base">
+            <CardDescription>
               Günlük kullanılan araçlar
             </CardDescription>
           </CardHeader>
-          <CardContent className="space-y-4">
-            <Button variant="outline" className="w-full justify-start p-4 h-auto bg-gradient-to-r from-blue-50 to-indigo-50 dark:from-blue-900/20 dark:to-indigo-900/20 border-blue-200 dark:border-blue-700 hover:shadow-lg transition-all duration-300 rounded-xl group">
-              <FileText className="h-5 w-5 mr-3 text-blue-600 dark:text-blue-400 group-hover:scale-110 transition-transform duration-300" />
-              <span className="font-semibold text-slate-900 dark:text-white">CV İnceleme</span>
+          <CardContent className="space-y-2">
+            <Button variant="outline" className="w-full justify-start">
+              <FileText className="h-4 w-4 mr-2" />
+              CV İnceleme
             </Button>
-            <Button variant="outline" className="w-full justify-start p-4 h-auto bg-gradient-to-r from-purple-50 to-pink-50 dark:from-purple-900/20 dark:to-pink-900/20 border-purple-200 dark:border-purple-700 hover:shadow-lg transition-all duration-300 rounded-xl group">
-              <Calendar className="h-5 w-5 mr-3 text-purple-600 dark:text-purple-400 group-hover:scale-110 transition-transform duration-300" />
-              <span className="font-semibold text-slate-900 dark:text-white">Mülakat Planla</span>
+            <Button variant="outline" className="w-full justify-start">
+              <Calendar className="h-4 w-4 mr-2" />
+              Mülakat Planla
             </Button>
-            <Button variant="outline" className="w-full justify-start p-4 h-auto bg-gradient-to-r from-green-50 to-emerald-50 dark:from-green-900/20 dark:to-emerald-900/20 border-green-200 dark:border-green-700 hover:shadow-lg transition-all duration-300 rounded-xl group">
-              <Phone className="h-5 w-5 mr-3 text-green-600 dark:text-green-400 group-hover:scale-110 transition-transform duration-300" />
-              <span className="font-semibold text-slate-900 dark:text-white">Aday Görüşmesi</span>
+            <Button variant="outline" className="w-full justify-start">
+              <Phone className="h-4 w-4 mr-2" />
+              Aday Görüşmesi
             </Button>
-            <Button variant="outline" className="w-full justify-start p-4 h-auto bg-gradient-to-r from-amber-50 to-orange-50 dark:from-amber-900/20 dark:to-orange-900/20 border-amber-200 dark:border-amber-700 hover:shadow-lg transition-all duration-300 rounded-xl group">
-              <GraduationCap className="h-5 w-5 mr-3 text-amber-600 dark:text-amber-400 group-hover:scale-110 transition-transform duration-300" />
-              <span className="font-semibold text-slate-900 dark:text-white">Oryantasyon</span>
+            <Button variant="outline" className="w-full justify-start">
+              <GraduationCap className="h-4 w-4 mr-2" />
+              Oryantasyon
             </Button>
-            <Button variant="outline" className="w-full justify-start p-4 h-auto bg-gradient-to-r from-cyan-50 to-blue-50 dark:from-cyan-900/20 dark:to-blue-900/20 border-cyan-200 dark:border-cyan-700 hover:shadow-lg transition-all duration-300 rounded-xl group">
-              <Briefcase className="h-5 w-5 mr-3 text-cyan-600 dark:text-cyan-400 group-hover:scale-110 transition-transform duration-300" />
-              <span className="font-semibold text-slate-900 dark:text-white">İş Teklifi</span>
+            <Button variant="outline" className="w-full justify-start">
+              <Briefcase className="h-4 w-4 mr-2" />
+              İş Teklifi
             </Button>
           </CardContent>
         </Card>
       </div>
 
-      {/* Application Pipeline */}
-      <Card>
+      {/* Corporate Application Pipeline */}
+      <Card className="bg-white dark:bg-slate-800 border">
         <CardHeader>
           <CardTitle>Başvuru Süreci</CardTitle>
           <CardDescription>
