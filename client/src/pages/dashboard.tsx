@@ -39,7 +39,8 @@ import {
   Mail,
   Phone,
   Key,
-  Edit
+  Edit,
+  Download
 } from "lucide-react";
 import { Link } from "wouter";
 
@@ -48,616 +49,225 @@ const inviteUserSchema = z.object({
   email: z.string().email("Geçerli bir e-posta adresi giriniz"),
   firstName: z.string().min(2, "Ad en az 2 karakter olmalı"),
   lastName: z.string().min(2, "Soyad en az 2 karakter olmalı"),
-  role: z.enum(["hr_manager", "hr_specialist", "admin"], {
-    required_error: "Lütfen bir rol seçiniz"
-  }),
-  phone: z.string().optional(),
+  role: z.enum(["admin", "hr_manager", "hr_specialist", "department_manager", "employee"])
 });
 
-const changePasswordSchema = z.object({
-  newPassword: z.string().min(6, "Şifre en az 6 karakter olmalı"),
-  confirmPassword: z.string(),
-}).refine((data) => data.newPassword === data.confirmPassword, {
-  message: "Şifreler eşleşmiyor",
-  path: ["confirmPassword"],
+const editUserSchema = z.object({
+  firstName: z.string().min(2, "Ad en az 2 karakter olmalı"),
+  lastName: z.string().min(2, "Soyad en az 2 karakter olmalı"),
+  email: z.string().email("Geçerli bir e-posta adresi giriniz"),
+  role: z.enum(["admin", "hr_manager", "hr_specialist", "department_manager", "employee"])
 });
 
-type InviteUserFormData = z.infer<typeof inviteUserSchema>;
-type ChangePasswordFormData = z.infer<typeof changePasswordSchema>;
+type InviteUserData = z.infer<typeof inviteUserSchema>;
+type EditUserData = z.infer<typeof editUserSchema>;
 
-function Dashboard() {
+export default function Dashboard() {
+  const [inviteDialogOpen, setInviteDialogOpen] = useState(false);
+  const [editDialogOpen, setEditDialogOpen] = useState(false);
+  const [selectedUser, setSelectedUser] = useState<any>(null);
   const { toast } = useToast();
-  const [isInviteDialogOpen, setIsInviteDialogOpen] = useState(false);
-  const [selectedUserForPassword, setSelectedUserForPassword] = useState<any>(null);
-  
-  const { data: stats, isLoading: statsLoading } = useQuery({
-    queryKey: ["/api/dashboard/stats"],
-  });
 
-  const { data: activities, isLoading: activitiesLoading } = useQuery({
-    queryKey: ["/api/activities"],
-  });
-
-  // Team management queries
-  const { data: teamMembers } = useQuery({
-    queryKey: ["/api/team"],
-  });
-
-  const { data: teamStats } = useQuery({
-    queryKey: ["/api/team/stats"],
-  });
-
-  // Forms
-  const inviteForm = useForm<InviteUserFormData>({
+  // Enhanced form configurations
+  const inviteForm = useForm<InviteUserData>({
     resolver: zodResolver(inviteUserSchema),
     defaultValues: {
       email: "",
       firstName: "",
       lastName: "",
-      role: "hr_specialist",
-      phone: "",
-    },
+      role: "employee"
+    }
   });
 
-  const passwordForm = useForm<ChangePasswordFormData>({
-    resolver: zodResolver(changePasswordSchema),
+  const editForm = useForm<EditUserData>({
+    resolver: zodResolver(editUserSchema),
     defaultValues: {
-      newPassword: "",
-      confirmPassword: "",
-    },
+      firstName: "",
+      lastName: "",
+      email: "",
+      role: "employee"
+    }
   });
 
-  // Mutations
+  // Corporate data queries
+  const { data: employeeStats } = useQuery({
+    queryKey: ['/api/stats/employees'],
+  });
+
+  const { data: teamMembers } = useQuery({
+    queryKey: ['/api/team/members'],
+  });
+
+  const { data: teamStats } = useQuery({
+    queryKey: ['/api/team/stats'],
+  });
+
+  const { data: activities } = useQuery({
+    queryKey: ['/api/activities'],
+  });
+
+  // Corporate mutations
   const inviteUserMutation = useMutation({
-    mutationFn: async (data: InviteUserFormData) => {
-      return await apiRequest("/api/team/invite", "POST", data);
+    mutationFn: async (data: InviteUserData) => {
+      return apiRequest('/api/team/invite', 'POST', data);
     },
     onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ["/api/team"] });
-      queryClient.invalidateQueries({ queryKey: ["/api/team/stats"] });
-      setIsInviteDialogOpen(false);
-      inviteForm.reset();
       toast({
         title: "Davet Gönderildi",
-        description: "Yeni İK uzmanı başarıyla sisteme eklendi.",
+        description: "Kullanıcı daveti başarıyla gönderildi.",
       });
+      setInviteDialogOpen(false);
+      inviteForm.reset();
+      queryClient.invalidateQueries({ queryKey: ['/api/team/members'] });
+      queryClient.invalidateQueries({ queryKey: ['/api/team/stats'] });
     },
     onError: (error: any) => {
       toast({
         title: "Hata",
-        description: error.message || "Kullanıcı eklenemedi.",
+        description: error.message || "Davet gönderilirken bir hata oluştu.",
         variant: "destructive",
       });
-    },
+    }
   });
 
-  const changePasswordMutation = useMutation({
-    mutationFn: async ({ userId, newPassword }: { userId: string; newPassword: string }) => {
-      return await apiRequest(`/api/team/${userId}/password`, "PATCH", { newPassword });
+  const updateUserMutation = useMutation({
+    mutationFn: async (data: EditUserData & { id: string }) => {
+      return apiRequest(`/api/team/members/${data.id}`, 'PATCH', data);
     },
     onSuccess: () => {
-      setSelectedUserForPassword(null);
-      passwordForm.reset();
       toast({
-        title: "Şifre Değiştirildi",
-        description: "Kullanıcı şifresi başarıyla güncellendi.",
+        title: "Güncellendi",
+        description: "Kullanıcı bilgileri başarıyla güncellendi.",
       });
+      setEditDialogOpen(false);
+      editForm.reset();
+      queryClient.invalidateQueries({ queryKey: ['/api/team/members'] });
     },
     onError: (error: any) => {
       toast({
         title: "Hata",
-        description: error.message || "Şifre değiştirilemedi.",
+        description: error.message || "Güncelleme sırasında bir hata oluştu.",
         variant: "destructive",
       });
-    },
+    }
   });
 
-  const updateUserStatusMutation = useMutation({
+  const toggleUserStatusMutation = useMutation({
     mutationFn: async ({ userId, isActive }: { userId: string; isActive: boolean }) => {
-      return await apiRequest(`/api/team/${userId}/status`, "PATCH", { isActive });
+      return apiRequest(`/api/team/members/${userId}/status`, 'PATCH', { isActive });
     },
     onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ["/api/team"] });
       toast({
         title: "Durum Güncellendi",
-        description: "Kullanıcı durumu başarıyla değiştirildi.",
+        description: "Kullanıcı durumu başarıyla güncellendi.",
       });
+      queryClient.invalidateQueries({ queryKey: ['/api/team/members'] });
     },
+    onError: (error: any) => {
+      toast({
+        title: "Hata",
+        description: error.message || "Durum güncellenirken bir hata oluştu.",
+        variant: "destructive",
+      });
+    }
   });
 
-  const getRoleDisplay = (role: string) => {
-    const roles = {
-      hr_manager: { label: "İK Müdürü", color: "bg-purple-100 text-purple-800" },
-      hr_specialist: { label: "İK Uzmanı", color: "bg-blue-100 text-blue-800" },
-      admin: { label: "Sistem Yöneticisi", color: "bg-green-100 text-green-800" }
+  const handleInviteUser = (data: InviteUserData) => {
+    inviteUserMutation.mutate(data);
+  };
+
+  const handleEditUser = (data: EditUserData) => {
+    if (selectedUser) {
+      updateUserMutation.mutate({ ...data, id: selectedUser.id });
+    }
+  };
+
+  const openEditDialog = (user: any) => {
+    setSelectedUser(user);
+    editForm.reset({
+      firstName: user.firstName,
+      lastName: user.lastName,
+      email: user.email,
+      role: user.role
+    });
+    setEditDialogOpen(true);
+  };
+
+  const getRoleDisplayName = (role: string) => {
+    const roleMap: Record<string, string> = {
+      "admin": "Sistem Yöneticisi",
+      "hr_manager": "İK Müdürü",
+      "hr_specialist": "İK Uzmanı", 
+      "department_manager": "Departman Müdürü",
+      "employee": "Çalışan"
     };
-    return roles[role as keyof typeof roles] || { label: role, color: "bg-gray-100 text-gray-800" };
-  };
-
-  const { data: employees, isLoading: employeesLoading } = useQuery({
-    queryKey: ["/api/employees"],
-  });
-
-  const { data: leaves, isLoading: leavesLoading } = useQuery({
-    queryKey: ["/api/leaves"],
-  });
-
-  const { data: performanceData } = useQuery({
-    queryKey: ["/api/dashboard/performance-chart"],
-  });
-
-  const statsCards = [
-    {
-      title: "Toplam Çalışan",
-      value: (stats && typeof (stats as any).totalEmployees === 'number') ? (stats as any).totalEmployees : 0,
-      change: "+2",
-      changeType: "increase" as const,
-      icon: Users,
-      color: "bg-blue-500",
-      bgColor: "bg-blue-50",
-      textColor: "text-blue-700",
-    },
-    {
-      title: "Aktif İzinler",
-      value: (stats && typeof (stats as any).activeLeaves === 'number') ? (stats as any).activeLeaves : 0,
-      change: "-1",
-      changeType: "decrease" as const,
-      icon: Calendar,
-      color: "bg-orange-500",
-      bgColor: "bg-orange-50",
-      textColor: "text-orange-700",
-    },
-    {
-      title: "Aylık Bordro",
-      value: (stats && (stats as any).monthlyPayroll) ? (stats as any).monthlyPayroll : "₺0",
-      change: "+5.2%",
-      changeType: "increase" as const,
-      icon: CreditCard,
-      color: "bg-green-500",
-      bgColor: "bg-green-50",
-      textColor: "text-green-700",
-    },
-    {
-      title: "Ortalama Performans",
-      value: (stats && (stats as any).avgPerformance) ? (stats as any).avgPerformance : "0%",
-      change: "+1.8%",
-      changeType: "increase" as const,
-      icon: BarChart3,
-      color: "bg-purple-500",
-      bgColor: "bg-purple-50",
-      textColor: "text-purple-700",
-    },
-  ];
-
-  const quickActions = [
-    {
-      title: "Yeni Çalışan Ekle",
-      description: "Sisteme yeni çalışan kaydı",
-      icon: UserPlus,
-      href: "/employees",
-      color: "bg-blue-50 hover:bg-blue-100 border-blue-200",
-      iconColor: "text-blue-600"
-    },
-    {
-      title: "İzin Talebini Onayla",
-      description: "Bekleyen izin taleplerini incele",
-      icon: CalendarCheck,
-      href: "/leaves",
-      color: "bg-green-50 hover:bg-green-100 border-green-200",
-      iconColor: "text-green-600"
-    },
-    {
-      title: "Bordro Hesapla",
-      description: "Aylık bordro hesaplaması",
-      icon: DollarSign,
-      href: "/payroll",
-      color: "bg-yellow-50 hover:bg-yellow-100 border-yellow-200",
-      iconColor: "text-yellow-600"
-    },
-    {
-      title: "Performans Raporu",
-      description: "Detaylı performans analizi",
-      icon: BarChart3,
-      href: "/performance",
-      color: "bg-purple-50 hover:bg-purple-100 border-purple-200",
-      iconColor: "text-purple-600"
-    },
-    {
-      title: "Aylık Rapor Oluştur",
-      description: "Kapsamlı aylık özet raporu",
-      icon: FileText,
-      href: "/reports",
-      color: "bg-indigo-50 hover:bg-indigo-100 border-indigo-200",
-      iconColor: "text-indigo-600"
-    },
-    {
-      title: "Duyuru Gönder",
-      description: "Şirket geneli duyuru paylaş",
-      icon: Megaphone,
-      href: "/settings",
-      color: "bg-orange-50 hover:bg-orange-100 border-orange-200",
-      iconColor: "text-orange-600"
-    }
-  ];
-
-  const recentActivities = Array.isArray(activities) ? activities.slice(0, 6) : [];
-  const recentEmployees = Array.isArray(employees) ? employees.slice(0, 4) : [];
-  const pendingLeaves = Array.isArray(leaves) ? leaves.filter((leave: any) => leave.status === 'pending').slice(0, 3) : [];
-
-  const getActivityIcon = (type: string) => {
-    switch (type) {
-      case 'employee_added': return UserPlus;
-      case 'leave_requested': return Calendar;
-      case 'payroll_processed': return CreditCard;
-      case 'performance_updated': return BarChart3;
-      default: return CheckCircle;
-    }
-  };
-
-  const getActivityColor = (type: string) => {
-    switch (type) {
-      case 'employee_added': return 'text-blue-500';
-      case 'leave_requested': return 'text-orange-500';
-      case 'payroll_processed': return 'text-green-500';
-      case 'performance_updated': return 'text-purple-500';
-      default: return 'text-gray-500';
-    }
+    return roleMap[role] || role;
   };
 
   return (
-    <div className="flex-1 space-y-6 p-6 max-w-full overflow-x-hidden overflow-y-auto h-full bg-gray-50 dark:bg-slate-900">
-      {/* Corporate Header */}
-      <div className="bg-white dark:bg-slate-800 rounded-lg shadow-sm border p-6">
-        <div className="flex items-center justify-between">
-          <div>
-            <h1 className="text-3xl font-bold text-slate-900 dark:text-white">
-              İK Yönetim Paneli
-            </h1>
-            <p className="text-slate-600 dark:text-slate-300 mt-1">
-              İnsan kaynakları süreçlerini yönetin ve analiz edin
-            </p>
-          </div>
-          <div className="bg-blue-600 rounded-lg p-3">
-            <BarChart3 className="h-6 w-6 text-white" />
-          </div>
-        </div>
-      </div>
-
-      {/* Corporate Stats Cards */}
-      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
-        {statsCards.map((stat, index) => {
-          const Icon = stat.icon;
-          return (
-            <Card key={index} className="bg-white dark:bg-slate-800 border hover:shadow-md transition-shadow duration-200">
-              <CardContent className="p-6">
-                <div className="flex items-center justify-between">
-                  <div className="space-y-2">
-                    <p className="text-sm font-medium text-slate-600 dark:text-slate-300">{stat.title}</p>
-                    <p className="text-2xl font-bold text-slate-900 dark:text-white">
-                      {statsLoading ? (
-                        <div className="animate-pulse bg-slate-200 dark:bg-slate-700 h-8 w-16 rounded"></div>
-                      ) : stat.value}
-                    </p>
-                    <div className="flex items-center space-x-1">
-                      {stat.changeType === 'increase' ? (
-                        <TrendingUp className="h-4 w-4 text-green-600" />
-                      ) : (
-                        <TrendingDown className="h-4 w-4 text-red-600" />
-                      )}
-                      <span className={`text-sm font-medium ${
-                        stat.changeType === 'increase' ? 'text-green-600' : 'text-red-600'
-                      }`}>
-                        {stat.change}
-                      </span>
-                      <span className="text-sm text-slate-500">bu ay</span>
-                    </div>
-                  </div>
-                  <div className={`p-3 rounded-lg ${stat.bgColor}`}>
-                    <Icon className={`h-6 w-6 ${stat.textColor}`} />
-                  </div>
-                </div>
-              </CardContent>
-            </Card>
-          );
-        })}
-      </div>
-
-      <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
-        {/* Corporate Quick Actions */}
-        <div className="lg:col-span-2">
-          <Card className="bg-white dark:bg-slate-800 border">
-            <CardHeader>
-              <CardTitle className="flex items-center">
-                <Plus className="h-5 w-5 text-blue-600 mr-2" />
-                Hızlı İşlemler
-              </CardTitle>
-            </CardHeader>
-            <CardContent>
-              <div className="grid grid-cols-2 gap-4">
-                {quickActions.map((action, index) => {
-                  const Icon = action.icon;
-                  return (
-                    <Link key={index} href={action.href}>
-                      <div className="p-4 rounded-lg border-2 border-gray-200 hover:border-blue-300 transition-colors cursor-pointer hover:bg-gray-50 dark:hover:bg-slate-700">
-                        <div className="flex items-start space-x-3">
-                          <div className={`p-2 rounded-lg ${action.color.split(' ')[0]}`}>
-                            <Icon className={`h-5 w-5 ${action.iconColor}`} />
-                          </div>
-                          <div className="flex-1 min-w-0">
-                            <h3 className="font-semibold text-slate-900 dark:text-white">
-                              {action.title}
-                            </h3>
-                            <p className="text-sm text-slate-600 dark:text-slate-300 mt-1">
-                              {action.description}
-                            </p>
-                          </div>
-                        </div>
-                      </div>
-                    </Link>
-                  );
-                })}
-              </div>
-            </CardContent>
-          </Card>
-        </div>
-
-        {/* Corporate Pending Leaves */}
-        <Card className="bg-white dark:bg-slate-800 border">
-          <CardHeader>
-            <CardTitle className="flex items-center justify-between">
-              <div className="flex items-center">
-                <Clock className="h-5 w-5 text-orange-600 mr-2" />
-                Bekleyen İzinler
-              </div>
-              <Link href="/leaves">
-                <Button variant="ghost" size="sm">
-                  <Eye className="h-4 w-4 mr-1" />
-                  Tümü
-                </Button>
-              </Link>
-            </CardTitle>
-          </CardHeader>
-          <CardContent>
-            {leavesLoading ? (
-              <div className="space-y-3">
-                {[1, 2, 3].map(i => (
-                  <div key={i} className="animate-pulse p-3 bg-gray-100 dark:bg-slate-700 rounded-lg">
-                    <div className="h-4 bg-gray-200 dark:bg-slate-600 rounded w-3/4 mb-2"></div>
-                    <div className="h-3 bg-gray-200 dark:bg-slate-600 rounded w-1/2"></div>
-                  </div>
-                ))}
-              </div>
-            ) : Array.isArray(leaves) && leaves.filter((leave: any) => leave.status === 'pending').length > 0 ? (
-              <div className="space-y-3">
-                {leaves.filter((leave: any) => leave.status === 'pending').slice(0, 3).map((leave: any) => (
-                  <div key={leave.id} className="p-3 bg-orange-50 dark:bg-orange-900/20 rounded-lg border border-orange-200 dark:border-orange-700">
-                    <div className="flex items-center justify-between">
-                      <div className="flex-1">
-                        <p className="font-medium text-slate-900 dark:text-white">İzin Talebi #{leave.id}</p>
-                        <p className="text-sm text-slate-600 dark:text-slate-300">
-                          {new Date(leave.startDate).toLocaleDateString('tr-TR')} - {new Date(leave.endDate).toLocaleDateString('tr-TR')}
-                        </p>
-                      </div>
-                      <Badge variant="secondary" className="bg-orange-100 text-orange-800">
-                        {leave.leaveType}
-                      </Badge>
-                    </div>
-                  </div>
-                ))}
-              </div>
-            ) : (
-              <div className="text-center py-6">
-                <CheckCircle className="h-12 w-12 text-green-500 mx-auto mb-2" />
-                <p className="text-slate-600 dark:text-slate-300">Bekleyen izin talebi yok</p>
-              </div>
-            )}
-          </CardContent>
-        </Card>
-      </div>
-
-      <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
-        {/* Corporate Recent Activities */}
-        <Card className="bg-white dark:bg-slate-800 border">
-          <CardHeader>
-            <CardTitle className="flex items-center">
-              <Clock className="h-5 w-5 text-green-600 mr-2" />
-              Son Aktiviteler
-            </CardTitle>
-          </CardHeader>
-          <CardContent>
-            {activitiesLoading ? (
-              <div className="space-y-3">
-                {[1, 2, 3, 4, 5].map(i => (
-                  <div key={i} className="animate-pulse p-3 bg-gray-100 dark:bg-slate-700 rounded-lg">
-                    <div className="h-4 bg-gray-200 dark:bg-slate-600 rounded w-3/4 mb-2"></div>
-                    <div className="h-3 bg-gray-200 dark:bg-slate-600 rounded w-1/2"></div>
-                  </div>
-                ))}
-              </div>
-            ) : recentActivities.length > 0 ? (
-              <div className="space-y-3">
-                {recentActivities.map((activity: any) => {
-                  const Icon = getActivityIcon(activity.type);
-                  const iconColor = getActivityColor(activity.type);
-                  
-                  return (
-                    <div key={activity.id} className="flex items-start space-x-3 p-3 rounded-lg hover:bg-gray-50 dark:hover:bg-slate-700 transition-colors">
-                      <div className={`p-2 rounded-lg bg-gray-100 dark:bg-slate-600`}>
-                        <Icon className={`h-4 w-4 ${iconColor}`} />
-                      </div>
-                      <div className="flex-1 min-w-0">
-                        <p className="text-sm font-medium text-slate-900 dark:text-white">
-                          {activity.description}
-                        </p>
-                        <p className="text-xs text-slate-500 dark:text-slate-400 mt-1">
-                          {new Date(activity.createdAt).toLocaleDateString('tr-TR')}
-                        </p>
-                      </div>
-                    </div>
-                  );
-                })}
-              </div>
-            ) : (
-              <div className="text-center py-6">
-                <Clock className="h-12 w-12 text-slate-400 mx-auto mb-2" />
-                <p className="text-slate-600 dark:text-slate-300">Henüz aktivite yok</p>
-              </div>
-            )}
-          </CardContent>
-        </Card>
-
-        {/* Corporate Recent Employees */}
-        <Card className="bg-white dark:bg-slate-800 border">
-          <CardHeader>
-            <CardTitle className="flex items-center justify-between">
-              <div className="flex items-center">
-                <Users className="h-5 w-5 text-blue-600 mr-2" />
-                Son Eklenen Çalışanlar
-              </div>
-              <Link href="/employees">
-                <Button variant="ghost" size="sm">
-                  <Eye className="h-4 w-4 mr-1" />
-                  Tümü
-                </Button>
-              </Link>
-            </CardTitle>
-          </CardHeader>
-          <CardContent>
-            {employeesLoading ? (
-              <div className="space-y-3">
-                {[1, 2, 3, 4].map(i => (
-                  <div key={i} className="animate-pulse flex items-center space-x-3 p-3 bg-gray-100 dark:bg-slate-700 rounded-lg">
-                    <div className="h-10 w-10 bg-gray-200 dark:bg-slate-600 rounded-full"></div>
-                    <div className="flex-1">
-                      <div className="h-4 bg-gray-200 dark:bg-slate-600 rounded w-3/4 mb-2"></div>
-                      <div className="h-3 bg-gray-200 dark:bg-slate-600 rounded w-1/2"></div>
-                    </div>
-                  </div>
-                ))}
-              </div>
-            ) : recentEmployees.length > 0 ? (
-              <div className="space-y-3">
-                {recentEmployees.map((employee: any) => (
-                  <div key={employee.id} className="flex items-center space-x-3 p-3 rounded-lg hover:bg-gray-50 dark:hover:bg-slate-700 transition-colors">
-                    <Avatar className="h-10 w-10">
-                      <AvatarFallback className="bg-blue-100 text-blue-600 font-medium">
-                        {employee.firstName?.[0]}{employee.lastName?.[0]}
-                      </AvatarFallback>
-                    </Avatar>
-                    <div className="flex-1 min-w-0">
-                      <p className="text-sm font-medium text-slate-900 dark:text-white">
-                        {employee.firstName} {employee.lastName}
-                      </p>
-                      <p className="text-xs text-slate-500 dark:text-slate-400">
-                        {employee.department} • {employee.position}
-                      </p>
-                    </div>
-                    <Badge 
-                      variant={employee.status === 'active' ? 'default' : 'secondary'}
-                      className={employee.status === 'active' ? 'bg-green-100 text-green-800' : ''}
-                    >
-                      {employee.status === 'active' ? 'Aktif' : 'Pasif'}
-                    </Badge>
-                  </div>
-                ))}
-              </div>
-            ) : (
-              <div className="text-center py-6">
-                <Users className="h-12 w-12 text-slate-400 mx-auto mb-2" />
-                <p className="text-slate-600 dark:text-slate-300">Henüz çalışan yok</p>
-              </div>
-            )}
-          </CardContent>
-        </Card>
-      </div>
-
-      {/* Corporate Performance Overview */}
-      {Array.isArray(performanceData) && performanceData.length > 0 && (
-        <Card className="bg-white dark:bg-slate-800 border">
-          <CardHeader>
-            <CardTitle className="flex items-center">
-              <BarChart3 className="h-5 w-5 text-purple-600 mr-2" />
-              Departman Performans Özeti
-            </CardTitle>
-          </CardHeader>
-          <CardContent>
-            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
-              {performanceData.map((dept: any, index: number) => (
-                <div key={index} className="p-4 bg-gray-50 dark:bg-slate-700 rounded-lg border hover:shadow-md transition-shadow">
-                  <div className="flex items-center justify-between mb-3">
-                    <h3 className="font-medium text-slate-900 dark:text-white">{dept.department}</h3>
-                    <span className="text-sm font-semibold text-purple-600">{dept.score}%</span>
-                  </div>
-                  <Progress value={dept.score} className="h-2 mb-3" />
-                  <p className={`text-xs px-2 py-1 rounded ${
-                    dept.score >= 80 
-                      ? 'bg-green-100 text-green-800' 
-                      : dept.score >= 60 
-                      ? 'bg-yellow-100 text-yellow-800' 
-                      : 'bg-red-100 text-red-800'
-                  }`}>
-                    {dept.score >= 80 ? 'Mükemmel' : dept.score >= 60 ? 'İyi' : 'Gelişmeli'}
-                  </p>
-                </div>
-              ))}
-            </div>
-          </CardContent>
-        </Card>
-      )}
-
-      {/* Team Management Section */}
-      <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 mt-6">
-        {/* Team Overview */}
-        <Card className="shadow-lg border-0">
-          <CardHeader>
+    <div className="min-h-screen bg-slate-50 dark:bg-slate-900">
+      <div className="p-6 space-y-6">
+        <div className="max-w-7xl mx-auto space-y-6">
+          {/* Corporate Header */}
+          <div className="bg-white dark:bg-slate-800 rounded-lg shadow-sm border border-slate-200 dark:border-slate-700 p-6">
             <div className="flex items-center justify-between">
-              <CardTitle className="flex items-center">
-                <Users className="mr-2 h-5 w-5 text-blue-600" />
-                Takım Yönetimi
-              </CardTitle>
-              <Dialog open={isInviteDialogOpen} onOpenChange={setIsInviteDialogOpen}>
-                <DialogTrigger asChild>
-                  <Button size="sm" className="bg-blue-600 hover:bg-blue-700">
-                    <Plus className="mr-2 h-4 w-4" />
-                    Yeni İK Uzmanı
-                  </Button>
-                </DialogTrigger>
-                <DialogContent className="sm:max-w-md">
-                  <DialogHeader>
-                    <DialogTitle>Yeni İK Uzmanı Ekle</DialogTitle>
-                    <DialogDescription>
-                      Yeni bir İK uzmanı davet edin ve rol atayın.
-                    </DialogDescription>
-                  </DialogHeader>
-                  <Form {...inviteForm}>
-                    <form onSubmit={inviteForm.handleSubmit((data) => inviteUserMutation.mutate(data))}>
-                      <div className="space-y-4">
-                        <FormField
-                          control={inviteForm.control}
-                          name="firstName"
-                          render={({ field }) => (
-                            <FormItem>
-                              <FormLabel>Ad</FormLabel>
-                              <FormControl>
-                                <Input {...field} placeholder="Ahmet" />
-                              </FormControl>
-                              <FormMessage />
-                            </FormItem>
-                          )}
-                        />
-                        <FormField
-                          control={inviteForm.control}
-                          name="lastName"
-                          render={({ field }) => (
-                            <FormItem>
-                              <FormLabel>Soyad</FormLabel>
-                              <FormControl>
-                                <Input {...field} placeholder="Yılmaz" />
-                              </FormControl>
-                              <FormMessage />
-                            </FormItem>
-                          )}
-                        />
+              <div>
+                <h1 className="text-3xl font-bold text-slate-900 dark:text-white">
+                  Operasyon Paneli
+                </h1>
+                <p className="text-slate-600 dark:text-slate-300 mt-1">
+                  Merkezi yönetim ve kontrol sistemi
+                </p>
+              </div>
+              <div className="flex space-x-2">
+                <Button variant="outline" size="sm" className="border-slate-300 dark:border-slate-600">
+                  <Download className="h-4 w-4 mr-2" />
+                  Rapor İndir
+                </Button>
+                <Dialog open={inviteDialogOpen} onOpenChange={setInviteDialogOpen}>
+                  <DialogTrigger asChild>
+                    <Button size="sm" className="bg-slate-900 hover:bg-slate-800 dark:bg-slate-700 dark:hover:bg-slate-600">
+                      <Plus className="h-4 w-4 mr-2" />
+                      Yeni Kullanıcı
+                    </Button>
+                  </DialogTrigger>
+                  <DialogContent className="sm:max-w-[425px]">
+                    <DialogHeader>
+                      <DialogTitle>Yeni Kullanıcı Davet Et</DialogTitle>
+                      <DialogDescription>
+                        Takımınıza yeni bir üye ekleyin.
+                      </DialogDescription>
+                    </DialogHeader>
+                    <Form {...inviteForm}>
+                      <form onSubmit={inviteForm.handleSubmit(handleInviteUser)} className="space-y-4">
+                        <div className="grid grid-cols-2 gap-4">
+                          <FormField
+                            control={inviteForm.control}
+                            name="firstName"
+                            render={({ field }) => (
+                              <FormItem>
+                                <FormLabel>Ad</FormLabel>
+                                <FormControl>
+                                  <Input placeholder="Ad" {...field} />
+                                </FormControl>
+                                <FormMessage />
+                              </FormItem>
+                            )}
+                          />
+                          <FormField
+                            control={inviteForm.control}
+                            name="lastName"
+                            render={({ field }) => (
+                              <FormItem>
+                                <FormLabel>Soyad</FormLabel>
+                                <FormControl>
+                                  <Input placeholder="Soyad" {...field} />
+                                </FormControl>
+                                <FormMessage />
+                              </FormItem>
+                            )}
+                          />
+                        </div>
                         <FormField
                           control={inviteForm.control}
                           name="email"
@@ -665,20 +275,7 @@ function Dashboard() {
                             <FormItem>
                               <FormLabel>E-posta</FormLabel>
                               <FormControl>
-                                <Input {...field} type="email" placeholder="ahmet@sirket.com" />
-                              </FormControl>
-                              <FormMessage />
-                            </FormItem>
-                          )}
-                        />
-                        <FormField
-                          control={inviteForm.control}
-                          name="phone"
-                          render={({ field }) => (
-                            <FormItem>
-                              <FormLabel>Telefon (Opsiyonel)</FormLabel>
-                              <FormControl>
-                                <Input {...field} placeholder="+90 555 123 4567" />
+                                <Input placeholder="ornek@sirket.com" {...field} />
                               </FormControl>
                               <FormMessage />
                             </FormItem>
@@ -693,12 +290,14 @@ function Dashboard() {
                               <Select onValueChange={field.onChange} defaultValue={field.value}>
                                 <FormControl>
                                   <SelectTrigger>
-                                    <SelectValue placeholder="Rol seçiniz" />
+                                    <SelectValue placeholder="Rol seçin" />
                                   </SelectTrigger>
                                 </FormControl>
                                 <SelectContent>
-                                  <SelectItem value="hr_manager">İK Müdürü</SelectItem>
+                                  <SelectItem value="employee">Çalışan</SelectItem>
+                                  <SelectItem value="department_manager">Departman Müdürü</SelectItem>
                                   <SelectItem value="hr_specialist">İK Uzmanı</SelectItem>
+                                  <SelectItem value="hr_manager">İK Müdürü</SelectItem>
                                   <SelectItem value="admin">Sistem Yöneticisi</SelectItem>
                                 </SelectContent>
                               </Select>
@@ -706,216 +305,318 @@ function Dashboard() {
                             </FormItem>
                           )}
                         />
-                      </div>
-                      <DialogFooter className="mt-6">
-                        <Button
-                          type="button"
-                          variant="outline"
-                          onClick={() => setIsInviteDialogOpen(false)}
-                        >
-                          İptal
-                        </Button>
-                        <Button type="submit" disabled={inviteUserMutation.isPending}>
-                          {inviteUserMutation.isPending ? "Ekleniyor..." : "Ekle"}
-                        </Button>
-                      </DialogFooter>
-                    </form>
-                  </Form>
-                </DialogContent>
-              </Dialog>
-            </div>
-          </CardHeader>
-          <CardContent>
-            {teamStats && (
-              <div className="grid grid-cols-2 gap-4 mb-6">
-                <div className="text-center">
-                  <div className="text-2xl font-bold text-blue-600">{teamStats.totalMembers}</div>
-                  <p className="text-sm text-gray-600">Toplam Üye</p>
-                </div>
-                <div className="text-center">
-                  <div className="text-2xl font-bold text-green-600">{teamStats.activeMembers}</div>
-                  <p className="text-sm text-gray-600">Aktif Üye</p>
-                </div>
+                        <DialogFooter>
+                          <Button type="button" variant="outline" onClick={() => setInviteDialogOpen(false)}>
+                            İptal
+                          </Button>
+                          <Button type="submit" disabled={inviteUserMutation.isPending}>
+                            {inviteUserMutation.isPending ? "Gönderiliyor..." : "Davet Gönder"}
+                          </Button>
+                        </DialogFooter>
+                      </form>
+                    </Form>
+                  </DialogContent>
+                </Dialog>
               </div>
-            )}
-            
-            <div className="space-y-3">
-              {teamMembers && Array.isArray(teamMembers) && teamMembers.map((member: any) => (
-                <div key={member.id} className="flex items-center justify-between p-3 bg-gray-50 rounded-lg">
-                  <div className="flex items-center space-x-3">
-                    <Avatar className="h-10 w-10">
-                      <AvatarImage src={member.profileImageUrl} />
-                      <AvatarFallback className="bg-blue-100 text-blue-600">
-                        {member.firstName?.[0]}{member.lastName?.[0]}
-                      </AvatarFallback>
-                    </Avatar>
-                    <div className="flex-1">
+            </div>
+          </div>
+
+          {/* Corporate Stats Cards */}
+          <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-4">
+            <Card className="bg-white dark:bg-slate-800 border-slate-200 dark:border-slate-700 hover:shadow-md transition-shadow duration-200">
+              <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
+                <CardTitle className="text-sm font-medium text-slate-700 dark:text-slate-300">Toplam Çalışan</CardTitle>
+                <Users className="h-4 w-4 text-slate-500" />
+              </CardHeader>
+              <CardContent>
+                <div className="text-2xl font-bold text-slate-900 dark:text-white">{employeeStats?.totalEmployees || 0}</div>
+                <p className="text-xs text-slate-600 dark:text-slate-400">
+                  +{employeeStats?.newThisMonth || 0} bu ay
+                </p>
+              </CardContent>
+            </Card>
+
+            <Card className="bg-white dark:bg-slate-800 border-slate-200 dark:border-slate-700 hover:shadow-md transition-shadow duration-200">
+              <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
+                <CardTitle className="text-sm font-medium text-slate-700 dark:text-slate-300">Aktif İzinler</CardTitle>
+                <Calendar className="h-4 w-4 text-slate-500" />
+              </CardHeader>
+              <CardContent>
+                <div className="text-2xl font-bold text-slate-900 dark:text-white">{employeeStats?.activeLeaves || 0}</div>
+                <p className="text-xs text-slate-600 dark:text-slate-400">
+                  Devam eden izinler
+                </p>
+              </CardContent>
+            </Card>
+
+            <Card className="bg-white dark:bg-slate-800 border-slate-200 dark:border-slate-700 hover:shadow-md transition-shadow duration-200">
+              <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
+                <CardTitle className="text-sm font-medium text-slate-700 dark:text-slate-300">Aylık Bordro</CardTitle>
+                <DollarSign className="h-4 w-4 text-slate-500" />
+              </CardHeader>
+              <CardContent>
+                <div className="text-2xl font-bold text-slate-900 dark:text-white">₺{employeeStats?.monthlyPayroll || "0"}</div>
+                <p className="text-xs text-slate-600 dark:text-slate-400">
+                  Toplam maliyet
+                </p>
+              </CardContent>
+            </Card>
+
+            <Card className="bg-white dark:bg-slate-800 border-slate-200 dark:border-slate-700 hover:shadow-md transition-shadow duration-200">
+              <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
+                <CardTitle className="text-sm font-medium text-slate-700 dark:text-slate-300">Ortalama Performans</CardTitle>
+                <BarChart3 className="h-4 w-4 text-slate-500" />
+              </CardHeader>
+              <CardContent>
+                <div className="text-2xl font-bold text-slate-900 dark:text-white">{employeeStats?.avgPerformance || "0"}%</div>
+                <p className="text-xs text-slate-600 dark:text-slate-400">
+                  Genel başarı oranı
+                </p>
+              </CardContent>
+            </Card>
+          </div>
+
+          {/* Corporate Team Overview and Activities */}
+          <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-3">
+            <Card className="lg:col-span-2 bg-white dark:bg-slate-800 border-slate-200 dark:border-slate-700">
+              <CardHeader>
+                <CardTitle className="text-slate-900 dark:text-white">Takım Üyeleri</CardTitle>
+              </CardHeader>
+              <CardContent>
+                <div className="space-y-4">
+                  {teamMembers?.slice(0, 8).map((member: any) => (
+                    <div key={member.id} className="flex items-center justify-between p-3 border border-slate-200 dark:border-slate-700 rounded-lg bg-slate-50 dark:bg-slate-750">
+                      <div className="flex items-center space-x-3">
+                        <Avatar className="h-8 w-8">
+                          <AvatarImage src={member.avatar} />
+                          <AvatarFallback className="bg-slate-200 dark:bg-slate-600 text-slate-700 dark:text-slate-300">
+                            {member.firstName?.[0]}{member.lastName?.[0]}
+                          </AvatarFallback>
+                        </Avatar>
+                        <div>
+                          <p className="text-sm font-medium text-slate-900 dark:text-white">
+                            {member.firstName} {member.lastName}
+                          </p>
+                          <p className="text-xs text-slate-600 dark:text-slate-400">
+                            {getRoleDisplayName(member.role)}
+                          </p>
+                        </div>
+                      </div>
                       <div className="flex items-center space-x-2">
-                        <p className="font-medium text-gray-900">
-                          {member.firstName} {member.lastName}
-                        </p>
-                        <Badge className={getRoleDisplay(member.role).color}>
-                          {getRoleDisplay(member.role).label}
+                        <Badge variant={member.isActive ? "default" : "secondary"} className="text-xs">
+                          {member.isActive ? "Aktif" : "Pasif"}
                         </Badge>
+                        <Button
+                          variant="ghost"
+                          size="sm"
+                          onClick={() => openEditDialog(member)}
+                          className="h-8 w-8 p-0"
+                        >
+                          <Edit className="h-3 w-3" />
+                        </Button>
+                        <Button
+                          variant="ghost"
+                          size="sm"
+                          onClick={() => toggleUserStatusMutation.mutate({ 
+                            userId: member.id, 
+                            isActive: !member.isActive 
+                          })}
+                          className="h-8 w-8 p-0"
+                        >
+                          {member.isActive ? <XCircle className="h-3 w-3" /> : <CheckCircle className="h-3 w-3" />}
+                        </Button>
                       </div>
-                      <div className="flex items-center space-x-4 mt-1">
-                        {member.email && (
-                          <div className="flex items-center text-xs text-gray-500">
-                            <Mail className="mr-1 h-3 w-3" />
-                            {member.email}
-                          </div>
-                        )}
-                        {member.phone && (
-                          <div className="flex items-center text-xs text-gray-500">
-                            <Phone className="mr-1 h-3 w-3" />
-                            {member.phone}  
-                          </div>
-                        )}
+                    </div>
+                  )) || (
+                    <div className="text-center py-6">
+                      <Users className="h-12 w-12 text-slate-400 mx-auto mb-2" />
+                      <p className="text-slate-600 dark:text-slate-300">Henüz takım üyesi yok</p>
+                    </div>
+                  )}
+                </div>
+              </CardContent>
+            </Card>
+
+            <Card className="bg-white dark:bg-slate-800 border-slate-200 dark:border-slate-700">
+              <CardHeader>
+                <CardTitle className="text-slate-900 dark:text-white">Son Aktiviteler</CardTitle>
+              </CardHeader>
+              <CardContent>
+                <div className="space-y-4">
+                  {activities?.slice(0, 6).map((activity: any, index: number) => (
+                    <div key={index} className="flex items-start space-x-3 text-sm">
+                      <div className="mt-1">
+                        <div className="w-2 h-2 bg-slate-400 rounded-full"></div>
+                      </div>
+                      <div className="flex-1">
+                        <p className="text-slate-900 dark:text-white">{activity.description}</p>
+                        <p className="text-xs text-slate-600 dark:text-slate-400">
+                          {new Date(activity.createdAt).toLocaleDateString('tr-TR')}
+                        </p>
                       </div>
                     </div>
-                  </div>
-                  <div className="flex items-center space-x-2">
-                    <Badge variant={member.isActive ? "default" : "secondary"}>
-                      {member.isActive ? "Aktif" : "Pasif"}
-                    </Badge>
-                    <Button
-                      size="sm"
-                      variant="outline"
-                      onClick={() => setSelectedUserForPassword(member)}
-                    >
-                      <Key className="h-4 w-4" />
-                    </Button>
-                    <Button
-                      size="sm"
-                      variant={member.isActive ? "destructive" : "default"}
-                      onClick={() => updateUserStatusMutation.mutate({
-                        userId: member.id,
-                        isActive: !member.isActive
-                      })}
-                    >
-                      {member.isActive ? "Pasifleştir" : "Aktifleştir"}
-                    </Button>
-                  </div>
-                </div>
-              ))}
-            </div>
-          </CardContent>
-        </Card>
-
-        {/* Team Statistics */}
-        <Card className="shadow-lg border-0">
-          <CardHeader>
-            <CardTitle className="flex items-center">
-              <BarChart3 className="mr-2 h-5 w-5 text-purple-600" />
-              Takım İstatistikleri
-            </CardTitle>
-          </CardHeader>
-          <CardContent>
-            {teamStats && (
-              <div className="space-y-6">
-                <div className="grid grid-cols-2 gap-4">
-                  <div className="text-center p-4 bg-purple-50 rounded-lg">
-                    <Shield className="mx-auto h-8 w-8 text-purple-600 mb-2" />
-                    <div className="text-xl font-bold text-purple-600">{teamStats.managers}</div>
-                    <p className="text-sm text-gray-600">İK Müdürü</p>
-                  </div>
-                  <div className="text-center p-4 bg-blue-50 rounded-lg">
-                    <Users className="mx-auto h-8 w-8 text-blue-600 mb-2" />
-                    <div className="text-xl font-bold text-blue-600">{teamStats.specialists}</div>
-                    <p className="text-sm text-gray-600">İK Uzmanı</p>
-                  </div>
-                </div>
-                
-                <div className="space-y-3">
-                  <div className="flex justify-between text-sm">
-                    <span>Aktif Kullanıcı Oranı</span>
-                    <span className="font-medium">
-                      {teamStats.totalMembers > 0 
-                        ? Math.round((teamStats.activeMembers / teamStats.totalMembers) * 100)
-                        : 0}%
-                    </span>
-                  </div>
-                  <Progress 
-                    value={teamStats.totalMembers > 0 
-                      ? (teamStats.activeMembers / teamStats.totalMembers) * 100 
-                      : 0} 
-                    className="h-2" 
-                  />
-                </div>
-
-                <div className="pt-4 border-t">
-                  <h4 className="font-medium mb-3">Yetki Dağılımı</h4>
-                  <div className="space-y-2">
-                    <div className="flex justify-between items-center">
-                      <span className="text-sm text-gray-600">Tam Yetki</span>
-                      <Badge variant="secondary">{teamStats.managers} kişi</Badge>
+                  )) || (
+                    <div className="text-center py-6">
+                      <Clock className="h-12 w-12 text-slate-400 mx-auto mb-2" />
+                      <p className="text-slate-600 dark:text-slate-300">Henüz aktivite yok</p>
                     </div>
-                    <div className="flex justify-between items-center">
-                      <span className="text-sm text-gray-600">Kısıtlı Yetki</span>
-                      <Badge variant="secondary">{teamStats.specialists} kişi</Badge>
+                  )}
+                </div>
+              </CardContent>
+            </Card>
+          </div>
+
+          {/* Corporate Quick Links */}
+          <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-4">
+            <Link href="/employees">
+              <Card className="bg-white dark:bg-slate-800 border-slate-200 dark:border-slate-700 hover:shadow-md transition-all duration-200 cursor-pointer group">
+                <CardContent className="p-6">
+                  <div className="flex items-center space-x-3">
+                    <div className="p-2 bg-slate-100 dark:bg-slate-700 rounded-lg group-hover:bg-slate-200 dark:group-hover:bg-slate-600 transition-colors">
+                      <Users className="h-5 w-5 text-slate-600 dark:text-slate-300" />
+                    </div>
+                    <div>
+                      <p className="font-medium text-slate-900 dark:text-white">Çalışanlar</p>
+                      <p className="text-sm text-slate-600 dark:text-slate-400">Personel yönetimi</p>
                     </div>
                   </div>
-                </div>
-              </div>
-            )}
-          </CardContent>
-        </Card>
+                </CardContent>
+              </Card>
+            </Link>
+
+            <Link href="/leaves">
+              <Card className="bg-white dark:bg-slate-800 border-slate-200 dark:border-slate-700 hover:shadow-md transition-all duration-200 cursor-pointer group">
+                <CardContent className="p-6">
+                  <div className="flex items-center space-x-3">
+                    <div className="p-2 bg-slate-100 dark:bg-slate-700 rounded-lg group-hover:bg-slate-200 dark:group-hover:bg-slate-600 transition-colors">
+                      <Calendar className="h-5 w-5 text-slate-600 dark:text-slate-300" />
+                    </div>
+                    <div>
+                      <p className="font-medium text-slate-900 dark:text-white">İzinler</p>
+                      <p className="text-sm text-slate-600 dark:text-slate-400">İzin yönetimi</p>
+                    </div>
+                  </div>
+                </CardContent>
+              </Card>
+            </Link>
+
+            <Link href="/payroll">
+              <Card className="bg-white dark:bg-slate-800 border-slate-200 dark:border-slate-700 hover:shadow-md transition-all duration-200 cursor-pointer group">
+                <CardContent className="p-6">
+                  <div className="flex items-center space-x-3">
+                    <div className="p-2 bg-slate-100 dark:bg-slate-700 rounded-lg group-hover:bg-slate-200 dark:group-hover:bg-slate-600 transition-colors">
+                      <CreditCard className="h-5 w-5 text-slate-600 dark:text-slate-300" />
+                    </div>
+                    <div>
+                      <p className="font-medium text-slate-900 dark:text-white">Bordro</p>
+                      <p className="text-sm text-slate-600 dark:text-slate-400">Maaş yönetimi</p>
+                    </div>
+                  </div>
+                </CardContent>
+              </Card>
+            </Link>
+
+            <Link href="/performance">
+              <Card className="bg-white dark:bg-slate-800 border-slate-200 dark:border-slate-700 hover:shadow-md transition-all duration-200 cursor-pointer group">
+                <CardContent className="p-6">
+                  <div className="flex items-center space-x-3">
+                    <div className="p-2 bg-slate-100 dark:bg-slate-700 rounded-lg group-hover:bg-slate-200 dark:group-hover:bg-slate-600 transition-colors">
+                      <BarChart3 className="h-5 w-5 text-slate-600 dark:text-slate-300" />
+                    </div>
+                    <div>
+                      <p className="font-medium text-slate-900 dark:text-white">Performans</p>
+                      <p className="text-sm text-slate-600 dark:text-slate-400">Değerlendirme</p>
+                    </div>
+                  </div>
+                </CardContent>
+              </Card>
+            </Link>
+          </div>
+        </div>
       </div>
 
-      {/* Password Change Dialog */}
-      <Dialog open={!!selectedUserForPassword} onOpenChange={() => setSelectedUserForPassword(null)}>
-        <DialogContent className="sm:max-w-md">
+      {/* Edit User Dialog */}
+      <Dialog open={editDialogOpen} onOpenChange={setEditDialogOpen}>
+        <DialogContent className="sm:max-w-[425px]">
           <DialogHeader>
-            <DialogTitle>Şifre Değiştir</DialogTitle>
+            <DialogTitle>Kullanıcı Düzenle</DialogTitle>
             <DialogDescription>
-              {selectedUserForPassword?.firstName} {selectedUserForPassword?.lastName} için yeni şifre belirleyin.
+              Kullanıcı bilgilerini güncelleyin.
             </DialogDescription>
           </DialogHeader>
-          <Form {...passwordForm}>
-            <form onSubmit={passwordForm.handleSubmit((data) => 
-              changePasswordMutation.mutate({
-                userId: selectedUserForPassword?.id,
-                newPassword: data.newPassword
-              })
-            )}>
-              <div className="space-y-4">
+          <Form {...editForm}>
+            <form onSubmit={editForm.handleSubmit(handleEditUser)} className="space-y-4">
+              <div className="grid grid-cols-2 gap-4">
                 <FormField
-                  control={passwordForm.control}
-                  name="newPassword"
+                  control={editForm.control}
+                  name="firstName"
                   render={({ field }) => (
                     <FormItem>
-                      <FormLabel>Yeni Şifre</FormLabel>
+                      <FormLabel>Ad</FormLabel>
                       <FormControl>
-                        <Input {...field} type="password" placeholder="En az 6 karakter" />
+                        <Input placeholder="Ad" {...field} />
                       </FormControl>
                       <FormMessage />
                     </FormItem>
                   )}
                 />
                 <FormField
-                  control={passwordForm.control}
-                  name="confirmPassword"
+                  control={editForm.control}
+                  name="lastName"
                   render={({ field }) => (
                     <FormItem>
-                      <FormLabel>Şifre Tekrar</FormLabel>
+                      <FormLabel>Soyad</FormLabel>
                       <FormControl>
-                        <Input {...field} type="password" placeholder="Şifreyi tekrar giriniz" />
+                        <Input placeholder="Soyad" {...field} />
                       </FormControl>
                       <FormMessage />
                     </FormItem>
                   )}
                 />
               </div>
-              <DialogFooter className="mt-6">
-                <Button
-                  type="button"
-                  variant="outline"
-                  onClick={() => setSelectedUserForPassword(null)}
-                >
+              <FormField
+                control={editForm.control}
+                name="email"
+                render={({ field }) => (
+                  <FormItem>
+                    <FormLabel>E-posta</FormLabel>
+                    <FormControl>
+                      <Input placeholder="ornek@sirket.com" {...field} />
+                    </FormControl>
+                    <FormMessage />
+                  </FormItem>
+                )}
+              />
+              <FormField
+                control={editForm.control}
+                name="role"
+                render={({ field }) => (
+                  <FormItem>
+                    <FormLabel>Rol</FormLabel>
+                    <Select onValueChange={field.onChange} value={field.value}>
+                      <FormControl>
+                        <SelectTrigger>
+                          <SelectValue placeholder="Rol seçin" />
+                        </SelectTrigger>
+                      </FormControl>
+                      <SelectContent>
+                        <SelectItem value="employee">Çalışan</SelectItem>
+                        <SelectItem value="department_manager">Departman Müdürü</SelectItem>
+                        <SelectItem value="hr_specialist">İK Uzmanı</SelectItem>
+                        <SelectItem value="hr_manager">İK Müdürü</SelectItem>
+                        <SelectItem value="admin">Sistem Yöneticisi</SelectItem>
+                      </SelectContent>
+                    </Select>
+                    <FormMessage />
+                  </FormItem>
+                )}
+              />
+              <DialogFooter>
+                <Button type="button" variant="outline" onClick={() => setEditDialogOpen(false)}>
                   İptal
                 </Button>
-                <Button type="submit" disabled={changePasswordMutation.isPending}>
-                  {changePasswordMutation.isPending ? "Değiştiriliyor..." : "Değiştir"}
+                <Button type="submit" disabled={updateUserMutation.isPending}>
+                  {updateUserMutation.isPending ? "Güncelleniyor..." : "Güncelle"}
                 </Button>
               </DialogFooter>
             </form>
@@ -925,5 +626,3 @@ function Dashboard() {
     </div>
   );
 }
-
-export default Dashboard;
