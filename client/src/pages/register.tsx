@@ -17,7 +17,18 @@ import {
   Eye, 
   EyeOff, 
   CheckCircle, 
-  XCircle
+  XCircle,
+  Mail,
+  User,
+  Briefcase,
+  Shield,
+  Users,
+  BarChart3,
+  Calendar,
+  ArrowRight,
+  Sparkles,
+  Award,
+  Globe
 } from "lucide-react";
 
 const passwordSchema = z.string()
@@ -49,7 +60,7 @@ const registerSchema = z.object({
     .refine(val => val === true, "Kullanım şartlarını kabul etmelisiniz"),
   acceptPrivacy: z.boolean()
     .refine(val => val === true, "Gizlilik politikasını kabul etmelisiniz"),
-  honeypot: z.string().max(0, "Güvenlik ihlali tespit edildi"),
+  honeypot: z.string().default(""),
 }).refine((data) => data.password === data.confirmPassword, {
   message: "Şifreler eşleşmiyor",
   path: ["confirmPassword"],
@@ -122,56 +133,139 @@ export default function Register() {
     onError: (error: any) => {
       toast({
         title: "Kayıt başarısız",
-        description: error.message || "Bir hata oluştu. Lütfen tekrar deneyin.",
+        description: error.message || "Bir hata oluştu",
         variant: "destructive",
       });
     },
   });
 
-  const onSubmit = (data: RegisterFormData) => {
-    registerMutation.mutate(data);
-  };
-
-  const getPasswordStrengthColor = () => {
-    if (passwordStrength < 50) return "bg-red-500";
-    if (passwordStrength < 75) return "bg-yellow-500";
-    return "bg-green-500";
-  };
-
   return (
-    <div className="min-h-screen bg-white dark:bg-slate-900">
-      <div className="container mx-auto px-6 py-8 max-w-2xl">
-        {/* Header - Microsoft Style */}
-        <div className="text-center mb-12">
-          <Link href="/" className="inline-flex items-center space-x-2 mb-8">
-            <div className="w-8 h-8 bg-slate-900 dark:bg-slate-100 flex items-center justify-center">
-              <Building2 className="h-5 w-5 text-white dark:text-slate-900" />
-            </div>
-            <span className="text-xl font-semibold text-slate-900 dark:text-slate-100">
-              HRFlow Pro
-            </span>
-          </Link>
-          
-          <h1 className="text-3xl font-light text-slate-900 dark:text-slate-100 mb-3">
-            Hesap oluşturun
-          </h1>
-          <p className="text-slate-600 dark:text-slate-400 font-light">
-            İK yönetim sisteminizi kurmaya başlayın
-          </p>
+    <div className="min-h-screen bg-gray-50 dark:bg-gray-900 flex">
+      {/* Left Panel - Visual */}
+      <div className="hidden lg:flex flex-1 bg-gradient-to-br from-indigo-600 via-purple-600 to-blue-700 relative overflow-hidden">
+        {/* Background Elements */}
+        <div className="absolute inset-0">
+          <div className="absolute top-40 left-40 w-60 h-60 bg-white/10 rounded-full blur-3xl animate-pulse"></div>
+          <div className="absolute bottom-20 right-20 w-80 h-80 bg-white/5 rounded-full blur-3xl animate-pulse" style={{animationDelay: '3s'}}></div>
+          <div className="absolute top-20 right-60 w-40 h-40 bg-white/10 rounded-full blur-3xl animate-pulse" style={{animationDelay: '1.5s'}}></div>
         </div>
 
-        {/* Register Form - Microsoft Style */}
-        <div className="bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 p-8">
+        <div className="relative z-10 flex items-center justify-center p-12 text-white">
+          <div className="max-w-lg">
+            <div className="inline-flex items-center px-4 py-2 bg-white/20 rounded-full text-white text-sm font-medium mb-6">
+              <Sparkles className="h-4 w-4 mr-2" />
+              Yeni nesil HR platformu
+            </div>
+            
+            <h3 className="text-4xl font-light mb-6">
+              İnsan kaynakları yönetiminde
+              <span className="block font-semibold">yeni bir dönem</span>
+            </h3>
+            <p className="text-xl font-light text-indigo-100 mb-8 leading-relaxed">
+              Şirketinizi geleceğe hazırlayın. Modern teknoloji ile desteklenen 
+              kapsamlı HR çözümleri ile fark yaratın.
+            </p>
+
+            {/* HR Benefits */}
+            <div className="space-y-6">
+              <div className="flex items-center space-x-4 p-4 bg-white/10 rounded-xl backdrop-blur-sm">
+                <div className="w-12 h-12 bg-white/20 rounded-xl flex items-center justify-center">
+                  <Users className="h-6 w-6" />
+                </div>
+                <div>
+                  <div className="font-semibold">Merkezi İK Yönetimi</div>
+                  <div className="text-sm text-indigo-200">Tüm çalışan verileri tek yerde</div>
+                </div>
+              </div>
+              
+              <div className="flex items-center space-x-4 p-4 bg-white/10 rounded-xl backdrop-blur-sm">
+                <div className="w-12 h-12 bg-white/20 rounded-xl flex items-center justify-center">
+                  <BarChart3 className="h-6 w-6" />
+                </div>
+                <div>
+                  <div className="font-semibold">Performans İzleme</div>
+                  <div className="text-sm text-indigo-200">Hedef bazlı değerlendirme</div>
+                </div>
+              </div>
+              
+              <div className="flex items-center space-x-4 p-4 bg-white/10 rounded-xl backdrop-blur-sm">
+                <div className="w-12 h-12 bg-white/20 rounded-xl flex items-center justify-center">
+                  <Calendar className="h-6 w-6" />
+                </div>
+                <div>
+                  <div className="font-semibold">Bordro Otomasyonu</div>
+                  <div className="text-sm text-indigo-200">Hatasız hesaplama ve raporlama</div>
+                </div>
+              </div>
+              
+              <div className="flex items-center space-x-4 p-4 bg-white/10 rounded-xl backdrop-blur-sm">
+                <div className="w-12 h-12 bg-white/20 rounded-xl flex items-center justify-center">
+                  <Shield className="h-6 w-6" />
+                </div>
+                <div>
+                  <div className="font-semibold">KVKK Uyumluluk</div>
+                  <div className="text-sm text-indigo-200">Veri güvenliği ve gizlilik</div>
+                </div>
+              </div>
+            </div>
+
+            {/* Trust Indicators */}
+            <div className="grid grid-cols-2 gap-6 mt-12 pt-8 border-t border-white/20">
+              <div>
+                <div className="text-2xl font-bold">KVKK</div>
+                <div className="text-sm text-indigo-200">Uyumlu</div>
+              </div>
+              <div>
+                <div className="text-2xl font-bold">ISO 27001</div>
+                <div className="text-sm text-indigo-200">Sertifikalı</div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        {/* Floating Elements */}
+        <div className="absolute top-10 left-10 w-16 h-16 bg-white/10 rounded-2xl flex items-center justify-center animate-bounce">
+          <Award className="h-8 w-8 text-white" />
+        </div>
+        <div className="absolute bottom-10 right-10 w-12 h-12 bg-white/10 rounded-xl flex items-center justify-center animate-pulse">
+          <Globe className="h-6 w-6 text-white" />
+        </div>
+      </div>
+
+      {/* Right Panel - Register Form */}
+      <div className="flex-1 flex items-center justify-center p-8">
+        <div className="w-full max-w-lg">
+          {/* Header */}
+          <div className="text-center mb-8">
+            <div className="flex items-center justify-center space-x-3 mb-6">
+              <div className="w-12 h-12 bg-blue-600 rounded-lg flex items-center justify-center">
+                <Building2 className="h-7 w-7 text-white" />
+              </div>
+              <h1 className="text-2xl font-semibold text-gray-900 dark:text-white">HR360</h1>
+            </div>
+            <h2 className="text-3xl font-light text-gray-900 dark:text-white mb-2">
+              Hesap oluşturun
+            </h2>
+            <p className="text-gray-600 dark:text-gray-400 font-light">
+              Modern HR yönetimine başlayın
+            </p>
+          </div>
+
+          {/* Register Form */}
           <Form {...form}>
-            <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-6">
+            <form onSubmit={form.handleSubmit((data) => registerMutation.mutate(data))} className="space-y-6">
               {/* Honeypot */}
               <FormField
                 control={form.control}
                 name="honeypot"
                 render={({ field }) => (
-                  <div className="hidden">
-                    <Input {...field} tabIndex={-1} autoComplete="off" />
-                  </div>
+                  <input
+                    {...field}
+                    type="text"
+                    style={{ display: "none" }}
+                    tabIndex={-1}
+                    autoComplete="off"
+                  />
                 )}
               />
 
@@ -182,34 +276,33 @@ export default function Register() {
                   name="firstName"
                   render={({ field }) => (
                     <FormItem>
-                      <FormLabel className="text-slate-900 dark:text-slate-100 font-medium">
+                      <FormLabel className="text-sm font-medium text-gray-700 dark:text-gray-300">
                         Ad
                       </FormLabel>
                       <FormControl>
-                        <Input 
-                          placeholder="Adınız" 
+                        <Input
+                          placeholder="Adınız"
                           {...field}
-                          className="border-slate-300 dark:border-slate-600 h-14 text-lg"
+                          className="h-12 border-gray-300 dark:border-gray-600 focus:border-blue-500 focus:ring-blue-500"
                         />
                       </FormControl>
                       <FormMessage />
                     </FormItem>
                   )}
                 />
-
                 <FormField
                   control={form.control}
                   name="lastName"
                   render={({ field }) => (
                     <FormItem>
-                      <FormLabel className="text-slate-900 dark:text-slate-100 font-medium">
+                      <FormLabel className="text-sm font-medium text-gray-700 dark:text-gray-300">
                         Soyad
                       </FormLabel>
                       <FormControl>
-                        <Input 
-                          placeholder="Soyadınız" 
+                        <Input
+                          placeholder="Soyadınız"
                           {...field}
-                          className="border-slate-300 dark:border-slate-600 h-14 text-lg"
+                          className="h-12 border-gray-300 dark:border-gray-600 focus:border-blue-500 focus:ring-blue-500"
                         />
                       </FormControl>
                       <FormMessage />
@@ -218,80 +311,91 @@ export default function Register() {
                 />
               </div>
 
+              {/* Email */}
               <FormField
                 control={form.control}
                 name="email"
                 render={({ field }) => (
                   <FormItem>
-                    <FormLabel className="text-slate-900 dark:text-slate-100 font-medium">
+                    <FormLabel className="text-sm font-medium text-gray-700 dark:text-gray-300">
                       E-posta
                     </FormLabel>
                     <FormControl>
-                      <Input 
-                        type="email" 
-                        placeholder="ornek@sirket.com" 
-                        {...field}
-                        className="border-slate-300 dark:border-slate-600 h-14 text-lg"
-                      />
+                      <div className="relative">
+                        <Mail className="absolute left-3 top-1/2 transform -translate-y-1/2 h-5 w-5 text-gray-400" />
+                        <Input
+                          type="email"
+                          placeholder="ornek@sirket.com"
+                          {...field}
+                          className="pl-10 h-12 border-gray-300 dark:border-gray-600 focus:border-blue-500 focus:ring-blue-500"
+                        />
+                      </div>
                     </FormControl>
                     <FormMessage />
                   </FormItem>
                 )}
               />
 
+              {/* Company Name */}
               <FormField
                 control={form.control}
                 name="companyName"
                 render={({ field }) => (
                   <FormItem>
-                    <FormLabel className="text-slate-900 dark:text-slate-100 font-medium">
+                    <FormLabel className="text-sm font-medium text-gray-700 dark:text-gray-300">
                       Şirket Adı
                     </FormLabel>
                     <FormControl>
-                      <Input 
-                        placeholder="Şirket adınız" 
-                        {...field}
-                        className="border-slate-300 dark:border-slate-600 h-14 text-lg"
-                      />
+                      <div className="relative">
+                        <Building2 className="absolute left-3 top-1/2 transform -translate-y-1/2 h-5 w-5 text-gray-400" />
+                        <Input
+                          placeholder="Şirket adınız"
+                          {...field}
+                          className="pl-10 h-12 border-gray-300 dark:border-gray-600 focus:border-blue-500 focus:ring-blue-500"
+                        />
+                      </div>
                     </FormControl>
                     <FormMessage />
                   </FormItem>
                 )}
               />
 
+              {/* Position and Role */}
               <div className="grid grid-cols-2 gap-4">
                 <FormField
                   control={form.control}
                   name="position"
                   render={({ field }) => (
                     <FormItem>
-                      <FormLabel className="text-slate-900 dark:text-slate-100 font-medium">
+                      <FormLabel className="text-sm font-medium text-gray-700 dark:text-gray-300">
                         Pozisyon
                       </FormLabel>
                       <FormControl>
-                        <Input 
-                          placeholder="İK Müdürü" 
-                          {...field}
-                          className="border-slate-300 dark:border-slate-600 h-14 text-lg"
-                        />
+                        <div className="relative">
+                          <Briefcase className="absolute left-3 top-1/2 transform -translate-y-1/2 h-5 w-5 text-gray-400" />
+                          <Input
+                            placeholder="İK Müdürü"
+                            {...field}
+                            className="pl-10 h-12 border-gray-300 dark:border-gray-600 focus:border-blue-500 focus:ring-blue-500"
+                          />
+                        </div>
                       </FormControl>
                       <FormMessage />
                     </FormItem>
                   )}
                 />
 
-                {/* Role Selection */}
                 <FormField
                   control={form.control}
                   name="role"
                   render={({ field }) => (
                     <FormItem>
-                      <FormLabel className="text-slate-900 dark:text-slate-100 font-medium">
+                      <FormLabel className="text-sm font-medium text-gray-700 dark:text-gray-300">
                         Rol
                       </FormLabel>
                       <Select onValueChange={field.onChange} defaultValue={field.value}>
                         <FormControl>
-                          <SelectTrigger className="h-14 text-lg">
+                          <SelectTrigger className="h-12 border-gray-300 dark:border-gray-600 focus:border-blue-500 focus:ring-blue-500">
                             <SelectValue placeholder="Rolünüzü seçin" />
                           </SelectTrigger>
                         </FormControl>
@@ -309,14 +413,13 @@ export default function Register() {
                 />
               </div>
 
-
-
+              {/* Password */}
               <FormField
                 control={form.control}
                 name="password"
                 render={({ field }) => (
                   <FormItem>
-                    <FormLabel className="text-slate-900 dark:text-slate-100 font-medium">
+                    <FormLabel className="text-sm font-medium text-gray-700 dark:text-gray-300">
                       Şifre
                     </FormLabel>
                     <FormControl>
@@ -325,30 +428,41 @@ export default function Register() {
                           type={showPassword ? "text" : "password"}
                           placeholder="Güçlü bir şifre oluşturun"
                           {...field}
-                          className="border-slate-300 dark:border-slate-600 h-14 text-lg pr-12"
+                          className="pr-10 h-12 border-gray-300 dark:border-gray-600 focus:border-blue-500 focus:ring-blue-500"
                         />
                         <Button
                           type="button"
                           variant="ghost"
                           size="sm"
-                          className="absolute right-0 top-0 h-full px-3"
+                          className="absolute right-0 top-0 h-12 px-3 hover:bg-transparent"
                           onClick={() => setShowPassword(!showPassword)}
                         >
                           {showPassword ? (
-                            <EyeOff className="h-4 w-4 text-slate-600 dark:text-slate-400" />
+                            <EyeOff className="h-4 w-4 text-gray-400" />
                           ) : (
-                            <Eye className="h-4 w-4 text-slate-600 dark:text-slate-400" />
+                            <Eye className="h-4 w-4 text-gray-400" />
                           )}
                         </Button>
                       </div>
                     </FormControl>
+                    
+                    {/* Password Strength Indicator */}
                     {password && (
                       <div className="mt-2">
                         <div className="flex items-center justify-between text-xs mb-1">
-                          <span className="text-slate-600 dark:text-slate-400">Şifre gücü</span>
-                          <span className="text-slate-600 dark:text-slate-400">{passwordStrength}%</span>
+                          <span className="text-gray-500 dark:text-gray-400">Şifre gücü</span>
+                          <span className={
+                            passwordStrength < 50 ? "text-red-500" :
+                            passwordStrength < 75 ? "text-yellow-500" : "text-green-500"
+                          }>
+                            {passwordStrength < 50 ? "Zayıf" :
+                             passwordStrength < 75 ? "Orta" : "Güçlü"}
+                          </span>
                         </div>
-                        <Progress value={passwordStrength} className="h-1" />
+                        <Progress 
+                          value={passwordStrength} 
+                          className="h-2"
+                        />
                       </div>
                     )}
                     <FormMessage />
@@ -356,12 +470,13 @@ export default function Register() {
                 )}
               />
 
+              {/* Confirm Password */}
               <FormField
                 control={form.control}
                 name="confirmPassword"
                 render={({ field }) => (
                   <FormItem>
-                    <FormLabel className="text-slate-900 dark:text-slate-100 font-medium">
+                    <FormLabel className="text-sm font-medium text-gray-700 dark:text-gray-300">
                       Şifre Tekrarı
                     </FormLabel>
                     <FormControl>
@@ -370,19 +485,19 @@ export default function Register() {
                           type={showConfirmPassword ? "text" : "password"}
                           placeholder="Şifrenizi tekrar girin"
                           {...field}
-                          className="border-slate-300 dark:border-slate-600 h-14 text-lg pr-12"
+                          className="pr-10 h-12 border-gray-300 dark:border-gray-600 focus:border-blue-500 focus:ring-blue-500"
                         />
                         <Button
                           type="button"
                           variant="ghost"
                           size="sm"
-                          className="absolute right-0 top-0 h-full px-3"
+                          className="absolute right-0 top-0 h-12 px-3 hover:bg-transparent"
                           onClick={() => setShowConfirmPassword(!showConfirmPassword)}
                         >
                           {showConfirmPassword ? (
-                            <EyeOff className="h-4 w-4 text-slate-600 dark:text-slate-400" />
+                            <EyeOff className="h-4 w-4 text-gray-400" />
                           ) : (
-                            <Eye className="h-4 w-4 text-slate-600 dark:text-slate-400" />
+                            <Eye className="h-4 w-4 text-gray-400" />
                           )}
                         </Button>
                       </div>
@@ -406,10 +521,14 @@ export default function Register() {
                         />
                       </FormControl>
                       <div className="space-y-1 leading-none">
-                        <FormLabel className="text-sm text-slate-700 dark:text-slate-300">
-                          <Link href="/terms" className="hover:underline">Kullanım Şartları</Link>'nı kabul ediyorum
+                        <FormLabel className="text-sm text-gray-600 dark:text-gray-400">
+                          <Link href="/terms" className="text-blue-600 hover:text-blue-500 underline">
+                            Kullanım şartlarını
+                          </Link>{" "}
+                          kabul ediyorum
                         </FormLabel>
                       </div>
+                      <FormMessage />
                     </FormItem>
                   )}
                 />
@@ -426,19 +545,24 @@ export default function Register() {
                         />
                       </FormControl>
                       <div className="space-y-1 leading-none">
-                        <FormLabel className="text-sm text-slate-700 dark:text-slate-300">
-                          <Link href="/privacy" className="hover:underline">Gizlilik Politikası</Link>'nı kabul ediyorum
+                        <FormLabel className="text-sm text-gray-600 dark:text-gray-400">
+                          <Link href="/privacy" className="text-blue-600 hover:text-blue-500 underline">
+                            Gizlilik politikasını
+                          </Link>{" "}
+                          kabul ediyorum
                         </FormLabel>
                       </div>
+                      <FormMessage />
                     </FormItem>
                   )}
                 />
               </div>
 
+              {/* Register Button */}
               <Button
                 type="submit"
                 disabled={registerMutation.isPending}
-                className="w-full bg-slate-900 hover:bg-slate-800 text-white h-14 font-medium text-lg"
+                className="w-full bg-blue-600 hover:bg-blue-700 text-white h-12 font-medium disabled:opacity-50"
               >
                 {registerMutation.isPending ? (
                   <div className="flex items-center">
@@ -446,27 +570,37 @@ export default function Register() {
                     Hesap oluşturuluyor...
                   </div>
                 ) : (
-                  "Hesap oluştur"
+                  <>
+                    Hesap oluştur
+                    <ArrowRight className="ml-2 h-4 w-4" />
+                  </>
                 )}
               </Button>
 
               {/* Login Link */}
-              <div className="text-center mt-8">
-                <p className="text-slate-600 dark:text-slate-400">
+              <div className="text-center">
+                <p className="text-sm text-gray-600 dark:text-gray-400">
                   Zaten hesabınız var mı?{" "}
-                  <Link href="/login" className="text-slate-900 dark:text-slate-100 hover:underline font-medium">
+                  <Link href="/login" className="text-blue-600 hover:text-blue-500 font-medium">
                     Giriş yapın
                   </Link>
                 </p>
               </div>
             </form>
           </Form>
-        </div>
 
-        {/* Legal Links */}
-        <div className="text-center mt-8 text-xs text-slate-500 dark:text-slate-400 space-x-4">
-          <Link href="/privacy" className="hover:text-slate-700 dark:hover:text-slate-300">Gizlilik</Link>
-          <Link href="/terms" className="hover:text-slate-700 dark:hover:text-slate-300">Şartlar</Link>
+          {/* Security Notice */}
+          <div className="mt-8 p-4 bg-green-50 dark:bg-green-900/20 rounded-lg border border-green-200 dark:border-green-800">
+            <div className="flex items-center space-x-2">
+              <Shield className="h-5 w-5 text-green-600 dark:text-green-400" />
+              <span className="text-sm text-green-800 dark:text-green-200 font-medium">
+                Güvenli kayıt
+              </span>
+            </div>
+            <p className="text-xs text-green-700 dark:text-green-300 mt-1">
+              Tüm verileriniz şifrelenir ve KVKK standartlarında korunur
+            </p>
+          </div>
         </div>
       </div>
     </div>

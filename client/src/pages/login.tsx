@@ -1,4 +1,4 @@
-import { useState, useEffect } from "react";
+import React, { useState, useEffect } from "react";
 import { Link, useLocation } from "wouter";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
@@ -10,21 +10,26 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from "@/components/ui/form";
 import { Checkbox } from "@/components/ui/checkbox";
-import { Alert, AlertDescription } from "@/components/ui/alert";
 import { 
-  Building2, 
   Eye, 
   EyeOff, 
-  Lock, 
+  Shield, 
+  Users,
+  BarChart3,
+  Calendar,
+  Building2,
+  CheckCircle,
+  ArrowRight,
+  Lock,
   Mail,
-  AlertTriangle
+  Globe
 } from "lucide-react";
 
 const loginSchema = z.object({
-  email: z.string().email("Geçerli bir e-posta adresi girin").toLowerCase(),
-  password: z.string().min(1, "Şifre gerekli"),
-  rememberMe: z.boolean().optional(),
-  honeypot: z.string().max(0, "Güvenlik ihlali tespit edildi"),
+  email: z.string().email("Geçerli bir e-posta adresi girin"),
+  password: z.string().min(1, "Şifre gereklidir"),
+  rememberMe: z.boolean().default(false),
+  honeypot: z.string().default(""),
 });
 
 type LoginFormData = z.infer<typeof loginSchema>;
@@ -36,7 +41,6 @@ export default function Login() {
   const [loginAttempts, setLoginAttempts] = useState(0);
   const [isBlocked, setIsBlocked] = useState(false);
   const [blockTimeLeft, setBlockTimeLeft] = useState(0);
-  const [securityWarnings, setSecurityWarnings] = useState<string[]>([]);
 
   const form = useForm<LoginFormData>({
     resolver: zodResolver(loginSchema),
@@ -48,31 +52,15 @@ export default function Login() {
     },
   });
 
-  // Security checks
-  useEffect(() => {
-    const warnings: string[] = [];
-    
-    if (navigator.userAgent.includes('headless') || 
-        !navigator.webdriver === undefined ||
-        navigator.languages.length === 0) {
-      warnings.push("Şüpheli tarayıcı aktivitesi tespit edildi");
-    }
-
-    if ((navigator as any).connection && (navigator as any).connection.type === 'none') {
-      warnings.push("Ağ bağlantısı anormalliği tespit edildi");
-    }
-
-    setSecurityWarnings(warnings);
-  }, []);
-
-  // Block countdown
+  // Block timer effect
   useEffect(() => {
     let interval: NodeJS.Timeout;
     if (isBlocked && blockTimeLeft > 0) {
       interval = setInterval(() => {
-        setBlockTimeLeft(prev => {
+        setBlockTimeLeft((prev) => {
           if (prev <= 1) {
             setIsBlocked(false);
+            setLoginAttempts(0);
             return 0;
           }
           return prev - 1;
@@ -118,155 +106,113 @@ export default function Login() {
         setIsBlocked(true);
         setBlockTimeLeft(300);
         toast({
-          title: "Hesap geçici olarak bloke edildi",
-          description: "Güvenlik nedeniyle 5 dakika bekleyin.",
+          title: "Hesap geçici olarak kilitlendi",
+          description: "Çok fazla başarısız deneme. 5 dakika bekleyin.",
           variant: "destructive",
         });
       } else {
         toast({
           title: "Giriş başarısız",
-          description: `${error.message || "E-posta veya şifre hatalı"}. ${3 - newAttempts} deneme hakkınız kaldı.`,
+          description: error.message || "E-posta veya şifre hatalı",
           variant: "destructive",
         });
       }
     },
   });
 
-  const onSubmit = (data: LoginFormData) => {
-    loginMutation.mutate(data);
-  };
-
-  const formatTime = (seconds: number) => {
-    const mins = Math.floor(seconds / 60);
-    const secs = seconds % 60;
-    return `${mins}:${secs.toString().padStart(2, '0')}`;
-  };
-
   return (
-    <div className="min-h-screen bg-white dark:bg-slate-900">
-      <div className="container mx-auto px-6 py-8 max-w-lg">
-        {/* Header - Microsoft Style */}
-        <div className="text-center mb-12">
-          <Link href="/" className="inline-flex items-center space-x-2 mb-8">
-            <div className="w-8 h-8 bg-slate-900 dark:bg-slate-100 flex items-center justify-center">
-              <Building2 className="h-5 w-5 text-white dark:text-slate-900" />
-            </div>
-            <span className="text-xl font-semibold text-slate-900 dark:text-slate-100">
-              HRFlow Pro
-            </span>
-          </Link>
-          
-          <h1 className="text-3xl font-light text-slate-900 dark:text-slate-100 mb-3">
-            Oturum açın
-          </h1>
-          <p className="text-slate-600 dark:text-slate-400 font-light">
-            Çalışma alanınıza erişmek için giriş yapın
-          </p>
-        </div>
-
-        {/* Security Warnings */}
-        {securityWarnings.length > 0 && (
-          <Alert className="mb-6 border-slate-200 dark:border-slate-700 bg-slate-50 dark:bg-slate-800">
-            <AlertTriangle className="h-4 w-4 text-slate-600 dark:text-slate-400" />
-            <AlertDescription className="text-slate-700 dark:text-slate-300">
-              <div className="text-sm font-medium">Güvenlik Uyarısı</div>
-              <ul className="mt-1 space-y-1">
-                {securityWarnings.map((warning, index) => (
-                  <li key={index} className="text-sm text-slate-600 dark:text-slate-400">{warning}</li>
-                ))}
-              </ul>
-            </AlertDescription>
-          </Alert>
-        )}
-
-        {/* Rate Limiting Warning */}
-        {isBlocked && (
-          <Alert className="mb-6 border-slate-200 dark:border-slate-700 bg-slate-50 dark:bg-slate-800">
-            <Lock className="h-4 w-4 text-slate-600 dark:text-slate-400" />
-            <AlertDescription className="text-slate-700 dark:text-slate-300">
-              <div className="flex items-center justify-between">
-                <span className="text-sm font-medium">Hesap geçici olarak bloke edildi</span>
-                <span className="text-sm text-slate-600 dark:text-slate-400">
-                  {formatTime(blockTimeLeft)}
-                </span>
+    <div className="min-h-screen bg-gray-50 dark:bg-gray-900 flex">
+      {/* Left Panel - Login Form */}
+      <div className="flex-1 flex items-center justify-center p-8">
+        <div className="w-full max-w-md">
+          {/* Header */}
+          <div className="text-center mb-8">
+            <div className="flex items-center justify-center space-x-3 mb-6">
+              <div className="w-12 h-12 bg-blue-600 rounded-lg flex items-center justify-center">
+                <Building2 className="h-7 w-7 text-white" />
               </div>
-            </AlertDescription>
-          </Alert>
-        )}
+              <h1 className="text-2xl font-semibold text-gray-900 dark:text-white">HR360</h1>
+            </div>
+            <h2 className="text-3xl font-light text-gray-900 dark:text-white mb-2">
+              Hesabınıza giriş yapın
+            </h2>
+            <p className="text-gray-600 dark:text-gray-400 font-light">
+              HR yönetim platformuna devam edin
+            </p>
+          </div>
 
-        {/* Login Form - Microsoft Style */}
-        <div className="bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 p-8">
+          {/* Login Form */}
           <Form {...form}>
-            <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-6">
+            <form onSubmit={form.handleSubmit((data) => loginMutation.mutate(data))} className="space-y-6">
               {/* Honeypot */}
               <FormField
                 control={form.control}
                 name="honeypot"
                 render={({ field }) => (
-                  <div className="hidden">
-                    <Input {...field} tabIndex={-1} autoComplete="off" />
-                  </div>
+                  <input
+                    {...field}
+                    type="text"
+                    style={{ display: "none" }}
+                    tabIndex={-1}
+                    autoComplete="off"
+                  />
                 )}
               />
 
+              {/* Email */}
               <FormField
                 control={form.control}
                 name="email"
                 render={({ field }) => (
                   <FormItem>
-                    <FormLabel className="text-slate-900 dark:text-slate-100 font-medium">
+                    <FormLabel className="text-sm font-medium text-gray-700 dark:text-gray-300">
                       E-posta
                     </FormLabel>
                     <FormControl>
-                      <Input 
-                        type="email" 
-                        placeholder="ornek@sirket.com" 
-                        {...field}
-                        disabled={isBlocked}
-                        className="border-slate-300 dark:border-slate-600 h-14 text-lg"
-                        autoComplete="email"
-                      />
+                      <div className="relative">
+                        <Mail className="absolute left-3 top-1/2 transform -translate-y-1/2 h-5 w-5 text-gray-400" />
+                        <Input
+                          type="email"
+                          placeholder="ornek@sirket.com"
+                          {...field}
+                          className="pl-10 h-12 border-gray-300 dark:border-gray-600 focus:border-blue-500 focus:ring-blue-500"
+                        />
+                      </div>
                     </FormControl>
                     <FormMessage />
                   </FormItem>
                 )}
               />
 
+              {/* Password */}
               <FormField
                 control={form.control}
                 name="password"
                 render={({ field }) => (
                   <FormItem>
-                    <FormLabel className="flex items-center justify-between">
-                      <span className="text-slate-900 dark:text-slate-100 font-medium">
-                        Şifre
-                      </span>
-                      <Link href="/forgot-password" className="text-sm text-slate-600 dark:text-slate-400 hover:text-slate-900 dark:hover:text-slate-100">
-                        Şifremi unuttum
-                      </Link>
+                    <FormLabel className="text-sm font-medium text-gray-700 dark:text-gray-300">
+                      Şifre
                     </FormLabel>
                     <FormControl>
                       <div className="relative">
+                        <Lock className="absolute left-3 top-1/2 transform -translate-y-1/2 h-5 w-5 text-gray-400" />
                         <Input
                           type={showPassword ? "text" : "password"}
                           placeholder="Şifrenizi girin"
                           {...field}
-                          disabled={isBlocked}
-                          className="border-slate-300 dark:border-slate-600 h-14 text-lg pr-12"
-                          autoComplete="current-password"
+                          className="pl-10 pr-10 h-12 border-gray-300 dark:border-gray-600 focus:border-blue-500 focus:ring-blue-500"
                         />
                         <Button
                           type="button"
                           variant="ghost"
                           size="sm"
-                          className="absolute right-0 top-0 h-full px-3"
+                          className="absolute right-0 top-0 h-12 px-3 hover:bg-transparent"
                           onClick={() => setShowPassword(!showPassword)}
-                          disabled={isBlocked}
                         >
                           {showPassword ? (
-                            <EyeOff className="h-4 w-4 text-slate-600 dark:text-slate-400" />
+                            <EyeOff className="h-4 w-4 text-gray-400" />
                           ) : (
-                            <Eye className="h-4 w-4 text-slate-600 dark:text-slate-400" />
+                            <Eye className="h-4 w-4 text-gray-400" />
                           )}
                         </Button>
                       </div>
@@ -276,31 +222,40 @@ export default function Login() {
                 )}
               />
 
-              <FormField
-                control={form.control}
-                name="rememberMe"
-                render={({ field }) => (
-                  <FormItem className="flex flex-row items-start space-x-3 space-y-0">
-                    <FormControl>
-                      <Checkbox
-                        checked={field.value}
-                        onCheckedChange={field.onChange}
-                        disabled={isBlocked}
-                      />
-                    </FormControl>
-                    <div className="space-y-1 leading-none">
-                      <FormLabel className="text-sm text-slate-700 dark:text-slate-300">
-                        Oturumumu açık tut
-                      </FormLabel>
-                    </div>
-                  </FormItem>
-                )}
-              />
+              {/* Remember Me & Forgot Password */}
+              <div className="flex items-center justify-between">
+                <FormField
+                  control={form.control}
+                  name="rememberMe"
+                  render={({ field }) => (
+                    <FormItem className="flex flex-row items-start space-x-3 space-y-0">
+                      <FormControl>
+                        <Checkbox
+                          checked={field.value}
+                          onCheckedChange={field.onChange}
+                        />
+                      </FormControl>
+                      <div className="space-y-1 leading-none">
+                        <FormLabel className="text-sm font-normal text-gray-600 dark:text-gray-400">
+                          Beni hatırla
+                        </FormLabel>
+                      </div>
+                    </FormItem>
+                  )}
+                />
+                <Link 
+                  href="/forgot-password" 
+                  className="text-sm text-blue-600 hover:text-blue-500 font-medium"
+                >
+                  Şifremi unuttum
+                </Link>
+              </div>
 
+              {/* Login Button */}
               <Button
                 type="submit"
-                disabled={isBlocked || loginMutation.isPending}
-                className="w-full bg-slate-900 hover:bg-slate-800 text-white h-14 font-medium text-lg"
+                disabled={loginMutation.isPending || isBlocked}
+                className="w-full bg-blue-600 hover:bg-blue-700 text-white h-12 font-medium disabled:opacity-50"
               >
                 {loginMutation.isPending ? (
                   <div className="flex items-center">
@@ -308,41 +263,115 @@ export default function Login() {
                     Giriş yapılıyor...
                   </div>
                 ) : isBlocked ? (
-                  <div className="flex items-center">
-                    <Lock className="h-4 w-4 mr-2" />
-                    Bloke ({formatTime(blockTimeLeft)})
-                  </div>
+                  `Bekleyin (${blockTimeLeft}s)`
                 ) : (
-                  "Giriş yap"
+                  <>
+                    Giriş yap
+                    <ArrowRight className="ml-2 h-4 w-4" />
+                  </>
                 )}
               </Button>
 
-              {/* Login Attempts Warning */}
-              {loginAttempts > 0 && loginAttempts < 3 && (
-                <div className="text-center">
-                  <p className="text-sm text-slate-600 dark:text-slate-400">
-                    {3 - loginAttempts} deneme hakkınız kaldı
-                  </p>
-                </div>
-              )}
-
-              {/* Sign Up Link */}
-              <div className="text-center mt-8">
-                <p className="text-slate-600 dark:text-slate-400">
+              {/* Register Link */}
+              <div className="text-center">
+                <p className="text-sm text-gray-600 dark:text-gray-400">
                   Hesabınız yok mu?{" "}
-                  <Link href="/register" className="text-slate-900 dark:text-slate-100 hover:underline font-medium">
-                    Kayıt olun
+                  <Link href="/register" className="text-blue-600 hover:text-blue-500 font-medium">
+                    Hesap oluşturun
                   </Link>
                 </p>
               </div>
             </form>
           </Form>
+
+          {/* Security Notice */}
+          <div className="mt-8 p-4 bg-blue-50 dark:bg-blue-900/20 rounded-lg border border-blue-200 dark:border-blue-800">
+            <div className="flex items-center space-x-2">
+              <Shield className="h-5 w-5 text-blue-600 dark:text-blue-400" />
+              <span className="text-sm text-blue-800 dark:text-blue-200 font-medium">
+                Güvenli bağlantı
+              </span>
+            </div>
+            <p className="text-xs text-blue-700 dark:text-blue-300 mt-1">
+              Verileriniz 256-bit SSL şifreleme ile korunmaktadır
+            </p>
+          </div>
+        </div>
+      </div>
+
+      {/* Right Panel - Visual */}
+      <div className="hidden lg:flex flex-1 bg-gradient-to-br from-blue-600 via-blue-700 to-purple-700 relative overflow-hidden">
+        {/* Background Elements */}
+        <div className="absolute inset-0">
+          <div className="absolute top-20 left-20 w-40 h-40 bg-white/10 rounded-full blur-3xl animate-pulse"></div>
+          <div className="absolute bottom-40 right-40 w-60 h-60 bg-white/5 rounded-full blur-3xl animate-pulse" style={{animationDelay: '2s'}}></div>
+          <div className="absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 w-80 h-80 bg-white/5 rounded-full blur-3xl animate-pulse" style={{animationDelay: '4s'}}></div>
         </div>
 
-        {/* Legal Links */}
-        <div className="text-center mt-8 text-xs text-slate-500 dark:text-slate-400 space-x-4">
-          <Link href="/privacy" className="hover:text-slate-700 dark:hover:text-slate-300">Gizlilik</Link>
-          <Link href="/terms" className="hover:text-slate-700 dark:hover:text-slate-300">Şartlar</Link>
+        <div className="relative z-10 flex items-center justify-center p-12 text-white">
+          <div className="max-w-lg">
+            <h3 className="text-4xl font-light mb-6">
+              İnsan kaynaklarında 
+              <span className="block font-semibold">dijital dönüşüm</span>
+            </h3>
+            <p className="text-xl font-light text-blue-100 mb-8 leading-relaxed">
+              Çalışan deneyimini iyileştirin, verimliliği artırın ve 
+              stratejik HR kararlarınızı güçlendirin.
+            </p>
+
+            {/* HR Process Highlights */}
+            <div className="space-y-6">
+              <div className="flex items-center space-x-4 p-4 bg-white/10 rounded-xl backdrop-blur-sm">
+                <div className="w-12 h-12 bg-white/20 rounded-xl flex items-center justify-center">
+                  <Users className="h-6 w-6" />
+                </div>
+                <div>
+                  <div className="font-semibold">Çalışan Yaşam Döngüsü</div>
+                  <div className="text-sm text-blue-200">İşe alımdan ayrılığa kadar</div>
+                </div>
+              </div>
+              
+              <div className="flex items-center space-x-4 p-4 bg-white/10 rounded-xl backdrop-blur-sm">
+                <div className="w-12 h-12 bg-white/20 rounded-xl flex items-center justify-center">
+                  <BarChart3 className="h-6 w-6" />
+                </div>
+                <div>
+                  <div className="font-semibold">Performans & Gelişim</div>
+                  <div className="text-sm text-blue-200">Sürekli değerlendirme sistemi</div>
+                </div>
+              </div>
+              
+              <div className="flex items-center space-x-4 p-4 bg-white/10 rounded-xl backdrop-blur-sm">
+                <div className="w-12 h-12 bg-white/20 rounded-xl flex items-center justify-center">
+                  <Calendar className="h-6 w-6" />
+                </div>
+                <div>
+                  <div className="font-semibold">İzin & Devam Yönetimi</div>
+                  <div className="text-sm text-blue-200">Akıllı planlama araçları</div>
+                </div>
+              </div>
+            </div>
+
+            {/* Trust Indicators */}
+            <div className="grid grid-cols-2 gap-6 mt-12 pt-8 border-t border-white/20">
+              <div className="text-center">
+                <div className="text-2xl font-bold">KVKK</div>
+                <div className="text-sm text-blue-200">Uyumlu</div>
+              </div>
+              <div className="text-center">
+                <div className="text-2xl font-bold">ISO 27001</div>
+                <div className="text-sm text-blue-200">Sertifikalı</div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        {/* Floating Elements */}
+        <div className="absolute top-10 right-10 w-16 h-16 bg-white/10 rounded-2xl flex items-center justify-center animate-bounce">
+          <CheckCircle className="h-8 w-8 text-white" />
+        </div>
+        <div className="absolute bottom-20 left-10 w-12 h-12 bg-white/10 rounded-xl flex items-center justify-center animate-pulse">
+          <Globe className="h-6 w-6 text-white" />
         </div>
       </div>
     </div>
