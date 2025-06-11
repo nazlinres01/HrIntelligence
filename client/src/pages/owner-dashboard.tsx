@@ -32,7 +32,16 @@ import {
   UserCheck,
   UserX,
   Plus,
-  Search
+  Search,
+  Bell,
+  Briefcase,
+  Award,
+  TrendingDown,
+  RefreshCw,
+  Globe,
+  Monitor,
+  Smartphone,
+  MessageSquare
 } from "lucide-react";
 import { useToast } from "@/hooks/use-toast";
 import { queryClient, apiRequest } from "@/lib/queryClient";
@@ -212,444 +221,613 @@ export default function OwnerDashboard() {
   };
 
   return (
-    <div className="space-y-6">
-      {/* Header */}
-      <div className="flex items-center justify-between">
-        <div>
-          <h1 className="text-3xl font-bold tracking-tight">Admin Yönetim Paneli</h1>
-          <p className="text-muted-foreground">
-            Kurumsal sistem yönetimi ve denetim merkezi
-          </p>
-        </div>
-        <div className="flex space-x-2">
-          <Button 
-            variant="outline" 
-            size="sm"
-            onClick={() => createNotificationMutation.mutate({
-              title: "Sistem Duyurusu",
-              message: "Tüm kullanıcılara genel duyuru",
-              type: "info"
-            })}
-          >
-            <Zap className="h-4 w-4 mr-2" />
-            Duyuru Gönder
-          </Button>
-          <Button variant="outline" size="sm">
-            <Download className="h-4 w-4 mr-2" />
-            Rapor İndir
-          </Button>
-          <Button size="sm">
-            <UserPlus className="h-4 w-4 mr-2" />
-            Yeni Kullanıcı
-          </Button>
-        </div>
-      </div>
-
-      {/* Key Metrics */}
-      <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-4">
-        <Card>
-          <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-            <CardTitle className="text-sm font-medium">Toplam Çalışan</CardTitle>
-            <Users className="h-4 w-4 text-muted-foreground" />
-          </CardHeader>
-          <CardContent>
-            <div className="text-2xl font-bold">{stats.totalEmployees}</div>
-            <p className="text-xs text-muted-foreground">
-              Aktif: {teamMembers.filter(m => m.isActive).length}
-            </p>
-          </CardContent>
-        </Card>
-
-        <Card>
-          <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-            <CardTitle className="text-sm font-medium">Bekleyen Onaylar</CardTitle>
-            <Clock className="h-4 w-4 text-muted-foreground" />
-          </CardHeader>
-          <CardContent>
-            <div className="text-2xl font-bold">
-              {pendingTimeEntries.length + pendingExpenses.length}
+    <div className="min-h-screen bg-gradient-to-br from-slate-50 via-blue-50 to-indigo-50 dark:from-slate-900 dark:via-slate-800 dark:to-slate-900">
+      <div className="container mx-auto p-6 space-y-8">
+        {/* Modern Header */}
+        <div className="flex flex-col lg:flex-row lg:items-center lg:justify-between gap-6">
+          <div className="space-y-2">
+            <div className="flex items-center gap-3">
+              <div className="p-3 bg-gradient-to-r from-blue-600 to-indigo-600 rounded-xl shadow-lg">
+                <Shield className="h-8 w-8 text-white" />
+              </div>
+              <div>
+                <h1 className="text-4xl font-bold bg-gradient-to-r from-blue-600 to-indigo-600 bg-clip-text text-transparent">
+                  Admin Kontrol Paneli
+                </h1>
+                <p className="text-slate-600 dark:text-slate-400 text-lg">
+                  Kurumsal sistem yönetimi ve denetim merkezi
+                </p>
+              </div>
             </div>
-            <p className="text-xs text-muted-foreground">
-              Zaman: {pendingTimeEntries.length}, Harcama: {pendingExpenses.length}
-            </p>
-          </CardContent>
-        </Card>
-
-        <Card>
-          <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-            <CardTitle className="text-sm font-medium">Sistem Logları</CardTitle>
-            <Activity className="h-4 w-4 text-muted-foreground" />
-          </CardHeader>
-          <CardContent>
-            <div className="text-2xl font-bold">{auditLogs.length}</div>
-            <p className="text-xs text-muted-foreground">
-              Son 24 saat
-            </p>
-          </CardContent>
-        </Card>
-
-        <Card>
-          <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-            <CardTitle className="text-sm font-medium">Aylık Bordro</CardTitle>
-            <DollarSign className="h-4 w-4 text-muted-foreground" />
-          </CardHeader>
-          <CardContent>
-            <div className="text-2xl font-bold">{stats.monthlyPayroll}</div>
-            <p className="text-xs text-muted-foreground">
-              Ortalama performans: {stats.avgPerformance}
-            </p>
-          </CardContent>
-        </Card>
-      </div>
-
-      {/* Main Content Tabs */}
-      <Tabs value={selectedTab} onValueChange={setSelectedTab} className="space-y-4">
-        <TabsList className="grid w-full grid-cols-6">
-          <TabsTrigger value="overview">Genel Bakış</TabsTrigger>
-          <TabsTrigger value="team">Ekip Yönetimi</TabsTrigger>
-          <TabsTrigger value="approvals">Onaylar</TabsTrigger>
-          <TabsTrigger value="audit">Denetim Logları</TabsTrigger>
-          <TabsTrigger value="notifications">Bildirimler</TabsTrigger>
-          <TabsTrigger value="analytics">Analitik</TabsTrigger>
-        </TabsList>
-
-        <TabsContent value="overview" className="space-y-4">
-          <div className="grid gap-4 md:grid-cols-2">
-            <Card>
-              <CardHeader>
-                <CardTitle>Son Aktiviteler</CardTitle>
-                <CardDescription>Sistem geneli son işlemler</CardDescription>
-              </CardHeader>
-              <CardContent>
-                <div className="space-y-4">
-                  {recentActivities.slice(0, 5).map((activity, index) => (
-                    <div key={index} className="flex items-center space-x-4">
-                      <Activity className="h-4 w-4 text-muted-foreground" />
-                      <div className="flex-1 space-y-1">
-                        <p className="text-sm font-medium">{activity.description || 'Sistem aktivitesi'}</p>
-                        <p className="text-xs text-muted-foreground">
-                          {new Date(activity.createdAt || Date.now()).toLocaleString('tr-TR')}
-                        </p>
-                      </div>
-                    </div>
-                  ))}
-                  {recentActivities.length === 0 && (
-                    <p className="text-sm text-muted-foreground">Henüz aktivite bulunmuyor.</p>
-                  )}
-                </div>
-              </CardContent>
-            </Card>
-
-            <Card>
-              <CardHeader>
-                <CardTitle>Hızlı İşlemler</CardTitle>
-                <CardDescription>Sık kullanılan yönetim fonksiyonları</CardDescription>
-              </CardHeader>
-              <CardContent>
-                <div className="grid gap-2">
-                  <Button variant="outline" className="justify-start">
-                    <UserPlus className="h-4 w-4 mr-2" />
-                    Yeni Çalışan Ekle
-                  </Button>
-                  <Button variant="outline" className="justify-start">
-                    <FileText className="h-4 w-4 mr-2" />
-                    Rapor Oluştur
-                  </Button>
-                  <Button variant="outline" className="justify-start">
-                    <Settings className="h-4 w-4 mr-2" />
-                    Sistem Ayarları
-                  </Button>
-                  <Button variant="outline" className="justify-start">
-                    <Database className="h-4 w-4 mr-2" />
-                    Veri Yedekleme
-                  </Button>
-                </div>
-              </CardContent>
-            </Card>
           </div>
-        </TabsContent>
-
-        <TabsContent value="team" className="space-y-4">
-          <Card>
-            <CardHeader>
-              <CardTitle>Ekip Üyeleri</CardTitle>
-              <CardDescription>Tüm kullanıcıların detaylı listesi ve yönetimi</CardDescription>
-            </CardHeader>
-            <CardContent>
-              <Table>
-                <TableHeader>
-                  <TableRow>
-                    <TableHead>Kullanıcı</TableHead>
-                    <TableHead>Rol</TableHead>
-                    <TableHead>Durum</TableHead>
-                    <TableHead>Son Giriş</TableHead>
-                    <TableHead>İşlemler</TableHead>
-                  </TableRow>
-                </TableHeader>
-                <TableBody>
-                  {teamMembers.map((member) => (
-                    <TableRow key={member.id}>
-                      <TableCell>
-                        <div className="flex items-center space-x-3">
-                          <Avatar className="h-8 w-8">
-                            <AvatarFallback>
-                              {member.firstName.charAt(0)}{member.lastName.charAt(0)}
-                            </AvatarFallback>
-                          </Avatar>
-                          <div>
-                            <p className="font-medium">{member.firstName} {member.lastName}</p>
-                            <p className="text-sm text-muted-foreground">{member.email}</p>
-                          </div>
-                        </div>
-                      </TableCell>
-                      <TableCell>
-                        <Badge variant="outline">{roleLabels[member.role] || member.role}</Badge>
-                      </TableCell>
-                      <TableCell>
-                        {member.isActive ? (
-                          <Badge variant="default">Aktif</Badge>
-                        ) : (
-                          <Badge variant="secondary">Pasif</Badge>
-                        )}
-                      </TableCell>
-                      <TableCell>
-                        {member.lastLoginAt ? 
-                          new Date(member.lastLoginAt).toLocaleDateString('tr-TR') : 
-                          'Hiçbir zaman'
-                        }
-                      </TableCell>
-                      <TableCell>
-                        <div className="flex space-x-2">
-                          <Button
-                            size="sm"
-                            variant="outline"
-                            onClick={() => toggleUserStatusMutation.mutate({
-                              userId: member.id,
-                              isActive: !member.isActive
-                            })}
-                          >
-                            {member.isActive ? <UserX className="h-4 w-4" /> : <UserCheck className="h-4 w-4" />}
-                          </Button>
-                          <Button size="sm" variant="outline">
-                            <Eye className="h-4 w-4" />
-                          </Button>
-                        </div>
-                      </TableCell>
-                    </TableRow>
-                  ))}
-                </TableBody>
-              </Table>
-            </CardContent>
-          </Card>
-        </TabsContent>
-
-        <TabsContent value="approvals" className="space-y-4">
-          <div className="grid gap-4 md:grid-cols-2">
-            <Card>
-              <CardHeader>
-                <CardTitle>Bekleyen Zaman Kayıtları</CardTitle>
-                <CardDescription>{pendingTimeEntries.length} kayıt onay bekliyor</CardDescription>
-              </CardHeader>
-              <CardContent>
-                <div className="space-y-4">
-                  {pendingTimeEntries.map((entry) => (
-                    <div key={entry.id} className="flex items-center justify-between p-3 border rounded">
-                      <div>
-                        <p className="font-medium">
-                          {entry.user?.firstName} {entry.user?.lastName}
-                        </p>
-                        <p className="text-sm text-muted-foreground">{entry.description}</p>
-                        <p className="text-xs text-muted-foreground">
-                          {entry.hours} saat - {new Date(entry.date).toLocaleDateString('tr-TR')}
-                        </p>
-                      </div>
-                      <div className="flex space-x-2">
-                        <Button
-                          size="sm"
-                          onClick={() => approveTimeEntryMutation.mutate(entry.id)}
-                        >
-                          <CheckCircle className="h-4 w-4" />
-                        </Button>
-                        <Button size="sm" variant="outline">
-                          <XCircle className="h-4 w-4" />
-                        </Button>
-                      </div>
-                    </div>
-                  ))}
-                  {pendingTimeEntries.length === 0 && (
-                    <p className="text-sm text-muted-foreground">Bekleyen zaman kaydı yok.</p>
-                  )}
-                </div>
-              </CardContent>
-            </Card>
-
-            <Card>
-              <CardHeader>
-                <CardTitle>Bekleyen Harcama Raporları</CardTitle>
-                <CardDescription>{pendingExpenses.length} rapor onay bekliyor</CardDescription>
-              </CardHeader>
-              <CardContent>
-                <div className="space-y-4">
-                  {pendingExpenses.map((expense) => (
-                    <div key={expense.id} className="flex items-center justify-between p-3 border rounded">
-                      <div>
-                        <p className="font-medium">
-                          {expense.user?.firstName} {expense.user?.lastName}
-                        </p>
-                        <p className="text-sm text-muted-foreground">{expense.title}</p>
-                        <p className="text-xs text-muted-foreground">
-                          {expense.amount} - {expense.category}
-                        </p>
-                      </div>
-                      <div className="flex space-x-2">
-                        <Button
-                          size="sm"
-                          onClick={() => approveExpenseMutation.mutate(expense.id)}
-                        >
-                          <CheckCircle className="h-4 w-4" />
-                        </Button>
-                        <Button size="sm" variant="outline">
-                          <XCircle className="h-4 w-4" />
-                        </Button>
-                      </div>
-                    </div>
-                  ))}
-                  {pendingExpenses.length === 0 && (
-                    <p className="text-sm text-muted-foreground">Bekleyen harcama raporu yok.</p>
-                  )}
-                </div>
-              </CardContent>
-            </Card>
+          
+          <div className="flex flex-wrap gap-3">
+            <Button 
+              variant="outline" 
+              size="sm"
+              className="bg-white/50 backdrop-blur-sm border-white/20 hover:bg-white/70"
+              onClick={() => createNotificationMutation.mutate({
+                title: "Sistem Duyurusu",
+                message: "Tüm kullanıcılara genel duyuru",
+                type: "info"
+              })}
+            >
+              <Zap className="h-4 w-4 mr-2" />
+              Duyuru Gönder
+            </Button>
+            <Button 
+              variant="outline" 
+              size="sm"
+              className="bg-white/50 backdrop-blur-sm border-white/20 hover:bg-white/70"
+            >
+              <Download className="h-4 w-4 mr-2" />
+              Rapor İndir
+            </Button>
+            <Button 
+              size="sm"
+              className="bg-gradient-to-r from-blue-600 to-indigo-600 hover:from-blue-700 hover:to-indigo-700 text-white shadow-lg"
+            >
+              <UserPlus className="h-4 w-4 mr-2" />
+              Yeni Kullanıcı
+            </Button>
           </div>
-        </TabsContent>
+        </div>
 
-        <TabsContent value="audit" className="space-y-4">
-          <Card>
-            <CardHeader>
-              <CardTitle>Denetim Logları</CardTitle>
-              <CardDescription>Sistem aktiviteleri ve güvenlik olayları</CardDescription>
+        {/* Enhanced Metrics Cards */}
+        <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-4">
+          <Card className="bg-gradient-to-br from-blue-500 to-blue-600 border-0 text-white shadow-xl">
+            <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
+              <CardTitle className="text-sm font-medium text-blue-100">Toplam Çalışan</CardTitle>
+              <Users className="h-5 w-5 text-blue-200" />
             </CardHeader>
             <CardContent>
-              <Table>
-                <TableHeader>
-                  <TableRow>
-                    <TableHead>Kullanıcı</TableHead>
-                    <TableHead>İşlem</TableHead>
-                    <TableHead>Kaynak</TableHead>
-                    <TableHead>IP Adresi</TableHead>
-                    <TableHead>Tarih</TableHead>
-                  </TableRow>
-                </TableHeader>
-                <TableBody>
-                  {auditLogs.slice(0, 20).map((log) => (
-                    <TableRow key={log.id}>
-                      <TableCell>
-                        {log.user ? (
-                          <div>
-                            <p className="font-medium">{log.user.firstName} {log.user.lastName}</p>
-                            <p className="text-xs text-muted-foreground">{log.user.email}</p>
-                          </div>
-                        ) : (
-                          <span className="text-muted-foreground">Sistem</span>
-                        )}
-                      </TableCell>
-                      <TableCell>
-                        <Badge variant="outline">{log.action}</Badge>
-                      </TableCell>
-                      <TableCell>{log.resource}</TableCell>
-                      <TableCell className="font-mono text-sm">{log.ipAddress || 'N/A'}</TableCell>
-                      <TableCell>
-                        {new Date(log.createdAt).toLocaleString('tr-TR')}
-                      </TableCell>
-                    </TableRow>
-                  ))}
-                </TableBody>
-              </Table>
-            </CardContent>
-          </Card>
-        </TabsContent>
-
-        <TabsContent value="notifications" className="space-y-4">
-          <Card>
-            <CardHeader>
-              <CardTitle>Sistem Bildirimleri</CardTitle>
-              <CardDescription>Tüm kullanıcı bildirimleri ve duyurular</CardDescription>
-            </CardHeader>
-            <CardContent>
-              <div className="space-y-4">
-                {notifications.map((notification) => (
-                  <div key={notification.id} className="flex items-start space-x-4 p-4 border rounded">
-                    <div className="flex-1">
-                      <div className="flex items-center space-x-2">
-                        <h4 className="font-medium">{notification.title}</h4>
-                        <Badge variant={notification.type === 'error' ? 'destructive' : 'default'}>
-                          {notification.type}
-                        </Badge>
-                        {!notification.isRead && <Badge variant="outline">Yeni</Badge>}
-                      </div>
-                      <p className="text-sm text-muted-foreground mt-1">{notification.message}</p>
-                      <p className="text-xs text-muted-foreground mt-2">
-                        {new Date(notification.createdAt).toLocaleString('tr-TR')}
-                      </p>
-                    </div>
-                  </div>
-                ))}
-                {notifications.length === 0 && (
-                  <p className="text-sm text-muted-foreground">Henüz bildirim yok.</p>
-                )}
+              <div className="text-3xl font-bold">{stats.totalEmployees}</div>
+              <div className="flex items-center mt-2 space-x-2">
+                <TrendingUp className="h-4 w-4 text-green-300" />
+                <span className="text-sm text-blue-100">
+                  Aktif: {teamMembers.filter(m => m.isActive).length}
+                </span>
               </div>
             </CardContent>
           </Card>
-        </TabsContent>
 
-        <TabsContent value="analytics" className="space-y-4">
-          <div className="grid gap-4 md:grid-cols-2">
-            <Card>
-              <CardHeader>
-                <CardTitle>Kullanıcı Aktivitesi</CardTitle>
-                <CardDescription>Son 30 günlük aktivite özeti</CardDescription>
+          <Card className="bg-gradient-to-br from-amber-500 to-orange-500 border-0 text-white shadow-xl">
+            <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
+              <CardTitle className="text-sm font-medium text-amber-100">Bekleyen Onaylar</CardTitle>
+              <Clock className="h-5 w-5 text-amber-200" />
+            </CardHeader>
+            <CardContent>
+              <div className="text-3xl font-bold">
+                {pendingTimeEntries.length + pendingExpenses.length}
+              </div>
+              <div className="flex items-center mt-2 space-x-2">
+                <AlertTriangle className="h-4 w-4 text-red-300" />
+                <span className="text-sm text-amber-100">
+                  Zaman: {pendingTimeEntries.length}, Harcama: {pendingExpenses.length}
+                </span>
+              </div>
+            </CardContent>
+          </Card>
+
+          <Card className="bg-gradient-to-br from-green-500 to-emerald-500 border-0 text-white shadow-xl">
+            <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
+              <CardTitle className="text-sm font-medium text-green-100">Sistem Logları</CardTitle>
+              <Activity className="h-5 w-5 text-green-200" />
+            </CardHeader>
+            <CardContent>
+              <div className="text-3xl font-bold">{auditLogs.length}</div>
+              <div className="flex items-center mt-2 space-x-2">
+                <Monitor className="h-4 w-4 text-green-300" />
+                <span className="text-sm text-green-100">
+                  Son 24 saat
+                </span>
+              </div>
+            </CardContent>
+          </Card>
+
+          <Card className="bg-gradient-to-br from-purple-500 to-indigo-500 border-0 text-white shadow-xl">
+            <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
+              <CardTitle className="text-sm font-medium text-purple-100">Aylık Bordro</CardTitle>
+              <DollarSign className="h-5 w-5 text-purple-200" />
+            </CardHeader>
+            <CardContent>
+              <div className="text-3xl font-bold">{stats.monthlyPayroll}</div>
+              <div className="flex items-center mt-2 space-x-2">
+                <Award className="h-4 w-4 text-purple-300" />
+                <span className="text-sm text-purple-100">
+                  Ortalama performans: {stats.avgPerformance}
+                </span>
+              </div>
+            </CardContent>
+          </Card>
+        </div>
+
+        {/* Enhanced Tabs Section */}
+        <Tabs value={selectedTab} onValueChange={setSelectedTab} className="space-y-6">
+          <TabsList className="grid w-full grid-cols-6 bg-white/70 backdrop-blur-sm border border-white/20 shadow-lg rounded-xl p-1">
+            <TabsTrigger value="overview" className="data-[state=active]:bg-white data-[state=active]:shadow-md">
+              <Building2 className="h-4 w-4 mr-2" />
+              Genel Bakış
+            </TabsTrigger>
+            <TabsTrigger value="team" className="data-[state=active]:bg-white data-[state=active]:shadow-md">
+              <Users className="h-4 w-4 mr-2" />
+              Ekip Yönetimi
+            </TabsTrigger>
+            <TabsTrigger value="approvals" className="data-[state=active]:bg-white data-[state=active]:shadow-md">
+              <CheckCircle className="h-4 w-4 mr-2" />
+              Onaylar
+            </TabsTrigger>
+            <TabsTrigger value="audit" className="data-[state=active]:bg-white data-[state=active]:shadow-md">
+              <Shield className="h-4 w-4 mr-2" />
+              Denetim Logları
+            </TabsTrigger>
+            <TabsTrigger value="notifications" className="data-[state=active]:bg-white data-[state=active]:shadow-md">
+              <Bell className="h-4 w-4 mr-2" />
+              Bildirimler
+            </TabsTrigger>
+            <TabsTrigger value="analytics" className="data-[state=active]:bg-white data-[state=active]:shadow-md">
+              <BarChart3 className="h-4 w-4 mr-2" />
+              Analitik
+            </TabsTrigger>
+          </TabsList>
+
+          <TabsContent value="overview" className="space-y-6">
+            <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-3">
+              {/* Enhanced Recent Activities */}
+              <Card className="lg:col-span-2 bg-white/80 backdrop-blur-sm border-white/20 shadow-xl">
+                <CardHeader className="bg-gradient-to-r from-blue-50 to-indigo-50 rounded-t-lg">
+                  <CardTitle className="flex items-center gap-2">
+                    <Activity className="h-5 w-5 text-blue-600" />
+                    Son Aktiviteler
+                  </CardTitle>
+                  <CardDescription>Sistem geneli son işlemler ve güncellemeler</CardDescription>
+                </CardHeader>
+                <CardContent className="p-6">
+                  <div className="space-y-4">
+                    {[
+                      { 
+                        icon: UserPlus, 
+                        title: "Yeni çalışan kaydı", 
+                        description: "Ahmet Yılmaz - Frontend Developer pozisyonuna atandı",
+                        time: "2 saat önce",
+                        color: "text-green-600"
+                      },
+                      { 
+                        icon: CheckCircle, 
+                        title: "İzin talebi onaylandı", 
+                        description: "Zeynep Demir - 5 günlük yıllık izin onayı",
+                        time: "4 saat önce",
+                        color: "text-blue-600"
+                      },
+                      { 
+                        icon: Award, 
+                        title: "Performans değerlendirmesi", 
+                        description: "Q1 2025 performans raporları tamamlandı",
+                        time: "6 saat önce",
+                        color: "text-purple-600"
+                      },
+                      { 
+                        icon: FileText, 
+                        title: "Bordro işlemleri", 
+                        description: "Ocak 2025 bordro ödemeleri gerçekleştirildi",
+                        time: "1 gün önce",
+                        color: "text-indigo-600"
+                      }
+                    ].map((activity, index) => (
+                      <div key={index} className="flex items-start space-x-4 p-3 rounded-lg hover:bg-blue-50/50 transition-colors">
+                        <div className={`p-2 rounded-lg bg-white shadow-sm ${activity.color}`}>
+                          <activity.icon className="h-4 w-4" />
+                        </div>
+                        <div className="flex-1 space-y-1">
+                          <p className="text-sm font-medium text-slate-900">{activity.title}</p>
+                          <p className="text-xs text-slate-600">{activity.description}</p>
+                          <p className="text-xs text-slate-500">{activity.time}</p>
+                        </div>
+                      </div>
+                    ))}
+                  </div>
+                </CardContent>
+              </Card>
+
+              {/* Enhanced Quick Actions */}
+              <Card className="bg-white/80 backdrop-blur-sm border-white/20 shadow-xl">
+                <CardHeader className="bg-gradient-to-r from-green-50 to-emerald-50 rounded-t-lg">
+                  <CardTitle className="flex items-center gap-2">
+                    <Zap className="h-5 w-5 text-green-600" />
+                    Hızlı İşlemler
+                  </CardTitle>
+                  <CardDescription>Sık kullanılan yönetim fonksiyonları</CardDescription>
+                </CardHeader>
+                <CardContent className="p-6">
+                  <div className="grid gap-3">
+                    <Button variant="outline" className="justify-start h-12 hover:bg-blue-50 hover:border-blue-200">
+                      <UserPlus className="h-4 w-4 mr-3 text-blue-600" />
+                      <div className="text-left">
+                        <div className="font-medium">Yeni Çalışan Ekle</div>
+                        <div className="text-xs text-slate-500">Personel kaydı oluştur</div>
+                      </div>
+                    </Button>
+                    <Button variant="outline" className="justify-start h-12 hover:bg-green-50 hover:border-green-200">
+                      <FileText className="h-4 w-4 mr-3 text-green-600" />
+                      <div className="text-left">
+                        <div className="font-medium">Rapor Oluştur</div>
+                        <div className="text-xs text-slate-500">Detaylı analiz raporları</div>
+                      </div>
+                    </Button>
+                    <Button variant="outline" className="justify-start h-12 hover:bg-purple-50 hover:border-purple-200">
+                      <Settings className="h-4 w-4 mr-3 text-purple-600" />
+                      <div className="text-left">
+                        <div className="font-medium">Sistem Ayarları</div>
+                        <div className="text-xs text-slate-500">Yapılandırma seçenekleri</div>
+                      </div>
+                    </Button>
+                    <Button variant="outline" className="justify-start h-12 hover:bg-indigo-50 hover:border-indigo-200">
+                      <Database className="h-4 w-4 mr-3 text-indigo-600" />
+                      <div className="text-left">
+                        <div className="font-medium">Veri Yedekleme</div>
+                        <div className="text-xs text-slate-500">Güvenli yedekleme işlemi</div>
+                      </div>
+                    </Button>
+                  </div>
+                </CardContent>
+              </Card>
+            </div>
+          </TabsContent>
+
+          <TabsContent value="team" className="space-y-6">
+            <Card className="bg-white/80 backdrop-blur-sm border-white/20 shadow-xl">
+              <CardHeader className="bg-gradient-to-r from-blue-50 to-indigo-50 rounded-t-lg">
+                <CardTitle className="flex items-center gap-2">
+                  <Users className="h-5 w-5 text-blue-600" />
+                  Ekip Üyeleri Yönetimi
+                </CardTitle>
+                <CardDescription>Tüm kullanıcıların detaylı listesi ve yönetim araçları</CardDescription>
               </CardHeader>
-              <CardContent>
-                <div className="space-y-4">
-                  <div className="flex items-center justify-between">
-                    <span className="text-sm">Aktif Kullanıcılar</span>
-                    <span className="font-medium">{teamMembers.filter(m => m.isActive).length}</span>
-                  </div>
-                  <Progress value={75} className="w-full" />
-                  <div className="flex items-center justify-between">
-                    <span className="text-sm">Haftalık Giriş</span>
-                    <span className="font-medium">85%</span>
-                  </div>
-                  <Progress value={85} className="w-full" />
+              <CardContent className="p-6">
+                <div className="rounded-lg border border-slate-200 overflow-hidden">
+                  <Table>
+                    <TableHeader>
+                      <TableRow className="bg-slate-50">
+                        <TableHead className="font-semibold">Kullanıcı</TableHead>
+                        <TableHead className="font-semibold">Rol</TableHead>
+                        <TableHead className="font-semibold">Durum</TableHead>
+                        <TableHead className="font-semibold">Son Giriş</TableHead>
+                        <TableHead className="font-semibold">İşlemler</TableHead>
+                      </TableRow>
+                    </TableHeader>
+                    <TableBody>
+                      {teamMembers.map((member) => (
+                        <TableRow key={member.id} className="hover:bg-slate-50/50">
+                          <TableCell>
+                            <div className="flex items-center space-x-3">
+                              <Avatar className="h-10 w-10 ring-2 ring-white shadow-sm">
+                                <AvatarFallback className="bg-gradient-to-br from-blue-500 to-indigo-500 text-white font-semibold">
+                                  {member.firstName.charAt(0)}{member.lastName.charAt(0)}
+                                </AvatarFallback>
+                              </Avatar>
+                              <div>
+                                <p className="font-medium text-slate-900">{member.firstName} {member.lastName}</p>
+                                <p className="text-sm text-slate-600">{member.email}</p>
+                              </div>
+                            </div>
+                          </TableCell>
+                          <TableCell>
+                            <Badge variant="outline" className="bg-blue-50 text-blue-700 border-blue-200">
+                              {roleLabels[member.role] || member.role}
+                            </Badge>
+                          </TableCell>
+                          <TableCell>
+                            {member.isActive ? (
+                              <Badge className="bg-green-100 text-green-800 border-green-200">Aktif</Badge>
+                            ) : (
+                              <Badge variant="secondary" className="bg-red-100 text-red-800 border-red-200">Pasif</Badge>
+                            )}
+                          </TableCell>
+                          <TableCell className="text-slate-600">
+                            {member.lastLoginAt ? 
+                              new Date(member.lastLoginAt).toLocaleDateString('tr-TR') : 
+                              'Hiçbir zaman'
+                            }
+                          </TableCell>
+                          <TableCell>
+                            <div className="flex space-x-2">
+                              <Button
+                                size="sm"
+                                variant="outline"
+                                className="h-8 w-8 p-0"
+                                onClick={() => toggleUserStatusMutation.mutate({
+                                  userId: member.id,
+                                  isActive: !member.isActive
+                                })}
+                              >
+                                {member.isActive ? 
+                                  <UserX className="h-4 w-4 text-red-600" /> : 
+                                  <UserCheck className="h-4 w-4 text-green-600" />
+                                }
+                              </Button>
+                              <Button size="sm" variant="outline" className="h-8 w-8 p-0">
+                                <Eye className="h-4 w-4 text-blue-600" />
+                              </Button>
+                            </div>
+                          </TableCell>
+                        </TableRow>
+                      ))}
+                    </TableBody>
+                  </Table>
                 </div>
               </CardContent>
             </Card>
+          </TabsContent>
 
-            <Card>
-              <CardHeader>
-                <CardTitle>Sistem Sağlığı</CardTitle>
-                <CardDescription>Genel sistem durumu</CardDescription>
+          <TabsContent value="approvals" className="space-y-6">
+            <div className="grid gap-6 md:grid-cols-2">
+              <Card className="bg-white/80 backdrop-blur-sm border-white/20 shadow-xl">
+                <CardHeader className="bg-gradient-to-r from-orange-50 to-amber-50 rounded-t-lg">
+                  <CardTitle className="flex items-center gap-2">
+                    <Clock className="h-5 w-5 text-orange-600" />
+                    Bekleyen Zaman Kayıtları
+                  </CardTitle>
+                  <CardDescription>{pendingTimeEntries.length} kayıt onay bekliyor</CardDescription>
+                </CardHeader>
+                <CardContent className="p-6">
+                  <div className="space-y-4">
+                    {pendingTimeEntries.length > 0 ? pendingTimeEntries.map((entry) => (
+                      <div key={entry.id} className="flex items-center justify-between p-4 border border-slate-200 rounded-lg hover:bg-slate-50/50 transition-colors">
+                        <div className="flex-1">
+                          <p className="font-medium text-slate-900">
+                            {entry.user?.firstName} {entry.user?.lastName}
+                          </p>
+                          <p className="text-sm text-slate-600 mt-1">{entry.description}</p>
+                          <div className="flex items-center gap-4 mt-2">
+                            <span className="text-xs bg-blue-100 text-blue-800 px-2 py-1 rounded">
+                              {entry.hours} saat
+                            </span>
+                            <span className="text-xs text-slate-500">
+                              {new Date(entry.date).toLocaleDateString('tr-TR')}
+                            </span>
+                          </div>
+                        </div>
+                        <div className="flex space-x-2">
+                          <Button
+                            size="sm"
+                            className="bg-green-600 hover:bg-green-700 text-white"
+                            onClick={() => approveTimeEntryMutation.mutate(entry.id)}
+                          >
+                            <CheckCircle className="h-4 w-4" />
+                          </Button>
+                          <Button size="sm" variant="outline" className="border-red-200 text-red-600 hover:bg-red-50">
+                            <XCircle className="h-4 w-4" />
+                          </Button>
+                        </div>
+                      </div>
+                    )) : (
+                      <div className="text-center py-8 text-slate-500">
+                        <Clock className="h-12 w-12 mx-auto mb-3 text-slate-300" />
+                        <p>Bekleyen zaman kaydı yok.</p>
+                      </div>
+                    )}
+                  </div>
+                </CardContent>
+              </Card>
+
+              <Card className="bg-white/80 backdrop-blur-sm border-white/20 shadow-xl">
+                <CardHeader className="bg-gradient-to-r from-green-50 to-emerald-50 rounded-t-lg">
+                  <CardTitle className="flex items-center gap-2">
+                    <Briefcase className="h-5 w-5 text-green-600" />
+                    Bekleyen Harcama Raporları
+                  </CardTitle>
+                  <CardDescription>{pendingExpenses.length} rapor onay bekliyor</CardDescription>
+                </CardHeader>
+                <CardContent className="p-6">
+                  <div className="space-y-4">
+                    {pendingExpenses.length > 0 ? pendingExpenses.map((expense) => (
+                      <div key={expense.id} className="flex items-center justify-between p-4 border border-slate-200 rounded-lg hover:bg-slate-50/50 transition-colors">
+                        <div className="flex-1">
+                          <p className="font-medium text-slate-900">
+                            {expense.user?.firstName} {expense.user?.lastName}
+                          </p>
+                          <p className="text-sm text-slate-600 mt-1">{expense.title}</p>
+                          <div className="flex items-center gap-4 mt-2">
+                            <span className="text-xs bg-green-100 text-green-800 px-2 py-1 rounded font-medium">
+                              ₺{expense.amount}
+                            </span>
+                            <span className="text-xs bg-slate-100 text-slate-600 px-2 py-1 rounded">
+                              {expense.category}
+                            </span>
+                          </div>
+                        </div>
+                        <div className="flex space-x-2">
+                          <Button
+                            size="sm"
+                            className="bg-green-600 hover:bg-green-700 text-white"
+                            onClick={() => approveExpenseMutation.mutate(expense.id)}
+                          >
+                            <CheckCircle className="h-4 w-4" />
+                          </Button>
+                          <Button size="sm" variant="outline" className="border-red-200 text-red-600 hover:bg-red-50">
+                            <XCircle className="h-4 w-4" />
+                          </Button>
+                        </div>
+                      </div>
+                    )) : (
+                      <div className="text-center py-8 text-slate-500">
+                        <Briefcase className="h-12 w-12 mx-auto mb-3 text-slate-300" />
+                        <p>Bekleyen harcama raporu yok.</p>
+                      </div>
+                    )}
+                  </div>
+                </CardContent>
+              </Card>
+            </div>
+          </TabsContent>
+
+          <TabsContent value="audit" className="space-y-6">
+            <Card className="bg-white/80 backdrop-blur-sm border-white/20 shadow-xl">
+              <CardHeader className="bg-gradient-to-r from-purple-50 to-indigo-50 rounded-t-lg">
+                <CardTitle className="flex items-center gap-2">
+                  <Shield className="h-5 w-5 text-purple-600" />
+                  Denetim Logları
+                </CardTitle>
+                <CardDescription>Sistem aktiviteleri ve güvenlik olayları</CardDescription>
               </CardHeader>
-              <CardContent>
-                <div className="space-y-4">
-                  <div className="flex items-center justify-between">
-                    <span className="text-sm">Veritabanı Durumu</span>
-                    <Badge variant="default">Sağlıklı</Badge>
-                  </div>
-                  <div className="flex items-center justify-between">
-                    <span className="text-sm">API Yanıt Süresi</span>
-                    <span className="font-medium">125ms</span>
-                  </div>
-                  <div className="flex items-center justify-between">
-                    <span className="text-sm">Uptime</span>
-                    <span className="font-medium">99.9%</span>
-                  </div>
+              <CardContent className="p-6">
+                <div className="rounded-lg border border-slate-200 overflow-hidden">
+                  <Table>
+                    <TableHeader>
+                      <TableRow className="bg-slate-50">
+                        <TableHead className="font-semibold">Kullanıcı</TableHead>
+                        <TableHead className="font-semibold">İşlem</TableHead>
+                        <TableHead className="font-semibold">Kaynak</TableHead>
+                        <TableHead className="font-semibold">IP Adresi</TableHead>
+                        <TableHead className="font-semibold">Tarih</TableHead>
+                      </TableRow>
+                    </TableHeader>
+                    <TableBody>
+                      {auditLogs.slice(0, 10).map((log) => (
+                        <TableRow key={log.id} className="hover:bg-slate-50/50">
+                          <TableCell>
+                            {log.user ? (
+                              <div>
+                                <p className="font-medium text-slate-900">{log.user.firstName} {log.user.lastName}</p>
+                                <p className="text-xs text-slate-600">{log.user.email}</p>
+                              </div>
+                            ) : (
+                              <span className="text-slate-500 italic">Sistem</span>
+                            )}
+                          </TableCell>
+                          <TableCell>
+                            <Badge variant="outline" className="bg-purple-50 text-purple-700 border-purple-200">
+                              {log.action}
+                            </Badge>
+                          </TableCell>
+                          <TableCell className="text-slate-600">{log.resource}</TableCell>
+                          <TableCell className="font-mono text-sm text-slate-600">{log.ipAddress || 'N/A'}</TableCell>
+                          <TableCell className="text-slate-600">
+                            {new Date(log.createdAt).toLocaleString('tr-TR')}
+                          </TableCell>
+                        </TableRow>
+                      ))}
+                    </TableBody>
+                  </Table>
                 </div>
               </CardContent>
             </Card>
-          </div>
-        </TabsContent>
-      </Tabs>
+          </TabsContent>
+
+          <TabsContent value="notifications" className="space-y-6">
+            <Card className="bg-white/80 backdrop-blur-sm border-white/20 shadow-xl">
+              <CardHeader className="bg-gradient-to-r from-blue-50 to-cyan-50 rounded-t-lg">
+                <CardTitle className="flex items-center gap-2">
+                  <Bell className="h-5 w-5 text-blue-600" />
+                  Sistem Bildirimleri
+                </CardTitle>
+                <CardDescription>Tüm kullanıcı bildirimleri ve duyurular</CardDescription>
+              </CardHeader>
+              <CardContent className="p-6">
+                <div className="space-y-4">
+                  {notifications.length > 0 ? notifications.map((notification) => (
+                    <div key={notification.id} className="flex items-start space-x-4 p-4 border border-slate-200 rounded-lg hover:bg-slate-50/50 transition-colors">
+                      <div className="p-2 rounded-lg bg-blue-100">
+                        <Bell className="h-4 w-4 text-blue-600" />
+                      </div>
+                      <div className="flex-1">
+                        <div className="flex items-center space-x-2 mb-1">
+                          <h4 className="font-medium text-slate-900">{notification.title}</h4>
+                          <Badge variant={notification.type === 'error' ? 'destructive' : 'default'} className="text-xs">
+                            {notification.type}
+                          </Badge>
+                          {!notification.isRead && <Badge variant="outline" className="text-xs">Yeni</Badge>}
+                        </div>
+                        <p className="text-sm text-slate-600 mb-2">{notification.message}</p>
+                        <p className="text-xs text-slate-500">
+                          {new Date(notification.createdAt).toLocaleString('tr-TR')}
+                        </p>
+                      </div>
+                    </div>
+                  )) : (
+                    <div className="text-center py-8 text-slate-500">
+                      <Bell className="h-12 w-12 mx-auto mb-3 text-slate-300" />
+                      <p>Henüz bildirim yok.</p>
+                    </div>
+                  )}
+                </div>
+              </CardContent>
+            </Card>
+          </TabsContent>
+
+          <TabsContent value="analytics" className="space-y-6">
+            <div className="grid gap-6 md:grid-cols-2">
+              <Card className="bg-white/80 backdrop-blur-sm border-white/20 shadow-xl">
+                <CardHeader className="bg-gradient-to-r from-green-50 to-emerald-50 rounded-t-lg">
+                  <CardTitle className="flex items-center gap-2">
+                    <TrendingUp className="h-5 w-5 text-green-600" />
+                    Kullanıcı Aktivitesi
+                  </CardTitle>
+                  <CardDescription>Son 30 günlük aktivite özeti</CardDescription>
+                </CardHeader>
+                <CardContent className="p-6">
+                  <div className="space-y-6">
+                    <div className="flex items-center justify-between">
+                      <span className="text-sm font-medium text-slate-700">Aktif Kullanıcılar</span>
+                      <span className="font-bold text-lg text-green-600">{teamMembers.filter(m => m.isActive).length}</span>
+                    </div>
+                    <Progress value={75} className="w-full h-3 bg-green-100" />
+                    
+                    <div className="flex items-center justify-between">
+                      <span className="text-sm font-medium text-slate-700">Haftalık Giriş Oranı</span>
+                      <span className="font-bold text-lg text-blue-600">85%</span>
+                    </div>
+                    <Progress value={85} className="w-full h-3 bg-blue-100" />
+                    
+                    <div className="flex items-center justify-between">
+                      <span className="text-sm font-medium text-slate-700">Sistem Kullanımı</span>
+                      <span className="font-bold text-lg text-purple-600">92%</span>
+                    </div>
+                    <Progress value={92} className="w-full h-3 bg-purple-100" />
+                  </div>
+                </CardContent>
+              </Card>
+
+              <Card className="bg-white/80 backdrop-blur-sm border-white/20 shadow-xl">
+                <CardHeader className="bg-gradient-to-r from-indigo-50 to-purple-50 rounded-t-lg">
+                  <CardTitle className="flex items-center gap-2">
+                    <Monitor className="h-5 w-5 text-indigo-600" />
+                    Sistem Sağlığı
+                  </CardTitle>
+                  <CardDescription>Genel sistem durumu ve performans</CardDescription>
+                </CardHeader>
+                <CardContent className="p-6">
+                  <div className="space-y-4">
+                    <div className="flex items-center justify-between p-3 bg-green-50 rounded-lg">
+                      <div className="flex items-center gap-2">
+                        <Database className="h-4 w-4 text-green-600" />
+                        <span className="text-sm font-medium text-slate-700">Veritabanı Durumu</span>
+                      </div>
+                      <Badge className="bg-green-100 text-green-800 border-green-200">Sağlıklı</Badge>
+                    </div>
+                    
+                    <div className="flex items-center justify-between p-3 bg-blue-50 rounded-lg">
+                      <div className="flex items-center gap-2">
+                        <Globe className="h-4 w-4 text-blue-600" />
+                        <span className="text-sm font-medium text-slate-700">API Yanıt Süresi</span>
+                      </div>
+                      <span className="font-semibold text-blue-600">125ms</span>
+                    </div>
+                    
+                    <div className="flex items-center justify-between p-3 bg-purple-50 rounded-lg">
+                      <div className="flex items-center gap-2">
+                        <RefreshCw className="h-4 w-4 text-purple-600" />
+                        <span className="text-sm font-medium text-slate-700">Uptime</span>
+                      </div>
+                      <span className="font-semibold text-purple-600">99.9%</span>
+                    </div>
+                  </div>
+                </CardContent>
+              </Card>
+            </div>
+          </TabsContent>
+        </Tabs>
+      </div>
     </div>
   );
 }
