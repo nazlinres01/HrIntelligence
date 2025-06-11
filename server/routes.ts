@@ -1131,6 +1131,314 @@ export async function registerRoutes(app: Express): Promise<Server> {
     }
   );
 
+  // Role-specific dashboard stats
+  app.get('/api/stats/owner', isAuthenticated, async (req, res) => {
+    try {
+      const stats = await storage.getEmployeeStats();
+      const activities = await storage.getActivities(10);
+      res.json({
+        totalEmployees: stats.totalEmployees,
+        monthlyPayroll: stats.monthlyPayroll,
+        activeLeaves: stats.activeLeaves,
+        avgPerformance: stats.avgPerformance,
+        recentGrowth: "+5.2%",
+        departmentCount: 4
+      });
+    } catch (error) {
+      console.error('Error fetching owner stats:', error);
+      res.status(500).json({ message: 'Failed to fetch owner stats' });
+    }
+  });
+
+  app.get('/api/stats/hr-manager', isAuthenticated, async (req, res) => {
+    try {
+      const stats = await storage.getEmployeeStats();
+      res.json({
+        activeEmployees: stats.totalEmployees,
+        newHires: 3,
+        pendingLeaves: stats.activeLeaves,
+        absenteeismRate: "2.1",
+        satisfaction: "87"
+      });
+    } catch (error) {
+      console.error('Error fetching HR manager stats:', error);
+      res.status(500).json({ message: 'Failed to fetch HR manager stats' });
+    }
+  });
+
+  app.get('/api/stats/department', isAuthenticated, async (req, res) => {
+    try {
+      res.json({
+        totalMembers: 8,
+        activeMembers: 7,
+        targetCompletion: "78",
+        pendingLeaves: 2,
+        teamPerformance: "85"
+      });
+    } catch (error) {
+      console.error('Error fetching department stats:', error);
+      res.status(500).json({ message: 'Failed to fetch department stats' });
+    }
+  });
+
+  app.get('/api/stats/employee', isAuthenticated, async (req, res) => {
+    try {
+      res.json({
+        activeTasks: 5,
+        urgentTasks: 2,
+        monthlyPerformance: "85",
+        monthlySalary: "45000"
+      });
+    } catch (error) {
+      console.error('Error fetching employee stats:', error);
+      res.status(500).json({ message: 'Failed to fetch employee stats' });
+    }
+  });
+
+  // Task endpoints for different roles
+  app.get('/api/tasks/hr-specialist', isAuthenticated, async (req, res) => {
+    try {
+      res.json({
+        pending: 8,
+        urgent: 3,
+        completed: 12,
+        daily: [
+          {
+            title: "CV İncelemesi - Frontend Developer",
+            description: "5 aday için CV değerlendirmesi",
+            priority: "high"
+          },
+          {
+            title: "Mülakat Planlaması",
+            description: "Bu hafta için mülakat takvimi",
+            priority: "medium"
+          },
+          {
+            title: "İş Teklifi Hazırlama",
+            description: "Seçilen aday için teklif belgesi",
+            priority: "high"
+          }
+        ]
+      });
+    } catch (error) {
+      console.error('Error fetching HR specialist tasks:', error);
+      res.status(500).json({ message: 'Failed to fetch HR specialist tasks' });
+    }
+  });
+
+  app.get('/api/tasks/department', isAuthenticated, async (req, res) => {
+    try {
+      res.json({
+        pending: [
+          {
+            title: "İzin Talebi Onayı",
+            employee: "Ahmet Yılmaz",
+            date: "15-20 Ocak",
+            type: "leave"
+          },
+          {
+            title: "Gider Raporu Onayı",
+            employee: "Zeynep Demir",
+            date: "Ocak 2025",
+            type: "expense"
+          }
+        ]
+      });
+    } catch (error) {
+      console.error('Error fetching department tasks:', error);
+      res.status(500).json({ message: 'Failed to fetch department tasks' });
+    }
+  });
+
+  app.get('/api/tasks/my', isAuthenticated, async (req, res) => {
+    try {
+      res.json({
+        active: [
+          {
+            title: "Website Yenileme Projesi",
+            dueDate: "25 Ocak",
+            progress: 75,
+            priority: "high"
+          },
+          {
+            title: "Müşteri Raporu Hazırlama",
+            dueDate: "30 Ocak",
+            progress: 45,
+            priority: "medium"
+          },
+          {
+            title: "Ekip Toplantısı Hazırlığı",
+            dueDate: "22 Ocak",
+            progress: 90,
+            priority: "low"
+          }
+        ]
+      });
+    } catch (error) {
+      console.error('Error fetching employee tasks:', error);
+      res.status(500).json({ message: 'Failed to fetch employee tasks' });
+    }
+  });
+
+  // Interview and application endpoints
+  app.get('/api/interviews/today', isAuthenticated, async (req, res) => {
+    try {
+      res.json({
+        today: 3,
+        completed: 1,
+        schedule: [
+          {
+            candidateName: "Ali Kaya",
+            position: "Frontend Developer",
+            time: "10:00"
+          },
+          {
+            candidateName: "Selin Öz",
+            position: "UX Designer",
+            time: "14:00"
+          },
+          {
+            candidateName: "Murat Şen",
+            position: "Backend Developer",
+            time: "16:30"
+          }
+        ]
+      });
+    } catch (error) {
+      console.error('Error fetching interviews:', error);
+      res.status(500).json({ message: 'Failed to fetch interviews' });
+    }
+  });
+
+  app.get('/api/applications/pending', isAuthenticated, async (req, res) => {
+    try {
+      res.json({
+        new: 12,
+        inReview: 8,
+        scheduled: 5
+      });
+    } catch (error) {
+      console.error('Error fetching applications:', error);
+      res.status(500).json({ message: 'Failed to fetch applications' });
+    }
+  });
+
+  // Leave balance for employees
+  app.get('/api/leaves/balance', isAuthenticated, async (req, res) => {
+    try {
+      res.json({
+        remaining: 12,
+        total: 20,
+        used: 8,
+        history: [
+          {
+            type: "Yıllık İzin",
+            startDate: "5 Ocak",
+            endDate: "10 Ocak",
+            days: 5,
+            status: "approved"
+          },
+          {
+            type: "Hastalık İzni",
+            startDate: "20 Aralık",
+            endDate: "22 Aralık",
+            days: 3,
+            status: "approved"
+          }
+        ]
+      });
+    } catch (error) {
+      console.error('Error fetching leave balance:', error);
+      res.status(500).json({ message: 'Failed to fetch leave balance' });
+    }
+  });
+
+  // Pending leaves for HR
+  app.get('/api/leaves/pending', isAuthenticated, async (req, res) => {
+    try {
+      res.json([
+        {
+          employeeName: "Ahmet Yılmaz",
+          type: "Yıllık İzin",
+          days: 5,
+          startDate: "15 Ocak",
+          endDate: "19 Ocak"
+        },
+        {
+          employeeName: "Zeynep Demir",
+          type: "Hastalık İzni",
+          days: 3,
+          startDate: "22 Ocak",
+          endDate: "24 Ocak"
+        }
+      ]);
+    } catch (error) {
+      console.error('Error fetching pending leaves:', error);
+      res.status(500).json({ message: 'Failed to fetch pending leaves' });
+    }
+  });
+
+  // Team members for department managers
+  app.get('/api/team/members', isAuthenticated, async (req, res) => {
+    try {
+      res.json([
+        {
+          name: "Ahmet Yılmaz",
+          position: "Senior Developer",
+          performance: 92,
+          status: "active"
+        },
+        {
+          name: "Zeynep Demir",
+          position: "UX Designer",
+          performance: 88,
+          status: "active"
+        },
+        {
+          name: "Murat Kaya",
+          position: "Frontend Developer",
+          performance: 85,
+          status: "leave"
+        },
+        {
+          name: "Selin Öz",
+          position: "QA Engineer",
+          performance: 90,
+          status: "active"
+        }
+      ]);
+    } catch (error) {
+      console.error('Error fetching team members:', error);
+      res.status(500).json({ message: 'Failed to fetch team members' });
+    }
+  });
+
+  // HR activities
+  app.get('/api/activities/hr', isAuthenticated, async (req, res) => {
+    try {
+      res.json([
+        {
+          title: "Yeni işe alım tamamlandı",
+          description: "Frontend Developer pozisyonu için Ali Kaya işe alındı",
+          createdAt: new Date().toISOString()
+        },
+        {
+          title: "Performans değerlendirmesi",
+          description: "Q4 performans değerlendirmeleri başlatıldı",
+          createdAt: new Date(Date.now() - 86400000).toISOString()
+        },
+        {
+          title: "İzin onayı",
+          description: "3 izin talebi onaylandı",
+          createdAt: new Date(Date.now() - 172800000).toISOString()
+        }
+      ]);
+    } catch (error) {
+      console.error('Error fetching HR activities:', error);
+      res.status(500).json({ message: 'Failed to fetch HR activities' });
+    }
+  });
+
   const httpServer = createServer(app);
   return httpServer;
 }
