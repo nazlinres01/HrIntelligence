@@ -39,8 +39,6 @@ const registerSchema = z.object({
   companyName: z.string()
     .min(2, "Şirket adı en az 2 karakter olmalı")
     .max(100, "Şirket adı en fazla 100 karakter olabilir"),
-  companySize: z.string()
-    .min(1, "Şirket büyüklüğünü seçin"),
   position: z.string()
     .min(2, "Pozisyon en az 2 karakter olmalı"),
   role: z.string()
@@ -73,7 +71,6 @@ export default function Register() {
       lastName: "",
       email: "",
       companyName: "",
-      companySize: "",
       position: "",
       role: "",
       password: "",
@@ -265,33 +262,6 @@ export default function Register() {
               <div className="grid grid-cols-2 gap-4">
                 <FormField
                   control={form.control}
-                  name="companySize"
-                  render={({ field }) => (
-                    <FormItem>
-                      <FormLabel className="text-slate-900 dark:text-slate-100 font-medium">
-                        Şirket Büyüklüğü
-                      </FormLabel>
-                      <Select onValueChange={field.onChange} defaultValue={field.value}>
-                        <FormControl>
-                          <SelectTrigger className="h-14 text-lg">
-                            <SelectValue placeholder="Seçin" />
-                          </SelectTrigger>
-                        </FormControl>
-                        <SelectContent>
-                          <SelectItem value="1-10">1-10 çalışan</SelectItem>
-                          <SelectItem value="11-50">11-50 çalışan</SelectItem>
-                          <SelectItem value="51-200">51-200 çalışan</SelectItem>
-                          <SelectItem value="201-1000">201-1000 çalışan</SelectItem>
-                          <SelectItem value="1000+">1000+ çalışan</SelectItem>
-                        </SelectContent>
-                      </Select>
-                      <FormMessage />
-                    </FormItem>
-                  )}
-                />
-
-                <FormField
-                  control={form.control}
                   name="position"
                   render={({ field }) => (
                     <FormItem>
@@ -309,35 +279,37 @@ export default function Register() {
                     </FormItem>
                   )}
                 />
+
+                {/* Role Selection */}
+                <FormField
+                  control={form.control}
+                  name="role"
+                  render={({ field }) => (
+                    <FormItem>
+                      <FormLabel className="text-slate-900 dark:text-slate-100 font-medium">
+                        Rol
+                      </FormLabel>
+                      <Select onValueChange={field.onChange} defaultValue={field.value}>
+                        <FormControl>
+                          <SelectTrigger className="h-14 text-lg">
+                            <SelectValue placeholder="Rolünüzü seçin" />
+                          </SelectTrigger>
+                        </FormControl>
+                        <SelectContent>
+                          <SelectItem value="admin">Admin</SelectItem>
+                          <SelectItem value="hr_manager">İK Müdürü</SelectItem>
+                          <SelectItem value="hr_specialist">İK Uzmanı</SelectItem>
+                          <SelectItem value="department_manager">Departman Müdürü</SelectItem>
+                          <SelectItem value="employee">Çalışan</SelectItem>
+                        </SelectContent>
+                      </Select>
+                      <FormMessage />
+                    </FormItem>
+                  )}
+                />
               </div>
 
-              {/* Role Selection */}
-              <FormField
-                control={form.control}
-                name="role"
-                render={({ field }) => (
-                  <FormItem>
-                    <FormLabel className="text-slate-900 dark:text-slate-100 font-medium">
-                      Rol
-                    </FormLabel>
-                    <Select onValueChange={field.onChange} defaultValue={field.value}>
-                      <FormControl>
-                        <SelectTrigger className="h-14 text-lg">
-                          <SelectValue placeholder="Rolünüzü seçin" />
-                        </SelectTrigger>
-                      </FormControl>
-                      <SelectContent>
-                        <SelectItem value="admin">Admin</SelectItem>
-                        <SelectItem value="hr_manager">İK Müdürü</SelectItem>
-                        <SelectItem value="hr_specialist">İK Uzmanı</SelectItem>
-                        <SelectItem value="department_manager">Departman Müdürü</SelectItem>
-                        <SelectItem value="employee">Çalışan</SelectItem>
-                      </SelectContent>
-                    </Select>
-                    <FormMessage />
-                  </FormItem>
-                )}
-              />
+
 
               <FormField
                 control={form.control}
