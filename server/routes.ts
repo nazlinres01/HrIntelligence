@@ -2,6 +2,9 @@ import type { Express } from "express";
 import { createServer, type Server } from "http";
 import { storage } from "./storage";
 import { setupAuth, isAuthenticated } from "./replitAuth";
+import { requireAuth, requireRole } from "./middleware/auth";
+import session from "express-session";
+import connectPg from "connect-pg-simple";
 import { insertEmployeeSchema, insertLeaveSchema, insertPerformanceSchema, insertPayrollSchema, insertDepartmentSchema, users } from "@shared/schema";
 import { 
   sanitizeInput, 
@@ -18,6 +21,23 @@ import { sql, desc, eq } from "drizzle-orm";
 import bcrypt from "bcrypt";
 
 export async function registerRoutes(app: Express): Promise<Server> {
+  // Session configuration
+  const pgStore = connectPg(session);
+  app.use(session({
+    store: new pgStore({
+      conString: process.env.DATABASE_URL,
+      createTableIfMissing: true,
+    }),
+    secret: process.env.SESSION_SECRET || 'your-secret-key-change-in-production',
+    resave: false,
+    saveUninitialized: false,
+    cookie: {
+      secure: false, // Set to true in production with HTTPS
+      httpOnly: true,
+      maxAge: 24 * 60 * 60 * 1000, // 24 hours
+    },
+  }));
+
   // Auth middleware
   await setupAuth(app);
 
@@ -188,14 +208,49 @@ export async function registerRoutes(app: Express): Promise<Server> {
   });
 
   // Auth routes
-  app.get('/api/auth/user', isAuthenticated, async (req: any, res) => {
+  app.get('/api/auth/user', requireAuth, async (req: any, res) => {
     try {
-      const userId = req.user.claims.sub;
-      const user = await storage.getUser(userId);
-      res.json(user);
+      res.json({
+        id: req.user.id,
+        email: req.user.email,
+        firstName: req.user.firstName,
+        lastName: req.user.lastName,
+        role: req.user.role,
+        companyId: req.user.companyId,
+        isActive: req.user.isActive
+      });
     } catch (error) {
       console.error("Error fetching user:", error);
       res.status(500).json({ message: "Failed to fetch user" });
+    }
+  });
+
+  // Logout endpoint
+  app.post('/api/auth/logout', requireAuth, async (req: any, res) => {
+    try {
+      // Log logout activity
+      await storage.createAuditLog({
+        action: "logout",
+        resource: "user", 
+        resourceId: req.user.id,
+        userId: req.user.id,
+        companyId: req.user.companyId,
+        details: `Kullanıcı çıkış yaptı: ${req.user.email}`,
+        ipAddress: req.ip
+      });
+
+      // Destroy session
+      req.session.destroy((err: any) => {
+        if (err) {
+          console.error('Session destroy error:', err);
+          return res.status(500).json({ message: 'Çıkış işlemi başarısız' });
+        }
+        res.clearCookie('connect.sid');
+        res.json({ message: 'Başarıyla çıkış yapıldı' });
+      });
+    } catch (error) {
+      console.error("Logout error:", error);
+      res.status(500).json({ message: "Çıkış işlemi başarısız" });
     }
   });
 
