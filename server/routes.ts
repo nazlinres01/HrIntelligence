@@ -13,7 +13,7 @@ import {
 } from "./middleware/security";
 import { z } from "zod";
 import { db } from "./db";
-import { sql, desc } from "drizzle-orm";
+import { sql, desc, eq } from "drizzle-orm";
 
 // Simple authentication middleware
 const isAuthenticated = (req: any, res: any, next: any) => {
@@ -1440,11 +1440,15 @@ export async function registerRoutes(app: Express): Promise<Server> {
     }
   });
 
-  // Admin dashboard - notifications
+  // Admin dashboard - notifications (bypass auth for admin dashboard)
   app.get('/api/notifications', async (req, res) => {
     try {
       const limit = parseInt(req.query.limit as string) || 50;
-      const allNotifications = await storage.getUserNotifications('admin_001', limit);
+      // Get all notifications for admin dashboard
+      const { notifications: notificationsTable } = await import("@shared/schema");
+      const allNotifications = await db.select().from(notificationsTable)
+        .orderBy(desc(notificationsTable.createdAt))
+        .limit(limit);
       res.json(allNotifications);
     } catch (error) {
       console.error('Error fetching notifications:', error);
@@ -1815,60 +1819,9 @@ export async function registerRoutes(app: Express): Promise<Server> {
     }
   });
 
-  app.get('/api/expense-reports/pending', async (req, res) => {
-    try {
-      const userId = (req.session as any)?.userId;
-      if (!userId) {
-        return res.status(401).json({ message: "Unauthorized" });
-      }
 
-      const user = await storage.getUser(userId);
-      if (!user || (user.role !== 'admin' && user.role !== 'owner' && user.role !== 'hr_manager')) {
-        return res.status(403).json({ message: "Unauthorized" });
-      }
 
-      const pendingExpenses = await storage.getPendingExpenseReports();
-      res.json(pendingExpenses);
-    } catch (error) {
-      console.error("Error fetching pending expense reports:", error);
-      res.status(500).json({ message: "Failed to fetch pending expense reports" });
-    }
-  });
 
-  app.put('/api/expense-reports/:id/approve', async (req, res) => {
-    try {
-      const userId = (req.session as any)?.userId;
-      if (!userId) {
-        return res.status(401).json({ message: "Unauthorized" });
-      }
-
-      const user = await storage.getUser(userId);
-      if (!user || (user.role !== 'admin' && user.role !== 'owner' && user.role !== 'hr_manager')) {
-        return res.status(403).json({ message: "Unauthorized" });
-      }
-
-      const expenseId = parseInt(req.params.id);
-      const success = await storage.approveExpenseReport(expenseId, user.id);
-      
-      if (success) {
-        await storage.createAuditLog({
-          userId: user.id,
-          action: 'APPROVE_EXPENSE',
-          resource: 'expense_reports',
-          details: `Approved expense report ID: ${expenseId}`,
-          ipAddress: req.ip,
-          userAgent: req.get('User-Agent')
-        });
-
-        res.json({ message: "Expense report approved successfully" });
-      } else {
-        res.status(404).json({ message: "Expense report not found" });
-      }
-    } catch (error) {
-      console.error("Error approving expense report:", error);
-      res.status(500).json({ message: "Failed to approve expense report" });
-    }
-  });
 
   app.put('/api/users/:userId/status', async (req, res) => {
     try {
