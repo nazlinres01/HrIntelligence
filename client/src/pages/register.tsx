@@ -251,7 +251,7 @@ export default function Register() {
                       <Input 
                         placeholder="Şirket adınız" 
                         {...field}
-                        className="border-slate-300 dark:border-slate-600 h-12"
+                        className="border-slate-300 dark:border-slate-600 h-14 text-lg"
                       />
                     </FormControl>
                     <FormMessage />
@@ -270,7 +270,7 @@ export default function Register() {
                       </FormLabel>
                       <Select onValueChange={field.onChange} defaultValue={field.value}>
                         <FormControl>
-                          <SelectTrigger className="h-12">
+                          <SelectTrigger className="h-14 text-lg">
                             <SelectValue placeholder="Seçin" />
                           </SelectTrigger>
                         </FormControl>
@@ -299,7 +299,7 @@ export default function Register() {
                         <Input 
                           placeholder="İK Müdürü" 
                           {...field}
-                          className="border-slate-300 dark:border-slate-600 h-12"
+                          className="border-slate-300 dark:border-slate-600 h-14 text-lg"
                         />
                       </FormControl>
                       <FormMessage />
@@ -322,7 +322,7 @@ export default function Register() {
                           type={showPassword ? "text" : "password"}
                           placeholder="Güçlü bir şifre oluşturun"
                           {...field}
-                          className="border-slate-300 dark:border-slate-600 h-12 pr-12"
+                          className="border-slate-300 dark:border-slate-600 h-14 text-lg pr-12"
                         />
                         <Button
                           type="button"
@@ -367,7 +367,7 @@ export default function Register() {
                           type={showConfirmPassword ? "text" : "password"}
                           placeholder="Şifrenizi tekrar girin"
                           {...field}
-                          className="border-slate-300 dark:border-slate-600 h-12 pr-12"
+                          className="border-slate-300 dark:border-slate-600 h-14 text-lg pr-12"
                         />
                         <Button
                           type="button"
@@ -435,7 +435,7 @@ export default function Register() {
               <Button
                 type="submit"
                 disabled={registerMutation.isPending}
-                className="w-full bg-slate-900 hover:bg-slate-800 text-white h-12 font-medium"
+                className="w-full bg-slate-900 hover:bg-slate-800 text-white h-14 font-medium text-lg"
               >
                 {registerMutation.isPending ? (
                   <div className="flex items-center">
@@ -447,33 +447,9 @@ export default function Register() {
                 )}
               </Button>
 
-              {/* External Registration */}
-              <div className="text-center">
-                <div className="relative mb-6">
-                  <div className="absolute inset-0 flex items-center">
-                    <div className="w-full border-t border-slate-200 dark:border-slate-700"></div>
-                  </div>
-                  <div className="relative flex justify-center text-sm">
-                    <span className="px-2 bg-white dark:bg-slate-800 text-slate-500 dark:text-slate-400">
-                      veya
-                    </span>
-                  </div>
-                </div>
-                
-                <Button 
-                  type="button" 
-                  variant="outline" 
-                  className="w-full border-slate-300 dark:border-slate-600 h-12 font-medium"
-                  onClick={() => window.location.href = "/api/login"}
-                >
-                  <Building2 className="h-4 w-4 mr-2" />
-                  Replit ile kaydol
-                </Button>
-              </div>
-
               {/* Login Link */}
-              <div className="text-center mt-6">
-                <p className="text-sm text-slate-600 dark:text-slate-400">
+              <div className="text-center mt-8">
+                <p className="text-slate-600 dark:text-slate-400">
                   Zaten hesabınız var mı?{" "}
                   <Link href="/login" className="text-slate-900 dark:text-slate-100 hover:underline font-medium">
                     Giriş yapın
