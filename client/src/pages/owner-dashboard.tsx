@@ -16,17 +16,24 @@ import {
   Shield
 } from "lucide-react";
 
+interface EmployeeStats {
+  totalEmployees: number;
+  activeLeaves: number;
+  monthlyPayroll: string;
+  avgPerformance: string;
+}
+
 export default function OwnerDashboard() {
   const { data: stats = {
     totalEmployees: 0,
     activeLeaves: 0,
     monthlyPayroll: '₺0K',
     avgPerformance: '0.0'
-  } } = useQuery({
+  } } = useQuery<EmployeeStats>({
     queryKey: ['/api/stats/employees'],
   });
 
-  const { data: recentActivities = [] } = useQuery({
+  const { data: recentActivities = [] } = useQuery<any[]>({
     queryKey: ['/api/activities'],
   });
 
@@ -76,7 +83,7 @@ export default function OwnerDashboard() {
             <DollarSign className="h-4 w-4 text-muted-foreground" />
           </CardHeader>
           <CardContent>
-            <div className="text-2xl font-bold">₺{stats?.monthlyPayroll || "0"}</div>
+            <div className="text-2xl font-bold">{stats.monthlyPayroll}</div>
             <p className="text-xs text-muted-foreground">
               +5.2% geçen aya göre
             </p>
@@ -89,7 +96,7 @@ export default function OwnerDashboard() {
             <Calendar className="h-4 w-4 text-muted-foreground" />
           </CardHeader>
           <CardContent>
-            <div className="text-2xl font-bold">{stats?.activeLeaves || 0}</div>
+            <div className="text-2xl font-bold">{stats.activeLeaves}</div>
             <p className="text-xs text-muted-foreground">
               3 beklemede
             </p>
@@ -102,7 +109,7 @@ export default function OwnerDashboard() {
             <Target className="h-4 w-4 text-muted-foreground" />
           </CardHeader>
           <CardContent>
-            <div className="text-2xl font-bold">{stats?.avgPerformance || "0"}%</div>
+            <div className="text-2xl font-bold">{stats.avgPerformance}%</div>
             <p className="text-xs text-muted-foreground">
               +1.2% bu çeyrek
             </p>
@@ -215,7 +222,7 @@ export default function OwnerDashboard() {
         </CardHeader>
         <CardContent>
           <div className="space-y-4">
-            {recentActivities?.slice(0, 5).map((activity: any, index: number) => (
+            {recentActivities.slice(0, 5).map((activity: any, index: number) => (
               <div key={index} className="flex items-center justify-between py-2 border-b last:border-b-0">
                 <div className="flex items-center space-x-3">
                   <div className="w-2 h-2 rounded-full bg-blue-500"></div>
