@@ -189,9 +189,9 @@ function Dashboard() {
   const statsCards = [
     {
       title: "Toplam Çalışan",
-      value: (stats && typeof stats.totalEmployees === 'number') ? stats.totalEmployees : 0,
+      value: (stats && typeof (stats as any).totalEmployees === 'number') ? (stats as any).totalEmployees : 0,
       change: "+2",
-      changeType: "increase",
+      changeType: "increase" as const,
       icon: Users,
       color: "bg-blue-500",
       bgColor: "bg-blue-50",
@@ -199,9 +199,9 @@ function Dashboard() {
     },
     {
       title: "Aktif İzinler",
-      value: (stats && typeof stats.activeLeaves === 'number') ? stats.activeLeaves : 0,
+      value: (stats && typeof (stats as any).activeLeaves === 'number') ? (stats as any).activeLeaves : 0,
       change: "-1",
-      changeType: "decrease",
+      changeType: "decrease" as const,
       icon: Calendar,
       color: "bg-orange-500",
       bgColor: "bg-orange-50",
@@ -209,9 +209,9 @@ function Dashboard() {
     },
     {
       title: "Aylık Bordro",
-      value: (stats && stats.monthlyPayroll) ? stats.monthlyPayroll : "₺0",
+      value: (stats && (stats as any).monthlyPayroll) ? (stats as any).monthlyPayroll : "₺0",
       change: "+5.2%",
-      changeType: "increase",
+      changeType: "increase" as const,
       icon: CreditCard,
       color: "bg-green-500",
       bgColor: "bg-green-50",
@@ -219,9 +219,9 @@ function Dashboard() {
     },
     {
       title: "Ortalama Performans",
-      value: (stats && stats.avgPerformance) ? stats.avgPerformance : "0%",
+      value: (stats && (stats as any).avgPerformance) ? (stats as any).avgPerformance : "0%",
       change: "+1.8%",
-      changeType: "increase",
+      changeType: "increase" as const,
       icon: BarChart3,
       color: "bg-purple-500",
       bgColor: "bg-purple-50",
@@ -280,9 +280,9 @@ function Dashboard() {
     }
   ];
 
-  const recentActivities = activities?.slice(0, 6) || [];
-  const recentEmployees = employees?.slice(0, 4) || [];
-  const pendingLeaves = leaves?.filter(leave => leave.status === 'pending').slice(0, 3) || [];
+  const recentActivities = Array.isArray(activities) ? activities.slice(0, 6) : [];
+  const recentEmployees = Array.isArray(employees) ? employees.slice(0, 4) : [];
+  const pendingLeaves = Array.isArray(leaves) ? leaves.filter((leave: any) => leave.status === 'pending').slice(0, 3) : [];
 
   const getActivityIcon = (type: string) => {
     switch (type) {
@@ -305,79 +305,108 @@ function Dashboard() {
   };
 
   return (
-    <div className="flex-1 space-y-6 p-6 max-w-full overflow-x-hidden overflow-y-auto h-full">
-      <Header 
-        title="Dashboard" 
-        subtitle="İnsan kaynakları sisteminizin genel görünümü" 
-      />
+    <div className="flex-1 space-y-8 p-8 max-w-full overflow-x-hidden overflow-y-auto h-full bg-gradient-to-br from-slate-50 via-blue-50 to-indigo-50 dark:from-slate-900 dark:via-slate-800 dark:to-slate-900">
+      {/* Modern Header with Gradient */}
+      <div className="bg-white dark:bg-slate-800 rounded-3xl shadow-xl border-0 p-8 backdrop-blur-sm bg-opacity-90">
+        <div className="flex items-center justify-between">
+          <div>
+            <h1 className="text-4xl font-bold bg-gradient-to-r from-blue-600 via-purple-600 to-indigo-600 bg-clip-text text-transparent">
+              İK Yönetim Paneli
+            </h1>
+            <p className="text-lg text-slate-600 dark:text-slate-300 mt-2">
+              Şirketinizin insan kaynakları süreçlerini yönetin ve analiz edin
+            </p>
+          </div>
+          <div className="flex items-center space-x-4">
+            <div className="bg-gradient-to-r from-green-400 to-blue-500 rounded-full p-3 shadow-lg">
+              <BarChart3 className="h-8 w-8 text-white" />
+            </div>
+          </div>
+        </div>
+      </div>
 
-      {/* Stats Cards */}
+      {/* Enhanced Stats Cards with Glassmorphism */}
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
         {statsCards.map((stat, index) => {
           const Icon = stat.icon;
           return (
-            <Card key={index} className="relative overflow-hidden border-0 shadow-lg hover:shadow-xl transition-all duration-300">
-              <CardContent className="p-6">
+            <Card key={index} className="relative overflow-hidden border-0 shadow-2xl hover:shadow-3xl transition-all duration-500 bg-white/80 dark:bg-slate-800/80 backdrop-blur-xl hover:scale-105 rounded-2xl">
+              <CardContent className="p-7">
                 <div className="flex items-center justify-between">
-                  <div className="space-y-2">
-                    <p className="text-sm font-medium text-gray-600">{stat.title}</p>
-                    <p className="text-3xl font-bold text-gray-900">
-                      {statsLoading ? "..." : stat.value}
+                  <div className="space-y-3">
+                    <p className="text-sm font-semibold text-slate-600 dark:text-slate-300 uppercase tracking-wider">{stat.title}</p>
+                    <p className="text-4xl font-bold text-slate-900 dark:text-white">
+                      {statsLoading ? (
+                        <div className="animate-pulse bg-slate-200 dark:bg-slate-700 h-10 w-20 rounded"></div>
+                      ) : stat.value}
                     </p>
-                    <div className="flex items-center space-x-1">
+                    <div className="flex items-center space-x-2">
                       {stat.changeType === 'increase' ? (
-                        <TrendingUp className="h-4 w-4 text-green-500" />
+                        <div className="flex items-center bg-green-100 dark:bg-green-900/30 px-2 py-1 rounded-full">
+                          <TrendingUp className="h-4 w-4 text-green-600 dark:text-green-400" />
+                          <span className="text-sm font-medium text-green-600 dark:text-green-400 ml-1">
+                            {stat.change}
+                          </span>
+                        </div>
                       ) : (
-                        <TrendingDown className="h-4 w-4 text-red-500" />
+                        <div className="flex items-center bg-red-100 dark:bg-red-900/30 px-2 py-1 rounded-full">
+                          <TrendingDown className="h-4 w-4 text-red-600 dark:text-red-400" />
+                          <span className="text-sm font-medium text-red-600 dark:text-red-400 ml-1">
+                            {stat.change}
+                          </span>
+                        </div>
                       )}
-                      <span className={`text-sm font-medium ${
-                        stat.changeType === 'increase' ? 'text-green-600' : 'text-red-600'
-                      }`}>
-                        {stat.change}
-                      </span>
-                      <span className="text-sm text-gray-500">bu ay</span>
+                      <span className="text-sm text-slate-500 dark:text-slate-400">bu ay</span>
                     </div>
                   </div>
-                  <div className={`p-3 rounded-2xl ${stat.bgColor}`}>
-                    <Icon className={`h-8 w-8 ${stat.textColor}`} />
+                  <div className={`p-4 rounded-3xl ${stat.bgColor} dark:bg-opacity-20 shadow-lg`}>
+                    <Icon className={`h-10 w-10 ${stat.textColor} dark:text-white`} />
                   </div>
                 </div>
-                <div className={`absolute inset-x-0 bottom-0 h-1 ${stat.color}`}></div>
+                <div className={`absolute inset-x-0 bottom-0 h-2 bg-gradient-to-r ${stat.color.replace('bg-', 'from-')}-400 to-${stat.color.replace('bg-', '')}-600 rounded-b-2xl`}></div>
               </CardContent>
             </Card>
           );
         })}
       </div>
 
-      <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
-        {/* Quick Actions */}
+      <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
+        {/* Enhanced Quick Actions */}
         <div className="lg:col-span-2">
-          <Card className="shadow-lg border-0">
-            <CardHeader>
-              <CardTitle className="flex items-center">
-                <Plus className="mr-2 h-5 w-5 text-blue-600" />
-                Hızlı İşlemler
+          <Card className="shadow-2xl border-0 bg-white/90 dark:bg-slate-800/90 backdrop-blur-xl rounded-3xl">
+            <CardHeader className="pb-6">
+              <CardTitle className="flex items-center text-2xl font-bold">
+                <div className="bg-gradient-to-r from-blue-500 to-purple-600 rounded-2xl p-3 mr-4 shadow-lg">
+                  <Plus className="h-6 w-6 text-white" />
+                </div>
+                <span className="bg-gradient-to-r from-blue-600 to-purple-600 bg-clip-text text-transparent">
+                  Hızlı İşlemler
+                </span>
               </CardTitle>
             </CardHeader>
             <CardContent>
-              <div className="grid grid-cols-2 gap-4">
+              <div className="grid grid-cols-2 gap-6">
                 {quickActions.map((action, index) => {
                   const Icon = action.icon;
                   return (
                     <Link key={index} href={action.href}>
-                      <div className={`p-4 rounded-xl border-2 transition-all duration-200 cursor-pointer ${action.color}`}>
-                        <div className="flex items-start space-x-3">
-                          <div className={`p-2 rounded-lg bg-white`}>
-                            <Icon className={`h-5 w-5 ${action.iconColor}`} />
+                      <div className="group relative p-6 rounded-2xl border-2 border-transparent bg-gradient-to-br from-white to-slate-50 dark:from-slate-800 dark:to-slate-700 transition-all duration-300 cursor-pointer hover:shadow-2xl hover:scale-105 hover:border-blue-200 dark:hover:border-blue-600">
+                        <div className="absolute inset-0 bg-gradient-to-br from-blue-50 to-purple-50 dark:from-blue-900/20 dark:to-purple-900/20 rounded-2xl opacity-0 group-hover:opacity-100 transition-opacity duration-300"></div>
+                        <div className="relative flex items-start space-x-4">
+                          <div className={`p-3 rounded-2xl shadow-lg transition-all duration-300 group-hover:scale-110 ${action.color.replace('hover:', '').replace('border-', 'bg-').split(' ')[0]}/10`}>
+                            <Icon className={`h-6 w-6 ${action.iconColor} transition-colors duration-300`} />
                           </div>
                           <div className="flex-1 min-w-0">
-                            <h3 className="font-semibold text-gray-900 truncate">
+                            <h3 className="font-bold text-slate-900 dark:text-white text-lg mb-2 group-hover:text-blue-600 dark:group-hover:text-blue-400 transition-colors duration-300">
                               {action.title}
                             </h3>
-                            <p className="text-sm text-gray-600 mt-1">
+                            <p className="text-sm text-slate-600 dark:text-slate-300 leading-relaxed">
                               {action.description}
                             </p>
                           </div>
+                        </div>
+                        <div className="absolute top-4 right-4 opacity-0 group-hover:opacity-100 transition-opacity duration-300">
+                          <ArrowRight className="h-5 w-5 text-blue-500" />
                         </div>
                       </div>
                     </Link>
@@ -388,17 +417,21 @@ function Dashboard() {
           </Card>
         </div>
 
-        {/* Pending Leaves */}
-        <Card className="shadow-lg border-0">
-          <CardHeader>
+        {/* Enhanced Pending Leaves */}
+        <Card className="shadow-2xl border-0 bg-white/90 dark:bg-slate-800/90 backdrop-blur-xl rounded-3xl">
+          <CardHeader className="pb-6">
             <CardTitle className="flex items-center justify-between">
               <div className="flex items-center">
-                <Clock className="mr-2 h-5 w-5 text-orange-600" />
-                Bekleyen İzinler
+                <div className="bg-gradient-to-r from-orange-500 to-red-500 rounded-2xl p-3 mr-4 shadow-lg">
+                  <Clock className="h-6 w-6 text-white" />
+                </div>
+                <span className="text-xl font-bold bg-gradient-to-r from-orange-600 to-red-600 bg-clip-text text-transparent">
+                  Bekleyen İzinler
+                </span>
               </div>
               <Link href="/leaves">
-                <Button variant="ghost" size="sm">
-                  <Eye className="h-4 w-4 mr-1" />
+                <Button variant="ghost" size="sm" className="hover:bg-orange-50 dark:hover:bg-orange-900/20 rounded-xl">
+                  <Eye className="h-4 w-4 mr-2" />
                   Tümü
                 </Button>
               </Link>
@@ -406,92 +439,128 @@ function Dashboard() {
           </CardHeader>
           <CardContent>
             {leavesLoading ? (
-              <div className="space-y-3">
+              <div className="space-y-4">
                 {[1, 2, 3].map(i => (
-                  <div key={i} className="animate-pulse">
-                    <div className="h-4 bg-gray-200 rounded w-3/4 mb-2"></div>
-                    <div className="h-3 bg-gray-200 rounded w-1/2"></div>
+                  <div key={i} className="animate-pulse p-4 bg-slate-100 dark:bg-slate-700 rounded-2xl">
+                    <div className="h-4 bg-slate-200 dark:bg-slate-600 rounded w-3/4 mb-3"></div>
+                    <div className="h-3 bg-slate-200 dark:bg-slate-600 rounded w-1/2"></div>
                   </div>
                 ))}
               </div>
-            ) : pendingLeaves.length > 0 ? (
+            ) : Array.isArray(leaves) && leaves.filter((leave: any) => leave.status === 'pending').length > 0 ? (
               <div className="space-y-4">
-                {pendingLeaves.map((leave) => (
-                  <div key={leave.id} className="flex items-center justify-between p-3 bg-orange-50 rounded-lg">
-                    <div className="flex-1">
-                      <p className="font-medium text-gray-900">İzin Talebi #{leave.id}</p>
-                      <p className="text-sm text-gray-600">{leave.startDate} - {leave.endDate}</p>
+                {leaves.filter((leave: any) => leave.status === 'pending').slice(0, 3).map((leave: any) => (
+                  <div key={leave.id} className="group p-4 bg-gradient-to-r from-orange-50 to-red-50 dark:from-orange-900/20 dark:to-red-900/20 rounded-2xl border border-orange-200 dark:border-orange-700 hover:shadow-lg transition-all duration-300">
+                    <div className="flex items-center justify-between">
+                      <div className="flex-1">
+                        <div className="flex items-center space-x-2 mb-2">
+                          <div className="w-3 h-3 bg-orange-500 rounded-full animate-pulse"></div>
+                          <p className="font-bold text-slate-900 dark:text-white">İzin Talebi #{leave.id}</p>
+                        </div>
+                        <p className="text-sm text-slate-600 dark:text-slate-300 font-medium">
+                          {new Date(leave.startDate).toLocaleDateString('tr-TR')} - {new Date(leave.endDate).toLocaleDateString('tr-TR')}
+                        </p>
+                      </div>
+                      <Badge className="bg-orange-100 dark:bg-orange-900/30 text-orange-800 dark:text-orange-200 border-orange-300 dark:border-orange-600 font-semibold px-3 py-1">
+                        {leave.leaveType}
+                      </Badge>
                     </div>
-                    <Badge variant="secondary" className="bg-orange-100 text-orange-800">
-                      {leave.leaveType}
-                    </Badge>
                   </div>
                 ))}
               </div>
             ) : (
-              <p className="text-gray-500 text-center py-4">Bekleyen izin talebi yok</p>
+              <div className="text-center py-8">
+                <div className="bg-slate-100 dark:bg-slate-700 rounded-full w-16 h-16 flex items-center justify-center mx-auto mb-4">
+                  <CheckCircle className="h-8 w-8 text-green-500" />
+                </div>
+                <p className="text-slate-600 dark:text-slate-300 font-medium">Bekleyen izin talebi yok</p>
+                <p className="text-sm text-slate-500 dark:text-slate-400 mt-1">Tüm izin talepleri onaylandı</p>
+              </div>
             )}
           </CardContent>
         </Card>
       </div>
 
-      <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
-        {/* Recent Activities */}
-        <Card className="shadow-lg border-0">
-          <CardHeader>
-            <CardTitle className="flex items-center">
-              <Clock className="mr-2 h-5 w-5 text-green-600" />
-              Son Aktiviteler
+      <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
+        {/* Enhanced Recent Activities */}
+        <Card className="shadow-2xl border-0 bg-white/90 dark:bg-slate-800/90 backdrop-blur-xl rounded-3xl">
+          <CardHeader className="pb-6">
+            <CardTitle className="flex items-center text-2xl font-bold">
+              <div className="bg-gradient-to-r from-green-500 to-emerald-600 rounded-2xl p-3 mr-4 shadow-lg">
+                <Clock className="h-6 w-6 text-white" />
+              </div>
+              <span className="bg-gradient-to-r from-green-600 to-emerald-600 bg-clip-text text-transparent">
+                Son Aktiviteler
+              </span>
             </CardTitle>
           </CardHeader>
           <CardContent>
             {activitiesLoading ? (
-              <div className="space-y-3">
+              <div className="space-y-4">
                 {[1, 2, 3, 4, 5].map(i => (
-                  <div key={i} className="animate-pulse">
-                    <div className="h-4 bg-gray-200 rounded w-3/4 mb-2"></div>
-                    <div className="h-3 bg-gray-200 rounded w-1/2"></div>
+                  <div key={i} className="animate-pulse p-4 bg-slate-100 dark:bg-slate-700 rounded-2xl">
+                    <div className="h-4 bg-slate-200 dark:bg-slate-600 rounded w-3/4 mb-3"></div>
+                    <div className="h-3 bg-slate-200 dark:bg-slate-600 rounded w-1/2"></div>
                   </div>
                 ))}
               </div>
-            ) : (
+            ) : recentActivities.length > 0 ? (
               <div className="space-y-4">
-                {recentActivities.map((activity) => {
+                {recentActivities.map((activity: any) => {
                   const Icon = getActivityIcon(activity.type);
                   const iconColor = getActivityColor(activity.type);
                   
                   return (
-                    <div key={activity.id} className="flex items-start space-x-3 p-3 rounded-lg hover:bg-gray-50 transition-colors">
-                      <div className={`p-2 rounded-full bg-gray-100`}>
-                        <Icon className={`h-4 w-4 ${iconColor}`} />
-                      </div>
-                      <div className="flex-1 min-w-0">
-                        <p className="text-sm font-medium text-gray-900">
-                          {activity.description}
-                        </p>
-                        <p className="text-xs text-gray-500 mt-1">
-                          {new Date(activity.createdAt).toLocaleDateString('tr-TR')}
-                        </p>
+                    <div key={activity.id} className="group p-4 bg-gradient-to-r from-slate-50 to-gray-50 dark:from-slate-700 dark:to-slate-600 rounded-2xl hover:shadow-lg transition-all duration-300 border border-slate-200 dark:border-slate-600">
+                      <div className="flex items-start space-x-4">
+                        <div className={`p-3 rounded-2xl bg-white dark:bg-slate-800 shadow-md group-hover:scale-110 transition-transform duration-300`}>
+                          <Icon className={`h-5 w-5 ${iconColor}`} />
+                        </div>
+                        <div className="flex-1 min-w-0">
+                          <p className="text-sm font-semibold text-slate-900 dark:text-white mb-1">
+                            {activity.description}
+                          </p>
+                          <p className="text-xs text-slate-500 dark:text-slate-400 font-medium">
+                            {new Date(activity.createdAt).toLocaleDateString('tr-TR', {
+                              day: 'numeric',
+                              month: 'long',
+                              hour: '2-digit',
+                              minute: '2-digit'
+                            })}
+                          </p>
+                        </div>
                       </div>
                     </div>
                   );
                 })}
               </div>
+            ) : (
+              <div className="text-center py-8">
+                <div className="bg-slate-100 dark:bg-slate-700 rounded-full w-16 h-16 flex items-center justify-center mx-auto mb-4">
+                  <Clock className="h-8 w-8 text-slate-400" />
+                </div>
+                <p className="text-slate-600 dark:text-slate-300 font-medium">Henüz aktivite yok</p>
+                <p className="text-sm text-slate-500 dark:text-slate-400 mt-1">Sistem kullanımı başladığında aktiviteler görünecek</p>
+              </div>
             )}
           </CardContent>
         </Card>
 
-        {/* Recent Employees */}
-        <Card className="shadow-lg border-0">
-          <CardHeader>
+        {/* Enhanced Recent Employees */}
+        <Card className="shadow-2xl border-0 bg-white/90 dark:bg-slate-800/90 backdrop-blur-xl rounded-3xl">
+          <CardHeader className="pb-6">
             <CardTitle className="flex items-center justify-between">
               <div className="flex items-center">
-                <Users className="mr-2 h-5 w-5 text-blue-600" />
-                Son Eklenen Çalışanlar
+                <div className="bg-gradient-to-r from-blue-500 to-cyan-600 rounded-2xl p-3 mr-4 shadow-lg">
+                  <Users className="h-6 w-6 text-white" />
+                </div>
+                <span className="text-xl font-bold bg-gradient-to-r from-blue-600 to-cyan-600 bg-clip-text text-transparent">
+                  Son Eklenen Çalışanlar
+                </span>
               </div>
               <Link href="/employees">
-                <Button variant="ghost" size="sm">
-                  <Eye className="h-4 w-4 mr-1" />
+                <Button variant="ghost" size="sm" className="hover:bg-blue-50 dark:hover:bg-blue-900/20 rounded-xl">
+                  <Eye className="h-4 w-4 mr-2" />
                   Tümü
                 </Button>
               </Link>
@@ -499,69 +568,101 @@ function Dashboard() {
           </CardHeader>
           <CardContent>
             {employeesLoading ? (
-              <div className="space-y-3">
+              <div className="space-y-4">
                 {[1, 2, 3, 4].map(i => (
-                  <div key={i} className="animate-pulse flex items-center space-x-3">
-                    <div className="h-10 w-10 bg-gray-200 rounded-full"></div>
+                  <div key={i} className="animate-pulse flex items-center space-x-4 p-4 bg-slate-100 dark:bg-slate-700 rounded-2xl">
+                    <div className="h-12 w-12 bg-slate-200 dark:bg-slate-600 rounded-full"></div>
                     <div className="flex-1">
-                      <div className="h-4 bg-gray-200 rounded w-3/4 mb-2"></div>
-                      <div className="h-3 bg-gray-200 rounded w-1/2"></div>
+                      <div className="h-4 bg-slate-200 dark:bg-slate-600 rounded w-3/4 mb-3"></div>
+                      <div className="h-3 bg-slate-200 dark:bg-slate-600 rounded w-1/2"></div>
+                    </div>
+                  </div>
+                ))}
+              </div>
+            ) : recentEmployees.length > 0 ? (
+              <div className="space-y-4">
+                {recentEmployees.map((employee: any) => (
+                  <div key={employee.id} className="group p-4 bg-gradient-to-r from-blue-50 to-cyan-50 dark:from-blue-900/20 dark:to-cyan-900/20 rounded-2xl hover:shadow-lg transition-all duration-300 border border-blue-200 dark:border-blue-700">
+                    <div className="flex items-center space-x-4">
+                      <Avatar className="h-12 w-12 border-2 border-white shadow-lg group-hover:scale-110 transition-transform duration-300">
+                        <AvatarFallback className="bg-gradient-to-br from-blue-500 to-cyan-500 text-white font-bold text-lg">
+                          {employee.firstName?.[0]}{employee.lastName?.[0]}
+                        </AvatarFallback>
+                      </Avatar>
+                      <div className="flex-1 min-w-0">
+                        <p className="text-base font-bold text-slate-900 dark:text-white mb-1">
+                          {employee.firstName} {employee.lastName}
+                        </p>
+                        <p className="text-sm text-slate-600 dark:text-slate-300 font-medium">
+                          {employee.department} • {employee.position}
+                        </p>
+                      </div>
+                      <Badge 
+                        className={`font-semibold px-3 py-1 ${
+                          employee.status === 'active' 
+                            ? 'bg-green-100 dark:bg-green-900/30 text-green-800 dark:text-green-200 border-green-300 dark:border-green-600' 
+                            : 'bg-gray-100 dark:bg-gray-900/30 text-gray-800 dark:text-gray-200 border-gray-300 dark:border-gray-600'
+                        }`}
+                      >
+                        {employee.status === 'active' ? 'Aktif' : 'Pasif'}
+                      </Badge>
                     </div>
                   </div>
                 ))}
               </div>
             ) : (
-              <div className="space-y-4">
-                {recentEmployees.map((employee) => (
-                  <div key={employee.id} className="flex items-center space-x-3 p-3 rounded-lg hover:bg-gray-50 transition-colors">
-                    <Avatar className="h-10 w-10">
-                      <AvatarFallback className="bg-blue-100 text-blue-600 font-medium">
-                        {employee.firstName[0]}{employee.lastName[0]}
-                      </AvatarFallback>
-                    </Avatar>
-                    <div className="flex-1 min-w-0">
-                      <p className="text-sm font-medium text-gray-900">
-                        {employee.firstName} {employee.lastName}
-                      </p>
-                      <p className="text-xs text-gray-500">
-                        {employee.department} • {employee.position}
-                      </p>
-                    </div>
-                    <Badge 
-                      variant={employee.status === 'active' ? 'default' : 'secondary'}
-                      className={employee.status === 'active' ? 'bg-green-100 text-green-800' : ''}
-                    >
-                      {employee.status === 'active' ? 'Aktif' : 'Pasif'}
-                    </Badge>
-                  </div>
-                ))}
+              <div className="text-center py-8">
+                <div className="bg-slate-100 dark:bg-slate-700 rounded-full w-16 h-16 flex items-center justify-center mx-auto mb-4">
+                  <Users className="h-8 w-8 text-slate-400" />
+                </div>
+                <p className="text-slate-600 dark:text-slate-300 font-medium">Henüz çalışan yok</p>
+                <p className="text-sm text-slate-500 dark:text-slate-400 mt-1">İlk çalışanları sisteme ekleyin</p>
               </div>
             )}
           </CardContent>
         </Card>
       </div>
 
-      {/* Performance Overview */}
-      {performanceData && (
-        <Card className="shadow-lg border-0">
-          <CardHeader>
-            <CardTitle className="flex items-center">
-              <BarChart3 className="mr-2 h-5 w-5 text-purple-600" />
-              Departman Performans Özeti
+      {/* Enhanced Performance Overview */}
+      {Array.isArray(performanceData) && performanceData.length > 0 && (
+        <Card className="shadow-2xl border-0 bg-white/90 dark:bg-slate-800/90 backdrop-blur-xl rounded-3xl">
+          <CardHeader className="pb-6">
+            <CardTitle className="flex items-center text-2xl font-bold">
+              <div className="bg-gradient-to-r from-purple-500 to-pink-600 rounded-2xl p-3 mr-4 shadow-lg">
+                <BarChart3 className="h-6 w-6 text-white" />
+              </div>
+              <span className="bg-gradient-to-r from-purple-600 to-pink-600 bg-clip-text text-transparent">
+                Departman Performans Özeti
+              </span>
             </CardTitle>
           </CardHeader>
           <CardContent>
-            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
-              {performanceData.map((dept, index) => (
-                <div key={index} className="p-4 bg-gray-50 rounded-lg">
-                  <div className="flex items-center justify-between mb-2">
-                    <h3 className="font-medium text-gray-900">{dept.department}</h3>
-                    <span className="text-sm font-semibold text-purple-600">{dept.score}%</span>
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
+              {performanceData.map((dept: any, index: number) => (
+                <div key={index} className="group p-6 bg-gradient-to-br from-white to-slate-50 dark:from-slate-700 dark:to-slate-600 rounded-2xl border border-slate-200 dark:border-slate-600 hover:shadow-xl transition-all duration-300 hover:scale-105">
+                  <div className="flex items-center justify-between mb-4">
+                    <h3 className="font-bold text-slate-900 dark:text-white text-lg">{dept.department}</h3>
+                    <div className="flex items-center space-x-2">
+                      <span className="text-2xl font-bold bg-gradient-to-r from-purple-600 to-pink-600 bg-clip-text text-transparent">
+                        {dept.score}%
+                      </span>
+                    </div>
                   </div>
-                  <Progress value={dept.score} className="h-2" />
-                  <p className="text-xs text-gray-500 mt-2">
-                    {dept.score >= 80 ? 'Mükemmel' : dept.score >= 60 ? 'İyi' : 'Gelişmeli'}
-                  </p>
+                  <Progress 
+                    value={dept.score} 
+                    className="h-3 mb-4 bg-slate-200 dark:bg-slate-700" 
+                  />
+                  <div className="flex items-center justify-between">
+                    <p className={`text-sm font-semibold px-3 py-1 rounded-full ${
+                      dept.score >= 80 
+                        ? 'bg-green-100 dark:bg-green-900/30 text-green-800 dark:text-green-200' 
+                        : dept.score >= 60 
+                        ? 'bg-yellow-100 dark:bg-yellow-900/30 text-yellow-800 dark:text-yellow-200' 
+                        : 'bg-red-100 dark:bg-red-900/30 text-red-800 dark:text-red-200'
+                    }`}>
+                      {dept.score >= 80 ? 'Mükemmel' : dept.score >= 60 ? 'İyi' : 'Gelişmeli'}
+                    </p>
+                  </div>
                 </div>
               ))}
             </div>
