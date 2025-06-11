@@ -157,17 +157,7 @@ const getRoleBasedNavigation = (userRole: UserRole) => {
     );
   }
 
-  // Employee - Personal access only
-  if (userRole === "employee") {
-    navigationItems.push(
-      {
-        name: "Profil",
-        href: "/profile",
-        icon: UserCircle,
-        show: true
-      }
-    );
-  }
+  // Employee - No additional navigation items
 
   return navigationItems.filter(item => item.show);
 };

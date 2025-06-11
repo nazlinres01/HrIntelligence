@@ -85,52 +85,16 @@ export function Header({ title, subtitle }: HeaderProps) {
           {/* Corporate Notifications */}
           <NotificationBell />
 
-          {/* Corporate User Profile Dropdown */}
+          {/* Corporate Logout Button */}
           {user && (
-            <DropdownMenu>
-              <DropdownMenuTrigger asChild>
-                <Button variant="ghost" className="relative h-9 w-9 rounded-full">
-                  <Avatar className="h-9 w-9">
-                    <AvatarImage src={user.avatar} alt={user.firstName} />
-                    <AvatarFallback className="bg-slate-100 dark:bg-slate-700 text-slate-900 dark:text-white">
-                      {user.firstName?.[0]}{user.lastName?.[0]}
-                    </AvatarFallback>
-                  </Avatar>
-                </Button>
-              </DropdownMenuTrigger>
-              <DropdownMenuContent className="w-56 bg-white dark:bg-slate-800 border-slate-200 dark:border-slate-700" align="end" forceMount>
-                <div className="flex items-center justify-start gap-2 p-2">
-                  <div className="flex flex-col space-y-1 leading-none">
-                    <p className="font-medium text-slate-900 dark:text-white">
-                      {user.firstName} {user.lastName}
-                    </p>
-                    <p className="w-[200px] truncate text-sm text-slate-600 dark:text-slate-400">
-                      {user.email}
-                    </p>
-                  </div>
-                </div>
-                <DropdownMenuSeparator className="bg-slate-200 dark:bg-slate-700" />
-                <Link href="/profile">
-                  <DropdownMenuItem className="cursor-pointer text-slate-700 dark:text-slate-300 hover:bg-slate-50 dark:hover:bg-slate-750">
-                    <User className="mr-2 h-4 w-4" />
-                    <span>Profil</span>
-                  </DropdownMenuItem>
-                </Link>
-                <Link href="/settings">
-                  <DropdownMenuItem className="cursor-pointer text-slate-700 dark:text-slate-300 hover:bg-slate-50 dark:hover:bg-slate-750">
-                    <Settings className="mr-2 h-4 w-4" />
-                    <span>Ayarlar</span>
-                  </DropdownMenuItem>
-                </Link>
-                <DropdownMenuSeparator className="bg-slate-200 dark:bg-slate-700" />
-                <DropdownMenuItem 
-                  className="cursor-pointer text-red-600 dark:text-red-400 hover:bg-red-50 dark:hover:bg-red-900/20"
-                  onClick={logout}
-                >
-                  <span>Çıkış Yap</span>
-                </DropdownMenuItem>
-              </DropdownMenuContent>
-            </DropdownMenu>
+            <Button
+              variant="outline"
+              size="sm"
+              onClick={logout}
+              className="border-slate-300 dark:border-slate-600 text-slate-700 dark:text-slate-300 hover:bg-slate-50 dark:hover:bg-slate-750"
+            >
+              Çıkış Yap
+            </Button>
           )}
         </div>
       </div>

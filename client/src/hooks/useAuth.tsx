@@ -24,6 +24,7 @@ interface AuthContextType {
   error: Error | null;
   loginMutation: UseMutationResult<User, Error, LoginData>;
   logoutMutation: UseMutationResult<void, Error, void>;
+  logout: () => void;
   isAuthenticated: boolean;
 }
 
@@ -85,6 +86,10 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     },
   });
 
+  const logout = () => {
+    logoutMutation.mutate();
+  };
+
   return (
     <AuthContext.Provider
       value={{
@@ -93,6 +98,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
         error,
         loginMutation,
         logoutMutation,
+        logout,
         isAuthenticated: !!user,
       }}
     >
