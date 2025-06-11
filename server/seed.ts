@@ -38,22 +38,7 @@ export async function seedDatabase() {
 
     await db.insert(departments).values(sampleDepartments);
 
-    // Create admin user first (Patron)
-    const adminUser = {
-      id: "admin_001",
-      email: "admin@gmail.com",
-      password: "admin123", // Sabit admin şifresi
-      firstName: "Admin",
-      lastName: "User",
-      phone: "+90 532 999 88 77",
-      companyId: sampleCompany.id,
-      role: "owner",
-      isActive: true,
-      createdAt: new Date(),
-      updatedAt: new Date()
-    };
 
-    await db.insert(users).values(adminUser);
 
     // Create HR team users for the company
     const hrTeamUsers = [
@@ -92,13 +77,13 @@ export async function seedDatabase() {
       },
       {
         id: "admin_001",
-        email: "admin@techcorp.com.tr",
+        email: "admin@gmail.com",
         firstName: "System",
         lastName: "Admin",
         phone: "+90 535 123 45 67",
         companyId: sampleCompany.id,
         role: "admin",
-        password: "password123",
+        password: "admin123",
         isActive: true
       }
     ];

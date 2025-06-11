@@ -68,13 +68,13 @@ export async function seedSimpleDatabase() {
       },
       {
         id: "admin_001",
-        email: "admin@techcorp.com.tr",
+        email: "admin@gmail.com",
         firstName: "System",
         lastName: "Admin",
         phone: "+90 535 123 45 67",
         companyId: sampleCompany.id,
         role: "admin",
-        password: "password123",
+        password: "admin123",
         isActive: true
       }
     ]);
