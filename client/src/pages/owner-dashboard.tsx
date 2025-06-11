@@ -207,6 +207,43 @@ export default function OwnerDashboard() {
     }
   });
 
+  // Employee creation mutation
+  const createEmployeeMutation = useMutation({
+    mutationFn: async (employeeData: any) => {
+      const response = await apiRequest('POST', '/api/employees', employeeData);
+      return response.json();
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ['/api/employees'] });
+      queryClient.invalidateQueries({ queryKey: ['/api/team/members'] });
+      setIsEmployeeDialogOpen(false);
+      toast({ title: "Yeni çalışan başarıyla eklendi" });
+    },
+    onError: () => {
+      toast({ title: "Çalışan eklenirken hata oluştu", variant: "destructive" });
+    }
+  });
+
+  const handleEmployeeSubmit = (e: React.FormEvent<HTMLFormElement>) => {
+    e.preventDefault();
+    const formData = new FormData(e.currentTarget);
+    
+    const employeeData = {
+      firstName: formData.get('firstName') as string,
+      lastName: formData.get('lastName') as string,
+      email: formData.get('email') as string,
+      phone: formData.get('phone') as string,
+      position: formData.get('position') as string,
+      department: formData.get('department') as string,
+      salary: parseFloat(formData.get('salary') as string),
+      startDate: formData.get('startDate') as string,
+      employeeId: `EMP_${Date.now()}`,
+      status: 'active'
+    };
+    
+    createEmployeeMutation.mutate(employeeData);
+  };
+
   const roleLabels: Record<string, string> = {
     admin: "Admin",
     owner: "Patron", 
@@ -266,6 +303,37 @@ export default function OwnerDashboard() {
               variant="outline" 
               size="sm"
               className="bg-white/50 backdrop-blur-sm border-white/20 hover:bg-white/70"
+              onClick={() => {
+                const reportData = {
+                  totalEmployees: stats.totalEmployees,
+                  activeLeaves: stats.activeLeaves,
+                  monthlyPayroll: stats.monthlyPayroll,
+                  avgPerformance: stats.avgPerformance,
+                  teamMembers: teamMembers.map(m => ({
+                    name: `${m.firstName} ${m.lastName}`,
+                    email: m.email,
+                    role: m.role,
+                    status: m.isActive ? 'Aktif' : 'Pasif'
+                  })),
+                  exportDate: new Date().toISOString()
+                };
+                
+                const csvContent = [
+                  'Ad,Email,Rol,Durum',
+                  ...reportData.teamMembers.map(m => 
+                    `${m.name},${m.email},${m.role},${m.status}`
+                  )
+                ].join('\n');
+                
+                const blob = new Blob([csvContent], { type: 'text/csv;charset=utf-8;' });
+                const url = window.URL.createObjectURL(blob);
+                const a = document.createElement('a');
+                a.href = url;
+                a.download = `ik360-rapor-${new Date().toISOString().split('T')[0]}.csv`;
+                a.click();
+                window.URL.revokeObjectURL(url);
+                toast({ title: "Sistem raporu indiriliyor..." });
+              }}
             >
               <Download className="h-4 w-4 mr-2" />
               Rapor İndir
@@ -273,6 +341,7 @@ export default function OwnerDashboard() {
             <Button 
               size="sm"
               className="bg-gradient-to-r from-blue-600 to-indigo-600 hover:from-blue-700 hover:to-indigo-700 text-white shadow-lg"
+              onClick={() => setIsEmployeeDialogOpen(true)}
             >
               <UserPlus className="h-4 w-4 mr-2" />
               Yeni Kullanıcı
@@ -447,20 +516,87 @@ export default function OwnerDashboard() {
                 </CardHeader>
                 <CardContent className="p-6">
                   <div className="grid gap-3">
-                    <Button 
-                      variant="outline" 
-                      className="justify-start h-12 hover:bg-blue-50 hover:border-blue-200"
-                      onClick={() => {
-                        toast({ title: "Yeni çalışan ekleme formu açılıyor..." });
-                        // Navigate to employee creation
-                      }}
-                    >
-                      <UserPlus className="h-4 w-4 mr-3 text-blue-600" />
-                      <div className="text-left">
-                        <div className="font-medium">Yeni Çalışan Ekle</div>
-                        <div className="text-xs text-slate-500">Personel kaydı oluştur</div>
-                      </div>
-                    </Button>
+                    <Dialog open={isEmployeeDialogOpen} onOpenChange={setIsEmployeeDialogOpen}>
+                      <DialogTrigger asChild>
+                        <Button 
+                          variant="outline" 
+                          className="justify-start h-12 hover:bg-blue-50 hover:border-blue-200"
+                        >
+                          <UserPlus className="h-4 w-4 mr-3 text-blue-600" />
+                          <div className="text-left">
+                            <div className="font-medium">Yeni Çalışan Ekle</div>
+                            <div className="text-xs text-slate-500">Personel kaydı oluştur</div>
+                          </div>
+                        </Button>
+                      </DialogTrigger>
+                      <DialogContent className="sm:max-w-[600px]">
+                        <DialogHeader>
+                          <DialogTitle>Yeni Çalışan Ekle</DialogTitle>
+                          <DialogDescription>
+                            Yeni çalışan bilgilerini girin ve sisteme kaydedin
+                          </DialogDescription>
+                        </DialogHeader>
+                        <form onSubmit={handleEmployeeSubmit} className="space-y-4">
+                          <div className="grid grid-cols-2 gap-4">
+                            <div>
+                              <Label htmlFor="firstName">Ad</Label>
+                              <Input id="firstName" name="firstName" required />
+                            </div>
+                            <div>
+                              <Label htmlFor="lastName">Soyad</Label>
+                              <Input id="lastName" name="lastName" required />
+                            </div>
+                          </div>
+                          <div>
+                            <Label htmlFor="email">E-posta</Label>
+                            <Input id="email" name="email" type="email" required />
+                          </div>
+                          <div>
+                            <Label htmlFor="phone">Telefon</Label>
+                            <Input id="phone" name="phone" type="tel" />
+                          </div>
+                          <div className="grid grid-cols-2 gap-4">
+                            <div>
+                              <Label htmlFor="position">Pozisyon</Label>
+                              <Input id="position" name="position" required />
+                            </div>
+                            <div>
+                              <Label htmlFor="department">Departman</Label>
+                              <Select name="department" required>
+                                <SelectTrigger>
+                                  <SelectValue placeholder="Departman seçin" />
+                                </SelectTrigger>
+                                <SelectContent>
+                                  <SelectItem value="IT">Bilgi İşlem</SelectItem>
+                                  <SelectItem value="HR">İnsan Kaynakları</SelectItem>
+                                  <SelectItem value="Finance">Finans</SelectItem>
+                                  <SelectItem value="Marketing">Pazarlama</SelectItem>
+                                  <SelectItem value="Operations">Operasyon</SelectItem>
+                                </SelectContent>
+                              </Select>
+                            </div>
+                          </div>
+                          <div className="grid grid-cols-2 gap-4">
+                            <div>
+                              <Label htmlFor="salary">Maaş (TL)</Label>
+                              <Input id="salary" name="salary" type="number" min="0" step="100" required />
+                            </div>
+                            <div>
+                              <Label htmlFor="startDate">İşe Başlama Tarihi</Label>
+                              <Input id="startDate" name="startDate" type="date" required />
+                            </div>
+                          </div>
+                          <div className="flex justify-end gap-2 pt-4">
+                            <Button type="button" variant="outline" onClick={() => setIsEmployeeDialogOpen(false)}>
+                              İptal
+                            </Button>
+                            <Button type="submit" disabled={createEmployeeMutation.isPending}>
+                              {createEmployeeMutation.isPending ? 'Ekleniyor...' : 'Çalışan Ekle'}
+                            </Button>
+                          </div>
+                        </form>
+                      </DialogContent>
+                    </Dialog>
                     <Button 
                       variant="outline" 
                       className="justify-start h-12 hover:bg-green-50 hover:border-green-200"
@@ -488,8 +624,8 @@ export default function OwnerDashboard() {
                       variant="outline" 
                       className="justify-start h-12 hover:bg-purple-50 hover:border-purple-200"
                       onClick={() => {
-                        setSelectedTab("analytics");
-                        toast({ title: "Sistem ayarları bölümü açılıyor..." });
+                        setLocation("/settings");
+                        toast({ title: "Sistem ayarları açılıyor..." });
                       }}
                     >
                       <Settings className="h-4 w-4 mr-3 text-purple-600" />
