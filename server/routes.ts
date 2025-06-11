@@ -1,7 +1,7 @@
 import type { Express } from "express";
 import { createServer, type Server } from "http";
 import { storage } from "./storage";
-import { insertEmployeeSchema, insertLeaveSchema, insertPerformanceSchema, insertPayrollSchema, users } from "@shared/schema";
+import { insertEmployeeSchema, insertLeaveSchema, insertPerformanceSchema, insertPayrollSchema, users, notifications } from "@shared/schema";
 import { 
   sanitizeInput, 
   preventXSS, 
@@ -13,7 +13,7 @@ import {
 } from "./middleware/security";
 import { z } from "zod";
 import { db } from "./db";
-import { sql } from "drizzle-orm";
+import { sql, desc } from "drizzle-orm";
 
 // Simple authentication middleware
 const isAuthenticated = (req: any, res: any, next: any) => {
@@ -1437,6 +1437,111 @@ export async function registerRoutes(app: Express): Promise<Server> {
     } catch (error) {
       console.error('Error fetching audit logs:', error);
       res.status(500).json({ message: 'Failed to fetch audit logs' });
+    }
+  });
+
+  // Admin dashboard - notifications
+  app.get('/api/notifications', async (req, res) => {
+    try {
+      const limit = parseInt(req.query.limit as string) || 50;
+      const allNotifications = await storage.getUserNotifications('admin_001', limit);
+      res.json(allNotifications);
+    } catch (error) {
+      console.error('Error fetching notifications:', error);
+      res.status(500).json({ message: 'Failed to fetch notifications' });
+    }
+  });
+
+  // Admin dashboard - pending expense reports
+  app.get('/api/expense-reports/pending', async (req, res) => {
+    try {
+      const limit = parseInt(req.query.limit as string) || 50;
+      const expenses = await storage.getPendingExpenseReports(limit);
+      res.json(expenses);
+    } catch (error) {
+      console.error('Error fetching pending expense reports:', error);
+      res.status(500).json({ message: 'Failed to fetch pending expense reports' });
+    }
+  });
+
+  // Admin dashboard - approve expense report
+  app.put('/api/expense-reports/:id/approve', async (req, res) => {
+    try {
+      const expenseId = parseInt(req.params.id);
+      const success = await storage.approveExpenseReport(expenseId, 'admin_001');
+      
+      if (success) {
+        res.json({ message: 'Expense report approved successfully' });
+      } else {
+        res.status(404).json({ message: 'Expense report not found' });
+      }
+    } catch (error) {
+      console.error('Error approving expense report:', error);
+      res.status(500).json({ message: 'Failed to approve expense report' });
+    }
+  });
+
+  // Admin dashboard - approve time entry
+  app.put('/api/time-entries/:id/approve', async (req, res) => {
+    try {
+      const entryId = parseInt(req.params.id);
+      const success = await storage.approveTimeEntry(entryId, 'admin_001');
+      
+      if (success) {
+        res.json({ message: 'Time entry approved successfully' });
+      } else {
+        res.status(404).json({ message: 'Time entry not found' });
+      }
+    } catch (error) {
+      console.error('Error approving time entry:', error);
+      res.status(500).json({ message: 'Failed to approve time entry' });
+    }
+  });
+
+  // Admin dashboard - broadcast notification
+  app.post('/api/notifications/broadcast', async (req, res) => {
+    try {
+      const { title, message, type } = req.body;
+      
+      const notification = await storage.createNotification({
+        userId: 'admin_001',
+        title,
+        message,
+        type
+      });
+      
+      res.status(201).json(notification);
+    } catch (error) {
+      console.error('Error creating broadcast notification:', error);
+      res.status(500).json({ message: 'Failed to create notification' });
+    }
+  });
+
+  // Admin dashboard - user status management
+  app.put('/api/users/:userId/status', async (req, res) => {
+    try {
+      const { userId } = req.params;
+      const { isActive } = req.body;
+      
+      const success = await storage.updateUserStatus(userId, isActive);
+      
+      if (success) {
+        // Create audit log
+        await storage.createAuditLog({
+          userId: 'admin_001',
+          action: isActive ? 'ACTIVATE_USER' : 'DEACTIVATE_USER',
+          resource: 'users',
+          details: `User ${userId} status changed to ${isActive ? 'active' : 'inactive'}`,
+          ipAddress: req.ip
+        });
+        
+        res.json({ message: 'User status updated successfully' });
+      } else {
+        res.status(404).json({ message: 'User not found' });
+      }
+    } catch (error) {
+      console.error('Error updating user status:', error);
+      res.status(500).json({ message: 'Failed to update user status' });
     }
   });
 
