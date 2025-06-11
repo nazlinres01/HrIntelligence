@@ -444,15 +444,26 @@ export async function registerRoutes(app: Express): Promise<Server> {
     }
   });
 
-  app.delete("/api/employees/:id", async (req, res) => {
+  app.delete("/api/employees/:id", isAuthenticated, async (req, res) => {
     try {
       const id = parseInt(req.params.id);
       const deleted = await storage.deleteEmployee(id);
       if (!deleted) {
         return res.status(404).json({ message: "Employee not found" });
       }
+      
+      // Create audit log
+      await storage.createAuditLog({
+        userId: (req.session as any)?.userId || 'admin_001',
+        action: 'DELETE_EMPLOYEE',
+        resource: 'employees',
+        details: `Deleted employee with ID ${id}`,
+        ipAddress: req.ip
+      });
+      
       res.json({ message: "Employee deleted successfully" });
     } catch (error) {
+      console.error('Employee deletion error:', error);
       res.status(500).json({ message: "Failed to delete employee" });
     }
   });
@@ -467,8 +478,8 @@ export async function registerRoutes(app: Express): Promise<Server> {
     }
   });
 
-  // Leave routes
-  app.get("/api/leaves", async (req, res) => {
+  // Leave routes with authentication and audit logging
+  app.get("/api/leaves", isAuthenticated, async (req, res) => {
     try {
       const leaves = await storage.getLeaves();
       res.json(leaves);
@@ -477,7 +488,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
     }
   });
 
-  app.get("/api/leaves/employee/:employeeId", async (req, res) => {
+  app.get("/api/leaves/employee/:employeeId", isAuthenticated, async (req, res) => {
     try {
       const employeeId = parseInt(req.params.employeeId);
       const leaves = await storage.getLeavesByEmployee(employeeId);
@@ -487,29 +498,57 @@ export async function registerRoutes(app: Express): Promise<Server> {
     }
   });
 
-  app.post("/api/leaves", async (req, res) => {
+  app.post("/api/leaves", isAuthenticated, async (req, res) => {
     try {
-      const leaveData = insertLeaveSchema.parse(req.body);
+      const leaveData = {
+        ...req.body,
+        days: Math.ceil((new Date(req.body.endDate).getTime() - new Date(req.body.startDate).getTime()) / (1000 * 60 * 60 * 24)) + 1
+      };
       const leave = await storage.createLeave(leaveData);
+      
+      // Create audit log
+      await storage.createAuditLog({
+        userId: (req.session as any)?.userId || 'admin_001',
+        action: 'CREATE_LEAVE',
+        resource: 'leaves',
+        details: `Created leave request for employee ID ${leave.employeeId}`,
+        ipAddress: req.ip
+      });
+      
       res.status(201).json(leave);
     } catch (error) {
+      console.error('Leave creation error:', error);
       res.status(400).json({ message: "Invalid leave data", error });
     }
   });
 
-  app.put("/api/leaves/:id", async (req, res) => {
+  app.put("/api/leaves/:id", isAuthenticated, async (req, res) => {
     try {
       const id = parseInt(req.params.id);
-      const leaveData = insertLeaveSchema.partial().parse(req.body);
-      const leave = await storage.updateLeave(id, leaveData);
+      const leave = await storage.updateLeave(id, req.body);
+      
+      if (!leave) {
+        return res.status(404).json({ message: 'Leave not found' });
+      }
+      
+      // Create audit log
+      await storage.createAuditLog({
+        userId: (req.session as any)?.userId || 'admin_001',
+        action: 'UPDATE_LEAVE',
+        resource: 'leaves',
+        details: `Updated leave ID ${id} - status: ${req.body.status || 'modified'}`,
+        ipAddress: req.ip
+      });
+      
       res.json(leave);
     } catch (error) {
+      console.error('Leave update error:', error);
       res.status(400).json({ message: "Failed to update leave", error });
     }
   });
 
-  // Performance routes
-  app.get("/api/performance", async (req, res) => {
+  // Performance routes with authentication and audit logging
+  app.get("/api/performance", isAuthenticated, async (req, res) => {
     try {
       const performance = await storage.getPerformanceRecords();
       res.json(performance);
@@ -518,7 +557,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
     }
   });
 
-  app.get("/api/performance/employee/:employeeId", async (req, res) => {
+  app.get("/api/performance/employee/:employeeId", isAuthenticated, async (req, res) => {
     try {
       const employeeId = parseInt(req.params.employeeId);
       const performance = await storage.getPerformanceByEmployee(employeeId);
@@ -528,18 +567,57 @@ export async function registerRoutes(app: Express): Promise<Server> {
     }
   });
 
-  app.post("/api/performance", async (req, res) => {
+  app.post("/api/performance", isAuthenticated, async (req, res) => {
     try {
-      const performanceData = insertPerformanceSchema.parse(req.body);
+      const performanceData = {
+        ...req.body,
+        score: parseFloat(req.body.overallRating || req.body.score) || 0
+      };
       const performance = await storage.createPerformance(performanceData);
+      
+      // Create audit log
+      await storage.createAuditLog({
+        userId: (req.session as any)?.userId || 'admin_001',
+        action: 'CREATE_PERFORMANCE',
+        resource: 'performance',
+        details: `Created performance review for employee ID ${performance.employeeId} - Score: ${performance.score}`,
+        ipAddress: req.ip
+      });
+      
       res.status(201).json(performance);
     } catch (error) {
+      console.error('Performance creation error:', error);
       res.status(400).json({ message: "Invalid performance data", error });
     }
   });
 
-  // Payroll routes
-  app.get("/api/payroll", async (req, res) => {
+  app.put("/api/performance/:id", isAuthenticated, async (req, res) => {
+    try {
+      const id = parseInt(req.params.id);
+      const performance = await storage.updatePerformance(id, req.body);
+      
+      if (!performance) {
+        return res.status(404).json({ message: 'Performance record not found' });
+      }
+      
+      // Create audit log
+      await storage.createAuditLog({
+        userId: (req.session as any)?.userId || 'admin_001',
+        action: 'UPDATE_PERFORMANCE',
+        resource: 'performance',
+        details: `Updated performance review ID ${id}`,
+        ipAddress: req.ip
+      });
+      
+      res.json(performance);
+    } catch (error) {
+      console.error('Performance update error:', error);
+      res.status(400).json({ message: "Failed to update performance", error });
+    }
+  });
+
+  // Payroll routes with authentication and audit logging
+  app.get("/api/payroll", isAuthenticated, async (req, res) => {
     try {
       const payroll = await storage.getPayrollRecords();
       res.json(payroll);
@@ -548,7 +626,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
     }
   });
 
-  app.get("/api/payroll/employee/:employeeId", async (req, res) => {
+  app.get("/api/payroll/employee/:employeeId", isAuthenticated, async (req, res) => {
     try {
       const employeeId = parseInt(req.params.employeeId);
       const payroll = await storage.getPayrollByEmployee(employeeId);
@@ -558,18 +636,61 @@ export async function registerRoutes(app: Express): Promise<Server> {
     }
   });
 
-  app.post("/api/payroll", async (req, res) => {
+  app.post("/api/payroll", isAuthenticated, async (req, res) => {
     try {
-      const payrollData = insertPayrollSchema.parse(req.body);
+      const payrollData = {
+        ...req.body,
+        basicSalary: parseFloat(req.body.basicSalary) || 0,
+        allowances: parseFloat(req.body.allowances) || 0,
+        deductions: parseFloat(req.body.deductions) || 0,
+        netSalary: (parseFloat(req.body.basicSalary) || 0) + (parseFloat(req.body.allowances) || 0) - (parseFloat(req.body.deductions) || 0),
+        status: req.body.status || 'draft'
+      };
       const payroll = await storage.createPayroll(payrollData);
+      
+      // Create audit log
+      await storage.createAuditLog({
+        userId: (req.session as any)?.userId || 'admin_001',
+        action: 'CREATE_PAYROLL',
+        resource: 'payroll',
+        details: `Created payroll record for employee ID ${payroll.employeeId} - Net: ₺${payroll.netSalary}`,
+        ipAddress: req.ip
+      });
+      
       res.status(201).json(payroll);
     } catch (error) {
+      console.error('Payroll creation error:', error);
       res.status(400).json({ message: "Invalid payroll data", error });
     }
   });
 
-  // Activity routes
-  app.get("/api/activities", async (req, res) => {
+  app.put("/api/payroll/:id", isAuthenticated, async (req, res) => {
+    try {
+      const id = parseInt(req.params.id);
+      const payroll = await storage.updatePayroll(id, req.body);
+      
+      if (!payroll) {
+        return res.status(404).json({ message: 'Payroll record not found' });
+      }
+      
+      // Create audit log
+      await storage.createAuditLog({
+        userId: (req.session as any)?.userId || 'admin_001',
+        action: 'UPDATE_PAYROLL',
+        resource: 'payroll',
+        details: `Updated payroll record ID ${id} - Status: ${req.body.status || 'modified'}`,
+        ipAddress: req.ip
+      });
+      
+      res.json(payroll);
+    } catch (error) {
+      console.error('Payroll update error:', error);
+      res.status(400).json({ message: "Failed to update payroll", error });
+    }
+  });
+
+  // Activity routes with authentication
+  app.get("/api/activities", isAuthenticated, async (req, res) => {
     try {
       const limit = req.query.limit ? parseInt(req.query.limit as string) : 10;
       const activities = await storage.getActivities(limit);
@@ -579,8 +700,8 @@ export async function registerRoutes(app: Express): Promise<Server> {
     }
   });
 
-  // Dashboard stats
-  app.get("/api/dashboard/stats", async (req, res) => {
+  // Dashboard stats with authentication
+  app.get("/api/dashboard/stats", isAuthenticated, async (req, res) => {
     try {
       const stats = await storage.getEmployeeStats();
       res.json(stats);
@@ -589,8 +710,19 @@ export async function registerRoutes(app: Express): Promise<Server> {
     }
   });
 
-  // Performance chart data
-  app.get("/api/dashboard/performance-chart", async (req, res) => {
+  // Employee stats endpoint for admin dashboard
+  app.get("/api/stats/employees", isAuthenticated, async (req, res) => {
+    try {
+      const stats = await storage.getEmployeeStats();
+      res.json(stats);
+    } catch (error) {
+      console.error('Employee stats error:', error);
+      res.status(500).json({ message: "Failed to fetch employee stats" });
+    }
+  });
+
+  // Performance chart data with authentication
+  app.get("/api/dashboard/performance-chart", isAuthenticated, async (req, res) => {
     try {
       const employees = await storage.getEmployees();
       const departmentPerformance = new Map<string, { total: number; count: number }>();
