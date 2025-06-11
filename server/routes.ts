@@ -200,6 +200,39 @@ export async function registerRoutes(app: Express): Promise<Server> {
     }
   });
 
+  // Password change endpoint
+  app.put('/api/change-password', async (req, res) => {
+    try {
+      const userId = (req.session as any)?.userId;
+      if (!userId) {
+        return res.status(401).json({ message: "Unauthorized" });
+      }
+
+      const { currentPassword, newPassword } = req.body;
+      
+      // Validate input
+      if (!currentPassword || !newPassword) {
+        return res.status(400).json({ message: "Current password and new password are required" });
+      }
+
+      if (newPassword.length < 6) {
+        return res.status(400).json({ message: "New password must be at least 6 characters" });
+      }
+
+      // Update password using storage method
+      const success = await storage.updateUserPassword(userId, newPassword);
+      
+      if (!success) {
+        return res.status(400).json({ message: "Failed to update password" });
+      }
+
+      res.json({ message: "Password updated successfully" });
+    } catch (error) {
+      console.error("Error changing password:", error);
+      res.status(500).json({ message: "Failed to change password" });
+    }
+  });
+
   app.post('/api/logout', async (req, res) => {
     try {
       req.session.destroy((err) => {
@@ -1013,7 +1046,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
     isAuthenticated,
     async (req: any, res) => {
       try {
-        const userId = req.user?.claims?.sub || req.user?.id;
+        const userId = (req.session as any)?.userId;
         if (!userId) {
           return res.status(401).json({ message: "User ID not found" });
         }
@@ -1031,7 +1064,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
     isAuthenticated,
     async (req: any, res) => {
       try {
-        const userId = req.user?.claims?.sub || req.user?.id;
+        const userId = (req.session as any)?.userId;
         if (!userId) {
           return res.status(401).json({ message: "User ID not found" });
         }
@@ -1048,7 +1081,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
     isAuthenticated,
     async (req: any, res) => {
       try {
-        const userId = req.user?.claims?.sub || req.user?.id;
+        const userId = (req.session as any)?.userId;
         if (!userId) {
           return res.status(401).json({ message: "User ID not found" });
         }
@@ -1440,21 +1473,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
     }
   });
 
-  // Admin dashboard - notifications (bypass auth for admin dashboard)
-  app.get('/api/notifications', async (req, res) => {
-    try {
-      const limit = parseInt(req.query.limit as string) || 50;
-      // Get all notifications for admin dashboard
-      const { notifications: notificationsTable } = await import("@shared/schema");
-      const allNotifications = await db.select().from(notificationsTable)
-        .orderBy(desc(notificationsTable.createdAt))
-        .limit(limit);
-      res.json(allNotifications);
-    } catch (error) {
-      console.error('Error fetching notifications:', error);
-      res.status(500).json({ message: 'Failed to fetch notifications' });
-    }
-  });
+
 
   // Admin dashboard - pending expense reports
   app.get('/api/expense-reports/pending', async (req, res) => {

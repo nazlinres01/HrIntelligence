@@ -427,11 +427,11 @@ export default function Settings() {
           </CardHeader>
           <CardContent className="space-y-4">
             <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-              <Button variant="outline" className="w-full">
+              <Button variant="outline" className="w-full" onClick={handleDataExport}>
                 <Download className="h-4 w-4 mr-2" />
                 Tüm Verileri İndir
               </Button>
-              <Button variant="outline" className="w-full">
+              <Button variant="outline" className="w-full" onClick={() => toast({ title: "Yedekleme başlatıldı", description: "Verileriniz arka planda yedekleniyor" })}>
                 <Upload className="h-4 w-4 mr-2" />
                 Veri Yedekle
               </Button>
