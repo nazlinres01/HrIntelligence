@@ -1,320 +1,280 @@
-import { useAuth } from "@/hooks/useAuth";
-import { useQuery, useMutation } from "@tanstack/react-query";
-import { Card, CardHeader, CardTitle, CardContent } from "@/components/ui/card";
-import { Badge } from "@/components/ui/badge";
+import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
-import { Input } from "@/components/ui/input";
-import { Label } from "@/components/ui/label";
-import { Textarea } from "@/components/ui/textarea";
-import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog";
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
-import { useToast } from "@/hooks/use-toast";
-import { apiRequest, queryClient } from "@/lib/queryClient";
-import { useState } from "react";
+import { Badge } from "@/components/ui/badge";
+import { Progress } from "@/components/ui/progress";
+import { useQuery } from "@tanstack/react-query";
 import { 
   User, 
   Calendar, 
-  Clock, 
-  FileText, 
-  Plus,
+  Clock,
+  Target,
+  Award,
+  FileText,
+  MessageSquare,
   CheckCircle,
-  XCircle,
-  AlertCircle
+  TrendingUp,
+  DollarSign
 } from "lucide-react";
 
 export default function EmployeeDashboard() {
-  const { user } = useAuth();
-  const { toast } = useToast();
-  const [isLeaveDialogOpen, setIsLeaveDialogOpen] = useState(false);
-  const [leaveForm, setLeaveForm] = useState({
-    type: "",
-    startDate: "",
-    endDate: "",
-    reason: "",
+  const { data: personalStats } = useQuery({
+    queryKey: ['/api/stats/employee'],
   });
 
-  const { data: myLeaves } = useQuery({
-    queryKey: ["/api/my-leaves"],
+  const { data: myTasks } = useQuery({
+    queryKey: ['/api/tasks/my'],
   });
 
-  const { data: myProfile } = useQuery({
-    queryKey: ["/api/my-profile"],
+  const { data: leaveBalance } = useQuery({
+    queryKey: ['/api/leaves/balance'],
   });
-
-  const createLeaveMutation = useMutation({
-    mutationFn: async (data: typeof leaveForm) => {
-      const res = await apiRequest("POST", "/api/leaves", data);
-      return res.json();
-    },
-    onSuccess: () => {
-      toast({
-        title: "İzin talebi oluşturuldu",
-        description: "İzin talebiniz başarıyla gönderildi.",
-      });
-      setIsLeaveDialogOpen(false);
-      setLeaveForm({ type: "", startDate: "", endDate: "", reason: "" });
-      queryClient.invalidateQueries({ queryKey: ["/api/my-leaves"] });
-    },
-    onError: (error: Error) => {
-      toast({
-        title: "Hata",
-        description: error.message,
-        variant: "destructive",
-      });
-    },
-  });
-
-  const handleLeaveSubmit = (e: React.FormEvent) => {
-    e.preventDefault();
-    createLeaveMutation.mutate(leaveForm);
-  };
-
-  const pendingLeaves = (myLeaves as any)?.filter((leave: any) => leave.status === "pending") || [];
-  const approvedLeaves = (myLeaves as any)?.filter((leave: any) => leave.status === "approved") || [];
-  const rejectedLeaves = (myLeaves as any)?.filter((leave: any) => leave.status === "rejected") || [];
 
   return (
     <div className="space-y-6">
-      {/* Header */}
-      <div className="bg-gradient-to-r from-emerald-600 via-emerald-700 to-green-700 rounded-xl p-6 text-white">
-        <div className="flex items-center justify-between">
-          <div className="flex items-center space-x-4">
-            <div className="p-3 bg-white/20 rounded-xl">
-              <User className="h-8 w-8" />
-            </div>
-            <div>
-              <h1 className="text-3xl font-bold">Çalışan Paneli</h1>
-              <p className="text-emerald-100">
-                Hoş geldiniz, {(user as any)?.firstName} {(user as any)?.lastName}
-              </p>
-              <Badge variant="secondary" className="mt-2 bg-white/20 text-white border-white/30">
-                Çalışan
-              </Badge>
-            </div>
-          </div>
-          <Dialog open={isLeaveDialogOpen} onOpenChange={setIsLeaveDialogOpen}>
-            <DialogTrigger asChild>
-              <Button variant="secondary" className="bg-white/20 hover:bg-white/30 text-white border-white/30">
-                <Plus className="h-4 w-4 mr-2" />
-                İzin Talebi
-              </Button>
-            </DialogTrigger>
-            <DialogContent>
-              <DialogHeader>
-                <DialogTitle>Yeni İzin Talebi</DialogTitle>
-              </DialogHeader>
-              <form onSubmit={handleLeaveSubmit} className="space-y-4">
-                <div>
-                  <Label htmlFor="type">İzin Türü</Label>
-                  <Select value={leaveForm.type} onValueChange={(value) => setLeaveForm(prev => ({ ...prev, type: value }))}>
-                    <SelectTrigger>
-                      <SelectValue placeholder="İzin türü seçin" />
-                    </SelectTrigger>
-                    <SelectContent>
-                      <SelectItem value="annual">Yıllık İzin</SelectItem>
-                      <SelectItem value="sick">Hastalık İzni</SelectItem>
-                      <SelectItem value="personal">Kişisel İzin</SelectItem>
-                      <SelectItem value="maternity">Doğum İzni</SelectItem>
-                      <SelectItem value="paternity">Babalık İzni</SelectItem>
-                    </SelectContent>
-                  </Select>
-                </div>
-                <div className="grid grid-cols-2 gap-4">
-                  <div>
-                    <Label htmlFor="startDate">Başlangıç Tarihi</Label>
-                    <Input
-                      id="startDate"
-                      type="date"
-                      value={leaveForm.startDate}
-                      onChange={(e) => setLeaveForm(prev => ({ ...prev, startDate: e.target.value }))}
-                      required
-                    />
-                  </div>
-                  <div>
-                    <Label htmlFor="endDate">Bitiş Tarihi</Label>
-                    <Input
-                      id="endDate"
-                      type="date"
-                      value={leaveForm.endDate}
-                      onChange={(e) => setLeaveForm(prev => ({ ...prev, endDate: e.target.value }))}
-                      required
-                    />
-                  </div>
-                </div>
-                <div>
-                  <Label htmlFor="reason">İzin Nedeni</Label>
-                  <Textarea
-                    id="reason"
-                    value={leaveForm.reason}
-                    onChange={(e) => setLeaveForm(prev => ({ ...prev, reason: e.target.value }))}
-                    placeholder="İzin nedeninizi açıklayın..."
-                    required
-                  />
-                </div>
-                <div className="flex space-x-2">
-                  <Button type="submit" disabled={createLeaveMutation.isPending}>
-                    {createLeaveMutation.isPending ? "Gönderiliyor..." : "Talebi Gönder"}
-                  </Button>
-                  <Button type="button" variant="outline" onClick={() => setIsLeaveDialogOpen(false)}>
-                    İptal
-                  </Button>
-                </div>
-              </form>
-            </DialogContent>
-          </Dialog>
+      <div className="flex items-center justify-between">
+        <div>
+          <h1 className="text-3xl font-bold tracking-tight">Çalışan Dashboard</h1>
+          <p className="text-muted-foreground">
+            Kişisel performans ve iş takibi
+          </p>
+        </div>
+        <div className="flex space-x-2">
+          <Button variant="outline" size="sm">
+            <Calendar className="h-4 w-4 mr-2" />
+            İzin Talep Et
+          </Button>
+          <Button size="sm">
+            <FileText className="h-4 w-4 mr-2" />
+            Gider Raporu
+          </Button>
         </div>
       </div>
 
-      {/* Quick Stats */}
-      <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-        <Card className="border-l-4 border-l-orange-500">
-          <CardHeader className="pb-3">
-            <CardTitle className="text-sm font-medium text-gray-600 flex items-center">
+      {/* Personal Metrics */}
+      <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-4">
+        <Card>
+          <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
+            <CardTitle className="text-sm font-medium">Aktif Görevler</CardTitle>
+            <Clock className="h-4 w-4 text-muted-foreground" />
+          </CardHeader>
+          <CardContent>
+            <div className="text-2xl font-bold">{personalStats?.activeTasks || 0}</div>
+            <p className="text-xs text-muted-foreground">
+              {personalStats?.urgentTasks || 0} acil
+            </p>
+          </CardContent>
+        </Card>
+
+        <Card>
+          <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
+            <CardTitle className="text-sm font-medium">Bu Ay Performans</CardTitle>
+            <Target className="h-4 w-4 text-muted-foreground" />
+          </CardHeader>
+          <CardContent>
+            <div className="text-2xl font-bold">{personalStats?.monthlyPerformance || "85"}%</div>
+            <p className="text-xs text-muted-foreground">
+              +2% geçen aya göre
+            </p>
+          </CardContent>
+        </Card>
+
+        <Card>
+          <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
+            <CardTitle className="text-sm font-medium">Kalan İzin</CardTitle>
+            <Calendar className="h-4 w-4 text-muted-foreground" />
+          </CardHeader>
+          <CardContent>
+            <div className="text-2xl font-bold">{leaveBalance?.remaining || 0}</div>
+            <p className="text-xs text-muted-foreground">
+              {leaveBalance?.total || 14} günden
+            </p>
+          </CardContent>
+        </Card>
+
+        <Card>
+          <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
+            <CardTitle className="text-sm font-medium">Bu Ay Bordro</CardTitle>
+            <DollarSign className="h-4 w-4 text-muted-foreground" />
+          </CardHeader>
+          <CardContent>
+            <div className="text-2xl font-bold">₺{personalStats?.monthlySalary || "0"}</div>
+            <p className="text-xs text-muted-foreground">
+              Net maaş
+            </p>
+          </CardContent>
+        </Card>
+      </div>
+
+      <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-7">
+        {/* My Tasks */}
+        <Card className="col-span-4">
+          <CardHeader>
+            <CardTitle>Görevlerim</CardTitle>
+            <CardDescription>
+              Aktif görevler ve tamamlanma durumu
+            </CardDescription>
+          </CardHeader>
+          <CardContent>
+            <div className="space-y-4">
+              {myTasks?.active?.slice(0, 5).map((task: any, index: number) => (
+                <div key={index} className="flex items-center justify-between p-3 border rounded-lg">
+                  <div className="flex items-center space-x-3">
+                    <div className={`w-2 h-2 rounded-full ${task.priority === 'high' ? 'bg-red-500' : task.priority === 'medium' ? 'bg-yellow-500' : 'bg-green-500'}`}></div>
+                    <div>
+                      <p className="text-sm font-medium">{task.title}</p>
+                      <p className="text-xs text-muted-foreground">
+                        Son teslim: {task.dueDate}
+                      </p>
+                    </div>
+                  </div>
+                  <div className="flex items-center space-x-3">
+                    <Progress value={task.progress} className="w-16" />
+                    <span className="text-sm font-medium">{task.progress}%</span>
+                    <Badge variant={task.priority === 'high' ? 'destructive' : task.priority === 'medium' ? 'default' : 'secondary'}>
+                      {task.priority === 'high' ? 'Acil' : task.priority === 'medium' ? 'Orta' : 'Düşük'}
+                    </Badge>
+                  </div>
+                </div>
+              ))}
+            </div>
+          </CardContent>
+        </Card>
+
+        {/* Quick Actions */}
+        <Card className="col-span-3">
+          <CardHeader>
+            <CardTitle>Hızlı İşlemler</CardTitle>
+            <CardDescription>
+              Günlük kullanılan araçlar
+            </CardDescription>
+          </CardHeader>
+          <CardContent className="space-y-3">
+            <Button variant="outline" className="w-full justify-start">
+              <Calendar className="h-4 w-4 mr-2" />
+              İzin Talep Et
+            </Button>
+            <Button variant="outline" className="w-full justify-start">
+              <FileText className="h-4 w-4 mr-2" />
+              Gider Raporu
+            </Button>
+            <Button variant="outline" className="w-full justify-start">
               <Clock className="h-4 w-4 mr-2" />
-              Bekleyen İzinler
-            </CardTitle>
-          </CardHeader>
-          <CardContent>
-            <div className="text-2xl font-bold text-gray-900">
-              {pendingLeaves.length}
-            </div>
-            <p className="text-xs text-gray-500 mt-1">Onay bekleyen talepler</p>
-          </CardContent>
-        </Card>
-
-        <Card className="border-l-4 border-l-green-500">
-          <CardHeader className="pb-3">
-            <CardTitle className="text-sm font-medium text-gray-600 flex items-center">
-              <CheckCircle className="h-4 w-4 mr-2" />
-              Onaylanan İzinler
-            </CardTitle>
-          </CardHeader>
-          <CardContent>
-            <div className="text-2xl font-bold text-gray-900">
-              {approvedLeaves.length}
-            </div>
-            <p className="text-xs text-gray-500 mt-1">Bu yıl onaylanan</p>
-          </CardContent>
-        </Card>
-
-        <Card className="border-l-4 border-l-red-500">
-          <CardHeader className="pb-3">
-            <CardTitle className="text-sm font-medium text-gray-600 flex items-center">
-              <XCircle className="h-4 w-4 mr-2" />
-              Reddedilen İzinler
-            </CardTitle>
-          </CardHeader>
-          <CardContent>
-            <div className="text-2xl font-bold text-gray-900">
-              {rejectedLeaves.length}
-            </div>
-            <p className="text-xs text-gray-500 mt-1">Bu yıl reddedilen</p>
+              Mesai Kayıt
+            </Button>
+            <Button variant="outline" className="w-full justify-start">
+              <MessageSquare className="h-4 w-4 mr-2" />
+              Yöneticimle İletişim
+            </Button>
+            <Button variant="outline" className="w-full justify-start">
+              <User className="h-4 w-4 mr-2" />
+              Profil Güncelle
+            </Button>
           </CardContent>
         </Card>
       </div>
 
-      {/* Leave Requests */}
-      <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
-        <Card>
-          <CardHeader>
-            <CardTitle className="flex items-center">
-              <AlertCircle className="h-5 w-5 mr-2 text-orange-500" />
-              Bekleyen İzin Taleplerim
-            </CardTitle>
-          </CardHeader>
-          <CardContent>
-            {pendingLeaves.length > 0 ? (
+      {/* Performance Summary */}
+      <Card>
+        <CardHeader>
+          <CardTitle>Performans Özeti</CardTitle>
+          <CardDescription>
+            Aylık performans değerlendirmesi ve hedefler
+          </CardDescription>
+        </CardHeader>
+        <CardContent>
+          <div className="grid grid-cols-3 gap-6">
+            <div className="space-y-3">
+              <h4 className="font-medium">Bu Ay Hedeflerim</h4>
               <div className="space-y-3">
-                {pendingLeaves.map((leave: any) => (
-                  <div key={leave.id} className="p-3 bg-orange-50 rounded-lg">
-                    <div className="flex justify-between items-start">
-                      <div>
-                        <p className="font-medium text-sm">{leave.type}</p>
-                        <p className="text-xs text-gray-500">
-                          {new Date(leave.startDate).toLocaleDateString('tr-TR')} - 
-                          {new Date(leave.endDate).toLocaleDateString('tr-TR')}
-                        </p>
-                        <p className="text-xs text-gray-500 mt-1">{leave.reason}</p>
-                      </div>
-                      <Badge variant="secondary" className="bg-orange-100 text-orange-700">
-                        Bekliyor
-                      </Badge>
-                    </div>
+                <div className="flex items-center justify-between">
+                  <span className="text-sm">Proje Teslim</span>
+                  <div className="flex items-center space-x-2">
+                    <Progress value={80} className="w-20" />
+                    <span className="text-sm font-medium">80%</span>
                   </div>
-                ))}
-              </div>
-            ) : (
-              <p className="text-gray-500 text-center py-4">Bekleyen izin talebiniz bulunmuyor</p>
-            )}
-          </CardContent>
-        </Card>
-
-        <Card>
-          <CardHeader>
-            <CardTitle className="flex items-center">
-              <CheckCircle className="h-5 w-5 mr-2 text-green-500" />
-              Onaylanan İzinlerim
-            </CardTitle>
-          </CardHeader>
-          <CardContent>
-            {approvedLeaves.length > 0 ? (
-              <div className="space-y-3">
-                {approvedLeaves.slice(0, 5).map((leave: any) => (
-                  <div key={leave.id} className="p-3 bg-green-50 rounded-lg">
-                    <div className="flex justify-between items-start">
-                      <div>
-                        <p className="font-medium text-sm">{leave.type}</p>
-                        <p className="text-xs text-gray-500">
-                          {new Date(leave.startDate).toLocaleDateString('tr-TR')} - 
-                          {new Date(leave.endDate).toLocaleDateString('tr-TR')}
-                        </p>
-                      </div>
-                      <Badge variant="secondary" className="bg-green-100 text-green-700">
-                        Onaylandı
-                      </Badge>
-                    </div>
+                </div>
+                <div className="flex items-center justify-between">
+                  <span className="text-sm">Kalite Skoru</span>
+                  <div className="flex items-center space-x-2">
+                    <Progress value={92} className="w-20" />
+                    <span className="text-sm font-medium">92%</span>
                   </div>
-                ))}
+                </div>
+                <div className="flex items-center justify-between">
+                  <span className="text-sm">Ekip İşbirliği</span>
+                  <div className="flex items-center space-x-2">
+                    <Progress value={88} className="w-20" />
+                    <span className="text-sm font-medium">88%</span>
+                  </div>
+                </div>
               </div>
-            ) : (
-              <p className="text-gray-500 text-center py-4">Onaylanan izniniz bulunmuyor</p>
-            )}
-          </CardContent>
-        </Card>
-      </div>
-
-      {/* Quick Actions */}
-      <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-        <Card className="hover:shadow-lg transition-shadow cursor-pointer">
-          <CardContent className="p-6 text-center">
-            <div className="w-12 h-12 bg-blue-100 rounded-xl flex items-center justify-center mx-auto mb-4">
-              <User className="h-6 w-6 text-blue-600" />
             </div>
-            <h3 className="font-semibold text-gray-900 mb-2">Profilim</h3>
-            <p className="text-sm text-gray-500">Kişisel bilgilerinizi görüntüle ve düzenle</p>
-          </CardContent>
-        </Card>
 
-        <Card className="hover:shadow-lg transition-shadow cursor-pointer">
-          <CardContent className="p-6 text-center">
-            <div className="w-12 h-12 bg-orange-100 rounded-xl flex items-center justify-center mx-auto mb-4">
-              <Calendar className="h-6 w-6 text-orange-600" />
+            <div className="space-y-3">
+              <h4 className="font-medium">Kazanımlarım</h4>
+              <div className="space-y-2">
+                <div className="flex items-center space-x-2">
+                  <Award className="h-4 w-4 text-yellow-500" />
+                  <span className="text-sm">Ayın Çalışanı</span>
+                </div>
+                <div className="flex items-center space-x-2">
+                  <CheckCircle className="h-4 w-4 text-green-500" />
+                  <span className="text-sm">Proje Tamamlama</span>
+                </div>
+                <div className="flex items-center space-x-2">
+                  <TrendingUp className="h-4 w-4 text-blue-500" />
+                  <span className="text-sm">Performans Artışı</span>
+                </div>
+              </div>
             </div>
-            <h3 className="font-semibold text-gray-900 mb-2">İzin Talebi</h3>
-            <p className="text-sm text-gray-500">Yeni izin talebi oluştur</p>
-          </CardContent>
-        </Card>
 
-        <Card className="hover:shadow-lg transition-shadow cursor-pointer">
-          <CardContent className="p-6 text-center">
-            <div className="w-12 h-12 bg-green-100 rounded-xl flex items-center justify-center mx-auto mb-4">
-              <FileText className="h-6 w-6 text-green-600" />
+            <div className="space-y-3">
+              <h4 className="font-medium">Gelişim Alanları</h4>
+              <div className="space-y-2">
+                <div className="text-sm text-muted-foreground">
+                  • Zaman yönetimi
+                </div>
+                <div className="text-sm text-muted-foreground">
+                  • Takım liderliği
+                </div>
+                <div className="text-sm text-muted-foreground">
+                  • Teknik beceriler
+                </div>
+              </div>
             </div>
-            <h3 className="font-semibold text-gray-900 mb-2">İzin Geçmişi</h3>
-            <p className="text-sm text-gray-500">Geçmiş izin taleplerini görüntüle</p>
-          </CardContent>
-        </Card>
-      </div>
+          </div>
+        </CardContent>
+      </Card>
+
+      {/* Leave History */}
+      <Card>
+        <CardHeader>
+          <CardTitle>İzin Geçmişi</CardTitle>
+          <CardDescription>
+            Son izin talepleri ve durumları
+          </CardDescription>
+        </CardHeader>
+        <CardContent>
+          <div className="space-y-3">
+            {leaveBalance?.history?.map((leave: any, index: number) => (
+              <div key={index} className="flex items-center justify-between p-3 border rounded-lg">
+                <div className="flex items-center space-x-3">
+                  <Calendar className="h-5 w-5 text-blue-600" />
+                  <div>
+                    <p className="text-sm font-medium">{leave.type}</p>
+                    <p className="text-xs text-muted-foreground">
+                      {leave.startDate} - {leave.endDate} ({leave.days} gün)
+                    </p>
+                  </div>
+                </div>
+                <Badge variant={leave.status === 'approved' ? 'default' : leave.status === 'pending' ? 'secondary' : 'destructive'}>
+                  {leave.status === 'approved' ? 'Onaylandı' : leave.status === 'pending' ? 'Beklemede' : 'Reddedildi'}
+                </Badge>
+              </div>
+            ))}
+          </div>
+        </CardContent>
+      </Card>
     </div>
   );
 }

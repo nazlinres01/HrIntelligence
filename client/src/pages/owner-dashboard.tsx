@@ -1,217 +1,232 @@
-import { useAuth } from "@/hooks/useAuth";
-import { useQuery } from "@tanstack/react-query";
-import { Card, CardHeader, CardTitle, CardContent } from "@/components/ui/card";
-import { Badge } from "@/components/ui/badge";
+import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
+import { Badge } from "@/components/ui/badge";
+import { Progress } from "@/components/ui/progress";
+import { useQuery } from "@tanstack/react-query";
 import { 
   Building2, 
   Users, 
   TrendingUp, 
   DollarSign, 
+  Calendar, 
+  Target,
+  UserPlus,
   BarChart3,
   Settings,
-  Plus,
-  Calendar,
-  Crown
+  Shield
 } from "lucide-react";
 
 export default function OwnerDashboard() {
-  const { user } = useAuth();
-
   const { data: stats } = useQuery({
-    queryKey: ["/api/dashboard/stats"],
+    queryKey: ['/api/stats/owner'],
   });
 
-  const { data: company } = useQuery({
-    queryKey: ["/api/company"],
+  const { data: recentActivities } = useQuery({
+    queryKey: ['/api/activities'],
   });
 
   const { data: teamStats } = useQuery({
-    queryKey: ["/api/team/stats"],
+    queryKey: ['/api/stats/team'],
   });
 
   return (
     <div className="space-y-6">
-      {/* Header */}
-      <div className="bg-gradient-to-r from-purple-600 via-purple-700 to-indigo-700 rounded-xl p-6 text-white">
-        <div className="flex items-center justify-between">
-          <div className="flex items-center space-x-4">
-            <div className="p-3 bg-white/20 rounded-xl">
-              <Crown className="h-8 w-8" />
-            </div>
-            <div>
-              <h1 className="text-3xl font-bold">Patron Paneli</h1>
-              <p className="text-purple-100">
-                Hoş geldiniz, {(user as any)?.firstName} {(user as any)?.lastName}
-              </p>
-              <Badge variant="secondary" className="mt-2 bg-white/20 text-white border-white/30">
-                Şirket Sahibi
-              </Badge>
-            </div>
-          </div>
-          <Button variant="secondary" className="bg-white/20 hover:bg-white/30 text-white border-white/30">
-            <Settings className="h-4 w-4 mr-2" />
-            Şirket Ayarları
+      <div className="flex items-center justify-between">
+        <div>
+          <h1 className="text-3xl font-bold tracking-tight">Patron Dashboard</h1>
+          <p className="text-muted-foreground">
+            Şirket geneli performans ve yönetim özeti
+          </p>
+        </div>
+        <div className="flex space-x-2">
+          <Button variant="outline" size="sm">
+            <BarChart3 className="h-4 w-4 mr-2" />
+            Raporlar
+          </Button>
+          <Button size="sm">
+            <UserPlus className="h-4 w-4 mr-2" />
+            Ekip Üyesi Ekle
           </Button>
         </div>
       </div>
 
-      {/* Quick Stats */}
-      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
-        <Card className="border-l-4 border-l-blue-500">
-          <CardHeader className="pb-3">
-            <CardTitle className="text-sm font-medium text-gray-600 flex items-center">
-              <Users className="h-4 w-4 mr-2" />
-              Toplam Çalışan
-            </CardTitle>
+      {/* Key Metrics */}
+      <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-4">
+        <Card>
+          <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
+            <CardTitle className="text-sm font-medium">Toplam Çalışan</CardTitle>
+            <Users className="h-4 w-4 text-muted-foreground" />
           </CardHeader>
           <CardContent>
-            <div className="text-2xl font-bold text-gray-900">
-              {(stats as any)?.totalEmployees || 0}
-            </div>
-            <p className="text-xs text-gray-500 mt-1">Aktif personel sayısı</p>
+            <div className="text-2xl font-bold">{stats?.totalEmployees || 0}</div>
+            <p className="text-xs text-muted-foreground">
+              +2 bu ay
+            </p>
           </CardContent>
         </Card>
 
-        <Card className="border-l-4 border-l-green-500">
-          <CardHeader className="pb-3">
-            <CardTitle className="text-sm font-medium text-gray-600 flex items-center">
-              <DollarSign className="h-4 w-4 mr-2" />
-              Aylık Bordro
-            </CardTitle>
+        <Card>
+          <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
+            <CardTitle className="text-sm font-medium">Aylık Bordro</CardTitle>
+            <DollarSign className="h-4 w-4 text-muted-foreground" />
           </CardHeader>
           <CardContent>
-            <div className="text-2xl font-bold text-gray-900">
-              ₺{(stats as any)?.monthlyPayroll || "0"}
-            </div>
-            <p className="text-xs text-gray-500 mt-1">Bu ay toplam maliyet</p>
+            <div className="text-2xl font-bold">₺{stats?.monthlyPayroll || "0"}</div>
+            <p className="text-xs text-muted-foreground">
+              +5.2% geçen aya göre
+            </p>
           </CardContent>
         </Card>
 
-        <Card className="border-l-4 border-l-orange-500">
-          <CardHeader className="pb-3">
-            <CardTitle className="text-sm font-medium text-gray-600 flex items-center">
-              <Calendar className="h-4 w-4 mr-2" />
-              Aktif İzinler
-            </CardTitle>
+        <Card>
+          <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
+            <CardTitle className="text-sm font-medium">Aktif İzinler</CardTitle>
+            <Calendar className="h-4 w-4 text-muted-foreground" />
           </CardHeader>
           <CardContent>
-            <div className="text-2xl font-bold text-gray-900">
-              {(stats as any)?.activeLeaves || 0}
-            </div>
-            <p className="text-xs text-gray-500 mt-1">İzinde olan personel</p>
+            <div className="text-2xl font-bold">{stats?.activeLeaves || 0}</div>
+            <p className="text-xs text-muted-foreground">
+              3 beklemede
+            </p>
           </CardContent>
         </Card>
 
-        <Card className="border-l-4 border-l-purple-500">
-          <CardHeader className="pb-3">
-            <CardTitle className="text-sm font-medium text-gray-600 flex items-center">
+        <Card>
+          <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
+            <CardTitle className="text-sm font-medium">Ortalama Performans</CardTitle>
+            <Target className="h-4 w-4 text-muted-foreground" />
+          </CardHeader>
+          <CardContent>
+            <div className="text-2xl font-bold">{stats?.avgPerformance || "0"}%</div>
+            <p className="text-xs text-muted-foreground">
+              +1.2% bu çeyrek
+            </p>
+          </CardContent>
+        </Card>
+      </div>
+
+      <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-7">
+        {/* Team Overview */}
+        <Card className="col-span-4">
+          <CardHeader>
+            <CardTitle>Ekip Genel Bakış</CardTitle>
+            <CardDescription>
+              Departman bazında çalışan dağılımı ve performans
+            </CardDescription>
+          </CardHeader>
+          <CardContent className="space-y-4">
+            <div className="space-y-3">
+              <div className="flex items-center justify-between">
+                <div className="flex items-center space-x-2">
+                  <Badge variant="secondary">İK</Badge>
+                  <span className="text-sm font-medium">İnsan Kaynakları</span>
+                </div>
+                <div className="flex items-center space-x-2">
+                  <span className="text-sm text-muted-foreground">3 kişi</span>
+                  <Progress value={85} className="w-16" />
+                  <span className="text-sm">85%</span>
+                </div>
+              </div>
+
+              <div className="flex items-center justify-between">
+                <div className="flex items-center space-x-2">
+                  <Badge variant="secondary">Satış</Badge>
+                  <span className="text-sm font-medium">Satış & Pazarlama</span>
+                </div>
+                <div className="flex items-center space-x-2">
+                  <span className="text-sm text-muted-foreground">8 kişi</span>
+                  <Progress value={92} className="w-16" />
+                  <span className="text-sm">92%</span>
+                </div>
+              </div>
+
+              <div className="flex items-center justify-between">
+                <div className="flex items-center space-x-2">
+                  <Badge variant="secondary">Teknoloji</Badge>
+                  <span className="text-sm font-medium">Teknoloji</span>
+                </div>
+                <div className="flex items-center space-x-2">
+                  <span className="text-sm text-muted-foreground">12 kişi</span>
+                  <Progress value={88} className="w-16" />
+                  <span className="text-sm">88%</span>
+                </div>
+              </div>
+
+              <div className="flex items-center justify-between">
+                <div className="flex items-center space-x-2">
+                  <Badge variant="secondary">Finans</Badge>
+                  <span className="text-sm font-medium">Finans & Muhasebe</span>
+                </div>
+                <div className="flex items-center space-x-2">
+                  <span className="text-sm text-muted-foreground">4 kişi</span>
+                  <Progress value={90} className="w-16" />
+                  <span className="text-sm">90%</span>
+                </div>
+              </div>
+            </div>
+          </CardContent>
+        </Card>
+
+        {/* Quick Actions */}
+        <Card className="col-span-3">
+          <CardHeader>
+            <CardTitle>Hızlı İşlemler</CardTitle>
+            <CardDescription>
+              Sık kullanılan yönetim araçları
+            </CardDescription>
+          </CardHeader>
+          <CardContent className="space-y-3">
+            <Button variant="outline" className="w-full justify-start">
+              <UserPlus className="h-4 w-4 mr-2" />
+              Yeni Çalışan Ekle
+            </Button>
+            <Button variant="outline" className="w-full justify-start">
               <BarChart3 className="h-4 w-4 mr-2" />
-              Ortalama Performans
-            </CardTitle>
-          </CardHeader>
-          <CardContent>
-            <div className="text-2xl font-bold text-gray-900">
-              {(stats as any)?.avgPerformance || "0"}/10
-            </div>
-            <p className="text-xs text-gray-500 mt-1">Genel performans skoru</p>
-          </CardContent>
-        </Card>
-      </div>
-
-      {/* Company Overview */}
-      <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
-        <Card>
-          <CardHeader>
-            <CardTitle className="flex items-center">
-              <Building2 className="h-5 w-5 mr-2" />
-              Şirket Bilgileri
-            </CardTitle>
-          </CardHeader>
-          <CardContent className="space-y-4">
-            <div>
-              <label className="text-sm font-medium text-gray-500">Şirket Adı</label>
-              <p className="text-sm font-medium">{(company as any)?.name || "Şirket Adı"}</p>
-            </div>
-            <div>
-              <label className="text-sm font-medium text-gray-500">Sektör</label>
-              <p className="text-sm font-medium">{(company as any)?.industry || "Belirtilmemiş"}</p>
-            </div>
-            <div>
-              <label className="text-sm font-medium text-gray-500">Adres</label>
-              <p className="text-sm font-medium">{(company as any)?.address || "Belirtilmemiş"}</p>
-            </div>
-            <Button variant="outline" className="w-full">
+              Performans Raporları
+            </Button>
+            <Button variant="outline" className="w-full justify-start">
+              <DollarSign className="h-4 w-4 mr-2" />
+              Bordro Yönetimi
+            </Button>
+            <Button variant="outline" className="w-full justify-start">
+              <Shield className="h-4 w-4 mr-2" />
+              Güvenlik Ayarları
+            </Button>
+            <Button variant="outline" className="w-full justify-start">
               <Settings className="h-4 w-4 mr-2" />
-              Şirket Bilgilerini Düzenle
-            </Button>
-          </CardContent>
-        </Card>
-
-        <Card>
-          <CardHeader>
-            <CardTitle className="flex items-center">
-              <Users className="h-5 w-5 mr-2" />
-              Takım Özeti
-            </CardTitle>
-          </CardHeader>
-          <CardContent className="space-y-4">
-            <div className="flex justify-between items-center">
-              <span className="text-sm text-gray-600">Toplam Üye</span>
-              <span className="font-semibold">{(teamStats as any)?.totalMembers || 0}</span>
-            </div>
-            <div className="flex justify-between items-center">
-              <span className="text-sm text-gray-600">Aktif Üye</span>
-              <span className="font-semibold text-green-600">{(teamStats as any)?.activeMembers || 0}</span>
-            </div>
-            <div className="flex justify-between items-center">
-              <span className="text-sm text-gray-600">İK Müdürü</span>
-              <span className="font-semibold">{(teamStats as any)?.managers || 0}</span>
-            </div>
-            <div className="flex justify-between items-center">
-              <span className="text-sm text-gray-600">İK Uzmanı</span>
-              <span className="font-semibold">{(teamStats as any)?.specialists || 0}</span>
-            </div>
-            <Button className="w-full">
-              <Plus className="h-4 w-4 mr-2" />
-              Yeni Takım Üyesi Ekle
+              Sistem Ayarları
             </Button>
           </CardContent>
         </Card>
       </div>
 
-      {/* Quick Actions */}
-      <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-        <Card className="hover:shadow-lg transition-shadow cursor-pointer">
-          <CardContent className="p-6 text-center">
-            <div className="w-12 h-12 bg-blue-100 rounded-xl flex items-center justify-center mx-auto mb-4">
-              <Users className="h-6 w-6 text-blue-600" />
-            </div>
-            <h3 className="font-semibold text-gray-900 mb-2">Çalışan Yönetimi</h3>
-            <p className="text-sm text-gray-500">Personel ekleme, düzenleme ve yönetimi</p>
-          </CardContent>
-        </Card>
-
-        <Card className="hover:shadow-lg transition-shadow cursor-pointer">
-          <CardContent className="p-6 text-center">
-            <div className="w-12 h-12 bg-green-100 rounded-xl flex items-center justify-center mx-auto mb-4">
-              <BarChart3 className="h-6 w-6 text-green-600" />
-            </div>
-            <h3 className="font-semibold text-gray-900 mb-2">Raporlar</h3>
-            <p className="text-sm text-gray-500">Detaylı iş gücü analizi ve raporları</p>
-          </CardContent>
-        </Card>
-
-        <Card className="hover:shadow-lg transition-shadow cursor-pointer">
-          <CardContent className="p-6 text-center">
-            <div className="w-12 h-12 bg-purple-100 rounded-xl flex items-center justify-center mx-auto mb-4">
-              <DollarSign className="h-6 w-6 text-purple-600" />
-            </div>
-            <h3 className="font-semibold text-gray-900 mb-2">Bordro Yönetimi</h3>
-            <p className="text-sm text-gray-500">Maaş hesaplamaları ve bordro işlemleri</p>
-          </CardContent>
-        </Card>
-      </div>
+      {/* Recent Activities */}
+      <Card>
+        <CardHeader>
+          <CardTitle>Son Aktiviteler</CardTitle>
+          <CardDescription>
+            Şirket genelindeki son hareketler ve güncellemeler
+          </CardDescription>
+        </CardHeader>
+        <CardContent>
+          <div className="space-y-4">
+            {recentActivities?.slice(0, 5).map((activity: any, index: number) => (
+              <div key={index} className="flex items-center justify-between py-2 border-b last:border-b-0">
+                <div className="flex items-center space-x-3">
+                  <div className="w-2 h-2 rounded-full bg-blue-500"></div>
+                  <div>
+                    <p className="text-sm font-medium">{activity.title}</p>
+                    <p className="text-xs text-muted-foreground">{activity.description}</p>
+                  </div>
+                </div>
+                <div className="text-xs text-muted-foreground">
+                  {new Date(activity.createdAt).toLocaleDateString('tr-TR')}
+                </div>
+              </div>
+            ))}
+          </div>
+        </CardContent>
+      </Card>
     </div>
   );
 }

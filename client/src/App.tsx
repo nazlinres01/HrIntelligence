@@ -7,6 +7,11 @@ import { LanguageProvider } from "@/hooks/use-language";
 import { useAuth } from "@/hooks/useAuth";
 import Sidebar from "@/components/layout/sidebar";
 import Dashboard from "@/pages/dashboard";
+import OwnerDashboard from "@/pages/owner-dashboard";
+import HRManagerDashboard from "@/pages/hr-manager-dashboard";
+import HRSpecialistDashboard from "@/pages/hr-specialist-dashboard";
+import DepartmentManagerDashboard from "@/pages/department-manager-dashboard";
+import EmployeeDashboard from "@/pages/employee-dashboard";
 import Employees from "@/pages/employees";
 import Performance from "@/pages/performance";
 import Leaves from "@/pages/leaves";
@@ -16,7 +21,6 @@ import Help from "@/pages/help";
 import Settings from "@/pages/settings";
 import Notifications from "@/pages/notifications";
 import Team from "@/pages/team";
-import TeamLogin from "@/pages/team-login";
 import Profile from "@/pages/profile";
 import Landing from "@/pages/landing";
 import Login from "@/pages/login";
@@ -41,10 +45,30 @@ function Router() {
   const userRole = (user as any)?.role as UserRole || "employee";
   const permissions = getUserPermissions(userRole);
 
+  // Role-specific dashboard component selector
+  const getDashboardComponent = () => {
+    switch (userRole) {
+      case 'owner':
+        return OwnerDashboard;
+      case 'hr_manager':
+        return HRManagerDashboard;
+      case 'hr_specialist':
+        return HRSpecialistDashboard;
+      case 'department_manager':
+        return DepartmentManagerDashboard;
+      case 'employee':
+        return EmployeeDashboard;
+      default:
+        return Dashboard;
+    }
+  };
+
+  const DashboardComponent = getDashboardComponent();
+
   return (
     <Switch>
-      <Route path="/" component={Dashboard} />
-      <Route path="/dashboard" component={Dashboard} />
+      <Route path="/" component={DashboardComponent} />
+      <Route path="/dashboard" component={DashboardComponent} />
 
       {/* Conditional routes based on permissions */}
       {permissions.canManageEmployees && <Route path="/employees" component={Employees} />}

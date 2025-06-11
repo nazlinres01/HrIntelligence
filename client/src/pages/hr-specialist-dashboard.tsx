@@ -1,269 +1,302 @@
-import { useAuth } from "@/hooks/useAuth";
-import { useQuery } from "@tanstack/react-query";
-import { Card, CardHeader, CardTitle, CardContent } from "@/components/ui/card";
-import { Badge } from "@/components/ui/badge";
+import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
+import { Badge } from "@/components/ui/badge";
+import { Progress } from "@/components/ui/progress";
+import { useQuery } from "@tanstack/react-query";
 import { 
-  Users, 
+  FileText, 
   Calendar, 
-  Clock, 
-  UserCheck,
-  FileText,
-  AlertCircle,
+  Clock,
+  Users,
   CheckCircle,
-  XCircle,
-  Plus
+  AlertCircle,
+  Briefcase,
+  GraduationCap,
+  Phone,
+  Mail
 } from "lucide-react";
 
 export default function HRSpecialistDashboard() {
-  const { user } = useAuth();
-
-  const { data: leaves } = useQuery({
-    queryKey: ["/api/leaves"],
+  const { data: tasks } = useQuery({
+    queryKey: ['/api/tasks/hr-specialist'],
   });
 
-  const { data: employees } = useQuery({
-    queryKey: ["/api/employees"],
+  const { data: applications } = useQuery({
+    queryKey: ['/api/applications/pending'],
   });
 
-  const pendingLeaves = (leaves as any)?.filter((leave: any) => leave.status === "pending") || [];
-  const todayLeaves = (leaves as any)?.filter((leave: any) => {
-    const today = new Date().toDateString();
-    const leaveStart = new Date(leave.startDate).toDateString();
-    return leaveStart === today;
-  }) || [];
-
-  const totalEmployees = (employees as any)?.length || 0;
-  const activeEmployees = (employees as any)?.filter((emp: any) => emp.status === "active").length || 0;
+  const { data: interviews } = useQuery({
+    queryKey: ['/api/interviews/today'],
+  });
 
   return (
     <div className="space-y-6">
-      {/* Header */}
-      <div className="bg-gradient-to-r from-teal-600 via-teal-700 to-cyan-700 rounded-xl p-6 text-white">
-        <div className="flex items-center justify-between">
-          <div className="flex items-center space-x-4">
-            <div className="p-3 bg-white/20 rounded-xl">
-              <Users className="h-8 w-8" />
-            </div>
-            <div>
-              <h1 className="text-3xl font-bold">İK Uzmanı Paneli</h1>
-              <p className="text-teal-100">
-                Hoş geldiniz, {(user as any)?.firstName} {(user as any)?.lastName}
-              </p>
-              <Badge variant="secondary" className="mt-2 bg-white/20 text-white border-white/30">
-                İK Uzmanı
-              </Badge>
-            </div>
-          </div>
-          <Button variant="secondary" className="bg-white/20 hover:bg-white/30 text-white border-white/30">
-            <Plus className="h-4 w-4 mr-2" />
-            Yeni İzin Talebi
+      <div className="flex items-center justify-between">
+        <div>
+          <h1 className="text-3xl font-bold tracking-tight">İK Uzmanı Dashboard</h1>
+          <p className="text-muted-foreground">
+            Günlük İK işlemleri ve operasyonel süreçler
+          </p>
+        </div>
+        <div className="flex space-x-2">
+          <Button variant="outline" size="sm">
+            <Calendar className="h-4 w-4 mr-2" />
+            Mülakat Takvimi
+          </Button>
+          <Button size="sm">
+            <FileText className="h-4 w-4 mr-2" />
+            Yeni Başvuru
           </Button>
         </div>
       </div>
 
-      {/* Quick Stats */}
-      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
-        <Card className="border-l-4 border-l-orange-500">
-          <CardHeader className="pb-3">
-            <CardTitle className="text-sm font-medium text-gray-600 flex items-center">
-              <AlertCircle className="h-4 w-4 mr-2" />
-              Bekleyen İzinler
-            </CardTitle>
+      {/* Daily Tasks */}
+      <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-4">
+        <Card>
+          <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
+            <CardTitle className="text-sm font-medium">Bekleyen Görevler</CardTitle>
+            <Clock className="h-4 w-4 text-muted-foreground" />
           </CardHeader>
           <CardContent>
-            <div className="text-2xl font-bold text-gray-900">
-              {pendingLeaves.length}
-            </div>
-            <p className="text-xs text-gray-500 mt-1">Onay bekleyen talepler</p>
+            <div className="text-2xl font-bold">{tasks?.pending || 0}</div>
+            <p className="text-xs text-muted-foreground">
+              {tasks?.urgent || 0} acil görev
+            </p>
           </CardContent>
         </Card>
 
-        <Card className="border-l-4 border-l-blue-500">
-          <CardHeader className="pb-3">
-            <CardTitle className="text-sm font-medium text-gray-600 flex items-center">
+        <Card>
+          <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
+            <CardTitle className="text-sm font-medium">Bugünkü Mülakatlar</CardTitle>
+            <Users className="h-4 w-4 text-muted-foreground" />
+          </CardHeader>
+          <CardContent>
+            <div className="text-2xl font-bold">{interviews?.today || 0}</div>
+            <p className="text-xs text-muted-foreground">
+              {interviews?.completed || 0} tamamlandı
+            </p>
+          </CardContent>
+        </Card>
+
+        <Card>
+          <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
+            <CardTitle className="text-sm font-medium">Yeni Başvurular</CardTitle>
+            <FileText className="h-4 w-4 text-muted-foreground" />
+          </CardHeader>
+          <CardContent>
+            <div className="text-2xl font-bold">{applications?.new || 0}</div>
+            <p className="text-xs text-muted-foreground">
+              Bu hafta gelen
+            </p>
+          </CardContent>
+        </Card>
+
+        <Card>
+          <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
+            <CardTitle className="text-sm font-medium">Tamamlanan İşler</CardTitle>
+            <CheckCircle className="h-4 w-4 text-muted-foreground" />
+          </CardHeader>
+          <CardContent>
+            <div className="text-2xl font-bold">{tasks?.completed || 0}</div>
+            <p className="text-xs text-muted-foreground">
+              Bu hafta
+            </p>
+          </CardContent>
+        </Card>
+      </div>
+
+      <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-7">
+        {/* Today's Interviews */}
+        <Card className="col-span-4">
+          <CardHeader>
+            <CardTitle>Bugünkü Mülakatlar</CardTitle>
+            <CardDescription>
+              Planlanan mülakat takvimi ve adaylar
+            </CardDescription>
+          </CardHeader>
+          <CardContent>
+            <div className="space-y-4">
+              {interviews?.schedule?.slice(0, 4).map((interview: any, index: number) => (
+                <div key={index} className="flex items-center justify-between p-3 border rounded-lg">
+                  <div className="flex items-center space-x-3">
+                    <div className="w-10 h-10 rounded-full bg-purple-100 flex items-center justify-center">
+                      <Users className="h-5 w-5 text-purple-600" />
+                    </div>
+                    <div>
+                      <p className="text-sm font-medium">{interview.candidateName}</p>
+                      <p className="text-xs text-muted-foreground">
+                        {interview.position} - {interview.time}
+                      </p>
+                    </div>
+                  </div>
+                  <div className="flex space-x-2">
+                    <Button size="sm" variant="outline">
+                      <Phone className="h-4 w-4 mr-1" />
+                      Ara
+                    </Button>
+                    <Button size="sm" variant="outline">
+                      <Mail className="h-4 w-4 mr-1" />
+                      Mail
+                    </Button>
+                  </div>
+                </div>
+              ))}
+            </div>
+          </CardContent>
+        </Card>
+
+        {/* Quick Actions */}
+        <Card className="col-span-3">
+          <CardHeader>
+            <CardTitle>Hızlı İşlemler</CardTitle>
+            <CardDescription>
+              Günlük kullanılan araçlar
+            </CardDescription>
+          </CardHeader>
+          <CardContent className="space-y-3">
+            <Button variant="outline" className="w-full justify-start">
+              <FileText className="h-4 w-4 mr-2" />
+              CV İnceleme
+            </Button>
+            <Button variant="outline" className="w-full justify-start">
               <Calendar className="h-4 w-4 mr-2" />
-              Bugün İzinde
-            </CardTitle>
-          </CardHeader>
-          <CardContent>
-            <div className="text-2xl font-bold text-gray-900">
-              {todayLeaves.length}
-            </div>
-            <p className="text-xs text-gray-500 mt-1">Bugün izin kullanan</p>
-          </CardContent>
-        </Card>
-
-        <Card className="border-l-4 border-l-green-500">
-          <CardHeader className="pb-3">
-            <CardTitle className="text-sm font-medium text-gray-600 flex items-center">
-              <UserCheck className="h-4 w-4 mr-2" />
-              Aktif Çalışanlar
-            </CardTitle>
-          </CardHeader>
-          <CardContent>
-            <div className="text-2xl font-bold text-gray-900">
-              {activeEmployees}
-            </div>
-            <p className="text-xs text-gray-500 mt-1">Toplam {totalEmployees} çalışan</p>
-          </CardContent>
-        </Card>
-
-        <Card className="border-l-4 border-l-purple-500">
-          <CardHeader className="pb-3">
-            <CardTitle className="text-sm font-medium text-gray-600 flex items-center">
-              <Clock className="h-4 w-4 mr-2" />
-              Bu Ay İzinler
-            </CardTitle>
-          </CardHeader>
-          <CardContent>
-            <div className="text-2xl font-bold text-gray-900">
-              {(leaves as any)?.filter((leave: any) => {
-                const leaveDate = new Date(leave.startDate);
-                const currentDate = new Date();
-                return leaveDate.getMonth() === currentDate.getMonth() && 
-                       leaveDate.getFullYear() === currentDate.getFullYear();
-              }).length || 0}
-            </div>
-            <p className="text-xs text-gray-500 mt-1">Bu ay toplam izin</p>
+              Mülakat Planla
+            </Button>
+            <Button variant="outline" className="w-full justify-start">
+              <Phone className="h-4 w-4 mr-2" />
+              Aday Görüşmesi
+            </Button>
+            <Button variant="outline" className="w-full justify-start">
+              <GraduationCap className="h-4 w-4 mr-2" />
+              Oryantasyon
+            </Button>
+            <Button variant="outline" className="w-full justify-start">
+              <Briefcase className="h-4 w-4 mr-2" />
+              İş Teklifi
+            </Button>
           </CardContent>
         </Card>
       </div>
 
-      {/* Main Content */}
-      <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
-        {/* Pending Leave Requests */}
-        <Card>
-          <CardHeader>
-            <CardTitle className="flex items-center justify-between">
-              <span className="flex items-center">
-                <AlertCircle className="h-5 w-5 mr-2 text-orange-500" />
-                Bekleyen İzin Talepleri
-              </span>
-              <Badge variant="secondary">{pendingLeaves.length}</Badge>
-            </CardTitle>
-          </CardHeader>
-          <CardContent>
-            {pendingLeaves.length > 0 ? (
+      {/* Application Pipeline */}
+      <Card>
+        <CardHeader>
+          <CardTitle>Başvuru Süreci</CardTitle>
+          <CardDescription>
+            Pozisyon bazında başvuru durumu ve aşama takibi
+          </CardDescription>
+        </CardHeader>
+        <CardContent>
+          <div className="space-y-4">
+            <div className="grid grid-cols-3 gap-4">
               <div className="space-y-3">
-                {pendingLeaves.slice(0, 5).map((leave: any) => (
-                  <div key={leave.id} className="flex items-center justify-between p-3 bg-orange-50 rounded-lg">
-                    <div>
-                      <p className="font-medium text-sm">{leave.employeeName}</p>
-                      <p className="text-xs text-gray-500">{leave.type} - {leave.days} gün</p>
-                      <p className="text-xs text-gray-500">
-                        {new Date(leave.startDate).toLocaleDateString('tr-TR')} - 
-                        {new Date(leave.endDate).toLocaleDateString('tr-TR')}
-                      </p>
-                      {leave.reason && (
-                        <p className="text-xs text-gray-600 mt-1 italic">"{leave.reason}"</p>
-                      )}
-                    </div>
-                    <div className="flex space-x-2">
-                      <Button size="sm" variant="outline" className="text-green-600 border-green-200 hover:bg-green-50">
-                        <CheckCircle className="h-3 w-3 mr-1" />
-                        Onayla
-                      </Button>
-                      <Button size="sm" variant="outline" className="text-red-600 border-red-200 hover:bg-red-50">
-                        <XCircle className="h-3 w-3 mr-1" />
-                        Reddet
-                      </Button>
-                    </div>
+                <div className="flex items-center justify-between">
+                  <h4 className="font-medium">Frontend Developer</h4>
+                  <Badge variant="secondary">5 aday</Badge>
+                </div>
+                <div className="space-y-2">
+                  <div className="flex justify-between text-sm">
+                    <span>CV İnceleme</span>
+                    <span>3 aday</span>
                   </div>
-                ))}
+                  <Progress value={60} className="h-2" />
+                  <div className="flex justify-between text-sm">
+                    <span>Teknik Mülakat</span>
+                    <span>2 aday</span>
+                  </div>
+                  <Progress value={40} className="h-2" />
+                  <div className="flex justify-between text-sm">
+                    <span>Son Mülakat</span>
+                    <span>1 aday</span>
+                  </div>
+                  <Progress value={20} className="h-2" />
+                </div>
               </div>
-            ) : (
-              <div className="text-center py-8">
-                <CheckCircle className="h-12 w-12 text-green-500 mx-auto mb-3" />
-                <p className="text-gray-500">Bekleyen izin talebi bulunmuyor</p>
-                <p className="text-xs text-gray-400 mt-1">Tüm talepler işlendi</p>
-              </div>
-            )}
-          </CardContent>
-        </Card>
 
-        {/* Today's Leave Status */}
-        <Card>
-          <CardHeader>
-            <CardTitle className="flex items-center justify-between">
-              <span className="flex items-center">
-                <Calendar className="h-5 w-5 mr-2 text-blue-500" />
-                Bugün İzinde Olanlar
-              </span>
-              <Badge variant="secondary">{todayLeaves.length}</Badge>
-            </CardTitle>
-          </CardHeader>
-          <CardContent>
-            {todayLeaves.length > 0 ? (
               <div className="space-y-3">
-                {todayLeaves.map((leave: any) => (
-                  <div key={leave.id} className="flex items-center justify-between p-3 bg-blue-50 rounded-lg">
-                    <div>
-                      <p className="font-medium text-sm">{leave.employeeName}</p>
-                      <p className="text-xs text-gray-500">{leave.type}</p>
-                      <p className="text-xs text-gray-500">
-                        {new Date(leave.endDate).toLocaleDateString('tr-TR')} tarihine kadar
-                      </p>
-                    </div>
-                    <Badge variant="secondary" className="bg-blue-100 text-blue-700">
-                      İzinde
-                    </Badge>
+                <div className="flex items-center justify-between">
+                  <h4 className="font-medium">Sales Manager</h4>
+                  <Badge variant="secondary">8 aday</Badge>
+                </div>
+                <div className="space-y-2">
+                  <div className="flex justify-between text-sm">
+                    <span>CV İnceleme</span>
+                    <span>5 aday</span>
                   </div>
-                ))}
+                  <Progress value={62} className="h-2" />
+                  <div className="flex justify-between text-sm">
+                    <span>İlk Mülakat</span>
+                    <span>3 aday</span>
+                  </div>
+                  <Progress value={37} className="h-2" />
+                  <div className="flex justify-between text-sm">
+                    <span>Son Mülakat</span>
+                    <span>2 aday</span>
+                  </div>
+                  <Progress value={25} className="h-2" />
+                </div>
               </div>
-            ) : (
-              <div className="text-center py-8">
-                <Users className="h-12 w-12 text-gray-400 mx-auto mb-3" />
-                <p className="text-gray-500">Bugün izinde kimse yok</p>
-                <p className="text-xs text-gray-400 mt-1">Herkes işte</p>
+
+              <div className="space-y-3">
+                <div className="flex items-center justify-between">
+                  <h4 className="font-medium">Marketing Specialist</h4>
+                  <Badge variant="secondary">3 aday</Badge>
+                </div>
+                <div className="space-y-2">
+                  <div className="flex justify-between text-sm">
+                    <span>CV İnceleme</span>
+                    <span>2 aday</span>
+                  </div>
+                  <Progress value={67} className="h-2" />
+                  <div className="flex justify-between text-sm">
+                    <span>Portfolio İnceleme</span>
+                    <span>2 aday</span>
+                  </div>
+                  <Progress value={67} className="h-2" />
+                  <div className="flex justify-between text-sm">
+                    <span>Son Mülakat</span>
+                    <span>1 aday</span>
+                  </div>
+                  <Progress value={33} className="h-2" />
+                </div>
               </div>
-            )}
-          </CardContent>
-        </Card>
-      </div>
-
-      {/* Quick Actions */}
-      <div className="grid grid-cols-1 md:grid-cols-4 gap-6">
-        <Card className="hover:shadow-lg transition-shadow cursor-pointer">
-          <CardContent className="p-6 text-center">
-            <div className="w-12 h-12 bg-orange-100 rounded-xl flex items-center justify-center mx-auto mb-4">
-              <Calendar className="h-6 w-6 text-orange-600" />
             </div>
-            <h3 className="font-semibold text-gray-900 mb-2">İzin Yönetimi</h3>
-            <p className="text-sm text-gray-500">İzin talepleri ve onayları</p>
-          </CardContent>
-        </Card>
+          </div>
+        </CardContent>
+      </Card>
 
-        <Card className="hover:shadow-lg transition-shadow cursor-pointer">
-          <CardContent className="p-6 text-center">
-            <div className="w-12 h-12 bg-blue-100 rounded-xl flex items-center justify-center mx-auto mb-4">
-              <Users className="h-6 w-6 text-blue-600" />
-            </div>
-            <h3 className="font-semibold text-gray-900 mb-2">Çalışan Listesi</h3>
-            <p className="text-sm text-gray-500">Çalışan bilgileri görüntüle</p>
-          </CardContent>
-        </Card>
-
-        <Card className="hover:shadow-lg transition-shadow cursor-pointer">
-          <CardContent className="p-6 text-center">
-            <div className="w-12 h-12 bg-teal-100 rounded-xl flex items-center justify-center mx-auto mb-4">
-              <FileText className="h-6 w-6 text-teal-600" />
-            </div>
-            <h3 className="font-semibold text-gray-900 mb-2">Raporlar</h3>
-            <p className="text-sm text-gray-500">İzin kullanım raporları</p>
-          </CardContent>
-        </Card>
-
-        <Card className="hover:shadow-lg transition-shadow cursor-pointer">
-          <CardContent className="p-6 text-center">
-            <div className="w-12 h-12 bg-green-100 rounded-xl flex items-center justify-center mx-auto mb-4">
-              <Plus className="h-6 w-6 text-green-600" />
-            </div>
-            <h3 className="font-semibold text-gray-900 mb-2">Yeni Talep</h3>
-            <p className="text-sm text-gray-500">İzin talebi oluştur</p>
-          </CardContent>
-        </Card>
-      </div>
+      {/* Today's Tasks */}
+      <Card>
+        <CardHeader>
+          <CardTitle>Günlük Görevler</CardTitle>
+          <CardDescription>
+            Bugün tamamlanması gereken İK işlemleri
+          </CardDescription>
+        </CardHeader>
+        <CardContent>
+          <div className="space-y-3">
+            {tasks?.daily?.map((task: any, index: number) => (
+              <div key={index} className="flex items-center justify-between p-3 border rounded-lg">
+                <div className="flex items-center space-x-3">
+                  <div className={`w-2 h-2 rounded-full ${task.priority === 'high' ? 'bg-red-500' : task.priority === 'medium' ? 'bg-yellow-500' : 'bg-green-500'}`}></div>
+                  <div>
+                    <p className="text-sm font-medium">{task.title}</p>
+                    <p className="text-xs text-muted-foreground">{task.description}</p>
+                  </div>
+                </div>
+                <div className="flex items-center space-x-2">
+                  <Badge variant={task.priority === 'high' ? 'destructive' : task.priority === 'medium' ? 'default' : 'secondary'}>
+                    {task.priority === 'high' ? 'Acil' : task.priority === 'medium' ? 'Orta' : 'Düşük'}
+                  </Badge>
+                  <Button size="sm" variant="outline">
+                    Tamamla
+                  </Button>
+                </div>
+              </div>
+            ))}
+          </div>
+        </CardContent>
+      </Card>
     </div>
   );
 }
