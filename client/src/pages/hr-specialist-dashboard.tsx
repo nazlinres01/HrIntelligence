@@ -16,16 +16,40 @@ import {
   Mail
 } from "lucide-react";
 
+interface SpecialistStats {
+  pending: number;
+  urgent: number;
+  today: number;
+  completed: number;
+  new: number;
+}
+
+interface InterviewStats {
+  today: number;
+  completed: number;
+  schedule: any[];
+  daily: any[];
+}
+
 export default function HRSpecialistDashboard() {
-  const { data: tasks } = useQuery({
+  const { data: tasks = {
+    pending: 0,
+    urgent: 0,
+    today: 0,
+    completed: 0,
+    new: 0
+  } } = useQuery<SpecialistStats>({
     queryKey: ['/api/tasks/hr-specialist'],
   });
 
-  const { data: applications } = useQuery({
+  const { data: applications = [] } = useQuery<any[]>({
     queryKey: ['/api/applications/pending'],
   });
 
-  const { data: interviews } = useQuery({
+  const { data: interviews = {
+    schedule: [],
+    daily: []
+  } } = useQuery<WorkloadStats>({
     queryKey: ['/api/interviews/today'],
   });
 
@@ -58,9 +82,9 @@ export default function HRSpecialistDashboard() {
             <Clock className="h-4 w-4 text-muted-foreground" />
           </CardHeader>
           <CardContent>
-            <div className="text-2xl font-bold">{tasks?.pending || 0}</div>
+            <div className="text-2xl font-bold">{tasks.pending}</div>
             <p className="text-xs text-muted-foreground">
-              {tasks?.urgent || 0} acil görev
+              {tasks.urgent} acil görev
             </p>
           </CardContent>
         </Card>
