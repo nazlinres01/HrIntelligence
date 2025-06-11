@@ -127,7 +127,7 @@ export function AddEmployeeModal({ open, onOpenChange }: AddEmployeeModalProps) 
                   <FormItem>
                     <FormLabel>Telefon</FormLabel>
                     <FormControl>
-                      <Input placeholder="+90 555 123 45 67" {...field} />
+                      <Input placeholder="+90 555 123 45 67" {...field} value={field.value || ""} />
                     </FormControl>
                     <FormMessage />
                   </FormItem>

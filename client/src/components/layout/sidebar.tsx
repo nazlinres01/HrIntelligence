@@ -6,6 +6,7 @@ import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Separator } from "@/components/ui/separator";
 import { getUserPermissions, roleLabels, type UserRole } from "@/lib/permissions";
 import { useToast } from "@/hooks/use-toast";
+import type { Permission } from "@shared/schema";
 
 import { 
   Building2, 
@@ -29,29 +30,25 @@ import {
 const getRoleBasedNavigation = (userRole: UserRole) => {
   const permissions = getUserPermissions(userRole);
   
-  const navigationItems = [
-    {
-      name: "Dashboard",
-      href: "/dashboard",
-      icon: LayoutDashboard,
-      show: true
-    }
-  ];
-
-  // Owner - Full permissions
-  if (userRole === "owner") {
-    navigationItems.push(
+  return {
+    main: [
+      {
+        name: "Dashboard",
+        href: "/",
+        icon: LayoutDashboard,
+        show: true
+      },
       {
         name: "Çalışanlar",
         href: "/employees",
         icon: Users,
-        show: true
+        show: permissions.canViewEmployees || true
       },
       {
         name: "Performans",
-        href: "/performance", 
+        href: "/performance",
         icon: BarChart3,
-        show: true
+        show: permissions.canViewPerformance || true
       },
       {
         name: "İzinler",
@@ -63,245 +60,250 @@ const getRoleBasedNavigation = (userRole: UserRole) => {
         name: "Bordro",
         href: "/payroll",
         icon: CreditCard,
-        show: true
+        show: permissions.canViewPayroll || true
       },
       {
         name: "Raporlar",
         href: "/reports",
         icon: FileText,
-        show: true
+        show: permissions.canViewReports || true
       }
-    );
-  }
-  
-  // HR Manager - HR operations
-  if (userRole === "hr_manager") {
-    navigationItems.push(
+    ],
+    hr: [
+      {
+        name: "İK Yönetimi",
+        href: "/hr-manager",
+        icon: Shield,
+        show: userRole === 'hr_manager'
+      },
+      {
+        name: "İK Uzmanı",
+        href: "/hr-specialist", 
+        icon: Target,
+        show: userRole === 'hr_specialist'
+      },
+      {
+        name: "Departman Yönetimi",
+        href: "/department-manager",
+        icon: Building2,
+        show: userRole === 'department_manager'
+      }
+    ],
+    admin: [
       {
         name: "Çalışanlar",
         href: "/employees",
         icon: Users,
-        show: permissions.canManageEmployees
+        show: permissions.canViewEmployees || true
       },
       {
         name: "Performans",
         href: "/performance",
         icon: BarChart3,
-        show: permissions.canViewPerformance
+        show: permissions.canViewPerformance || true
       },
       {
-        name: "İzinler",
-        href: "/leaves",
-        icon: Calendar,
-        show: permissions.canManageLeaves
+        name: "Ayarlar",
+        href: "/settings",
+        icon: Settings,
+        show: userRole === 'hr_manager' || userRole === 'owner'
       },
       {
-        name: "Bordro",
-        href: "/payroll",
-        icon: CreditCard,
-        show: permissions.canManagePayroll
-      },
-      {
-        name: "Raporlar",
-        href: "/reports",
-        icon: FileText,
-        show: permissions.canViewReports
+        name: "Denetim Kayıtları",
+        href: "/audit",
+        icon: Clock,
+        show: permissions.canViewAuditLogs || false
       }
-    );
-  }
-
-  // HR Specialist - Limited HR operations
-  if (userRole === "hr_specialist") {
-    navigationItems.push(
-      {
-        name: "Çalışanlar",
-        href: "/employees",
-        icon: Users,
-        show: permissions.canViewEmployees
-      },
-      {
-        name: "Performans",
-        href: "/performance",
-        icon: BarChart3,
-        show: permissions.canViewPerformance
-      },
-      {
-        name: "İzinler",
-        href: "/leaves",
-        icon: Calendar,
-        show: permissions.canManageLeaves
-      }
-    );
-  }
-
-  // Department Manager - Department specific
-  if (userRole === "department_manager") {
-    navigationItems.push(
-      {
-        name: "Takım",
-        href: "/team",
-        icon: Users,
-        show: permissions.canViewEmployees
-      },
-      {
-        name: "Performans",
-        href: "/performance",
-        icon: BarChart3,
-        show: permissions.canViewPerformance
-      },
-      {
-        name: "İzinler",
-        href: "/leaves",
-        icon: Calendar,
-        show: permissions.canManageLeaves
-      }
-    );
-  }
-
-  // Employee - No additional navigation items
-
-  return navigationItems.filter(item => item.show);
+    ]
+  };
 };
 
-interface SidebarProps {
-  className?: string;
-}
-
-export default function Sidebar({ className }: SidebarProps) {
-  const { user } = useAuth();
+export default function Sidebar() {
+  const { user, isLoading } = useAuth();
   const [location] = useLocation();
   const { toast } = useToast();
 
-  const handleLogout = async () => {
-    try {
-      const response = await fetch("/api/logout", {
-        method: "POST",
-        credentials: "include",
-        headers: {
-          "Content-Type": "application/json",
-        },
-      });
-      
-      if (response.ok) {
-        toast({
-          title: "Çıkış yapıldı",
-          description: "Güvenle çıkış yapıldı",
-        });
-        window.location.href = "/";
-      } else {
-        throw new Error("Logout failed");
-      }
-    } catch (error) {
-      toast({
-        title: "Çıkış hatası",
-        description: "Çıkış sırasında bir hata oluştu",
-        variant: "destructive",
-      });
-    }
+  if (isLoading) {
+    return (
+      <div className="w-64 bg-white dark:bg-slate-800 border-r border-slate-200 dark:border-slate-700 h-screen">
+        <div className="p-4">
+          <div className="animate-pulse">
+            <div className="h-8 bg-slate-200 dark:bg-slate-700 rounded mb-4"></div>
+            <div className="space-y-2">
+              {[...Array(6)].map((_, i) => (
+                <div key={i} className="h-6 bg-slate-200 dark:bg-slate-700 rounded"></div>
+              ))}
+            </div>
+          </div>
+        </div>
+      </div>
+    );
+  }
+
+  const userData = user as any || {};
+  const userRole = (userData?.role as UserRole) || 'employee';
+  const permissions = getUserPermissions(userRole);
+  const navigation = getRoleBasedNavigation(userRole);
+
+  const handleLogout = () => {
+    toast({
+      title: "Çıkış yapılıyor...",
+      description: "Güvenle çıkış yapılıyor",
+    });
+    
+    setTimeout(() => {
+      window.location.href = "/api/logout";
+    }, 500);
   };
 
-  if (!user) return null;
-
-  const navigation = getRoleBasedNavigation(user.role as UserRole);
-
   return (
-    <div className={cn(
-      "flex h-full w-64 flex-col bg-white dark:bg-slate-800 border-r border-slate-200 dark:border-slate-700",
-      className
-    )}>
-      {/* Corporate Brand Header */}
-      <div className="flex h-16 items-center border-b border-slate-200 dark:border-slate-700 px-6">
+    <div className="w-64 bg-white dark:bg-slate-800 border-r border-slate-200 dark:border-slate-700 h-screen flex flex-col">
+      {/* Company Header */}
+      <div className="p-6 border-b border-slate-200 dark:border-slate-700">
         <div className="flex items-center space-x-3">
-          <div className="flex h-8 w-8 items-center justify-center rounded-lg bg-slate-900 dark:bg-slate-700">
-            <Building2 className="h-5 w-5 text-white" />
+          <div className="w-8 h-8 bg-slate-900 dark:bg-slate-100 rounded-lg flex items-center justify-center">
+            <Building2 className="h-5 w-5 text-white dark:text-slate-900" />
           </div>
-          <div className="flex flex-col">
-            <span className="text-sm font-bold text-slate-900 dark:text-white">HR Sistemi</span>
-            <span className="text-xs text-slate-600 dark:text-slate-400">Kurumsal Platform</span>
+          <div>
+            <h2 className="text-lg font-semibold text-slate-900 dark:text-slate-100">
+              İK Sistemi
+            </h2>
+            <p className="text-xs text-slate-600 dark:text-slate-400">
+              {roleLabels[userRole] || 'Çalışan'}
+            </p>
           </div>
         </div>
       </div>
 
-      {/* Corporate User Profile */}
-      <div className="border-b border-slate-200 dark:border-slate-700 p-6">
-        <div className="flex items-center space-x-3">
-          <Avatar className="h-10 w-10">
-            <AvatarImage src={user.avatar} />
-            <AvatarFallback className="bg-slate-100 dark:bg-slate-700 text-slate-900 dark:text-white">
-              {user.firstName?.[0]}{user.lastName?.[0]}
+      {/* Navigation */}
+      <div className="flex-1 overflow-y-auto p-4">
+        <nav className="space-y-6">
+          {/* Main Navigation */}
+          <div>
+            <h3 className="text-xs font-semibold text-slate-500 dark:text-slate-400 uppercase tracking-wider mb-3">
+              Ana Menü
+            </h3>
+            <div className="space-y-1">
+              {navigation.main.filter(item => item.show).map((item) => {
+                const isActive = location === item.href;
+                return (
+                  <Link key={item.name} href={item.href}>
+                    <Button
+                      variant={isActive ? "secondary" : "ghost"}
+                      className={cn(
+                        "w-full justify-start text-slate-700 dark:text-slate-300",
+                        isActive && "bg-slate-100 dark:bg-slate-700 text-slate-900 dark:text-slate-100"
+                      )}
+                    >
+                      <item.icon className="h-4 w-4 mr-3" />
+                      {item.name}
+                    </Button>
+                  </Link>
+                );
+              })}
+            </div>
+          </div>
+
+          {/* HR Management */}
+          {navigation.hr.some(item => item.show) && (
+            <>
+              <Separator className="bg-slate-200 dark:bg-slate-700" />
+              <div>
+                <h3 className="text-xs font-semibold text-slate-500 dark:text-slate-400 uppercase tracking-wider mb-3">
+                  İK Yönetimi
+                </h3>
+                <div className="space-y-1">
+                  {navigation.hr.filter(item => item.show).map((item) => {
+                    const isActive = location === item.href;
+                    return (
+                      <Link key={item.name} href={item.href}>
+                        <Button
+                          variant={isActive ? "secondary" : "ghost"}
+                          className={cn(
+                            "w-full justify-start text-slate-700 dark:text-slate-300",
+                            isActive && "bg-slate-100 dark:bg-slate-700 text-slate-900 dark:text-slate-100"
+                          )}
+                        >
+                          <item.icon className="h-4 w-4 mr-3" />
+                          {item.name}
+                        </Button>
+                      </Link>
+                    );
+                  })}
+                </div>
+              </div>
+            </>
+          )}
+
+          {/* Admin Section */}
+          {navigation.admin.some(item => item.show) && (
+            <>
+              <Separator className="bg-slate-200 dark:bg-slate-700" />
+              <div>
+                <h3 className="text-xs font-semibold text-slate-500 dark:text-slate-400 uppercase tracking-wider mb-3">
+                  Yönetim
+                </h3>
+                <div className="space-y-1">
+                  {navigation.admin.filter(item => item.show).map((item) => {
+                    const isActive = location === item.href;
+                    return (
+                      <Link key={item.name} href={item.href}>
+                        <Button
+                          variant={isActive ? "secondary" : "ghost"}
+                          className={cn(
+                            "w-full justify-start text-slate-700 dark:text-slate-300",
+                            isActive && "bg-slate-100 dark:bg-slate-700 text-slate-900 dark:text-slate-100"
+                          )}
+                        >
+                          <item.icon className="h-4 w-4 mr-3" />
+                          {item.name}
+                        </Button>
+                      </Link>
+                    );
+                  })}
+                </div>
+              </div>
+            </>
+          )}
+        </nav>
+      </div>
+
+      {/* User Profile & Logout */}
+      <div className="p-4 border-t border-slate-200 dark:border-slate-700">
+        <div className="flex items-center space-x-3 mb-3">
+          <Avatar className="h-8 w-8">
+            <AvatarImage src={userData?.avatar || userData?.profileImageUrl} />
+            <AvatarFallback className="bg-slate-200 dark:bg-slate-600 text-slate-700 dark:text-slate-300">
+              {userData?.firstName?.[0] || 'U'}{userData?.lastName?.[0] || 'S'}
             </AvatarFallback>
           </Avatar>
           <div className="flex-1 min-w-0">
-            <p className="text-sm font-medium text-slate-900 dark:text-white truncate">
-              {user.firstName} {user.lastName}
+            <p className="text-sm font-medium text-slate-900 dark:text-slate-100 truncate">
+              {userData?.firstName || 'Kullanıcı'} {userData?.lastName || 'Sistem'}
             </p>
-            <p className="text-xs text-slate-600 dark:text-slate-400 truncate">
-              {roleLabels[user.role as UserRole] || user.role}
+            <p className="text-xs text-slate-600 dark:text-slate-400">
+              {roleLabels[userData?.role as UserRole] || roleLabels[userRole]}
             </p>
           </div>
         </div>
-      </div>
-
-      {/* Corporate Navigation */}
-      <nav className="flex-1 px-4 py-6 space-y-1">
-        {navigation.map((item) => {
-          const isActive = location === item.href || 
-            (item.href !== "/dashboard" && location.startsWith(item.href));
+        
+        <div className="space-y-2">
+          <Link href="/profile">
+            <Button variant="ghost" className="w-full justify-start text-slate-700 dark:text-slate-300">
+              <UserCircle className="h-4 w-4 mr-3" />
+              Profil
+            </Button>
+          </Link>
           
-          return (
-            <Link key={item.name} href={item.href}>
-              <a className={cn(
-                "group flex items-center px-3 py-2.5 text-sm font-medium rounded-lg transition-all duration-200",
-                isActive
-                  ? "bg-slate-100 dark:bg-slate-700 text-slate-900 dark:text-white border-l-4 border-slate-900 dark:border-slate-200"
-                  : "text-slate-700 dark:text-slate-300 hover:bg-slate-50 dark:hover:bg-slate-750 hover:text-slate-900 dark:hover:text-white"
-              )}>
-                <item.icon className={cn(
-                  "mr-3 h-5 w-5 flex-shrink-0 transition-colors",
-                  isActive 
-                    ? "text-slate-900 dark:text-white" 
-                    : "text-slate-500 dark:text-slate-400 group-hover:text-slate-700 dark:group-hover:text-slate-300"
-                )} />
-                {item.name}
-              </a>
-            </Link>
-          );
-        })}
-      </nav>
-
-      {/* Corporate Secondary Navigation */}
-      <div className="border-t border-slate-200 dark:border-slate-700 p-4 space-y-1">
-        <Link href="/notifications">
-          <a className="group flex items-center px-3 py-2.5 text-sm font-medium text-slate-700 dark:text-slate-300 rounded-lg hover:bg-slate-50 dark:hover:bg-slate-750 hover:text-slate-900 dark:hover:text-white transition-all duration-200">
-            <Bell className="mr-3 h-5 w-5 flex-shrink-0 text-slate-500 dark:text-slate-400 group-hover:text-slate-700 dark:group-hover:text-slate-300" />
-            Bildirimler
-          </a>
-        </Link>
-
-        <Link href="/settings">
-          <a className="group flex items-center px-3 py-2.5 text-sm font-medium text-slate-700 dark:text-slate-300 rounded-lg hover:bg-slate-50 dark:hover:bg-slate-750 hover:text-slate-900 dark:hover:text-white transition-all duration-200">
-            <Settings className="mr-3 h-5 w-5 flex-shrink-0 text-slate-500 dark:text-slate-400 group-hover:text-slate-700 dark:group-hover:text-slate-300" />
-            Ayarlar
-          </a>
-        </Link>
-
-        <Link href="/help">
-          <a className="group flex items-center px-3 py-2.5 text-sm font-medium text-slate-700 dark:text-slate-300 rounded-lg hover:bg-slate-50 dark:hover:bg-slate-750 hover:text-slate-900 dark:hover:text-white transition-all duration-200">
-            <HelpCircle className="mr-3 h-5 w-5 flex-shrink-0 text-slate-500 dark:text-slate-400 group-hover:text-slate-700 dark:group-hover:text-slate-300" />
-            Yardım
-          </a>
-        </Link>
-
-        <Separator className="my-2 bg-slate-200 dark:bg-slate-700" />
-
-        <Button
-          variant="ghost"
-          className="w-full justify-start px-3 py-2.5 h-auto text-sm font-medium text-slate-700 dark:text-slate-300 hover:bg-slate-50 dark:hover:bg-slate-750 hover:text-slate-900 dark:hover:text-white"
-          onClick={handleLogout}
-        >
-          <LogOut className="mr-3 h-5 w-5 flex-shrink-0" />
-          Çıkış Yap
-        </Button>
+          <Button 
+            variant="ghost" 
+            className="w-full justify-start text-slate-700 dark:text-slate-300 hover:text-red-600 dark:hover:text-red-400"
+            onClick={handleLogout}
+          >
+            <LogOut className="h-4 w-4 mr-3" />
+            Çıkış Yap
+          </Button>
+        </div>
       </div>
     </div>
   );

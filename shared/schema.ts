@@ -306,3 +306,17 @@ export type ExpenseReport = typeof expenseReports.$inferSelect;
 export type InsertExpenseReport = z.infer<typeof insertExpenseReportSchema>;
 export type Message = typeof messages.$inferSelect;
 export type InsertMessage = z.infer<typeof insertMessageSchema>;
+
+// Permission type for role-based access control
+export type Permission = {
+  canViewEmployees: boolean;
+  canEditEmployees: boolean;
+  canDeleteEmployees: boolean;
+  canViewPerformance: boolean;
+  canEditPerformance: boolean;
+  canViewPayroll: boolean;
+  canEditPayroll: boolean;
+  canViewReports: boolean;
+  canManageTeam: boolean;
+  canViewAuditLogs: boolean;
+};
