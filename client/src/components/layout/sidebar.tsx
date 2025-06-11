@@ -177,27 +177,19 @@ const getRoleBasedNavigation = (userRole: UserRole) => {
   // Her kullanıcı için ortak sayfalar
   navigationItems.push(
     {
-      name: "Profil",
-      href: "/profile",
-      icon: UserCircle,
-      color: "text-gray-600",
-      bgColor: "bg-gray-50",
-      show: true
-    },
-    {
       name: "Bildirimler",
       href: "/notifications",
       icon: Bell,
-      color: "text-yellow-600",
-      bgColor: "bg-yellow-50",
+      color: "text-amber-600",
+      bgColor: "bg-amber-50",
       show: true
     },
     {
       name: "Ayarlar",
       href: "/settings",
       icon: Settings,
-      color: "text-gray-600",
-      bgColor: "bg-gray-50",
+      color: "text-slate-600",
+      bgColor: "bg-slate-50",
       show: true
     },
     {
@@ -232,32 +224,32 @@ export default function Sidebar() {
   };
 
   return (
-    <div className="flex h-full w-64 flex-col bg-white border-r border-gray-200">
+    <div className="flex h-full w-64 flex-col bg-gradient-to-b from-slate-50 to-white border-r border-slate-200 shadow-sm">
       {/* Header */}
-      <div className="flex items-center gap-3 px-6 py-4 border-b border-gray-200">
-        <div className="p-2 bg-blue-100 rounded-lg">
-          <Building2 className="h-6 w-6 text-blue-600" />
+      <div className="flex items-center gap-3 px-6 py-5 border-b border-slate-200 bg-white">
+        <div className="p-2.5 bg-gradient-to-br from-blue-500 to-indigo-600 rounded-xl shadow-md">
+          <Building2 className="h-6 w-6 text-white" />
         </div>
         <div>
-          <h1 className="text-lg font-semibold text-gray-900">İK360</h1>
-          <p className="text-xs text-gray-500">İnsan Kaynakları Sistemi</p>
+          <h1 className="text-xl font-bold bg-gradient-to-r from-blue-600 to-indigo-600 bg-clip-text text-transparent">İK360</h1>
+          <p className="text-xs text-slate-500 font-medium">İnsan Kaynakları Sistemi</p>
         </div>
       </div>
 
       {/* User Info */}
-      <div className="p-4 border-b border-gray-200">
+      <div className="p-4 border-b border-slate-200 bg-white/80">
         <div className="flex items-center gap-3">
-          <Avatar className="h-10 w-10">
+          <Avatar className="h-11 w-11 ring-2 ring-white shadow-md">
             <AvatarImage src={(user as any)?.profileImageUrl} />
-            <AvatarFallback className="bg-blue-100 text-blue-600">
+            <AvatarFallback className="bg-gradient-to-br from-blue-500 to-indigo-600 text-white font-semibold">
               {(user as any)?.firstName?.[0]}{(user as any)?.lastName?.[0]}
             </AvatarFallback>
           </Avatar>
           <div className="flex-1 min-w-0">
-            <p className="text-sm font-medium text-gray-900 truncate">
+            <p className="text-sm font-semibold text-slate-900 truncate">
               {(user as any)?.firstName} {(user as any)?.lastName}
             </p>
-            <p className="text-xs text-gray-500 truncate">
+            <p className="text-xs text-slate-600 truncate bg-slate-100 px-2 py-0.5 rounded-full mt-1">
               {roleLabels[userRole]}
             </p>
           </div>
@@ -265,7 +257,7 @@ export default function Sidebar() {
       </div>
 
       {/* Navigation */}
-      <nav className="flex-1 px-4 py-4 space-y-1 overflow-y-auto">
+      <nav className="flex-1 px-3 py-4 space-y-2 overflow-y-auto">
         {navigationItems.map((item) => {
           const isActive = location === item.href || 
             (item.href !== "/dashboard" && location.startsWith(item.href));
@@ -275,14 +267,14 @@ export default function Sidebar() {
               <Button
                 variant="ghost"
                 className={cn(
-                  "w-full justify-start gap-3 h-10 px-3",
+                  "w-full justify-start gap-3 h-11 px-3 rounded-xl transition-all duration-200",
                   isActive
-                    ? `${item.bgColor} ${item.color} font-medium`
-                    : "text-gray-600 hover:bg-gray-50 hover:text-gray-900"
+                    ? `${item.bgColor} ${item.color} font-semibold shadow-sm border border-white/50`
+                    : "text-slate-600 hover:bg-white/80 hover:text-slate-900 hover:shadow-sm"
                 )}
               >
                 <item.icon className="h-4 w-4" />
-                {item.name}
+                <span className="font-medium">{item.name}</span>
               </Button>
             </Link>
           );
@@ -290,11 +282,11 @@ export default function Sidebar() {
       </nav>
 
       {/* Footer */}
-      <div className="p-4 border-t border-gray-200">
+      <div className="p-4 border-t border-slate-200 bg-white/80">
         <Button
           variant="ghost"
           onClick={handleLogout}
-          className="w-full justify-start gap-3 h-10 px-3 text-red-600 hover:bg-red-50 hover:text-red-700"
+          className="w-full justify-start gap-3 h-11 px-3 rounded-xl text-red-600 hover:bg-red-50 hover:text-red-700 font-medium transition-all duration-200"
         >
           <LogOut className="h-4 w-4" />
           Çıkış Yap
