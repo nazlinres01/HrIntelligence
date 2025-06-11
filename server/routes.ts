@@ -371,8 +371,8 @@ export async function registerRoutes(app: Express): Promise<Server> {
     }
   });
 
-  // Employee routes
-  app.get("/api/employees", async (req, res) => {
+  // Employee routes with authentication and audit logging
+  app.get("/api/employees", isAuthenticated, async (req, res) => {
     try {
       const employees = await storage.getEmployees();
       res.json(employees);
@@ -381,7 +381,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
     }
   });
 
-  app.get("/api/employees/:id", async (req, res) => {
+  app.get("/api/employees/:id", isAuthenticated, async (req, res) => {
     try {
       const id = parseInt(req.params.id);
       const employee = await storage.getEmployee(id);
@@ -394,23 +394,52 @@ export async function registerRoutes(app: Express): Promise<Server> {
     }
   });
 
-  app.post("/api/employees", async (req, res) => {
+  app.post("/api/employees", isAuthenticated, async (req, res) => {
     try {
-      const employeeData = insertEmployeeSchema.parse(req.body);
+      const employeeData = {
+        ...req.body,
+        companyId: 1,
+        status: req.body.status || 'active'
+      };
       const employee = await storage.createEmployee(employeeData);
+      
+      // Create audit log
+      await storage.createAuditLog({
+        userId: (req.session as any)?.userId || 'admin_001',
+        action: 'CREATE_EMPLOYEE',
+        resource: 'employees',
+        details: `Created employee ${employee.firstName} ${employee.lastName}`,
+        ipAddress: req.ip
+      });
+      
       res.status(201).json(employee);
     } catch (error) {
+      console.error('Employee creation error:', error);
       res.status(400).json({ message: "Invalid employee data", error });
     }
   });
 
-  app.put("/api/employees/:id", async (req, res) => {
+  app.put("/api/employees/:id", isAuthenticated, async (req, res) => {
     try {
       const id = parseInt(req.params.id);
-      const employeeData = insertEmployeeSchema.partial().parse(req.body);
-      const employee = await storage.updateEmployee(id, employeeData);
+      const employee = await storage.updateEmployee(id, req.body);
+      
+      if (!employee) {
+        return res.status(404).json({ message: 'Employee not found' });
+      }
+      
+      // Create audit log
+      await storage.createAuditLog({
+        userId: (req.session as any)?.userId || 'admin_001',
+        action: 'UPDATE_EMPLOYEE',
+        resource: 'employees',
+        details: `Updated employee ${employee.firstName} ${employee.lastName}`,
+        ipAddress: req.ip
+      });
+      
       res.json(employee);
     } catch (error) {
+      console.error('Employee update error:', error);
       res.status(400).json({ message: "Failed to update employee", error });
     }
   });
