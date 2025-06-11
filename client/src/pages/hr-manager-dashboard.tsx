@@ -44,53 +44,43 @@ export default function HRManagerDashboard() {
   });
 
   return (
-    <div className="flex-1 space-y-8 p-8 max-w-full overflow-x-hidden overflow-y-auto h-full bg-gradient-to-br from-slate-50 via-purple-50 to-indigo-50 dark:from-slate-900 dark:via-slate-800 dark:to-slate-900">
-      {/* Modern Header with Gradient */}
-      <div className="bg-white dark:bg-slate-800 rounded-3xl shadow-xl border-0 p-8 backdrop-blur-sm bg-opacity-90">
+    <div className="space-y-6 p-6 bg-gray-50 dark:bg-slate-900">
+      {/* Corporate Header */}
+      <div className="bg-white dark:bg-slate-800 rounded-lg shadow-sm border p-6">
         <div className="flex items-center justify-between">
           <div>
-            <h1 className="text-4xl font-bold bg-gradient-to-r from-purple-600 via-blue-600 to-indigo-600 bg-clip-text text-transparent">
+            <h1 className="text-3xl font-bold text-slate-900 dark:text-white">
               İK Müdürü Paneli
             </h1>
-            <p className="text-lg text-slate-600 dark:text-slate-300 mt-2">
-              İnsan kaynakları süreçleri ve personel yönetimi kontrolü
+            <p className="text-slate-600 dark:text-slate-300 mt-1">
+              İnsan kaynakları süreçleri ve personel yönetimi
             </p>
           </div>
-          <div className="flex items-center space-x-4">
-            <Button variant="outline" size="lg" className="bg-gradient-to-r from-blue-50 to-purple-50 dark:from-blue-900/30 dark:to-purple-900/30 border-blue-200 dark:border-blue-700 hover:shadow-lg transition-all duration-300 rounded-xl">
-              <FileText className="h-5 w-5 mr-2 text-blue-600 dark:text-blue-400" />
+          <div className="flex items-center space-x-2">
+            <Button variant="outline" size="sm">
+              <FileText className="h-4 w-4 mr-2" />
               İK Raporları
             </Button>
-            <Button size="lg" className="bg-gradient-to-r from-purple-600 to-blue-600 hover:from-purple-700 hover:to-blue-700 shadow-lg hover:shadow-xl transition-all duration-300 rounded-xl">
-              <UserPlus className="h-5 w-5 mr-2" />
+            <Button size="sm">
+              <UserPlus className="h-4 w-4 mr-2" />
               Personel İşe Al
             </Button>
           </div>
         </div>
       </div>
 
-      {/* Enhanced HR Metrics */}
-      <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-4">
-        <Card className="relative overflow-hidden border-0 shadow-2xl hover:shadow-3xl transition-all duration-500 bg-white/80 dark:bg-slate-800/80 backdrop-blur-xl hover:scale-105 rounded-2xl">
-          <CardContent className="p-7">
-            <div className="flex items-center justify-between">
-              <div className="space-y-3">
-                <p className="text-sm font-semibold text-slate-600 dark:text-slate-300 uppercase tracking-wider">Aktif Personel</p>
-                <p className="text-4xl font-bold text-slate-900 dark:text-white">
-                  {stats.activeEmployees}
-                </p>
-                <div className="flex items-center bg-green-100 dark:bg-green-900/30 px-2 py-1 rounded-full">
-                  <TrendingUp className="h-4 w-4 text-green-600 dark:text-green-400" />
-                  <span className="text-sm font-medium text-green-600 dark:text-green-400 ml-1">
-                    +{stats.newHires} bu ay
-                  </span>
-                </div>
-              </div>
-              <div className="p-4 rounded-3xl bg-blue-50 dark:bg-blue-900/20 shadow-lg">
-                <Users className="h-10 w-10 text-blue-600 dark:text-blue-400" />
-              </div>
-            </div>
-            <div className="absolute inset-x-0 bottom-0 h-2 bg-gradient-to-r from-blue-400 to-blue-600 rounded-b-2xl"></div>
+      {/* Corporate HR Metrics */}
+      <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-4">
+        <Card className="bg-white dark:bg-slate-800 border hover:shadow-md transition-shadow duration-200">
+          <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
+            <CardTitle className="text-sm font-medium">Aktif Personel</CardTitle>
+            <Users className="h-4 w-4 text-muted-foreground" />
+          </CardHeader>
+          <CardContent>
+            <div className="text-2xl font-bold">{stats.activeEmployees}</div>
+            <p className="text-xs text-muted-foreground">
+              {stats.newHires} yeni işe alım bu ay
+            </p>
           </CardContent>
         </Card>
 
