@@ -47,9 +47,11 @@ export default function HRSpecialistDashboard() {
   });
 
   const { data: interviews = {
+    today: 0,
+    completed: 0,
     schedule: [],
     daily: []
-  } } = useQuery<WorkloadStats>({
+  } } = useQuery<InterviewStats>({
     queryKey: ['/api/interviews/today'],
   });
 
@@ -95,9 +97,9 @@ export default function HRSpecialistDashboard() {
             <Users className="h-4 w-4 text-muted-foreground" />
           </CardHeader>
           <CardContent>
-            <div className="text-2xl font-bold">{interviews?.today || 0}</div>
+            <div className="text-2xl font-bold">{interviews.today}</div>
             <p className="text-xs text-muted-foreground">
-              {interviews?.completed || 0} tamamlandı
+              {interviews.completed} tamamlandı
             </p>
           </CardContent>
         </Card>
@@ -108,7 +110,7 @@ export default function HRSpecialistDashboard() {
             <FileText className="h-4 w-4 text-muted-foreground" />
           </CardHeader>
           <CardContent>
-            <div className="text-2xl font-bold">{applications?.new || 0}</div>
+            <div className="text-2xl font-bold">{applications.length}</div>
             <p className="text-xs text-muted-foreground">
               Bu hafta gelen
             </p>
@@ -140,7 +142,7 @@ export default function HRSpecialistDashboard() {
           </CardHeader>
           <CardContent>
             <div className="space-y-4">
-              {interviews?.schedule?.slice(0, 4).map((interview: any, index: number) => (
+              {interviews.schedule.slice(0, 4).map((interview: any, index: number) => (
                 <div key={index} className="flex items-center justify-between p-3 border rounded-lg">
                   <div className="flex items-center space-x-3">
                     <div className="w-10 h-10 rounded-full bg-purple-100 flex items-center justify-center">
@@ -299,7 +301,7 @@ export default function HRSpecialistDashboard() {
         </CardHeader>
         <CardContent>
           <div className="space-y-3">
-            {tasks?.daily?.map((task: any, index: number) => (
+            {interviews.daily.map((task: any, index: number) => (
               <div key={index} className="flex items-center justify-between p-3 border rounded-lg">
                 <div className="flex items-center space-x-3">
                   <div className={`w-2 h-2 rounded-full ${task.priority === 'high' ? 'bg-red-500' : task.priority === 'medium' ? 'bg-yellow-500' : 'bg-green-500'}`}></div>
