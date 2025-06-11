@@ -49,6 +49,7 @@ function Router() {
   const getDashboardComponent = () => {
     switch (userRole) {
       case 'owner':
+      case 'admin':
         return OwnerDashboard;
       case 'hr_manager':
         return HRManagerDashboard;

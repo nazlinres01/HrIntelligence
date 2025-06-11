@@ -1,4 +1,4 @@
-export type UserRole = "owner" | "hr_manager" | "hr_specialist" | "department_manager" | "employee";
+export type UserRole = "owner" | "admin" | "hr_manager" | "hr_specialist" | "department_manager" | "employee";
 
 export interface Permission {
   canViewDashboard: boolean;
@@ -17,6 +17,20 @@ export interface Permission {
 
 export const rolePermissions: Record<UserRole, Permission> = {
   owner: {
+    canViewDashboard: true,
+    canManageEmployees: true,
+    canManagePayroll: true,
+    canManageLeaves: true,
+    canManagePerformance: true,
+    canManageTeam: true,
+    canManageCompany: true,
+    canViewReports: true,
+    canManageDepartments: true,
+    canViewAllData: true,
+    canManageOwnProfile: true,
+    canRequestLeave: false,
+  },
+  admin: {
     canViewDashboard: true,
     canManageEmployees: true,
     canManagePayroll: true,
@@ -98,6 +112,7 @@ export function hasPermission(role: UserRole, permission: keyof Permission): boo
 
 export const roleLabels: Record<UserRole, string> = {
   owner: "Patron",
+  admin: "Admin",
   hr_manager: "İK Müdürü", 
   hr_specialist: "İK Uzmanı",
   department_manager: "Departman Müdürü",
