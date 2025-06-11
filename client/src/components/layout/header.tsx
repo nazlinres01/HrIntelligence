@@ -1,9 +1,13 @@
 import { useState } from "react";
-import { Search } from "lucide-react";
+import { Search, Sun, Moon, Bell, User, Settings } from "lucide-react";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
+import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
+import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuSeparator, DropdownMenuTrigger } from "@/components/ui/dropdown-menu";
 import { useLanguage } from "@/hooks/use-language";
+import { useAuth } from "@/hooks/useAuth";
 import { NotificationBell } from "@/components/notifications/notification-bell";
+import { Link } from "wouter";
 
 interface HeaderProps {
   title: string;
@@ -12,31 +16,40 @@ interface HeaderProps {
 
 export function Header({ title, subtitle }: HeaderProps) {
   const [searchQuery, setSearchQuery] = useState("");
+  const [isDarkMode, setIsDarkMode] = useState(false);
   const { language, setLanguage, t } = useLanguage();
+  const { user, logout } = useAuth();
+
+  const toggleDarkMode = () => {
+    setIsDarkMode(!isDarkMode);
+    document.documentElement.classList.toggle('dark');
+  };
 
   return (
-    <header className="bg-white shadow-sm border-b border-gray-200 px-6 py-4">
+    <header className="bg-white dark:bg-slate-800 shadow-sm border-b border-slate-200 dark:border-slate-700 px-6 py-4">
       <div className="flex items-center justify-between">
+        {/* Corporate Title Section */}
         <div>
-          <h2 className="text-2xl font-bold text-gray-900">{title}</h2>
-          {subtitle && <p className="text-gray-600 mt-1">{subtitle}</p>}
+          <h2 className="text-2xl font-bold text-slate-900 dark:text-white">{title}</h2>
+          {subtitle && <p className="text-slate-600 dark:text-slate-400 mt-1">{subtitle}</p>}
         </div>
         
+        {/* Corporate Controls Section */}
         <div className="flex items-center space-x-4">
-          {/* Search Bar */}
+          {/* Corporate Search Bar */}
           <div className="relative">
-            <Search className="absolute left-3 top-3 h-4 w-4 text-gray-400" />
+            <Search className="absolute left-3 top-3 h-4 w-4 text-slate-400" />
             <Input
               type="text"
-              placeholder={t("searchEmployee")}
+              placeholder="Ara..."
               value={searchQuery}
               onChange={(e) => setSearchQuery(e.target.value)}
-              className="pl-10 w-64"
+              className="pl-10 w-64 bg-white dark:bg-slate-700 border-slate-300 dark:border-slate-600 text-slate-900 dark:text-white placeholder-slate-500 dark:placeholder-slate-400"
             />
           </div>
           
-          {/* Language Toggle */}
-          <div className="flex bg-gray-100 rounded-lg p-1">
+          {/* Corporate Language Toggle */}
+          <div className="flex bg-slate-100 dark:bg-slate-700 rounded-lg p-1">
             <Button
               variant={language === "tr" ? "secondary" : "ghost"}
               size="sm"
@@ -54,9 +67,71 @@ export function Header({ title, subtitle }: HeaderProps) {
               EN
             </Button>
           </div>
-          
-          {/* Notifications */}
+
+          {/* Corporate Dark Mode Toggle */}
+          <Button
+            variant="ghost"
+            size="sm"
+            onClick={toggleDarkMode}
+            className="h-9 w-9 p-0"
+          >
+            {isDarkMode ? (
+              <Sun className="h-4 w-4 text-slate-600 dark:text-slate-400" />
+            ) : (
+              <Moon className="h-4 w-4 text-slate-600 dark:text-slate-400" />
+            )}
+          </Button>
+
+          {/* Corporate Notifications */}
           <NotificationBell />
+
+          {/* Corporate User Profile Dropdown */}
+          {user && (
+            <DropdownMenu>
+              <DropdownMenuTrigger asChild>
+                <Button variant="ghost" className="relative h-9 w-9 rounded-full">
+                  <Avatar className="h-9 w-9">
+                    <AvatarImage src={user.avatar} alt={user.firstName} />
+                    <AvatarFallback className="bg-slate-100 dark:bg-slate-700 text-slate-900 dark:text-white">
+                      {user.firstName?.[0]}{user.lastName?.[0]}
+                    </AvatarFallback>
+                  </Avatar>
+                </Button>
+              </DropdownMenuTrigger>
+              <DropdownMenuContent className="w-56 bg-white dark:bg-slate-800 border-slate-200 dark:border-slate-700" align="end" forceMount>
+                <div className="flex items-center justify-start gap-2 p-2">
+                  <div className="flex flex-col space-y-1 leading-none">
+                    <p className="font-medium text-slate-900 dark:text-white">
+                      {user.firstName} {user.lastName}
+                    </p>
+                    <p className="w-[200px] truncate text-sm text-slate-600 dark:text-slate-400">
+                      {user.email}
+                    </p>
+                  </div>
+                </div>
+                <DropdownMenuSeparator className="bg-slate-200 dark:bg-slate-700" />
+                <Link href="/profile">
+                  <DropdownMenuItem className="cursor-pointer text-slate-700 dark:text-slate-300 hover:bg-slate-50 dark:hover:bg-slate-750">
+                    <User className="mr-2 h-4 w-4" />
+                    <span>Profil</span>
+                  </DropdownMenuItem>
+                </Link>
+                <Link href="/settings">
+                  <DropdownMenuItem className="cursor-pointer text-slate-700 dark:text-slate-300 hover:bg-slate-50 dark:hover:bg-slate-750">
+                    <Settings className="mr-2 h-4 w-4" />
+                    <span>Ayarlar</span>
+                  </DropdownMenuItem>
+                </Link>
+                <DropdownMenuSeparator className="bg-slate-200 dark:bg-slate-700" />
+                <DropdownMenuItem 
+                  className="cursor-pointer text-red-600 dark:text-red-400 hover:bg-red-50 dark:hover:bg-red-900/20"
+                  onClick={logout}
+                >
+                  <span>Çıkış Yap</span>
+                </DropdownMenuItem>
+              </DropdownMenuContent>
+            </DropdownMenu>
+          )}
         </div>
       </div>
     </header>
