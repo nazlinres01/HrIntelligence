@@ -43,6 +43,8 @@ const registerSchema = z.object({
     .min(1, "Şirket büyüklüğünü seçin"),
   position: z.string()
     .min(2, "Pozisyon en az 2 karakter olmalı"),
+  role: z.string()
+    .min(1, "Rol seçimi zorunludur"),
   password: passwordSchema,
   confirmPassword: z.string(),
   acceptTerms: z.boolean()
@@ -73,6 +75,7 @@ export default function Register() {
       companyName: "",
       companySize: "",
       position: "",
+      role: "",
       password: "",
       confirmPassword: "",
       acceptTerms: false,
@@ -307,6 +310,34 @@ export default function Register() {
                   )}
                 />
               </div>
+
+              {/* Role Selection */}
+              <FormField
+                control={form.control}
+                name="role"
+                render={({ field }) => (
+                  <FormItem>
+                    <FormLabel className="text-slate-900 dark:text-slate-100 font-medium">
+                      Rol
+                    </FormLabel>
+                    <Select onValueChange={field.onChange} defaultValue={field.value}>
+                      <FormControl>
+                        <SelectTrigger className="h-14 text-lg">
+                          <SelectValue placeholder="Rolünüzü seçin" />
+                        </SelectTrigger>
+                      </FormControl>
+                      <SelectContent>
+                        <SelectItem value="admin">Admin</SelectItem>
+                        <SelectItem value="hr_manager">İK Müdürü</SelectItem>
+                        <SelectItem value="hr_specialist">İK Uzmanı</SelectItem>
+                        <SelectItem value="department_manager">Departman Müdürü</SelectItem>
+                        <SelectItem value="employee">Çalışan</SelectItem>
+                      </SelectContent>
+                    </Select>
+                    <FormMessage />
+                  </FormItem>
+                )}
+              />
 
               <FormField
                 control={form.control}
