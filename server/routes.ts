@@ -748,29 +748,63 @@ export async function registerRoutes(app: Express): Promise<Server> {
     }
   });
 
-  // Settings routes
-  app.get("/api/profile", async (req, res) => {
+  // Settings routes with authentication
+  app.get("/api/profile", isAuthenticated, async (req, res) => {
     try {
-      // Return authenticated user profile data
+      const userId = (req.session as any)?.userId;
+      const user = await storage.getUser(userId);
+      
+      if (!user) {
+        return res.status(404).json({ message: "User not found" });
+      }
+      
       const profileData = {
-        firstName: "Admin",
-        lastName: "User",
-        email: "admin@ik360.com",
-        phone: "+90 212 123 45 67",
+        firstName: user.firstName || "Admin",
+        lastName: user.lastName || "User", 
+        email: user.email,
+        phone: user.phone || "+90 212 123 45 67",
         position: "System Administrator",
-        department: "IT"
+        department: "IT",
+        role: user.role
       };
       res.json(profileData);
     } catch (error) {
+      console.error('Profile fetch error:', error);
       res.status(500).json({ message: "Failed to fetch profile" });
     }
   });
 
-  app.put("/api/profile", async (req, res) => {
+  app.put("/api/profile", isAuthenticated, async (req, res) => {
     try {
+      const userId = (req.session as any)?.userId;
       const userData = req.body;
-      res.json({ message: "Profile updated successfully", ...userData });
+      
+      // Get current user data to preserve required fields
+      const currentUser = await storage.getUser(userId);
+      if (!currentUser) {
+        return res.status(404).json({ message: "User not found" });
+      }
+      
+      const updatedUser = await storage.upsertUser({
+        id: userId,
+        firstName: userData.firstName,
+        lastName: userData.lastName,
+        email: userData.email,
+        phone: userData.phone,
+        password: currentUser.password // Preserve existing password
+      });
+      
+      await storage.createAuditLog({
+        userId: userId,
+        action: 'UPDATE_PROFILE',
+        resource: 'users',
+        details: `Updated profile information`,
+        ipAddress: req.ip
+      });
+      
+      res.json(updatedUser);
     } catch (error) {
+      console.error('Profile update error:', error);
       res.status(500).json({ message: "Failed to update profile" });
     }
   });
