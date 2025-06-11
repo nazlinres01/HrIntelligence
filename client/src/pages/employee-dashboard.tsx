@@ -161,15 +161,18 @@ export default function EmployeeDashboard() {
   };
 
   return (
-    <div className="space-y-6">
-      <div className="flex items-center justify-between">
-        <div>
-          <h1 className="text-3xl font-bold tracking-tight">Çalışan Dashboard</h1>
-          <p className="text-muted-foreground">
-            Kişisel performans ve iş takibi
-          </p>
-        </div>
-        <div className="flex space-x-2">
+    <div className="min-h-screen bg-gradient-to-br from-slate-50 to-blue-50 dark:from-slate-900 dark:to-slate-800 p-6">
+      <div className="max-w-7xl mx-auto space-y-8">
+        <div className="flex items-center justify-between bg-white dark:bg-slate-900 rounded-xl p-6 shadow-sm border border-slate-200 dark:border-slate-700">
+          <div>
+            <h1 className="text-3xl font-bold tracking-tight bg-gradient-to-r from-blue-600 to-purple-600 bg-clip-text text-transparent">
+              Çalışan Dashboard
+            </h1>
+            <p className="text-slate-600 dark:text-slate-400 mt-2">
+              Kişisel performans ve iş takibi
+            </p>
+          </div>
+          <div className="flex space-x-2">
           <Dialog open={isLeaveDialogOpen} onOpenChange={setIsLeaveDialogOpen}>
             <DialogTrigger asChild>
               <Button variant="outline" size="sm">
@@ -299,8 +302,8 @@ export default function EmployeeDashboard() {
               </form>
             </DialogContent>
           </Dialog>
+          </div>
         </div>
-      </div>
 
       {/* Personal Metrics */}
       <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-4">
@@ -687,6 +690,7 @@ export default function EmployeeDashboard() {
           </div>
         </CardContent>
       </Card>
+      </div>
     </div>
   );
 }
