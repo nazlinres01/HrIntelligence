@@ -26,6 +26,163 @@ export async function registerRoutes(app: Express): Promise<Server> {
   app.use(preventXSS);
   app.use(requestLogger);
 
+  // Enhanced registration endpoint with security
+  app.post('/api/auth/register', async (req, res) => {
+    try {
+      const { 
+        firstName, lastName, email, phone, companyName, companySize, 
+        industry, password, userAgent, timestamp, timezone, honeypot 
+      } = req.body;
+
+      // Honeypot check
+      if (honeypot) {
+        return res.status(400).json({ message: "Bot aktivitesi tespit edildi" });
+      }
+
+      // Rate limiting check (basic)
+      const clientIP = req.ip;
+      // In production, implement Redis-based rate limiting
+
+      // Email domain validation
+      const emailDomain = email.split('@')[1];
+      const suspiciousDomains = ['10minutemail.com', 'guerrillamail.com', 'tempmail.org'];
+      if (suspiciousDomains.includes(emailDomain)) {
+        return res.status(400).json({ message: "Geçici e-posta adresleri kabul edilmez" });
+      }
+
+      // Password strength validation
+      const passwordRegex = /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[^A-Za-z\d]).{12,}$/;
+      if (!passwordRegex.test(password)) {
+        return res.status(400).json({ message: "Şifre güvenlik gereksinimlerini karşılamıyor" });
+      }
+
+      // Check if user already exists
+      const existingUser = await storage.getUserByEmail(email);
+      if (existingUser) {
+        return res.status(400).json({ message: "Bu e-posta adresi zaten kayıtlı" });
+      }
+
+      // Hash password
+      const bcrypt = require('bcrypt');
+      const hashedPassword = await bcrypt.hash(password, 12);
+
+      // Create company first
+      const company = await storage.createCompany({
+        name: companyName,
+        industry: industry,
+        address: "",
+        phone: phone,
+        email: email
+      });
+
+      // Create user
+      const user = await storage.upsertUser({
+        id: require('crypto').randomUUID(),
+        email: email.toLowerCase(),
+        firstName,
+        lastName,
+        phone,
+        companyId: company.id,
+        role: 'owner',
+        password: hashedPassword,
+        isActive: true
+      });
+
+      // Log registration
+      await storage.createAuditLog({
+        action: "user_registered",
+        resource: "user",
+        resourceId: user.id,
+        userId: user.id,
+        companyId: company.id,
+        details: `Yeni kullanıcı kaydı: ${firstName} ${lastName} - ${companyName}`,
+        ipAddress: clientIP
+      });
+
+      res.status(201).json({ 
+        message: "Kayıt başarılı",
+        user: {
+          id: user.id,
+          email: user.email,
+          firstName: user.firstName,
+          lastName: user.lastName
+        }
+      });
+    } catch (error) {
+      console.error("Registration error:", error);
+      res.status(500).json({ message: "Kayıt işlemi başarısız" });
+    }
+  });
+
+  // Enhanced login endpoint with security
+  app.post('/api/auth/login', async (req, res) => {
+    try {
+      const { email, password, rememberMe, userAgent, fingerprint, timezone } = req.body;
+      const clientIP = req.ip;
+
+      // Rate limiting - in production use Redis
+      // For now, basic in-memory tracking would be implemented
+
+      // Find user
+      const user = await storage.getUserByEmail(email.toLowerCase());
+      if (!user) {
+        return res.status(401).json({ message: "E-posta veya şifre hatalı" });
+      }
+
+      // Check if user is active
+      if (!user.isActive) {
+        return res.status(401).json({ message: "Hesap deaktif durumda" });
+      }
+
+      // Verify password
+      const bcrypt = require('bcrypt');
+      const passwordValid = await bcrypt.compare(password, user.password);
+      if (!passwordValid) {
+        // Log failed attempt
+        await storage.createAuditLog({
+          action: "login_failed",
+          resource: "user",
+          resourceId: user.id,
+          userId: user.id,
+          companyId: user.companyId,
+          details: `Başarısız giriş denemesi: ${email}`,
+          ipAddress: clientIP
+        });
+        return res.status(401).json({ message: "E-posta veya şifre hatalı" });
+      }
+
+      // Update last login
+      await storage.updateUser(user.id, { lastLoginAt: new Date() });
+
+      // Log successful login
+      await storage.createAuditLog({
+        action: "login_success",
+        resource: "user",
+        resourceId: user.id,
+        userId: user.id,
+        companyId: user.companyId,
+        details: `Başarılı giriş: ${email}`,
+        ipAddress: clientIP
+      });
+
+      // In production, create JWT token or session
+      res.json({
+        message: "Giriş başarılı",
+        user: {
+          id: user.id,
+          email: user.email,
+          firstName: user.firstName,
+          lastName: user.lastName,
+          role: user.role,
+          companyId: user.companyId
+        }
+      });
+    } catch (error) {
+      console.error("Login error:", error);
+      res.status(500).json({ message: "Giriş işlemi başarısız" });
+    }
+  });
+
   // Auth routes
   app.get('/api/auth/user', isAuthenticated, async (req: any, res) => {
     try {

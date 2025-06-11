@@ -1,221 +1,474 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
+import { Link, useLocation } from "wouter";
+import { useForm } from "react-hook-form";
+import { zodResolver } from "@hookform/resolvers/zod";
+import { z } from "zod";
+import { useMutation } from "@tanstack/react-query";
+import { apiRequest } from "@/lib/queryClient";
+import { useToast } from "@/hooks/use-toast";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
-import { Label } from "@/components/ui/label";
+import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
+import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from "@/components/ui/form";
+import { Checkbox } from "@/components/ui/checkbox";
 import { Alert, AlertDescription } from "@/components/ui/alert";
-import { Eye, EyeOff, Mail, Lock, Building2, Users, BarChart3, Shield, Zap, CheckCircle } from "lucide-react";
-import { Link } from "wouter";
-import { queryClient } from "@/lib/queryClient";
+import { Badge } from "@/components/ui/badge";
+import { 
+  Building2, 
+  Shield, 
+  Eye, 
+  EyeOff, 
+  Lock, 
+  Mail,
+  User,
+  AlertTriangle,
+  CheckCircle,
+  Clock,
+  Fingerprint,
+  Smartphone,
+  Globe,
+  Info
+} from "lucide-react";
+
+// Gelişmiş güvenlik şeması
+const loginSchema = z.object({
+  email: z.string()
+    .email("Geçerli bir e-posta adresi girin")
+    .toLowerCase(),
+  password: z.string()
+    .min(1, "Şifre gerekli"),
+  rememberMe: z.boolean().optional(),
+  honeypot: z.string().max(0, "Güvenlik ihlali tespit edildi"),
+});
+
+type LoginFormData = z.infer<typeof loginSchema>;
 
 export default function Login() {
+  const [, setLocation] = useLocation();
+  const { toast } = useToast();
   const [showPassword, setShowPassword] = useState(false);
-  const [email, setEmail] = useState("");
-  const [password, setPassword] = useState("");
-  const [isLoading, setIsLoading] = useState(false);
-  const [error, setError] = useState("");
+  const [loginAttempts, setLoginAttempts] = useState(0);
+  const [isBlocked, setIsBlocked] = useState(false);
+  const [blockTimeLeft, setBlockTimeLeft] = useState(0);
+  const [securityWarnings, setSecurityWarnings] = useState<string[]>([]);
 
-  const handleSubmit = async (e: React.FormEvent) => {
-    e.preventDefault();
-    setIsLoading(true);
-    setError("");
+  const form = useForm<LoginFormData>({
+    resolver: zodResolver(loginSchema),
+    defaultValues: {
+      email: "",
+      password: "",
+      rememberMe: false,
+      honeypot: "",
+    },
+  });
+
+  // Güvenlik kontrolleri
+  useEffect(() => {
+    const warnings: string[] = [];
     
-    try {
-      const response = await fetch('/api/login', {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify({ email, password }),
-      });
-
-      const data = await response.json();
-
-      if (response.ok) {
-        queryClient.invalidateQueries({ queryKey: ['/api/auth/user'] });
-        window.location.href = '/';
-      } else {
-        setError(data.message || 'Giriş başarısız');
-      }
-    } catch (error) {
-      console.error('Login error:', error);
-      setError('Giriş sırasında bir hata oluştu');
-    } finally {
-      setIsLoading(false);
+    // Suspicious browser check
+    if (navigator.userAgent.includes('headless') || 
+        !navigator.webdriver === undefined ||
+        navigator.languages.length === 0) {
+      warnings.push("Şüpheli tarayıcı aktivitesi tespit edildi");
     }
+
+    // VPN/Proxy detection (basic)
+    if (navigator.connection && (navigator.connection as any).type === 'none') {
+      warnings.push("Ağ bağlantısı anormalliği tespit edildi");
+    }
+
+    setSecurityWarnings(warnings);
+  }, []);
+
+  // Bloke süresi countdown
+  useEffect(() => {
+    let interval: NodeJS.Timeout;
+    if (isBlocked && blockTimeLeft > 0) {
+      interval = setInterval(() => {
+        setBlockTimeLeft(prev => {
+          if (prev <= 1) {
+            setIsBlocked(false);
+            return 0;
+          }
+          return prev - 1;
+        });
+      }, 1000);
+    }
+    return () => clearInterval(interval);
+  }, [isBlocked, blockTimeLeft]);
+
+  // Giriş mutation
+  const loginMutation = useMutation({
+    mutationFn: async (data: LoginFormData) => {
+      // Honeypot kontrolü
+      if (data.honeypot) {
+        throw new Error("Güvenlik ihlali tespit edildi");
+      }
+
+      // Rate limiting kontrolü
+      if (isBlocked) {
+        throw new Error(`Çok fazla başarısız deneme. ${blockTimeLeft} saniye bekleyin.`);
+      }
+
+      const response = await apiRequest("POST", "/api/auth/login", {
+        ...data,
+        userAgent: navigator.userAgent,
+        timestamp: Date.now(),
+        timezone: Intl.DateTimeFormat().resolvedOptions().timeZone,
+        fingerprint: await generateFingerprint(),
+      });
+      
+      return response.json();
+    },
+    onSuccess: () => {
+      setLoginAttempts(0);
+      toast({
+        title: "Giriş başarılı!",
+        description: "Dashboard'a yönlendiriliyorsunuz...",
+      });
+      setLocation("/");
+    },
+    onError: (error: any) => {
+      const newAttempts = loginAttempts + 1;
+      setLoginAttempts(newAttempts);
+
+      // 3 başarısız denemeden sonra 5 dakika bloke
+      if (newAttempts >= 3) {
+        setIsBlocked(true);
+        setBlockTimeLeft(300); // 5 dakika
+        toast({
+          title: "Hesap geçici olarak bloke edildi",
+          description: "Güvenlik nedeniyle 5 dakika bekleyin.",
+          variant: "destructive",
+        });
+      } else {
+        toast({
+          title: "Giriş başarısız",
+          description: `${error.message || "E-posta veya şifre hatalı"}. ${3 - newAttempts} deneme hakkınız kaldı.`,
+          variant: "destructive",
+        });
+      }
+    },
+  });
+
+  // Browser fingerprinting
+  const generateFingerprint = async (): Promise<string> => {
+    const canvas = document.createElement('canvas');
+    const ctx = canvas.getContext('2d');
+    if (ctx) {
+      ctx.textBaseline = 'top';
+      ctx.font = '14px Arial';
+      ctx.fillText('Browser fingerprint', 2, 2);
+    }
+    
+    const fingerprint = {
+      userAgent: navigator.userAgent,
+      language: navigator.language,
+      platform: navigator.platform,
+      screen: `${screen.width}x${screen.height}`,
+      timezone: Intl.DateTimeFormat().resolvedOptions().timeZone,
+      canvas: canvas.toDataURL(),
+    };
+
+    return btoa(JSON.stringify(fingerprint));
+  };
+
+  const onSubmit = (data: LoginFormData) => {
+    loginMutation.mutate(data);
+  };
+
+  const formatTime = (seconds: number) => {
+    const mins = Math.floor(seconds / 60);
+    const secs = seconds % 60;
+    return `${mins}:${secs.toString().padStart(2, '0')}`;
   };
 
   return (
-    <div className="min-h-screen flex">
-      {/* Sol Taraf - Login Form */}
-      <div className="flex-1 flex items-center justify-center p-8 bg-white">
-        <div className="w-full max-w-md space-y-8">
-          {/* Logo ve Başlık */}
-          <div className="text-center">
-            <div className="flex items-center justify-center mb-4">
-              <Building2 className="h-10 w-10 text-blue-600 mr-2" />
-              <h1 className="text-3xl font-bold text-gray-900">İK360</h1>
+    <div className="min-h-screen bg-gradient-to-br from-slate-50 via-white to-blue-50 dark:from-slate-900 dark:via-slate-800 dark:to-blue-900">
+      <div className="container mx-auto px-6 py-8">
+        {/* Header */}
+        <div className="text-center mb-8">
+          <Link href="/" className="inline-flex items-center space-x-3 mb-6">
+            <div className="w-10 h-10 bg-gradient-to-br from-blue-600 to-indigo-700 rounded-xl flex items-center justify-center shadow-lg">
+              <Building2 className="h-6 w-6 text-white" />
             </div>
-            <p className="text-gray-600">İnsan Kaynakları Yönetim Sistemi</p>
-          </div>
-
-          {/* Login Form */}
-          <form onSubmit={handleSubmit} className="space-y-6">
-            {error && (
-              <Alert variant="destructive">
-                <AlertDescription>{error}</AlertDescription>
-              </Alert>
-            )}
-
-            <div className="space-y-4">
-              <div>
-                <Label htmlFor="email" className="text-sm font-medium text-gray-700">
-                  E-posta Adresi
-                </Label>
-                <div className="relative mt-1">
-                  <Mail className="absolute left-3 top-1/2 transform -translate-y-1/2 h-5 w-5 text-gray-400" />
-                  <Input
-                    id="email"
-                    type="email"
-                    placeholder="ornek@sirket.com"
-                    value={email}
-                    onChange={(e) => setEmail(e.target.value)}
-                    className="pl-10 h-12 border-gray-300 focus:border-blue-500 focus:ring-blue-500"
-                    required
-                  />
-                </div>
-              </div>
-
-              <div>
-                <Label htmlFor="password" className="text-sm font-medium text-gray-700">
-                  Şifre
-                </Label>
-                <div className="relative mt-1">
-                  <Lock className="absolute left-3 top-1/2 transform -translate-y-1/2 h-5 w-5 text-gray-400" />
-                  <Input
-                    id="password"
-                    type={showPassword ? "text" : "password"}
-                    placeholder="Şifrenizi giriniz"
-                    value={password}
-                    onChange={(e) => setPassword(e.target.value)}
-                    className="pl-10 pr-10 h-12 border-gray-300 focus:border-blue-500 focus:ring-blue-500"
-                    required
-                  />
-                  <button
-                    type="button"
-                    onClick={() => setShowPassword(!showPassword)}
-                    className="absolute right-3 top-1/2 transform -translate-y-1/2 text-gray-400 hover:text-gray-600"
-                  >
-                    {showPassword ? <EyeOff className="h-5 w-5" /> : <Eye className="h-5 w-5" />}
-                  </button>
-                </div>
-              </div>
-            </div>
-
-            <Button
-              type="submit"
-              disabled={isLoading}
-              className="w-full h-12 bg-blue-600 hover:bg-blue-700 text-white font-medium rounded-lg transition-colors"
-            >
-              {isLoading ? "Giriş yapılıyor..." : "Giriş Yap"}
-            </Button>
-
-            <div className="text-center">
-              <span className="text-gray-600">Hesabınız yok mu? </span>
-              <Link href="/register">
-                <a className="text-blue-600 hover:text-blue-700 font-medium">
-                  Kayıt Ol
-                </a>
-              </Link>
-            </div>
-          </form>
-
-          {/* Demo Login Info */}
-          <div className="border-t pt-6">
-            <p className="text-sm text-gray-500 text-center mb-3">Demo hesaplar:</p>
-            <div className="space-y-2 text-xs text-gray-600">
-              <div className="bg-gray-50 p-2 rounded">
-                <strong>İK Müdürü:</strong> fatma@tekirdag.com / 123456
-              </div>
-              <div className="bg-gray-50 p-2 rounded">
-                <strong>İK Uzmanı:</strong> mehmet@tekirdag.com / 123456
-              </div>
-            </div>
-          </div>
+            <span className="text-2xl font-bold bg-gradient-to-r from-slate-900 to-slate-700 dark:from-slate-100 dark:to-slate-300 bg-clip-text text-transparent">
+              HRFlow Pro
+            </span>
+          </Link>
+          
+          <h1 className="text-3xl font-bold text-slate-900 dark:text-slate-100 mb-2">
+            Güvenli Giriş
+          </h1>
+          <p className="text-slate-600 dark:text-slate-400">
+            Kurumsal hesabınızla güvenle giriş yapın
+          </p>
         </div>
-      </div>
 
-      {/* Sağ Taraf - Tanıtım */}
-      <div className="flex-1 bg-gradient-to-br from-blue-600 to-purple-700 p-8 text-white hidden lg:flex lg:items-center lg:justify-center">
-        <div className="max-w-lg space-y-8">
-          <div className="space-y-4">
-            <h2 className="text-4xl font-bold leading-tight">
-              Modern İK Yönetimi
-              <br />
-              <span className="text-blue-200">Artık Çok Kolay</span>
-            </h2>
-            <p className="text-xl text-blue-100">
-              Ekibinizi yönetin, performansı takip edin ve İK süreçlerinizi dijitalleştirin.
-            </p>
+        <div className="max-w-md mx-auto">
+          {/* Security Warnings */}
+          {securityWarnings.length > 0 && (
+            <Alert className="mb-6 border-yellow-200 dark:border-yellow-800 bg-yellow-50 dark:bg-yellow-900/20">
+              <AlertTriangle className="h-4 w-4 text-yellow-600 dark:text-yellow-400" />
+              <AlertDescription className="text-yellow-800 dark:text-yellow-200">
+                <strong>Güvenlik Uyarısı:</strong>
+                <ul className="mt-1 list-disc list-inside">
+                  {securityWarnings.map((warning, index) => (
+                    <li key={index} className="text-sm">{warning}</li>
+                  ))}
+                </ul>
+              </AlertDescription>
+            </Alert>
+          )}
+
+          {/* Rate Limiting Warning */}
+          {isBlocked && (
+            <Alert className="mb-6 border-red-200 dark:border-red-800 bg-red-50 dark:bg-red-900/20">
+              <Lock className="h-4 w-4 text-red-600 dark:text-red-400" />
+              <AlertDescription className="text-red-800 dark:text-red-200">
+                <div className="flex items-center justify-between">
+                  <span><strong>Hesap Bloke:</strong> Çok fazla başarısız deneme</span>
+                  <Badge variant="destructive" className="ml-2">
+                    <Clock className="h-3 w-3 mr-1" />
+                    {formatTime(blockTimeLeft)}
+                  </Badge>
+                </div>
+              </AlertDescription>
+            </Alert>
+          )}
+
+          <Card className="border-slate-200 dark:border-slate-700 shadow-xl">
+            <CardHeader className="text-center pb-6">
+              <div className="w-12 h-12 bg-gradient-to-br from-green-500 to-emerald-600 rounded-xl flex items-center justify-center mx-auto mb-4">
+                <Shield className="h-6 w-6 text-white" />
+              </div>
+              <CardTitle className="text-xl text-slate-900 dark:text-slate-100">
+                Hesabınıza Giriş Yapın
+              </CardTitle>
+              <CardDescription className="text-slate-600 dark:text-slate-400">
+                E-posta adresiniz ve şifrenizi girin
+              </CardDescription>
+            </CardHeader>
+
+            <CardContent>
+              <Form {...form}>
+                <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-6">
+                  {/* Honeypot - Bot koruması */}
+                  <FormField
+                    control={form.control}
+                    name="honeypot"
+                    render={({ field }) => (
+                      <div className="hidden">
+                        <Input {...field} tabIndex={-1} autoComplete="off" />
+                      </div>
+                    )}
+                  />
+
+                  <FormField
+                    control={form.control}
+                    name="email"
+                    render={({ field }) => (
+                      <FormItem>
+                        <FormLabel className="flex items-center">
+                          <Mail className="h-4 w-4 mr-2" />
+                          E-posta Adresi
+                        </FormLabel>
+                        <FormControl>
+                          <Input 
+                            type="email" 
+                            placeholder="ornek@sirket.com" 
+                            {...field}
+                            disabled={isBlocked}
+                            className="border-slate-300 dark:border-slate-600"
+                            autoComplete="email"
+                          />
+                        </FormControl>
+                        <FormMessage />
+                      </FormItem>
+                    )}
+                  />
+
+                  <FormField
+                    control={form.control}
+                    name="password"
+                    render={({ field }) => (
+                      <FormItem>
+                        <FormLabel className="flex items-center justify-between">
+                          <span className="flex items-center">
+                            <Lock className="h-4 w-4 mr-2" />
+                            Şifre
+                          </span>
+                          <Link href="/forgot-password" className="text-sm text-blue-600 dark:text-blue-400 hover:underline">
+                            Şifremi Unuttum
+                          </Link>
+                        </FormLabel>
+                        <FormControl>
+                          <div className="relative">
+                            <Input
+                              type={showPassword ? "text" : "password"}
+                              placeholder="Şifrenizi girin"
+                              {...field}
+                              disabled={isBlocked}
+                              className="border-slate-300 dark:border-slate-600 pr-10"
+                              autoComplete="current-password"
+                            />
+                            <Button
+                              type="button"
+                              variant="ghost"
+                              size="sm"
+                              className="absolute right-0 top-0 h-full px-3 py-2"
+                              onClick={() => setShowPassword(!showPassword)}
+                              disabled={isBlocked}
+                            >
+                              {showPassword ? (
+                                <EyeOff className="h-4 w-4" />
+                              ) : (
+                                <Eye className="h-4 w-4" />
+                              )}
+                            </Button>
+                          </div>
+                        </FormControl>
+                        <FormMessage />
+                      </FormItem>
+                    )}
+                  />
+
+                  <FormField
+                    control={form.control}
+                    name="rememberMe"
+                    render={({ field }) => (
+                      <FormItem className="flex flex-row items-start space-x-3 space-y-0">
+                        <FormControl>
+                          <Checkbox
+                            checked={field.value}
+                            onCheckedChange={field.onChange}
+                            disabled={isBlocked}
+                          />
+                        </FormControl>
+                        <div className="space-y-1 leading-none">
+                          <FormLabel className="text-sm">
+                            Beni hatırla (30 gün)
+                          </FormLabel>
+                          <p className="text-xs text-slate-600 dark:text-slate-400">
+                            Güvenilir cihazlarda kullanın
+                          </p>
+                        </div>
+                      </FormItem>
+                    )}
+                  />
+
+                  {/* Security Information */}
+                  <div className="bg-blue-50 dark:bg-blue-900/20 border border-blue-200 dark:border-blue-800 rounded-lg p-4">
+                    <div className="flex items-start space-x-3">
+                      <Info className="h-5 w-5 text-blue-600 dark:text-blue-400 mt-0.5" />
+                      <div>
+                        <h4 className="font-medium text-blue-900 dark:text-blue-100 mb-2">
+                          Güvenlik Bilgisi
+                        </h4>
+                        <ul className="text-sm text-blue-800 dark:text-blue-200 space-y-1">
+                          <li className="flex items-center">
+                            <CheckCircle className="h-3 w-3 text-green-500 mr-2" />
+                            256-bit SSL şifreleme aktif
+                          </li>
+                          <li className="flex items-center">
+                            <CheckCircle className="h-3 w-3 text-green-500 mr-2" />
+                            Multi-faktör doğrulama desteklenir
+                          </li>
+                          <li className="flex items-center">
+                            <CheckCircle className="h-3 w-3 text-green-500 mr-2" />
+                            Oturum izleme aktif
+                          </li>
+                        </ul>
+                      </div>
+                    </div>
+                  </div>
+
+                  <Button
+                    type="submit"
+                    disabled={isBlocked || loginMutation.isPending}
+                    className="w-full bg-gradient-to-r from-blue-600 to-indigo-700 hover:from-blue-700 hover:to-indigo-800 text-white py-3"
+                  >
+                    {loginMutation.isPending ? (
+                      <div className="flex items-center">
+                        <div className="animate-spin rounded-full h-4 w-4 border-b-2 border-white mr-2" />
+                        Doğrulanıyor...
+                      </div>
+                    ) : isBlocked ? (
+                      <div className="flex items-center">
+                        <Lock className="h-4 w-4 mr-2" />
+                        Hesap Bloke ({formatTime(blockTimeLeft)})
+                      </div>
+                    ) : (
+                      <div className="flex items-center justify-center">
+                        <User className="h-4 w-4 mr-2" />
+                        Güvenli Giriş Yap
+                      </div>
+                    )}
+                  </Button>
+
+                  {/* Login Attempts Warning */}
+                  {loginAttempts > 0 && loginAttempts < 3 && (
+                    <div className="text-center">
+                      <p className="text-sm text-yellow-600 dark:text-yellow-400">
+                        <AlertTriangle className="h-4 w-4 inline mr-1" />
+                        {loginAttempts} başarısız deneme. {3 - loginAttempts} hakkınız kaldı.
+                      </p>
+                    </div>
+                  )}
+                </form>
+              </Form>
+
+              {/* Register Link */}
+              <div className="text-center mt-6 pt-6 border-t border-slate-200 dark:border-slate-700">
+                <p className="text-slate-600 dark:text-slate-400">
+                  Henüz hesabınız yok mu?{" "}
+                  <Link href="/register" className="text-blue-600 dark:text-blue-400 hover:underline font-medium">
+                    Ücretsiz hesap oluşturun
+                  </Link>
+                </p>
+              </div>
+            </CardContent>
+          </Card>
+
+          {/* Security Features */}
+          <div className="mt-8 grid grid-cols-3 gap-4">
+            <div className="bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-lg p-4 text-center">
+              <Fingerprint className="h-6 w-6 text-purple-500 mx-auto mb-2" />
+              <h3 className="font-medium text-slate-900 dark:text-slate-100 mb-1 text-sm">
+                Biometrik Doğrulama
+              </h3>
+              <p className="text-xs text-slate-600 dark:text-slate-400">
+                Parmak izi ve yüz tanıma
+              </p>
+            </div>
+            
+            <div className="bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-lg p-4 text-center">
+              <Smartphone className="h-6 w-6 text-green-500 mx-auto mb-2" />
+              <h3 className="font-medium text-slate-900 dark:text-slate-100 mb-1 text-sm">
+                SMS Doğrulama
+              </h3>
+              <p className="text-xs text-slate-600 dark:text-slate-400">
+                İki faktörlü güvenlik
+              </p>
+            </div>
+            
+            <div className="bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-lg p-4 text-center">
+              <Globe className="h-6 w-6 text-blue-500 mx-auto mb-2" />
+              <h3 className="font-medium text-slate-900 dark:text-slate-100 mb-1 text-sm">
+                Konum Takibi
+              </h3>
+              <p className="text-xs text-slate-600 dark:text-slate-400">
+                Anormal giriş tespiti
+              </p>
+            </div>
           </div>
 
-          <div className="space-y-6">
-            <div className="flex items-start space-x-4">
-              <div className="flex-shrink-0">
-                <Users className="h-8 w-8 text-blue-200" />
-              </div>
-              <div>
-                <h3 className="text-lg font-semibold mb-2">Takım Yönetimi</h3>
-                <p className="text-blue-100">
-                  Çoklu İK uzmanı desteği ile ekibinizi kolayca yönetin. Roller atayın ve yetkileri kontrol edin.
-                </p>
-              </div>
-            </div>
-
-            <div className="flex items-start space-x-4">
-              <div className="flex-shrink-0">
-                <BarChart3 className="h-8 w-8 text-blue-200" />
-              </div>
-              <div>
-                <h3 className="text-lg font-semibold mb-2">Analiz ve Raporlama</h3>
-                <p className="text-blue-100">
-                  Gerçek zamanlı dashboard ile performans metrikleri ve detaylı raporlar.
-                </p>
-              </div>
-            </div>
-
-            <div className="flex items-start space-x-4">
-              <div className="flex-shrink-0">
-                <Shield className="h-8 w-8 text-blue-200" />
-              </div>
-              <div>
-                <h3 className="text-lg font-semibold mb-2">Güvenli ve Güvenilir</h3>
-                <p className="text-blue-100">
-                  Kurumsal düzeyde güvenlik ve yedekleme sistemi ile verileriniz güvende.
-                </p>
-              </div>
-            </div>
-
-            <div className="flex items-start space-x-4">
-              <div className="flex-shrink-0">
-                <Zap className="h-8 w-8 text-blue-200" />
-              </div>
-              <div>
-                <h3 className="text-lg font-semibold mb-2">Hızlı ve Kolay</h3>
-                <p className="text-blue-100">
-                  Sezgisel arayüz ile dakikalar içinde kurulum ve kullanıma başlama.
-                </p>
-              </div>
-            </div>
-          </div>
-
-          <div className="bg-white/10 backdrop-blur-sm rounded-lg p-6 border border-white/20">
-            <div className="flex items-center space-x-3 mb-3">
-              <CheckCircle className="h-6 w-6 text-green-300" />
-              <span className="font-semibold">Türkiye'nin En İyi İK Sistemi</span>
-            </div>
-            <p className="text-sm text-blue-100">
-              500+ şirket tarafından kullanılan, güvenilen ve tercih edilen İK yönetim sistemi.
-            </p>
+          {/* Legal Links */}
+          <div className="text-center mt-8 text-xs text-slate-500 dark:text-slate-400">
+            <Link href="/privacy" className="hover:underline mr-4">Gizlilik Politikası</Link>
+            <Link href="/terms" className="hover:underline mr-4">Kullanım Şartları</Link>
+            <Link href="/security" className="hover:underline">Güvenlik</Link>
           </div>
         </div>
       </div>

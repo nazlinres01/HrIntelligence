@@ -1,457 +1,490 @@
-import { useState } from "react";
-import { Button } from "@/components/ui/button";
-import { Input } from "@/components/ui/input";
-import { Label } from "@/components/ui/label";
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
-import { Alert, AlertDescription } from "@/components/ui/alert";
-import { Eye, EyeOff, Mail, Lock, Building2, Users, BarChart3, CheckCircle, Shield, User, Zap } from "lucide-react";
+import React, { useState } from "react";
 import { Link } from "wouter";
-import { queryClient } from "@/lib/queryClient";
-import { roleLabels, type UserRole } from "@/lib/permissions";
+import { Button } from "@/components/ui/button";
+import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
+import { Badge } from "@/components/ui/badge";
+import { 
+  Building2, 
+  Users, 
+  Shield, 
+  BarChart3, 
+  Clock, 
+  CreditCard,
+  CheckCircle,
+  ArrowRight,
+  Star,
+  Globe,
+  Award,
+  TrendingUp,
+  Zap,
+  Lock,
+  Database,
+  Cloud,
+  HeadphonesIcon,
+  Mail,
+  Phone,
+  MapPin
+} from "lucide-react";
 
 export default function Landing() {
-  const [isLoginMode, setIsLoginMode] = useState(true);
-  const [showPassword, setShowPassword] = useState(false);
-  const [loginData, setLoginData] = useState({
-    email: "",
-    password: "",
-  });
-  const [registerData, setRegisterData] = useState({
-    firstName: "",
-    lastName: "",
-    email: "",
-    password: "",
-    role: "employee" as UserRole,
-    companyName: "",
-    phone: "",
-    department: "",
-    position: "",
-  });
-  const [isLoading, setIsLoading] = useState(false);
-  const [error, setError] = useState("");
+  const [activeFeature, setActiveFeature] = useState(0);
 
-  const handleLoginSubmit = async (e: React.FormEvent) => {
-    e.preventDefault();
-    setIsLoading(true);
-    setError("");
-    
-    try {
-      const response = await fetch('/api/login', {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify(loginData),
-      });
-
-      const data = await response.json();
-
-      if (response.ok) {
-        queryClient.invalidateQueries({ queryKey: ['/api/auth/user'] });
-        window.location.href = '/dashboard';
-      } else {
-        setError(data.message || 'Giriş başarısız');
-      }
-    } catch (error) {
-      console.error('Login error:', error);
-      setError('Giriş sırasında bir hata oluştu');
-    } finally {
-      setIsLoading(false);
+  const features = [
+    {
+      icon: Users,
+      title: "Çalışan Yönetimi",
+      description: "Kapsamlı personel takibi, organizasyon şeması ve detaylı çalışan profilleri",
+      benefits: ["360° çalışan görünümü", "Otomatik organizasyon şeması", "Performans analitikleri"]
+    },
+    {
+      icon: BarChart3,
+      title: "Performans Takibi",
+      description: "Gerçek zamanlı performans metrikleri ve analitik raporlar",
+      benefits: ["KPI takibi", "Trend analizi", "Benchmark karşılaştırması"]
+    },
+    {
+      icon: Clock,
+      title: "İzin Yönetimi",
+      description: "Akıllı izin planlama ve otomatik onay süreçleri",
+      benefits: ["Akıllı planlama", "Otomatik onaylar", "Takvim entegrasyonu"]
+    },
+    {
+      icon: CreditCard,
+      title: "Bordro Sistemi",
+      description: "Otomatik bordro hesaplama ve vergi uyumluluk sistemi",
+      benefits: ["Otomatik hesaplama", "Vergi uyumu", "Detaylı raporlama"]
     }
-  };
+  ];
 
-  const handleRegisterSubmit = async (e: React.FormEvent) => {
-    e.preventDefault();
-    setIsLoading(true);
-    setError("");
-    
-    try {
-      const response = await fetch('/api/register', {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify(registerData),
-      });
-
-      const data = await response.json();
-
-      if (response.ok) {
-        queryClient.invalidateQueries({ queryKey: ['/api/auth/user'] });
-        window.location.href = '/dashboard';
-      } else {
-        setError(data.message || 'Kayıt başarısız');
-      }
-    } catch (error) {
-      console.error('Register error:', error);
-      setError('Kayıt sırasında bir hata oluştu');
-    } finally {
-      setIsLoading(false);
+  const testimonials = [
+    {
+      name: "Ahmet Kaya",
+      position: "İK Müdürü",
+      company: "TechCorp",
+      content: "Bu sistem sayesinde İK süreçlerimizi %80 hızlandırdık. Artık stratejik işlere daha fazla zaman ayırabiliyoruz.",
+      rating: 5
+    },
+    {
+      name: "Elif Demir",
+      position: "CEO",
+      company: "InnovateTech",
+      content: "Çalışan memnuniyeti %95'e çıktı. Sistem son derece kullanıcı dostu ve güvenilir.",
+      rating: 5
+    },
+    {
+      name: "Mehmet Özkan",
+      position: "Operasyon Müdürü", 
+      company: "GlobalSoft",
+      content: "Raporlama sistemi harika. Yönetim kararlarımızı artık veriye dayalı olarak alabiliyoruz.",
+      rating: 5
     }
-  };
-
-  const isOwner = registerData.role === 'owner';
-  const isHRRole = registerData.role === 'hr_manager' || registerData.role === 'hr_specialist';
-  const isDepartmentOrEmployee = registerData.role === 'department_manager' || registerData.role === 'employee';
+  ];
 
   return (
-    <div className="min-h-screen flex">
-      {/* Sol Taraf - Login Form */}
-      <div className="flex-1 flex items-center justify-center p-8 bg-white">
-        <div className="w-full max-w-md space-y-8">
-          {/* Logo ve Başlık */}
-          <div className="text-center">
-            <div className="flex items-center justify-center mb-4">
-              <Building2 className="h-10 w-10 text-blue-600 mr-2" />
-              <h1 className="text-3xl font-bold text-gray-900">İK360</h1>
+    <div className="min-h-screen bg-gradient-to-br from-slate-50 via-white to-slate-100 dark:from-slate-900 dark:via-slate-800 dark:to-slate-900">
+      {/* Corporate Header */}
+      <header className="border-b border-slate-200 dark:border-slate-700 bg-white/80 dark:bg-slate-800/80 backdrop-blur-lg sticky top-0 z-50">
+        <div className="container mx-auto px-6 py-4">
+          <div className="flex items-center justify-between">
+            <div className="flex items-center space-x-3">
+              <div className="w-10 h-10 bg-gradient-to-br from-blue-600 to-indigo-700 rounded-xl flex items-center justify-center shadow-lg">
+                <Building2 className="h-6 w-6 text-white" />
+              </div>
+              <div>
+                <h1 className="text-2xl font-bold bg-gradient-to-r from-slate-900 to-slate-700 dark:from-slate-100 dark:to-slate-300 bg-clip-text text-transparent">
+                  HRFlow Pro
+                </h1>
+                <p className="text-xs text-slate-600 dark:text-slate-400">Enterprise HR Management</p>
+              </div>
             </div>
-            <p className="text-gray-600">
-              {isLoginMode ? "Hesabınıza Giriş Yapın" : "Yeni Hesap Oluşturun"}
-            </p>
-          </div>
-
-          {/* Form Toggle */}
-          <div className="flex bg-gray-100 rounded-lg p-1">
-            <button
-              onClick={() => setIsLoginMode(true)}
-              className={`flex-1 py-2 text-sm font-medium rounded-md transition-colors ${
-                isLoginMode 
-                  ? 'bg-white text-blue-600 shadow-sm' 
-                  : 'text-gray-600 hover:text-gray-900'
-              }`}
-            >
-              Giriş Yap
-            </button>
-            <button
-              onClick={() => setIsLoginMode(false)}
-              className={`flex-1 py-2 text-sm font-medium rounded-md transition-colors ${
-                !isLoginMode 
-                  ? 'bg-white text-blue-600 shadow-sm' 
-                  : 'text-gray-600 hover:text-gray-900'
-              }`}
-            >
-              Kayıt Ol
-            </button>
-          </div>
-
-          {error && (
-            <Alert variant="destructive">
-              <AlertDescription>{error}</AlertDescription>
-            </Alert>
-          )}
-
-          {/* Login Form */}
-          {isLoginMode ? (
-            <form onSubmit={handleLoginSubmit} className="space-y-6">
-              <div className="space-y-4">
-                <div>
-                  <Label htmlFor="login-email" className="text-sm font-medium text-gray-700">
-                    E-posta Adresi
-                  </Label>
-                  <div className="relative mt-1">
-                    <Mail className="absolute left-3 top-1/2 transform -translate-y-1/2 h-5 w-5 text-gray-400" />
-                    <Input
-                      id="login-email"
-                      type="email"
-                      placeholder="ornek@sirket.com"
-                      value={loginData.email}
-                      onChange={(e) => setLoginData(prev => ({ ...prev, email: e.target.value }))}
-                      className="pl-10 h-12 border-gray-300 focus:border-blue-500 focus:ring-blue-500"
-                      required
-                    />
-                  </div>
-                </div>
-
-                <div>
-                  <Label htmlFor="login-password" className="text-sm font-medium text-gray-700">
-                    Şifre
-                  </Label>
-                  <div className="relative mt-1">
-                    <Lock className="absolute left-3 top-1/2 transform -translate-y-1/2 h-5 w-5 text-gray-400" />
-                    <Input
-                      id="login-password"
-                      type={showPassword ? "text" : "password"}
-                      placeholder="Şifrenizi giriniz"
-                      value={loginData.password}
-                      onChange={(e) => setLoginData(prev => ({ ...prev, password: e.target.value }))}
-                      className="pl-10 pr-10 h-12 border-gray-300 focus:border-blue-500 focus:ring-blue-500"
-                      required
-                    />
-                    <button
-                      type="button"
-                      onClick={() => setShowPassword(!showPassword)}
-                      className="absolute right-3 top-1/2 transform -translate-y-1/2 text-gray-400 hover:text-gray-600"
-                    >
-                      {showPassword ? <EyeOff className="h-5 w-5" /> : <Eye className="h-5 w-5" />}
-                    </button>
-                  </div>
-                </div>
-              </div>
-
-              <Button
-                type="submit"
-                disabled={isLoading}
-                className="w-full h-12 bg-blue-600 hover:bg-blue-700 text-white font-medium rounded-lg transition-colors"
-              >
-                {isLoading ? "Giriş yapılıyor..." : "Giriş Yap"}
+            
+            <div className="flex items-center space-x-4">
+              <Button variant="ghost" className="text-slate-700 dark:text-slate-300">
+                Özellikler
               </Button>
-
-            </form>
-          ) : (
-            /* Register Form */
-            <form onSubmit={handleRegisterSubmit} className="space-y-6">
-              <div className="space-y-4">
-                <div className="grid grid-cols-2 gap-3">
-                  <div>
-                    <Label htmlFor="firstName" className="text-sm font-medium text-gray-700">
-                      Ad
-                    </Label>
-                    <Input
-                      id="firstName"
-                      type="text"
-                      placeholder="Adınız"
-                      value={registerData.firstName}
-                      onChange={(e) => setRegisterData(prev => ({ ...prev, firstName: e.target.value }))}
-                      className="h-12 border-gray-300 focus:border-blue-500 focus:ring-blue-500"
-                      required
-                    />
-                  </div>
-
-                  <div>
-                    <Label htmlFor="lastName" className="text-sm font-medium text-gray-700">
-                      Soyad
-                    </Label>
-                    <Input
-                      id="lastName"
-                      type="text"
-                      placeholder="Soyadınız"
-                      value={registerData.lastName}
-                      onChange={(e) => setRegisterData(prev => ({ ...prev, lastName: e.target.value }))}
-                      className="h-12 border-gray-300 focus:border-blue-500 focus:ring-blue-500"
-                      required
-                    />
-                  </div>
-                </div>
-
-                <div>
-                  <Label htmlFor="role" className="text-sm font-medium text-gray-700">
-                    Rol Seçimi
-                  </Label>
-                  <Select value={registerData.role} onValueChange={(value: UserRole) => setRegisterData(prev => ({ ...prev, role: value }))}>
-                    <SelectTrigger className="h-12">
-                      <SelectValue placeholder="Rolünüzü seçin" />
-                    </SelectTrigger>
-                    <SelectContent>
-                      <SelectItem value="hr_manager">🛡️ {roleLabels.hr_manager}</SelectItem>
-                      <SelectItem value="hr_specialist">👥 {roleLabels.hr_specialist}</SelectItem>
-                      <SelectItem value="department_manager">📋 {roleLabels.department_manager}</SelectItem>
-                      <SelectItem value="employee">👤 {roleLabels.employee}</SelectItem>
-                    </SelectContent>
-                  </Select>
-                </div>
-
-                {/* Şirket adı - sadece patron için */}
-                {isOwner && (
-                  <div>
-                    <Label htmlFor="companyName" className="text-sm font-medium text-gray-700">
-                      Şirket Adı
-                    </Label>
-                    <div className="relative mt-1">
-                      <Building2 className="absolute left-3 top-1/2 transform -translate-y-1/2 h-5 w-5 text-gray-400" />
-                      <Input
-                        id="companyName"
-                        type="text"
-                        placeholder="Şirket Adınız"
-                        value={registerData.companyName}
-                        onChange={(e) => setRegisterData(prev => ({ ...prev, companyName: e.target.value }))}
-                        className="pl-10 h-12 border-gray-300 focus:border-blue-500 focus:ring-blue-500"
-                        required
-                      />
-                    </div>
-                  </div>
-                )}
-
-                {/* Telefon - patron ve İK rolleri için */}
-                {(isOwner || isHRRole) && (
-                  <div>
-                    <Label htmlFor="phone" className="text-sm font-medium text-gray-700">
-                      Telefon Numarası
-                    </Label>
-                    <Input
-                      id="phone"
-                      type="tel"
-                      placeholder="0532 XXX XX XX"
-                      value={registerData.phone}
-                      onChange={(e) => setRegisterData(prev => ({ ...prev, phone: e.target.value }))}
-                      className="h-12 border-gray-300 focus:border-blue-500 focus:ring-blue-500"
-                      required
-                    />
-                  </div>
-                )}
-
-                {/* Departman ve pozisyon - departman müdürü ve çalışan için */}
-                {isDepartmentOrEmployee && (
-                  <>
-                    <div>
-                      <Label htmlFor="department" className="text-sm font-medium text-gray-700">
-                        Departman
-                      </Label>
-                      <Input
-                        id="department"
-                        type="text"
-                        placeholder="Hangi departmanda çalışıyorsunuz?"
-                        value={registerData.department}
-                        onChange={(e) => setRegisterData(prev => ({ ...prev, department: e.target.value }))}
-                        className="h-12 border-gray-300 focus:border-blue-500 focus:ring-blue-500"
-                        required
-                      />
-                    </div>
-
-                    <div>
-                      <Label htmlFor="position" className="text-sm font-medium text-gray-700">
-                        Pozisyon
-                      </Label>
-                      <Input
-                        id="position"
-                        type="text"
-                        placeholder="Pozisyonunuz nedir?"
-                        value={registerData.position}
-                        onChange={(e) => setRegisterData(prev => ({ ...prev, position: e.target.value }))}
-                        className="h-12 border-gray-300 focus:border-blue-500 focus:ring-blue-500"
-                        required
-                      />
-                    </div>
-                  </>
-                )}
-
-                <div>
-                  <Label htmlFor="register-email" className="text-sm font-medium text-gray-700">
-                    E-posta Adresi
-                  </Label>
-                  <div className="relative mt-1">
-                    <Mail className="absolute left-3 top-1/2 transform -translate-y-1/2 h-5 w-5 text-gray-400" />
-                    <Input
-                      id="register-email"
-                      type="email"
-                      placeholder="ornek@sirket.com"
-                      value={registerData.email}
-                      onChange={(e) => setRegisterData(prev => ({ ...prev, email: e.target.value }))}
-                      className="pl-10 h-12 border-gray-300 focus:border-blue-500 focus:ring-blue-500"
-                      required
-                    />
-                  </div>
-                </div>
-
-                <div>
-                  <Label htmlFor="register-password" className="text-sm font-medium text-gray-700">
-                    Şifre
-                  </Label>
-                  <div className="relative mt-1">
-                    <Lock className="absolute left-3 top-1/2 transform -translate-y-1/2 h-5 w-5 text-gray-400" />
-                    <Input
-                      id="register-password"
-                      type={showPassword ? "text" : "password"}
-                      placeholder="En az 6 karakter"
-                      value={registerData.password}
-                      onChange={(e) => setRegisterData(prev => ({ ...prev, password: e.target.value }))}
-                      className="pl-10 pr-10 h-12 border-gray-300 focus:border-blue-500 focus:ring-blue-500"
-                      required
-                      minLength={6}
-                    />
-                    <button
-                      type="button"
-                      onClick={() => setShowPassword(!showPassword)}
-                      className="absolute right-3 top-1/2 transform -translate-y-1/2 text-gray-400 hover:text-gray-600"
-                    >
-                      {showPassword ? <EyeOff className="h-5 w-5" /> : <Eye className="h-5 w-5" />}
-                    </button>
-                  </div>
-                </div>
-              </div>
-
-              <Button
-                type="submit"
-                disabled={isLoading}
-                className="w-full h-12 bg-blue-600 hover:bg-blue-700 text-white font-medium rounded-lg transition-colors"
-              >
-                {isLoading ? "Hesap oluşturuluyor..." : "Hesap Oluştur"}
+              <Button variant="ghost" className="text-slate-700 dark:text-slate-300">
+                Fiyatlandırma
               </Button>
-            </form>
-          )}
+              <Button variant="ghost" className="text-slate-700 dark:text-slate-300">
+                İletişim
+              </Button>
+              <div className="w-px h-6 bg-slate-300 dark:bg-slate-600"></div>
+              <Link href="/login">
+                <Button variant="outline" className="border-slate-300 dark:border-slate-600">
+                  Giriş Yap
+                </Button>
+              </Link>
+              <Link href="/register">
+                <Button className="bg-gradient-to-r from-blue-600 to-indigo-700 hover:from-blue-700 hover:to-indigo-800 text-white shadow-lg">
+                  Ücretsiz Dene
+                </Button>
+              </Link>
+            </div>
+          </div>
         </div>
-      </div>
+      </header>
 
-      {/* Sağ Taraf - Tanıtım */}
-      <div className="flex-1 bg-gradient-to-br from-blue-600 to-purple-700 p-8 text-white hidden lg:flex lg:items-center lg:justify-center">
-        <div className="max-w-lg space-y-8">
-          <div className="space-y-4">
-            <h2 className="text-4xl font-bold leading-tight">
-              Modern İK Yönetimi
+      {/* Hero Section */}
+      <section className="py-20 px-6">
+        <div className="container mx-auto text-center">
+          <div className="max-w-4xl mx-auto">
+            <Badge className="mb-6 bg-blue-50 dark:bg-blue-900/30 text-blue-700 dark:text-blue-300 border-blue-200 dark:border-blue-800">
+              <Star className="h-3 w-3 mr-1" />
+              Türkiye'nin En Güvenilir İK Platformu
+            </Badge>
+            
+            <h1 className="text-5xl md:text-7xl font-bold tracking-tight mb-8">
+              <span className="bg-gradient-to-r from-slate-900 via-blue-900 to-indigo-900 dark:from-slate-100 dark:via-blue-100 dark:to-indigo-100 bg-clip-text text-transparent">
+                İnsan Kaynakları
+              </span>
               <br />
-              <span className="text-blue-200">Artık Çok Kolay</span>
+              <span className="bg-gradient-to-r from-blue-600 to-indigo-700 bg-clip-text text-transparent">
+                Yönetiminde Devrim
+              </span>
+            </h1>
+            
+            <p className="text-xl text-slate-600 dark:text-slate-400 mb-10 max-w-3xl mx-auto leading-relaxed">
+              Yapay zeka destekli, bulut tabanlı İK yönetim sistemi ile şirketinizi geleceğe taşıyın. 
+              Çalışan deneyimini optimize edin, süreçleri otomatikleştirin ve stratejik kararlara odaklanın.
+            </p>
+            
+            <div className="flex flex-col sm:flex-row gap-4 justify-center mb-12">
+              <Link href="/register">
+                <Button size="lg" className="bg-gradient-to-r from-blue-600 to-indigo-700 hover:from-blue-700 hover:to-indigo-800 text-white px-8 py-4 text-lg shadow-2xl">
+                  <Zap className="h-5 w-5 mr-2" />
+                  30 Gün Ücretsiz Başla
+                  <ArrowRight className="h-5 w-5 ml-2" />
+                </Button>
+              </Link>
+              <Button size="lg" variant="outline" className="px-8 py-4 text-lg border-slate-300 dark:border-slate-600">
+                <Globe className="h-5 w-5 mr-2" />
+                Demo İzle
+              </Button>
+            </div>
+
+            <div className="flex flex-wrap justify-center gap-8 text-sm text-slate-600 dark:text-slate-400">
+              <div className="flex items-center">
+                <CheckCircle className="h-4 w-4 text-green-500 mr-2" />
+                Kredi kartı gerekmez
+              </div>
+              <div className="flex items-center">
+                <CheckCircle className="h-4 w-4 text-green-500 mr-2" />
+                Anında kurulum
+              </div>
+              <div className="flex items-center">
+                <CheckCircle className="h-4 w-4 text-green-500 mr-2" />
+                7/24 destek
+              </div>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      {/* Trust Indicators */}
+      <section className="py-12 bg-white dark:bg-slate-800 border-y border-slate-200 dark:border-slate-700">
+        <div className="container mx-auto px-6">
+          <div className="text-center mb-8">
+            <p className="text-slate-600 dark:text-slate-400 font-medium">5000+ şirket tarafından güveniliyor</p>
+          </div>
+          <div className="flex flex-wrap justify-center items-center gap-12 opacity-60">
+            {["TechCorp", "InnovateTech", "GlobalSoft", "NextGen", "FutureTech", "CloudFlow"].map((company) => (
+              <div key={company} className="text-2xl font-bold text-slate-400 dark:text-slate-600">
+                {company}
+              </div>
+            ))}
+          </div>
+        </div>
+      </section>
+
+      {/* Features Section */}
+      <section className="py-20 px-6">
+        <div className="container mx-auto">
+          <div className="text-center mb-16">
+            <Badge className="mb-4 bg-indigo-50 dark:bg-indigo-900/30 text-indigo-700 dark:text-indigo-300 border-indigo-200 dark:border-indigo-800">
+              Özellikler
+            </Badge>
+            <h2 className="text-4xl font-bold text-slate-900 dark:text-slate-100 mb-4">
+              Her İhtiyacınıza Uygun Çözümler
             </h2>
-            <p className="text-xl text-blue-100">
-              Ekibinizi yönetin, performansı takip edin ve İK süreçlerinizi dijitalleştirin.
+            <p className="text-xl text-slate-600 dark:text-slate-400 max-w-2xl mx-auto">
+              Modern İK yönetimi için ihtiyacınız olan tüm araçlar tek platformda
             </p>
           </div>
 
-          <div className="space-y-6">
-            <div className="flex items-start space-x-4">
-              <div className="flex-shrink-0">
-                <Users className="h-8 w-8 text-blue-200" />
-              </div>
-              <div>
-                <h3 className="text-xl font-semibold mb-2">Çalışan Yönetimi</h3>
-                <p className="text-blue-100">
-                  Personel bilgilerini merkezi olarak yönetin ve takip edin.
-                </p>
-              </div>
+          <div className="grid lg:grid-cols-2 gap-12 items-center">
+            <div className="space-y-4">
+              {features.map((feature, index) => (
+                <Card 
+                  key={index}
+                  className={`cursor-pointer transition-all duration-300 ${
+                    activeFeature === index 
+                      ? 'border-blue-500 dark:border-blue-400 shadow-xl bg-blue-50 dark:bg-blue-900/20' 
+                      : 'border-slate-200 dark:border-slate-700 hover:border-slate-300 dark:hover:border-slate-600'
+                  }`}
+                  onClick={() => setActiveFeature(index)}
+                >
+                  <CardHeader className="pb-3">
+                    <div className="flex items-center space-x-3">
+                      <div className={`w-10 h-10 rounded-lg flex items-center justify-center ${
+                        activeFeature === index 
+                          ? 'bg-blue-500 text-white' 
+                          : 'bg-slate-100 dark:bg-slate-800 text-slate-600 dark:text-slate-400'
+                      }`}>
+                        <feature.icon className="h-5 w-5" />
+                      </div>
+                      <CardTitle className="text-slate-900 dark:text-slate-100">{feature.title}</CardTitle>
+                    </div>
+                  </CardHeader>
+                  <CardContent>
+                    <CardDescription className="text-slate-600 dark:text-slate-400 mb-3">
+                      {feature.description}
+                    </CardDescription>
+                    {activeFeature === index && (
+                      <div className="space-y-2">
+                        {feature.benefits.map((benefit, idx) => (
+                          <div key={idx} className="flex items-center text-sm text-blue-700 dark:text-blue-300">
+                            <CheckCircle className="h-4 w-4 mr-2" />
+                            {benefit}
+                          </div>
+                        ))}
+                      </div>
+                    )}
+                  </CardContent>
+                </Card>
+              ))}
             </div>
 
-            <div className="flex items-start space-x-4">
-              <div className="flex-shrink-0">
-                <BarChart3 className="h-8 w-8 text-blue-200" />
-              </div>
-              <div>
-                <h3 className="text-xl font-semibold mb-2">Performans Takibi</h3>
-                <p className="text-blue-100">
-                  Çalışan performansını objektif verilerle değerlendirin.
-                </p>
-              </div>
-            </div>
-
-            <div className="flex items-start space-x-4">
-              <div className="flex-shrink-0">
-                <Shield className="h-8 w-8 text-blue-200" />
-              </div>
-              <div>
-                <h3 className="text-xl font-semibold mb-2">Güvenli Sistem</h3>
-                <p className="text-blue-100">
-                  Rol tabanlı erişim kontrolü ile verilerinizi koruyun.
-                </p>
-              </div>
-            </div>
-          </div>
-
-          <div className="border-t border-blue-400 pt-6">
-            <div className="space-y-3">
-              <div className="flex items-center space-x-2">
-                <CheckCircle className="h-5 w-5 text-green-300" />
-                <span className="text-blue-100">Demo hesabı ile sistemi deneyin</span>
-              </div>
-              <div className="bg-blue-800/30 rounded-lg p-4 text-sm">
-                <div className="text-blue-200 font-medium mb-2">👑 Admin Hesabı:</div>
-                <div className="text-blue-100">
-                  E-posta: <span className="font-mono bg-blue-900/50 px-2 py-1 rounded">admin@gmail.com</span>
-                </div>
-                <div className="text-blue-100 mt-1">
-                  Şifre: <span className="font-mono bg-blue-900/50 px-2 py-1 rounded">admin123</span>
+            <div className="relative">
+              <div className="bg-gradient-to-br from-blue-50 to-indigo-100 dark:from-blue-900/20 dark:to-indigo-900/20 rounded-2xl p-8 shadow-2xl">
+                <div className="w-full h-96 bg-white dark:bg-slate-800 rounded-xl shadow-lg p-6 border border-slate-200 dark:border-slate-700">
+                  <div className="space-y-4">
+                    <div className="flex items-center space-x-3">
+                      <div className="w-8 h-8 bg-blue-500 rounded-lg flex items-center justify-center">
+                        <BarChart3 className="h-4 w-4 text-white" />
+                      </div>
+                      <h3 className="font-semibold text-slate-900 dark:text-slate-100">
+                        {features[activeFeature].title}
+                      </h3>
+                    </div>
+                    <div className="space-y-3">
+                      {features[activeFeature].benefits.map((benefit, idx) => (
+                        <div key={idx} className="flex items-center space-x-3 p-3 bg-slate-50 dark:bg-slate-700 rounded-lg">
+                          <CheckCircle className="h-4 w-4 text-green-500" />
+                          <span className="text-sm text-slate-700 dark:text-slate-300">{benefit}</span>
+                        </div>
+                      ))}
+                    </div>
+                  </div>
                 </div>
               </div>
             </div>
           </div>
         </div>
-      </div>
+      </section>
+
+      {/* Security Section */}
+      <section className="py-20 px-6 bg-slate-50 dark:bg-slate-900">
+        <div className="container mx-auto">
+          <div className="text-center mb-16">
+            <Badge className="mb-4 bg-green-50 dark:bg-green-900/30 text-green-700 dark:text-green-300 border-green-200 dark:border-green-800">
+              <Shield className="h-3 w-3 mr-1" />
+              Güvenlik
+            </Badge>
+            <h2 className="text-4xl font-bold text-slate-900 dark:text-slate-100 mb-4">
+              Kurumsal Düzeyde Güvenlik
+            </h2>
+            <p className="text-xl text-slate-600 dark:text-slate-400 max-w-2xl mx-auto">
+              Verileriniz askeri düzeyde şifreleme ve güvenlik protokolleri ile korunuyor
+            </p>
+          </div>
+
+          <div className="grid md:grid-cols-3 gap-8">
+            <Card className="border-green-200 dark:border-green-800 bg-white dark:bg-slate-800">
+              <CardHeader>
+                <div className="w-12 h-12 bg-green-100 dark:bg-green-900/30 rounded-lg flex items-center justify-center mb-4">
+                  <Lock className="h-6 w-6 text-green-600 dark:text-green-400" />
+                </div>
+                <CardTitle className="text-slate-900 dark:text-slate-100">AES-256 Şifreleme</CardTitle>
+              </CardHeader>
+              <CardContent>
+                <CardDescription className="text-slate-600 dark:text-slate-400">
+                  Tüm verileriniz askeri standartlarda şifreleme ile korunuyor. Hem transit hem de storage seviyesinde güvenlik.
+                </CardDescription>
+              </CardContent>
+            </Card>
+
+            <Card className="border-blue-200 dark:border-blue-800 bg-white dark:bg-slate-800">
+              <CardHeader>
+                <div className="w-12 h-12 bg-blue-100 dark:bg-blue-900/30 rounded-lg flex items-center justify-center mb-4">
+                  <Database className="h-6 w-6 text-blue-600 dark:text-blue-400" />
+                </div>
+                <CardTitle className="text-slate-900 dark:text-slate-100">KVKK Uyumlu</CardTitle>
+              </CardHeader>
+              <CardContent>
+                <CardDescription className="text-slate-600 dark:text-slate-400">
+                  Türkiye KVKK ve Avrupa GDPR standartlarına tam uyumlu. Kişisel veri güvenliği garantili.
+                </CardDescription>
+              </CardContent>
+            </Card>
+
+            <Card className="border-purple-200 dark:border-purple-800 bg-white dark:bg-slate-800">
+              <CardHeader>
+                <div className="w-12 h-12 bg-purple-100 dark:bg-purple-900/30 rounded-lg flex items-center justify-center mb-4">
+                  <Cloud className="h-6 w-6 text-purple-600 dark:text-purple-400" />
+                </div>
+                <CardTitle className="text-slate-900 dark:text-slate-100">ISO 27001</CardTitle>
+              </CardHeader>
+              <CardContent>
+                <CardDescription className="text-slate-600 dark:text-slate-400">
+                  Uluslararası bilgi güvenliği yönetim sistemi standartlarına sahip altyapı.
+                </CardDescription>
+              </CardContent>
+            </Card>
+          </div>
+        </div>
+      </section>
+
+      {/* Testimonials */}
+      <section className="py-20 px-6">
+        <div className="container mx-auto">
+          <div className="text-center mb-16">
+            <Badge className="mb-4 bg-yellow-50 dark:bg-yellow-900/30 text-yellow-700 dark:text-yellow-300 border-yellow-200 dark:border-yellow-800">
+              <Award className="h-3 w-3 mr-1" />
+              Müşteri Yorumları
+            </Badge>
+            <h2 className="text-4xl font-bold text-slate-900 dark:text-slate-100 mb-4">
+              Müşterilerimiz Ne Diyor?
+            </h2>
+          </div>
+
+          <div className="grid md:grid-cols-3 gap-8">
+            {testimonials.map((testimonial, index) => (
+              <Card key={index} className="border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-800">
+                <CardHeader>
+                  <div className="flex items-center space-x-1 mb-3">
+                    {[...Array(testimonial.rating)].map((_, i) => (
+                      <Star key={i} className="h-4 w-4 fill-yellow-400 text-yellow-400" />
+                    ))}
+                  </div>
+                  <CardDescription className="text-slate-600 dark:text-slate-400 italic">
+                    "{testimonial.content}"
+                  </CardDescription>
+                </CardHeader>
+                <CardContent>
+                  <div className="flex items-center space-x-3">
+                    <div className="w-10 h-10 bg-gradient-to-br from-blue-500 to-indigo-600 rounded-full flex items-center justify-center">
+                      <span className="text-white font-semibold text-sm">
+                        {testimonial.name.split(' ').map(n => n[0]).join('')}
+                      </span>
+                    </div>
+                    <div>
+                      <p className="font-semibold text-slate-900 dark:text-slate-100">{testimonial.name}</p>
+                      <p className="text-sm text-slate-600 dark:text-slate-400">
+                        {testimonial.position}, {testimonial.company}
+                      </p>
+                    </div>
+                  </div>
+                </CardContent>
+              </Card>
+            ))}
+          </div>
+        </div>
+      </section>
+
+      {/* CTA Section */}
+      <section className="py-20 px-6 bg-gradient-to-r from-blue-600 to-indigo-700">
+        <div className="container mx-auto text-center">
+          <div className="max-w-3xl mx-auto">
+            <h2 className="text-4xl font-bold text-white mb-6">
+              İK Süreçlerinizi Bugün Dönüştürün
+            </h2>
+            <p className="text-xl text-blue-100 mb-8">
+              Binlerce şirketin tercih ettiği İK platformu ile tanışın. 30 gün ücretsiz deneyin.
+            </p>
+            <div className="flex flex-col sm:flex-row gap-4 justify-center">
+              <Link href="/register">
+                <Button size="lg" className="bg-white text-blue-700 hover:bg-gray-100 px-8 py-4 text-lg shadow-xl">
+                  <TrendingUp className="h-5 w-5 mr-2" />
+                  Hemen Başla
+                </Button>
+              </Link>
+              <Button size="lg" variant="outline" className="border-white text-white hover:bg-white hover:text-blue-700 px-8 py-4 text-lg">
+                <HeadphonesIcon className="h-5 w-5 mr-2" />
+                Danışman ile Görüş
+              </Button>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      {/* Footer */}
+      <footer className="bg-slate-900 text-white py-16 px-6">
+        <div className="container mx-auto">
+          <div className="grid md:grid-cols-4 gap-8">
+            <div>
+              <div className="flex items-center space-x-3 mb-6">
+                <div className="w-10 h-10 bg-gradient-to-br from-blue-600 to-indigo-700 rounded-xl flex items-center justify-center">
+                  <Building2 className="h-6 w-6 text-white" />
+                </div>
+                <div>
+                  <h3 className="text-xl font-bold">HRFlow Pro</h3>
+                  <p className="text-xs text-slate-400">Enterprise HR Management</p>
+                </div>
+              </div>
+              <p className="text-slate-400 mb-4">
+                Türkiye'nin en güvenilir İK yönetim platformu. 5000+ şirket tarafından tercih ediliyor.
+              </p>
+              <div className="flex space-x-4">
+                <div className="w-8 h-8 bg-slate-800 rounded-lg flex items-center justify-center cursor-pointer hover:bg-slate-700">
+                  <Mail className="h-4 w-4" />
+                </div>
+                <div className="w-8 h-8 bg-slate-800 rounded-lg flex items-center justify-center cursor-pointer hover:bg-slate-700">
+                  <Phone className="h-4 w-4" />
+                </div>
+              </div>
+            </div>
+
+            <div>
+              <h4 className="font-semibold mb-4">Ürün</h4>
+              <ul className="space-y-2 text-slate-400">
+                <li className="hover:text-white cursor-pointer">Özellikler</li>
+                <li className="hover:text-white cursor-pointer">Fiyatlandırma</li>
+                <li className="hover:text-white cursor-pointer">API</li>
+                <li className="hover:text-white cursor-pointer">Entegrasyonlar</li>
+              </ul>
+            </div>
+
+            <div>
+              <h4 className="font-semibold mb-4">Şirket</h4>
+              <ul className="space-y-2 text-slate-400">
+                <li className="hover:text-white cursor-pointer">Hakkımızda</li>
+                <li className="hover:text-white cursor-pointer">Kariyer</li>
+                <li className="hover:text-white cursor-pointer">Blog</li>
+                <li className="hover:text-white cursor-pointer">Basın</li>
+              </ul>
+            </div>
+
+            <div>
+              <h4 className="font-semibold mb-4">Destek</h4>
+              <ul className="space-y-2 text-slate-400">
+                <li className="hover:text-white cursor-pointer">Yardım Merkezi</li>
+                <li className="hover:text-white cursor-pointer">Dokümantasyon</li>
+                <li className="hover:text-white cursor-pointer">İletişim</li>
+                <li className="hover:text-white cursor-pointer">Durumu</li>
+              </ul>
+            </div>
+          </div>
+
+          <div className="border-t border-slate-800 mt-12 pt-8 flex flex-col md:flex-row justify-between items-center">
+            <p className="text-slate-400">© 2024 HRFlow Pro. Tüm hakları saklıdır.</p>
+            <div className="flex space-x-6 mt-4 md:mt-0">
+              <a href="#" className="text-slate-400 hover:text-white text-sm">Gizlilik Politikası</a>
+              <a href="#" className="text-slate-400 hover:text-white text-sm">Kullanım Şartları</a>
+              <a href="#" className="text-slate-400 hover:text-white text-sm">KVKK</a>
+            </div>
+          </div>
+        </div>
+      </footer>
     </div>
   );
 }
