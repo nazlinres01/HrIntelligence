@@ -1105,7 +1105,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
     isAuthenticated,
     async (req: any, res) => {
       try {
-        const userId = req.user?.claims?.sub || req.user?.id;
+        const userId = (req.session as any)?.userId;
         if (!userId) {
           return res.status(401).json({ message: "User ID not found" });
         }
@@ -1128,7 +1128,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
     isAuthenticated,
     async (req: any, res) => {
       try {
-        const userId = req.user?.claims?.sub || req.user?.id;
+        const userId = (req.session as any)?.userId;
         if (!userId) {
           return res.status(401).json({ message: "User ID not found" });
         }
@@ -1145,7 +1145,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
     isAuthenticated,
     async (req: any, res) => {
       try {
-        const userId = req.user?.claims?.sub || req.user?.id;
+        const userId = (req.session as any)?.userId;
         if (!userId) {
           return res.status(401).json({ message: "User ID not found" });
         }
