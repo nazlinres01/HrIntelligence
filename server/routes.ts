@@ -30,8 +30,8 @@ export async function registerRoutes(app: Express): Promise<Server> {
   app.post('/api/auth/register', async (req, res) => {
     try {
       const { 
-        firstName, lastName, email, phone, companyName, companySize, 
-        industry, password, userAgent, timestamp, timezone, honeypot 
+        firstName, lastName, email, companyName, position, role,
+        password, userAgent, timestamp, timezone, honeypot 
       } = req.body;
 
       // Honeypot check
@@ -51,7 +51,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
       }
 
       // Password strength validation
-      const passwordRegex = /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[^A-Za-z\d]).{12,}$/;
+      const passwordRegex = /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d).{8,}$/;
       if (!passwordRegex.test(password)) {
         return res.status(400).json({ message: "Şifre güvenlik gereksinimlerini karşılamıyor" });
       }
@@ -63,27 +63,27 @@ export async function registerRoutes(app: Express): Promise<Server> {
       }
 
       // Hash password
-      const bcrypt = require('bcrypt');
+      const bcrypt = await import('bcrypt');
       const hashedPassword = await bcrypt.hash(password, 12);
 
       // Create company first
       const company = await storage.createCompany({
         name: companyName,
-        industry: industry,
+        industry: "",
         address: "",
-        phone: phone,
+        phone: "",
         email: email
       });
 
       // Create user
+      const crypto = await import('crypto');
       const user = await storage.upsertUser({
-        id: require('crypto').randomUUID(),
+        id: crypto.randomUUID(),
         email: email.toLowerCase(),
         firstName,
         lastName,
-        phone,
         companyId: company.id,
-        role: 'owner',
+        role: role,
         password: hashedPassword,
         isActive: true
       });
@@ -135,7 +135,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
       }
 
       // Verify password
-      const bcrypt = require('bcrypt');
+      const bcrypt = await import('bcrypt');
       const passwordValid = await bcrypt.compare(password, user.password);
       if (!passwordValid) {
         // Log failed attempt
@@ -165,7 +165,11 @@ export async function registerRoutes(app: Express): Promise<Server> {
         ipAddress: clientIP
       });
 
-      // In production, create JWT token or session
+      // Create session
+      (req as any).session.userId = user.id;
+      (req as any).session.userRole = user.role;
+      (req as any).session.companyId = user.companyId;
+      
       res.json({
         message: "Giriş başarılı",
         user: {
