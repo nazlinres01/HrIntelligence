@@ -11,7 +11,6 @@ import { roleLabels, type UserRole } from "@/lib/permissions";
 
 export default function Register() {
   const [showPassword, setShowPassword] = useState(false);
-  const [isFirstUser, setIsFirstUser] = useState(false);
   const [selectedRole, setSelectedRole] = useState<UserRole>("employee");
   const [formData, setFormData] = useState({
     firstName: "",
@@ -25,24 +24,6 @@ export default function Register() {
   });
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState("");
-
-  // İlk kullanıcı kontrolü
-  useEffect(() => {
-    checkFirstUser();
-  }, []);
-
-  const checkFirstUser = async () => {
-    try {
-      const response = await fetch('/api/check-first-user');
-      const data = await response.json();
-      setIsFirstUser(data.isFirstUser);
-      if (data.isFirstUser) {
-        setSelectedRole("owner");
-      }
-    } catch (error) {
-      console.error('İlk kullanıcı kontrolü başarısız:', error);
-    }
-  };
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     setFormData(prev => ({
@@ -110,7 +91,7 @@ export default function Register() {
   const shouldShowField = (field: string) => {
     switch (field) {
       case "companyName":
-        return isFirstUser; // Sadece ilk kullanıcı şirket adını girer
+        return selectedRole === "owner"; // Sadece patron şirket adını girer
       case "department":
         return selectedRole === "department_manager" || selectedRole === "employee";
       case "position":
@@ -133,7 +114,7 @@ export default function Register() {
             </div>
             <h1 className="text-2xl font-bold text-gray-900 mb-2">İK360'a Katılın</h1>
             <p className="text-gray-600 text-sm">
-              {isFirstUser ? "Şirketinizi kurun ve yönetmeye başlayın" : "Hesap oluşturun ve ekibinize katılın"}
+              Hesap oluşturun ve rolünüzü seçin
             </p>
           </div>
 
@@ -143,46 +124,35 @@ export default function Register() {
             </Alert>
           )}
 
-          {isFirstUser && (
-            <Alert className="mb-6 border-blue-200 bg-blue-50">
-              <CheckCircle className="h-4 w-4 text-blue-600" />
-              <AlertDescription className="text-blue-700">
-                İlk kullanıcı olarak otomatik şirket sahibi yetkisi alacaksınız
-              </AlertDescription>
-            </Alert>
-          )}
+
 
           <form onSubmit={handleSubmit} className="space-y-6">
-            {/* Rol Seçimi - İlk kullanıcı değilse göster */}
-            {!isFirstUser && (
-              <div className="space-y-2">
-                <Label htmlFor="role">Rolünüz</Label>
-                <Select value={selectedRole} onValueChange={(value: UserRole) => setSelectedRole(value)}>
-                  <SelectTrigger>
-                    <SelectValue placeholder="Rol seçin" />
-                  </SelectTrigger>
-                  <SelectContent>
-                    {Object.entries(roleLabels)
-                      .filter(([role]) => role !== "owner") // Owner sadece ilk kullanıcı için
-                      .map(([role, label]) => (
-                        <SelectItem key={role} value={role}>
-                          <div className="flex items-center gap-2">
-                            {getRoleIcon(role as UserRole)}
-                            <div>
-                              <div className="font-medium">{label}</div>
-                              <div className="text-xs text-gray-500">
-                                {getRoleDescription(role as UserRole)}
-                              </div>
-                            </div>
+            {/* Rol Seçimi - Her zaman göster */}
+            <div className="space-y-2">
+              <Label htmlFor="role">Rolünüz</Label>
+              <Select value={selectedRole} onValueChange={(value: UserRole) => setSelectedRole(value)}>
+                <SelectTrigger>
+                  <SelectValue placeholder="Rol seçin" />
+                </SelectTrigger>
+                <SelectContent>
+                  {Object.entries(roleLabels).map(([role, label]) => (
+                    <SelectItem key={role} value={role}>
+                      <div className="flex items-center gap-2">
+                        {getRoleIcon(role as UserRole)}
+                        <div>
+                          <div className="font-medium">{label}</div>
+                          <div className="text-xs text-gray-500">
+                            {getRoleDescription(role as UserRole)}
                           </div>
-                        </SelectItem>
-                      ))}
-                  </SelectContent>
-                </Select>
-              </div>
-            )}
+                        </div>
+                      </div>
+                    </SelectItem>
+                  ))}
+                </SelectContent>
+              </Select>
+            </div>
 
-            {/* Şirket Adı - Sadece ilk kullanıcı */}
+            {/* Şirket Adı - Sadece patron rolü */}
             {shouldShowField("companyName") && (
               <div className="space-y-2">
                 <Label htmlFor="companyName">Şirket Adı</Label>
