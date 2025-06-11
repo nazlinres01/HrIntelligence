@@ -130,6 +130,27 @@ export async function registerRoutes(app: Express): Promise<Server> {
     try {
       const { email, password } = req.body;
       
+      // Admin bypass for development
+      if (email === 'admin@gmail.com' && password === 'admin') {
+        const adminUser = {
+          id: 'admin-001',
+          email: 'admin@gmail.com',
+          firstName: 'Admin',
+          lastName: 'User',
+          role: 'admin',
+          isActive: true,
+          phone: '+90 212 123 45 67',
+          companyId: 1
+        };
+        
+        // Store admin user in session
+        (req.session as any).userId = adminUser.id;
+        (req.session as any).userRole = adminUser.role;
+        
+        res.json(adminUser);
+        return;
+      }
+      
       const user = await storage.getUserByEmail(email);
       if (!user) {
         return res.status(401).json({ message: "E-posta veya şifre hatalı" });
@@ -142,6 +163,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
 
       // Store user in session
       (req.session as any).userId = user.id;
+      (req.session as any).userRole = user.role;
       
       res.json({ ...user, password: undefined });
     } catch (error) {
