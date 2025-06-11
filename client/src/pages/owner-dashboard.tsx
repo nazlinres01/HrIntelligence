@@ -5,8 +5,13 @@ import { Progress } from "@/components/ui/progress";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
+import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog";
+import { Input } from "@/components/ui/input";
+import { Label } from "@/components/ui/label";
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { useQuery, useMutation } from "@tanstack/react-query";
 import { useState } from "react";
+import { useLocation } from "wouter";
 import { 
   Building2, 
   Users, 
@@ -120,7 +125,9 @@ interface ExpenseReport {
 
 export default function OwnerDashboard() {
   const { toast } = useToast();
+  const [location, setLocation] = useLocation();
   const [selectedTab, setSelectedTab] = useState("overview");
+  const [isEmployeeDialogOpen, setIsEmployeeDialogOpen] = useState(false);
 
   const { data: stats = {
     totalEmployees: 0,
