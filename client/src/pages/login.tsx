@@ -22,7 +22,8 @@ import {
   ArrowRight,
   Lock,
   Mail,
-  Globe
+  Globe,
+  Award
 } from "lucide-react";
 
 const loginSchema = z.object({
