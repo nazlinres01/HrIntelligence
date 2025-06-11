@@ -903,7 +903,7 @@ export default function OwnerDashboard() {
           </TabsContent>
 
           <TabsContent value="analytics" className="space-y-6">
-            <div className="grid gap-6 md:grid-cols-2">
+            <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-3">
               <Card className="bg-white/80 backdrop-blur-sm border-white/20 shadow-xl">
                 <CardHeader className="bg-gradient-to-r from-green-50 to-emerald-50 rounded-t-lg">
                   <CardTitle className="flex items-center gap-2">
@@ -918,19 +918,19 @@ export default function OwnerDashboard() {
                       <span className="text-sm font-medium text-slate-700">Aktif Kullanıcılar</span>
                       <span className="font-bold text-lg text-green-600">{teamMembers.filter(m => m.isActive).length}</span>
                     </div>
-                    <Progress value={75} className="w-full h-3 bg-green-100" />
+                    <Progress value={85} className="w-full h-3" />
                     
                     <div className="flex items-center justify-between">
                       <span className="text-sm font-medium text-slate-700">Haftalık Giriş Oranı</span>
-                      <span className="font-bold text-lg text-blue-600">85%</span>
+                      <span className="font-bold text-lg text-blue-600">91%</span>
                     </div>
-                    <Progress value={85} className="w-full h-3 bg-blue-100" />
+                    <Progress value={91} className="w-full h-3" />
                     
                     <div className="flex items-center justify-between">
                       <span className="text-sm font-medium text-slate-700">Sistem Kullanımı</span>
-                      <span className="font-bold text-lg text-purple-600">92%</span>
+                      <span className="font-bold text-lg text-purple-600">96%</span>
                     </div>
-                    <Progress value={92} className="w-full h-3 bg-purple-100" />
+                    <Progress value={96} className="w-full h-3" />
                   </div>
                 </CardContent>
               </Card>
@@ -941,24 +941,24 @@ export default function OwnerDashboard() {
                     <Monitor className="h-5 w-5 text-indigo-600" />
                     Sistem Sağlığı
                   </CardTitle>
-                  <CardDescription>Genel sistem durumu ve performans</CardDescription>
+                  <CardDescription>Gerçek zamanlı sistem durumu</CardDescription>
                 </CardHeader>
                 <CardContent className="p-6">
                   <div className="space-y-4">
                     <div className="flex items-center justify-between p-3 bg-green-50 rounded-lg">
                       <div className="flex items-center gap-2">
                         <Database className="h-4 w-4 text-green-600" />
-                        <span className="text-sm font-medium text-slate-700">Veritabanı Durumu</span>
+                        <span className="text-sm font-medium text-slate-700">Veritabanı</span>
                       </div>
-                      <Badge className="bg-green-100 text-green-800 border-green-200">Sağlıklı</Badge>
+                      <Badge className="bg-green-100 text-green-800 border-green-200">Çevrimiçi</Badge>
                     </div>
                     
                     <div className="flex items-center justify-between p-3 bg-blue-50 rounded-lg">
                       <div className="flex items-center gap-2">
                         <Globe className="h-4 w-4 text-blue-600" />
-                        <span className="text-sm font-medium text-slate-700">API Yanıt Süresi</span>
+                        <span className="text-sm font-medium text-slate-700">API Yanıt</span>
                       </div>
-                      <span className="font-semibold text-blue-600">125ms</span>
+                      <span className="font-semibold text-blue-600">89ms</span>
                     </div>
                     
                     <div className="flex items-center justify-between p-3 bg-purple-50 rounded-lg">
@@ -966,7 +966,136 @@ export default function OwnerDashboard() {
                         <RefreshCw className="h-4 w-4 text-purple-600" />
                         <span className="text-sm font-medium text-slate-700">Uptime</span>
                       </div>
-                      <span className="font-semibold text-purple-600">99.9%</span>
+                      <span className="font-semibold text-purple-600">99.8%</span>
+                    </div>
+                  </div>
+                </CardContent>
+              </Card>
+
+              <Card className="bg-white/80 backdrop-blur-sm border-white/20 shadow-xl">
+                <CardHeader className="bg-gradient-to-r from-amber-50 to-orange-50 rounded-t-lg">
+                  <CardTitle className="flex items-center gap-2">
+                    <BarChart3 className="h-5 w-5 text-amber-600" />
+                    Performans Metrikleri
+                  </CardTitle>
+                  <CardDescription>Sistem performans analizi</CardDescription>
+                </CardHeader>
+                <CardContent className="p-6">
+                  <div className="space-y-4">
+                    <div className="flex items-center justify-between p-3 bg-cyan-50 rounded-lg">
+                      <div className="flex items-center gap-2">
+                        <Smartphone className="h-4 w-4 text-cyan-600" />
+                        <span className="text-sm font-medium text-slate-700">Mobil Kullanım</span>
+                      </div>
+                      <span className="font-semibold text-cyan-600">34%</span>
+                    </div>
+                    
+                    <div className="flex items-center justify-between p-3 bg-slate-50 rounded-lg">
+                      <div className="flex items-center gap-2">
+                        <Monitor className="h-4 w-4 text-slate-600" />
+                        <span className="text-sm font-medium text-slate-700">Masaüstü</span>
+                      </div>
+                      <span className="font-semibold text-slate-600">66%</span>
+                    </div>
+                    
+                    <div className="flex items-center justify-between p-3 bg-emerald-50 rounded-lg">
+                      <div className="flex items-center gap-2">
+                        <Activity className="h-4 w-4 text-emerald-600" />
+                        <span className="text-sm font-medium text-slate-700">Ortalama Seans</span>
+                      </div>
+                      <span className="font-semibold text-emerald-600">24dk</span>
+                    </div>
+                  </div>
+                </CardContent>
+              </Card>
+            </div>
+
+            <div className="grid gap-6 md:grid-cols-2">
+              <Card className="bg-white/80 backdrop-blur-sm border-white/20 shadow-xl">
+                <CardHeader className="bg-gradient-to-r from-rose-50 to-pink-50 rounded-t-lg">
+                  <CardTitle className="flex items-center gap-2">
+                    <Target className="h-5 w-5 text-rose-600" />
+                    Departman Bazlı Analiz
+                  </CardTitle>
+                  <CardDescription>Bölümsel performans değerlendirmesi</CardDescription>
+                </CardHeader>
+                <CardContent className="p-6">
+                  <div className="space-y-4">
+                    {[
+                      { dept: "İnsan Kaynakları", users: 8, efficiency: 94, color: "bg-blue-500" },
+                      { dept: "Bilgi İşlem", users: 12, efficiency: 89, color: "bg-green-500" },
+                      { dept: "Muhasebe", users: 6, efficiency: 92, color: "bg-purple-500" },
+                      { dept: "Pazarlama", users: 15, efficiency: 87, color: "bg-orange-500" },
+                      { dept: "Satış", users: 20, efficiency: 91, color: "bg-cyan-500" }
+                    ].map((dept, index) => (
+                      <div key={index} className="flex items-center justify-between p-3 bg-slate-50 rounded-lg">
+                        <div className="flex items-center gap-3">
+                          <div className={`w-3 h-3 rounded-full ${dept.color}`}></div>
+                          <div>
+                            <p className="font-medium text-slate-900">{dept.dept}</p>
+                            <p className="text-xs text-slate-600">{dept.users} çalışan</p>
+                          </div>
+                        </div>
+                        <div className="text-right">
+                          <p className="font-bold text-slate-900">{dept.efficiency}%</p>
+                          <p className="text-xs text-slate-500">verimlilik</p>
+                        </div>
+                      </div>
+                    ))}
+                  </div>
+                </CardContent>
+              </Card>
+
+              <Card className="bg-white/80 backdrop-blur-sm border-white/20 shadow-xl">
+                <CardHeader className="bg-gradient-to-r from-violet-50 to-purple-50 rounded-t-lg">
+                  <CardTitle className="flex items-center gap-2">
+                    <Calendar className="h-5 w-5 text-violet-600" />
+                    Zaman Analizi
+                  </CardTitle>
+                  <CardDescription>Çalışma saatleri ve verimlilik</CardDescription>
+                </CardHeader>
+                <CardContent className="p-6">
+                  <div className="space-y-4">
+                    <div className="p-4 bg-gradient-to-r from-blue-50 to-indigo-50 rounded-lg">
+                      <h4 className="font-medium text-slate-900 mb-2">Bu Hafta Özeti</h4>
+                      <div className="grid grid-cols-2 gap-4 text-sm">
+                        <div>
+                          <p className="text-slate-600">Toplam Çalışma</p>
+                          <p className="font-bold text-lg text-blue-600">1,847 saat</p>
+                        </div>
+                        <div>
+                          <p className="text-slate-600">Ortalama/Kişi</p>
+                          <p className="font-bold text-lg text-green-600">38.2 saat</p>
+                        </div>
+                      </div>
+                    </div>
+
+                    <div className="p-4 bg-gradient-to-r from-green-50 to-emerald-50 rounded-lg">
+                      <h4 className="font-medium text-slate-900 mb-2">Verimlilik Trendi</h4>
+                      <div className="grid grid-cols-2 gap-4 text-sm">
+                        <div>
+                          <p className="text-slate-600">Bu Ay</p>
+                          <p className="font-bold text-lg text-green-600">↑ 12%</p>
+                        </div>
+                        <div>
+                          <p className="text-slate-600">Geçen Aya Göre</p>
+                          <p className="font-bold text-lg text-emerald-600">+5.8%</p>
+                        </div>
+                      </div>
+                    </div>
+
+                    <div className="p-4 bg-gradient-to-r from-purple-50 to-pink-50 rounded-lg">
+                      <h4 className="font-medium text-slate-900 mb-2">İzin ve Devamsızlık</h4>
+                      <div className="grid grid-cols-2 gap-4 text-sm">
+                        <div>
+                          <p className="text-slate-600">Aktif İzinler</p>
+                          <p className="font-bold text-lg text-purple-600">{stats.activeLeaves}</p>
+                        </div>
+                        <div>
+                          <p className="text-slate-600">İzin Oranı</p>
+                          <p className="font-bold text-lg text-pink-600">2.1%</p>
+                        </div>
+                      </div>
                     </div>
                   </div>
                 </CardContent>
