@@ -2,7 +2,15 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/com
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { Progress } from "@/components/ui/progress";
-import { useQuery } from "@tanstack/react-query";
+import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog";
+import { Input } from "@/components/ui/input";
+import { Label } from "@/components/ui/label";
+import { Textarea } from "@/components/ui/textarea";
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
+import { useQuery, useMutation } from "@tanstack/react-query";
+import { queryClient } from "@/lib/queryClient";
+import { useState } from "react";
+import { useToast } from "@/hooks/use-toast";
 import { 
   User, 
   Calendar, 
@@ -13,21 +21,144 @@ import {
   MessageSquare,
   CheckCircle,
   TrendingUp,
-  DollarSign
+  DollarSign,
+  Plus,
+  Edit,
+  Send,
+  Upload
 } from "lucide-react";
 
 export default function EmployeeDashboard() {
+  const [isLeaveDialogOpen, setIsLeaveDialogOpen] = useState(false);
+  const [isExpenseDialogOpen, setIsExpenseDialogOpen] = useState(false);
+  const [isTimeDialogOpen, setIsTimeDialogOpen] = useState(false);
+  const [isMessageDialogOpen, setIsMessageDialogOpen] = useState(false);
+  const [isProfileDialogOpen, setIsProfileDialogOpen] = useState(false);
+
+  const { toast } = useToast();
+
   const { data: personalStats } = useQuery({
     queryKey: ['/api/stats/employee'],
-  });
+  }) as { data: any };
 
   const { data: myTasks } = useQuery({
     queryKey: ['/api/tasks/my'],
-  });
+  }) as { data: any };
 
   const { data: leaveBalance } = useQuery({
     queryKey: ['/api/leaves/balance'],
+  }) as { data: any };
+
+  const leaveRequestMutation = useMutation({
+    mutationFn: async (data: any) => {
+      const response = await fetch('/api/leaves', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(data)
+      });
+      if (!response.ok) throw new Error('Failed to submit leave request');
+      return response.json();
+    },
+    onSuccess: () => {
+      toast({
+        title: "İzin Talebi Gönderildi",
+        description: "İzin talebiniz yöneticinize iletildi.",
+      });
+      setIsLeaveDialogOpen(false);
+      queryClient.invalidateQueries({ queryKey: ['/api/leaves/balance'] });
+    },
+    onError: () => {
+      toast({
+        title: "Hata",
+        description: "İzin talebi gönderilirken bir hata oluştu.",
+        variant: "destructive",
+      });
+    }
   });
+
+  const expenseReportMutation = useMutation({
+    mutationFn: async (data: any) => {
+      const response = await fetch('/api/expenses', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(data)
+      });
+      if (!response.ok) throw new Error('Failed to submit expense report');
+      return response.json();
+    },
+    onSuccess: () => {
+      toast({
+        title: "Gider Raporu Gönderildi",
+        description: "Gider raporunuz yöneticinize iletildi.",
+      });
+      setIsExpenseDialogOpen(false);
+    },
+    onError: () => {
+      toast({
+        title: "Hata",
+        description: "Gider raporu gönderilirken bir hata oluştu.",
+        variant: "destructive",
+      });
+    }
+  });
+
+  const timeEntryMutation = useMutation({
+    mutationFn: async (data: any) => {
+      const response = await fetch('/api/time-entries', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(data)
+      });
+      if (!response.ok) throw new Error('Failed to submit time entry');
+      return response.json();
+    },
+    onSuccess: () => {
+      toast({
+        title: "Mesai Kaydedildi",
+        description: "Mesai kayıtınız başarıyla eklendi.",
+      });
+      setIsTimeDialogOpen(false);
+    },
+    onError: () => {
+      toast({
+        title: "Hata",
+        description: "Mesai kaydı yapılırken bir hata oluştu.",
+        variant: "destructive",
+      });
+    }
+  });
+
+  const handleLeaveRequest = (formData: FormData) => {
+    const data = {
+      type: formData.get('type'),
+      startDate: formData.get('startDate'),
+      endDate: formData.get('endDate'),
+      reason: formData.get('reason'),
+    };
+    leaveRequestMutation.mutate(data);
+  };
+
+  const handleExpenseReport = (formData: FormData) => {
+    const data = {
+      description: formData.get('description'),
+      amount: parseFloat(formData.get('amount') as string),
+      category: formData.get('category'),
+      date: formData.get('date'),
+      receipt: formData.get('receipt'),
+    };
+    expenseReportMutation.mutate(data);
+  };
+
+  const handleTimeEntry = (formData: FormData) => {
+    const data = {
+      date: formData.get('date'),
+      startTime: formData.get('startTime'),
+      endTime: formData.get('endTime'),
+      breakMinutes: parseInt(formData.get('breakMinutes') as string),
+      description: formData.get('description'),
+    };
+    timeEntryMutation.mutate(data);
+  };
 
   return (
     <div className="space-y-6">
@@ -39,14 +170,135 @@ export default function EmployeeDashboard() {
           </p>
         </div>
         <div className="flex space-x-2">
-          <Button variant="outline" size="sm">
-            <Calendar className="h-4 w-4 mr-2" />
-            İzin Talep Et
-          </Button>
-          <Button size="sm">
-            <FileText className="h-4 w-4 mr-2" />
-            Gider Raporu
-          </Button>
+          <Dialog open={isLeaveDialogOpen} onOpenChange={setIsLeaveDialogOpen}>
+            <DialogTrigger asChild>
+              <Button variant="outline" size="sm">
+                <Calendar className="h-4 w-4 mr-2" />
+                İzin Talep Et
+              </Button>
+            </DialogTrigger>
+            <DialogContent className="sm:max-w-[425px]">
+              <DialogHeader>
+                <DialogTitle>İzin Talebi Oluştur</DialogTitle>
+                <DialogDescription>
+                  Yeni bir izin talebi oluşturun. Talebiniz yöneticinize iletilecektir.
+                </DialogDescription>
+              </DialogHeader>
+              <form onSubmit={(e) => {
+                e.preventDefault();
+                handleLeaveRequest(new FormData(e.currentTarget));
+              }} className="space-y-4">
+                <div className="space-y-2">
+                  <Label htmlFor="type">İzin Türü</Label>
+                  <Select name="type" required>
+                    <SelectTrigger>
+                      <SelectValue placeholder="İzin türünü seçin" />
+                    </SelectTrigger>
+                    <SelectContent>
+                      <SelectItem value="annual">Yıllık İzin</SelectItem>
+                      <SelectItem value="sick">Hastalık İzni</SelectItem>
+                      <SelectItem value="personal">Kişisel İzin</SelectItem>
+                      <SelectItem value="maternity">Doğum İzni</SelectItem>
+                      <SelectItem value="paternity">Babalık İzni</SelectItem>
+                    </SelectContent>
+                  </Select>
+                </div>
+                <div className="grid grid-cols-2 gap-4">
+                  <div className="space-y-2">
+                    <Label htmlFor="startDate">Başlangıç Tarihi</Label>
+                    <Input name="startDate" type="date" required />
+                  </div>
+                  <div className="space-y-2">
+                    <Label htmlFor="endDate">Bitiş Tarihi</Label>
+                    <Input name="endDate" type="date" required />
+                  </div>
+                </div>
+                <div className="space-y-2">
+                  <Label htmlFor="reason">İzin Nedeni</Label>
+                  <Textarea 
+                    name="reason" 
+                    placeholder="İzin nedeninizi açıklayın..."
+                    required
+                  />
+                </div>
+                <div className="flex justify-end space-x-2">
+                  <Button type="button" variant="outline" onClick={() => setIsLeaveDialogOpen(false)}>
+                    İptal
+                  </Button>
+                  <Button type="submit" disabled={leaveRequestMutation.isPending}>
+                    {leaveRequestMutation.isPending ? "Gönderiliyor..." : "Talep Gönder"}
+                  </Button>
+                </div>
+              </form>
+            </DialogContent>
+          </Dialog>
+
+          <Dialog open={isExpenseDialogOpen} onOpenChange={setIsExpenseDialogOpen}>
+            <DialogTrigger asChild>
+              <Button size="sm">
+                <FileText className="h-4 w-4 mr-2" />
+                Gider Raporu
+              </Button>
+            </DialogTrigger>
+            <DialogContent className="sm:max-w-[425px]">
+              <DialogHeader>
+                <DialogTitle>Gider Raporu Oluştur</DialogTitle>
+                <DialogDescription>
+                  İş ile ilgili giderlerinizi raporlayın.
+                </DialogDescription>
+              </DialogHeader>
+              <form onSubmit={(e) => {
+                e.preventDefault();
+                handleExpenseReport(new FormData(e.currentTarget));
+              }} className="space-y-4">
+                <div className="space-y-2">
+                  <Label htmlFor="description">Gider Açıklaması</Label>
+                  <Input 
+                    name="description" 
+                    placeholder="Gider açıklaması..."
+                    required
+                  />
+                </div>
+                <div className="grid grid-cols-2 gap-4">
+                  <div className="space-y-2">
+                    <Label htmlFor="amount">Tutar (₺)</Label>
+                    <Input name="amount" type="number" step="0.01" placeholder="0.00" required />
+                  </div>
+                  <div className="space-y-2">
+                    <Label htmlFor="date">Tarih</Label>
+                    <Input name="date" type="date" required />
+                  </div>
+                </div>
+                <div className="space-y-2">
+                  <Label htmlFor="category">Kategori</Label>
+                  <Select name="category" required>
+                    <SelectTrigger>
+                      <SelectValue placeholder="Kategori seçin" />
+                    </SelectTrigger>
+                    <SelectContent>
+                      <SelectItem value="travel">Seyahat</SelectItem>
+                      <SelectItem value="meals">Yemek</SelectItem>
+                      <SelectItem value="office">Ofis Malzemeleri</SelectItem>
+                      <SelectItem value="training">Eğitim</SelectItem>
+                      <SelectItem value="other">Diğer</SelectItem>
+                    </SelectContent>
+                  </Select>
+                </div>
+                <div className="space-y-2">
+                  <Label htmlFor="receipt">Fiş/Fatura</Label>
+                  <Input name="receipt" type="file" accept="image/*,.pdf" />
+                </div>
+                <div className="flex justify-end space-x-2">
+                  <Button type="button" variant="outline" onClick={() => setIsExpenseDialogOpen(false)}>
+                    İptal
+                  </Button>
+                  <Button type="submit" disabled={expenseReportMutation.isPending}>
+                    {expenseReportMutation.isPending ? "Gönderiliyor..." : "Rapor Gönder"}
+                  </Button>
+                </div>
+              </form>
+            </DialogContent>
+          </Dialog>
         </div>
       </div>
 
@@ -149,26 +401,186 @@ export default function EmployeeDashboard() {
             </CardDescription>
           </CardHeader>
           <CardContent className="space-y-3">
-            <Button variant="outline" className="w-full justify-start">
-              <Calendar className="h-4 w-4 mr-2" />
-              İzin Talep Et
-            </Button>
-            <Button variant="outline" className="w-full justify-start">
-              <FileText className="h-4 w-4 mr-2" />
-              Gider Raporu
-            </Button>
-            <Button variant="outline" className="w-full justify-start">
-              <Clock className="h-4 w-4 mr-2" />
-              Mesai Kayıt
-            </Button>
-            <Button variant="outline" className="w-full justify-start">
-              <MessageSquare className="h-4 w-4 mr-2" />
-              Yöneticimle İletişim
-            </Button>
-            <Button variant="outline" className="w-full justify-start">
-              <User className="h-4 w-4 mr-2" />
-              Profil Güncelle
-            </Button>
+            <Dialog open={isLeaveDialogOpen} onOpenChange={setIsLeaveDialogOpen}>
+              <DialogTrigger asChild>
+                <Button variant="outline" className="w-full justify-start hover:bg-blue-50 dark:hover:bg-blue-950 transition-colors">
+                  <Calendar className="h-4 w-4 mr-2 text-blue-600" />
+                  İzin Talep Et
+                </Button>
+              </DialogTrigger>
+            </Dialog>
+
+            <Dialog open={isExpenseDialogOpen} onOpenChange={setIsExpenseDialogOpen}>
+              <DialogTrigger asChild>
+                <Button variant="outline" className="w-full justify-start hover:bg-green-50 dark:hover:bg-green-950 transition-colors">
+                  <FileText className="h-4 w-4 mr-2 text-green-600" />
+                  Gider Raporu
+                </Button>
+              </DialogTrigger>
+            </Dialog>
+
+            <Dialog open={isTimeDialogOpen} onOpenChange={setIsTimeDialogOpen}>
+              <DialogTrigger asChild>
+                <Button variant="outline" className="w-full justify-start hover:bg-purple-50 dark:hover:bg-purple-950 transition-colors">
+                  <Clock className="h-4 w-4 mr-2 text-purple-600" />
+                  Mesai Kayıt
+                </Button>
+              </DialogTrigger>
+              <DialogContent className="sm:max-w-[425px]">
+                <DialogHeader>
+                  <DialogTitle>Mesai Kaydı</DialogTitle>
+                  <DialogDescription>
+                    Günlük mesai saatlerinizi kaydedin.
+                  </DialogDescription>
+                </DialogHeader>
+                <form onSubmit={(e) => {
+                  e.preventDefault();
+                  handleTimeEntry(new FormData(e.currentTarget));
+                }} className="space-y-4">
+                  <div className="space-y-2">
+                    <Label htmlFor="date">Tarih</Label>
+                    <Input name="date" type="date" defaultValue={new Date().toISOString().split('T')[0]} required />
+                  </div>
+                  <div className="grid grid-cols-2 gap-4">
+                    <div className="space-y-2">
+                      <Label htmlFor="startTime">Başlangıç Saati</Label>
+                      <Input name="startTime" type="time" required />
+                    </div>
+                    <div className="space-y-2">
+                      <Label htmlFor="endTime">Bitiş Saati</Label>
+                      <Input name="endTime" type="time" required />
+                    </div>
+                  </div>
+                  <div className="space-y-2">
+                    <Label htmlFor="breakMinutes">Mola Süresi (Dakika)</Label>
+                    <Input name="breakMinutes" type="number" defaultValue="60" min="0" max="480" />
+                  </div>
+                  <div className="space-y-2">
+                    <Label htmlFor="description">Açıklama (Opsiyonel)</Label>
+                    <Textarea 
+                      name="description" 
+                      placeholder="Gün boyunca yaptığınız işleri açıklayın..."
+                    />
+                  </div>
+                  <div className="flex justify-end space-x-2">
+                    <Button type="button" variant="outline" onClick={() => setIsTimeDialogOpen(false)}>
+                      İptal
+                    </Button>
+                    <Button type="submit" disabled={timeEntryMutation.isPending}>
+                      {timeEntryMutation.isPending ? "Kaydediliyor..." : "Mesai Kaydet"}
+                    </Button>
+                  </div>
+                </form>
+              </DialogContent>
+            </Dialog>
+
+            <Dialog open={isMessageDialogOpen} onOpenChange={setIsMessageDialogOpen}>
+              <DialogTrigger asChild>
+                <Button variant="outline" className="w-full justify-start hover:bg-orange-50 dark:hover:bg-orange-950 transition-colors">
+                  <MessageSquare className="h-4 w-4 mr-2 text-orange-600" />
+                  Yöneticimle İletişim
+                </Button>
+              </DialogTrigger>
+              <DialogContent className="sm:max-w-[425px]">
+                <DialogHeader>
+                  <DialogTitle>Yöneticiye Mesaj Gönder</DialogTitle>
+                  <DialogDescription>
+                    Yöneticinize veya İK departmanına mesaj gönderin.
+                  </DialogDescription>
+                </DialogHeader>
+                <form className="space-y-4">
+                  <div className="space-y-2">
+                    <Label htmlFor="recipient">Alıcı</Label>
+                    <Select name="recipient" required>
+                      <SelectTrigger>
+                        <SelectValue placeholder="Alıcı seçin" />
+                      </SelectTrigger>
+                      <SelectContent>
+                        <SelectItem value="manager">Departman Müdürü</SelectItem>
+                        <SelectItem value="hr">İK Departmanı</SelectItem>
+                        <SelectItem value="it">IT Destek</SelectItem>
+                      </SelectContent>
+                    </Select>
+                  </div>
+                  <div className="space-y-2">
+                    <Label htmlFor="subject">Konu</Label>
+                    <Input name="subject" placeholder="Mesaj konusu..." required />
+                  </div>
+                  <div className="space-y-2">
+                    <Label htmlFor="message">Mesaj</Label>
+                    <Textarea 
+                      name="message" 
+                      placeholder="Mesajınızı yazın..."
+                      className="min-h-[100px]"
+                      required
+                    />
+                  </div>
+                  <div className="flex justify-end space-x-2">
+                    <Button type="button" variant="outline" onClick={() => setIsMessageDialogOpen(false)}>
+                      İptal
+                    </Button>
+                    <Button type="submit">
+                      <Send className="h-4 w-4 mr-2" />
+                      Mesaj Gönder
+                    </Button>
+                  </div>
+                </form>
+              </DialogContent>
+            </Dialog>
+
+            <Dialog open={isProfileDialogOpen} onOpenChange={setIsProfileDialogOpen}>
+              <DialogTrigger asChild>
+                <Button variant="outline" className="w-full justify-start hover:bg-indigo-50 dark:hover:bg-indigo-950 transition-colors">
+                  <User className="h-4 w-4 mr-2 text-indigo-600" />
+                  Profil Güncelle
+                </Button>
+              </DialogTrigger>
+              <DialogContent className="sm:max-w-[500px]">
+                <DialogHeader>
+                  <DialogTitle>Profil Bilgilerini Güncelle</DialogTitle>
+                  <DialogDescription>
+                    Kişisel bilgilerinizi güncelleyin.
+                  </DialogDescription>
+                </DialogHeader>
+                <form className="space-y-4">
+                  <div className="grid grid-cols-2 gap-4">
+                    <div className="space-y-2">
+                      <Label htmlFor="firstName">Ad</Label>
+                      <Input name="firstName" placeholder="Adınız" />
+                    </div>
+                    <div className="space-y-2">
+                      <Label htmlFor="lastName">Soyad</Label>
+                      <Input name="lastName" placeholder="Soyadınız" />
+                    </div>
+                  </div>
+                  <div className="space-y-2">
+                    <Label htmlFor="email">E-posta</Label>
+                    <Input name="email" type="email" placeholder="email@example.com" />
+                  </div>
+                  <div className="space-y-2">
+                    <Label htmlFor="phone">Telefon</Label>
+                    <Input name="phone" placeholder="+90 5XX XXX XX XX" />
+                  </div>
+                  <div className="space-y-2">
+                    <Label htmlFor="address">Adres</Label>
+                    <Textarea name="address" placeholder="Adresiniz..." />
+                  </div>
+                  <div className="space-y-2">
+                    <Label htmlFor="emergencyContact">Acil Durum İletişim</Label>
+                    <Input name="emergencyContact" placeholder="Acil durum telefonu" />
+                  </div>
+                  <div className="flex justify-end space-x-2">
+                    <Button type="button" variant="outline" onClick={() => setIsProfileDialogOpen(false)}>
+                      İptal
+                    </Button>
+                    <Button type="submit">
+                      <Edit className="h-4 w-4 mr-2" />
+                      Bilgileri Güncelle
+                    </Button>
+                  </div>
+                </form>
+              </DialogContent>
+            </Dialog>
           </CardContent>
         </Card>
       </div>
