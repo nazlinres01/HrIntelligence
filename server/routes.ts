@@ -1442,7 +1442,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
       }
       
       const limit = parseInt(req.query.limit as string) || 100;
-      const logs = await storage.getAuditLogs(limit, user.companyId);
+      const logs = await storage.getAuditLogs(limit, user.companyId ? user.companyId : undefined);
       res.json(logs);
     } catch (error) {
       console.error('Error fetching audit logs:', error);
@@ -1671,6 +1671,200 @@ export async function registerRoutes(app: Express): Promise<Server> {
     } catch (error) {
       console.error('Error creating leave request:', error);
       res.status(500).json({ message: 'Failed to create leave request' });
+    }
+  });
+
+  // Admin dashboard specific endpoints for comprehensive management
+  app.get('/api/time-entries/pending', async (req, res) => {
+    try {
+      const userId = (req.session as any)?.userId;
+      if (!userId) {
+        return res.status(401).json({ message: "Unauthorized" });
+      }
+
+      const user = await storage.getUser(userId);
+      if (!user || (user.role !== 'admin' && user.role !== 'owner' && user.role !== 'hr_manager')) {
+        return res.status(403).json({ message: "Unauthorized" });
+      }
+
+      const pendingEntries = await storage.getPendingTimeEntries();
+      res.json(pendingEntries);
+    } catch (error) {
+      console.error("Error fetching pending time entries:", error);
+      res.status(500).json({ message: "Failed to fetch pending time entries" });
+    }
+  });
+
+  app.put('/api/time-entries/:id/approve', async (req, res) => {
+    try {
+      const userId = (req.session as any)?.userId;
+      if (!userId) {
+        return res.status(401).json({ message: "Unauthorized" });
+      }
+
+      const user = await storage.getUser(userId);
+      if (!user || (user.role !== 'admin' && user.role !== 'owner' && user.role !== 'hr_manager')) {
+        return res.status(403).json({ message: "Unauthorized" });
+      }
+
+      const entryId = parseInt(req.params.id);
+      const success = await storage.approveTimeEntry(entryId, user.id);
+      
+      if (success) {
+        await storage.createAuditLog({
+          userId: user.id,
+          action: 'APPROVE_TIME_ENTRY',
+          resource: 'time_entries',
+          details: `Approved time entry ID: ${entryId}`,
+          ipAddress: req.ip,
+          userAgent: req.get('User-Agent')
+        });
+
+        res.json({ message: "Time entry approved successfully" });
+      } else {
+        res.status(404).json({ message: "Time entry not found" });
+      }
+    } catch (error) {
+      console.error("Error approving time entry:", error);
+      res.status(500).json({ message: "Failed to approve time entry" });
+    }
+  });
+
+  app.get('/api/expense-reports/pending', async (req, res) => {
+    try {
+      const userId = (req.session as any)?.userId;
+      if (!userId) {
+        return res.status(401).json({ message: "Unauthorized" });
+      }
+
+      const user = await storage.getUser(userId);
+      if (!user || (user.role !== 'admin' && user.role !== 'owner' && user.role !== 'hr_manager')) {
+        return res.status(403).json({ message: "Unauthorized" });
+      }
+
+      const pendingExpenses = await storage.getPendingExpenseReports();
+      res.json(pendingExpenses);
+    } catch (error) {
+      console.error("Error fetching pending expense reports:", error);
+      res.status(500).json({ message: "Failed to fetch pending expense reports" });
+    }
+  });
+
+  app.put('/api/expense-reports/:id/approve', async (req, res) => {
+    try {
+      const userId = (req.session as any)?.userId;
+      if (!userId) {
+        return res.status(401).json({ message: "Unauthorized" });
+      }
+
+      const user = await storage.getUser(userId);
+      if (!user || (user.role !== 'admin' && user.role !== 'owner' && user.role !== 'hr_manager')) {
+        return res.status(403).json({ message: "Unauthorized" });
+      }
+
+      const expenseId = parseInt(req.params.id);
+      const success = await storage.approveExpenseReport(expenseId, user.id);
+      
+      if (success) {
+        await storage.createAuditLog({
+          userId: user.id,
+          action: 'APPROVE_EXPENSE',
+          resource: 'expense_reports',
+          details: `Approved expense report ID: ${expenseId}`,
+          ipAddress: req.ip,
+          userAgent: req.get('User-Agent')
+        });
+
+        res.json({ message: "Expense report approved successfully" });
+      } else {
+        res.status(404).json({ message: "Expense report not found" });
+      }
+    } catch (error) {
+      console.error("Error approving expense report:", error);
+      res.status(500).json({ message: "Failed to approve expense report" });
+    }
+  });
+
+  app.put('/api/users/:userId/status', async (req, res) => {
+    try {
+      const sessionUserId = (req.session as any)?.userId;
+      if (!sessionUserId) {
+        return res.status(401).json({ message: "Unauthorized" });
+      }
+
+      const sessionUser = await storage.getUser(sessionUserId);
+      if (!sessionUser || (sessionUser.role !== 'admin' && sessionUser.role !== 'owner')) {
+        return res.status(403).json({ message: "Admin access required" });
+      }
+
+      const { userId } = req.params;
+      const { isActive } = req.body;
+      
+      const success = await storage.updateUserStatus(userId, isActive);
+      
+      if (success) {
+        await storage.createAuditLog({
+          userId: sessionUser.id,
+          action: 'UPDATE_USER_STATUS',
+          resource: 'users',
+          details: `Changed user ${userId} status to ${isActive ? 'active' : 'inactive'}`,
+          ipAddress: req.ip,
+          userAgent: req.get('User-Agent')
+        });
+
+        res.json({ message: "User status updated successfully" });
+      } else {
+        res.status(404).json({ message: "User not found" });
+      }
+    } catch (error) {
+      console.error("Error updating user status:", error);
+      res.status(500).json({ message: "Failed to update user status" });
+    }
+  });
+
+  app.post('/api/notifications/broadcast', async (req, res) => {
+    try {
+      const userId = (req.session as any)?.userId;
+      if (!userId) {
+        return res.status(401).json({ message: "Unauthorized" });
+      }
+
+      const user = await storage.getUser(userId);
+      if (!user || (user.role !== 'admin' && user.role !== 'owner')) {
+        return res.status(403).json({ message: "Admin access required" });
+      }
+
+      const { title, message, type } = req.body;
+      
+      if (!user.companyId) {
+        return res.status(400).json({ message: "Company ID not found" });
+      }
+      
+      const teamMembers = await storage.getTeamMembers(user.companyId);
+      
+      for (const member of teamMembers) {
+        await storage.createNotification({
+          userId: member.id,
+          title,
+          message,
+          type: type || 'info',
+          isRead: false
+        });
+      }
+
+      await storage.createAuditLog({
+        userId: user.id,
+        action: 'BROADCAST_NOTIFICATION',
+        resource: 'notifications',
+        details: `Sent broadcast: ${title}`,
+        ipAddress: req.ip,
+        userAgent: req.get('User-Agent')
+      });
+
+      res.json({ message: "Broadcast notification sent successfully" });
+    } catch (error) {
+      console.error("Error sending broadcast notification:", error);
+      res.status(500).json({ message: "Failed to send notification" });
     }
   });
 
