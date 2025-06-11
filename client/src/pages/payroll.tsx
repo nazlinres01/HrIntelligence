@@ -74,11 +74,11 @@ export default function Payroll() {
     notes: ""
   });
 
-  const { data: payrolls, isLoading } = useQuery({
+  const { data: payrolls = [], isLoading } = useQuery<Payroll[]>({
     queryKey: ["/api/payroll"],
   });
 
-  const { data: employees } = useQuery({
+  const { data: employees = [] } = useQuery<Employee[]>({
     queryKey: ["/api/employees"],
   });
 

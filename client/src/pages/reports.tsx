@@ -34,19 +34,19 @@ export default function Reports() {
   const [reportType, setReportType] = useState("overview");
   const { toast } = useToast();
 
-  const { data: employees } = useQuery({
+  const { data: employees = [] } = useQuery({
     queryKey: ["/api/employees"],
   });
 
-  const { data: leaves } = useQuery({
+  const { data: leaves = [] } = useQuery({
     queryKey: ["/api/leaves"],
   });
 
-  const { data: performance } = useQuery({
+  const { data: performance = [] } = useQuery({
     queryKey: ["/api/performance"],
   });
 
-  const { data: payroll } = useQuery({
+  const { data: payroll = [] } = useQuery({
     queryKey: ["/api/payroll"],
   });
 

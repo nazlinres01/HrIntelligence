@@ -79,11 +79,11 @@ export default function Leaves() {
     reason: ""
   });
 
-  const { data: leaves, isLoading } = useQuery({
+  const { data: leaves = [], isLoading } = useQuery<Leave[]>({
     queryKey: ["/api/leaves"],
   });
 
-  const { data: employees } = useQuery({
+  const { data: employees = [] } = useQuery<Employee[]>({
     queryKey: ["/api/employees"],
   });
 

@@ -72,11 +72,11 @@ export default function Performance() {
     feedback: ""
   });
 
-  const { data: performances, isLoading } = useQuery({
+  const { data: performances = [], isLoading } = useQuery<Performance[]>({
     queryKey: ["/api/performance"],
   });
 
-  const { data: employees } = useQuery({
+  const { data: employees = [] } = useQuery<Employee[]>({
     queryKey: ["/api/employees"],
   });
 
@@ -253,7 +253,7 @@ export default function Performance() {
                 </SelectTrigger>
                 <SelectContent>
                   <SelectItem value="all">Tüm Departmanlar</SelectItem>
-                  {departments.map((dept) => (
+                  {departments.filter(dept => dept).map((dept) => (
                     <SelectItem key={dept} value={dept}>{dept}</SelectItem>
                   ))}
                 </SelectContent>

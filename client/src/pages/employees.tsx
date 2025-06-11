@@ -75,7 +75,7 @@ export default function Employees() {
     notes: ""
   });
 
-  const { data: employees, isLoading } = useQuery({
+  const { data: employees = [], isLoading } = useQuery<Employee[]>({
     queryKey: ["/api/employees"],
   });
 
