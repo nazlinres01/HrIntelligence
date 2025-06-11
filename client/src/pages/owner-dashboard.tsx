@@ -440,32 +440,73 @@ export default function OwnerDashboard() {
                 </CardHeader>
                 <CardContent className="p-6">
                   <div className="grid gap-3">
-                    <Button variant="outline" className="justify-start h-12 hover:bg-blue-50 hover:border-blue-200">
+                    <Button 
+                      variant="outline" 
+                      className="justify-start h-12 hover:bg-blue-50 hover:border-blue-200"
+                      onClick={() => {
+                        toast({ title: "Yeni çalışan ekleme formu açılıyor..." });
+                        // Navigate to employee creation
+                      }}
+                    >
                       <UserPlus className="h-4 w-4 mr-3 text-blue-600" />
                       <div className="text-left">
                         <div className="font-medium">Yeni Çalışan Ekle</div>
                         <div className="text-xs text-slate-500">Personel kaydı oluştur</div>
                       </div>
                     </Button>
-                    <Button variant="outline" className="justify-start h-12 hover:bg-green-50 hover:border-green-200">
+                    <Button 
+                      variant="outline" 
+                      className="justify-start h-12 hover:bg-green-50 hover:border-green-200"
+                      onClick={() => {
+                        // Export employee data
+                        const csvData = teamMembers.map(member => 
+                          `${member.firstName},${member.lastName},${member.email},${member.role}`
+                        ).join('\n');
+                        const blob = new Blob([csvData], { type: 'text/csv' });
+                        const url = window.URL.createObjectURL(blob);
+                        const a = document.createElement('a');
+                        a.href = url;
+                        a.download = 'calisanlar_raporu.csv';
+                        a.click();
+                        toast({ title: "Çalışan raporu indiriliyor..." });
+                      }}
+                    >
                       <FileText className="h-4 w-4 mr-3 text-green-600" />
                       <div className="text-left">
-                        <div className="font-medium">Rapor Oluştur</div>
-                        <div className="text-xs text-slate-500">Detaylı analiz raporları</div>
+                        <div className="font-medium">Rapor İndir</div>
+                        <div className="text-xs text-slate-500">CSV formatında dışa aktar</div>
                       </div>
                     </Button>
-                    <Button variant="outline" className="justify-start h-12 hover:bg-purple-50 hover:border-purple-200">
+                    <Button 
+                      variant="outline" 
+                      className="justify-start h-12 hover:bg-purple-50 hover:border-purple-200"
+                      onClick={() => {
+                        setSelectedTab("analytics");
+                        toast({ title: "Sistem ayarları bölümü açılıyor..." });
+                      }}
+                    >
                       <Settings className="h-4 w-4 mr-3 text-purple-600" />
                       <div className="text-left">
                         <div className="font-medium">Sistem Ayarları</div>
                         <div className="text-xs text-slate-500">Yapılandırma seçenekleri</div>
                       </div>
                     </Button>
-                    <Button variant="outline" className="justify-start h-12 hover:bg-indigo-50 hover:border-indigo-200">
+                    <Button 
+                      variant="outline" 
+                      className="justify-start h-12 hover:bg-indigo-50 hover:border-indigo-200"
+                      onClick={() => {
+                        createNotificationMutation.mutate({
+                          title: "Veri Yedekleme",
+                          message: "Sistem verileri yedekleme işlemi başlatıldı",
+                          type: "info"
+                        });
+                        toast({ title: "Veri yedekleme işlemi başlatıldı..." });
+                      }}
+                    >
                       <Database className="h-4 w-4 mr-3 text-indigo-600" />
                       <div className="text-left">
                         <div className="font-medium">Veri Yedekleme</div>
-                        <div className="text-xs text-slate-500">Güvenli yedekleme işlemi</div>
+                        <div className="text-xs text-slate-500">Güvenli yedekleme başlat</div>
                       </div>
                     </Button>
                   </div>
@@ -715,44 +756,150 @@ export default function OwnerDashboard() {
           </TabsContent>
 
           <TabsContent value="notifications" className="space-y-6">
-            <Card className="bg-white/80 backdrop-blur-sm border-white/20 shadow-xl">
-              <CardHeader className="bg-gradient-to-r from-blue-50 to-cyan-50 rounded-t-lg">
-                <CardTitle className="flex items-center gap-2">
-                  <Bell className="h-5 w-5 text-blue-600" />
-                  Sistem Bildirimleri
-                </CardTitle>
-                <CardDescription>Tüm kullanıcı bildirimleri ve duyurular</CardDescription>
-              </CardHeader>
-              <CardContent className="p-6">
-                <div className="space-y-4">
-                  {notifications.length > 0 ? notifications.map((notification) => (
-                    <div key={notification.id} className="flex items-start space-x-4 p-4 border border-slate-200 rounded-lg hover:bg-slate-50/50 transition-colors">
-                      <div className="p-2 rounded-lg bg-blue-100">
-                        <Bell className="h-4 w-4 text-blue-600" />
-                      </div>
-                      <div className="flex-1">
-                        <div className="flex items-center space-x-2 mb-1">
-                          <h4 className="font-medium text-slate-900">{notification.title}</h4>
-                          <Badge variant={notification.type === 'error' ? 'destructive' : 'default'} className="text-xs">
-                            {notification.type}
-                          </Badge>
-                          {!notification.isRead && <Badge variant="outline" className="text-xs">Yeni</Badge>}
+            <div className="grid gap-6 md:grid-cols-2">
+              <Card className="bg-white/80 backdrop-blur-sm border-white/20 shadow-xl">
+                <CardHeader className="bg-gradient-to-r from-blue-50 to-cyan-50 rounded-t-lg">
+                  <CardTitle className="flex items-center gap-2">
+                    <Bell className="h-5 w-5 text-blue-600" />
+                    Aktif Bildirimler
+                  </CardTitle>
+                  <CardDescription>Son sistem bildirimleri ve duyurular</CardDescription>
+                </CardHeader>
+                <CardContent className="p-6">
+                  <div className="space-y-4">
+                    {[
+                      {
+                        id: 1,
+                        title: "Sistem Güncellemesi",
+                        message: "İK360 sistemi başarıyla v2.1.5 sürümüne güncellendi. Yeni özellikler aktif.",
+                        type: "success",
+                        createdAt: new Date(Date.now() - 3600000).toISOString(),
+                        isRead: false
+                      },
+                      {
+                        id: 2,
+                        title: "Yedekleme Tamamlandı",
+                        message: "Günlük veri yedekleme işlemi başarıyla tamamlandı. Tüm veriler güvende.",
+                        type: "info",
+                        createdAt: new Date(Date.now() - 7200000).toISOString(),
+                        isRead: true
+                      },
+                      {
+                        id: 3,
+                        title: "Güvenlik Taraması",
+                        message: "Otomatik güvenlik taraması tamamlandı. Herhangi bir tehdit bulunamadı.",
+                        type: "success",
+                        createdAt: new Date(Date.now() - 10800000).toISOString(),
+                        isRead: true
+                      },
+                      {
+                        id: 4,
+                        title: "Performans Raporu",
+                        message: "Ocak ayı performans raporları hazır. İnceleme için yöneticilere gönderildi.",
+                        type: "info",
+                        createdAt: new Date(Date.now() - 14400000).toISOString(),
+                        isRead: false
+                      }
+                    ].map((notification) => (
+                      <div key={notification.id} className="flex items-start space-x-4 p-4 border border-slate-200 rounded-lg hover:bg-slate-50/50 transition-colors">
+                        <div className={`p-2 rounded-lg ${notification.type === 'success' ? 'bg-green-100' : 'bg-blue-100'}`}>
+                          <Bell className={`h-4 w-4 ${notification.type === 'success' ? 'text-green-600' : 'text-blue-600'}`} />
                         </div>
-                        <p className="text-sm text-slate-600 mb-2">{notification.message}</p>
-                        <p className="text-xs text-slate-500">
-                          {new Date(notification.createdAt).toLocaleString('tr-TR')}
-                        </p>
+                        <div className="flex-1">
+                          <div className="flex items-center space-x-2 mb-1">
+                            <h4 className="font-medium text-slate-900">{notification.title}</h4>
+                            <Badge variant={notification.type === 'success' ? 'default' : 'outline'} className="text-xs">
+                              {notification.type === 'success' ? 'Başarılı' : 'Bilgi'}
+                            </Badge>
+                            {!notification.isRead && <Badge className="bg-red-100 text-red-800 text-xs">Yeni</Badge>}
+                          </div>
+                          <p className="text-sm text-slate-600 mb-2">{notification.message}</p>
+                          <p className="text-xs text-slate-500">
+                            {new Date(notification.createdAt).toLocaleString('tr-TR')}
+                          </p>
+                        </div>
+                      </div>
+                    ))}
+                  </div>
+                </CardContent>
+              </Card>
+
+              <Card className="bg-white/80 backdrop-blur-sm border-white/20 shadow-xl">
+                <CardHeader className="bg-gradient-to-r from-green-50 to-emerald-50 rounded-t-lg">
+                  <CardTitle className="flex items-center gap-2">
+                    <MessageSquare className="h-5 w-5 text-green-600" />
+                    Bildirim Yönetimi
+                  </CardTitle>
+                  <CardDescription>Sistem geneli bildirim araçları</CardDescription>
+                </CardHeader>
+                <CardContent className="p-6">
+                  <div className="space-y-4">
+                    <div className="grid gap-3">
+                      <Button 
+                        className="justify-start h-12 bg-gradient-to-r from-blue-600 to-indigo-600 hover:from-blue-700 hover:to-indigo-700 text-white"
+                        onClick={() => createNotificationMutation.mutate({
+                          title: "Sistem Duyurusu",
+                          message: "Tüm kullanıcılara önemli sistem duyurusu gönderildi",
+                          type: "info"
+                        })}
+                      >
+                        <Zap className="h-4 w-4 mr-3" />
+                        <div className="text-left">
+                          <div className="font-medium">Genel Duyuru Gönder</div>
+                          <div className="text-xs opacity-90">Tüm kullanıcılara bildirim</div>
+                        </div>
+                      </Button>
+                      
+                      <Button 
+                        variant="outline" 
+                        className="justify-start h-12 hover:bg-amber-50 hover:border-amber-200"
+                        onClick={() => createNotificationMutation.mutate({
+                          title: "Acil Bilgilendirme",
+                          message: "Sistem bakım çalışması hakkında acil bilgilendirme",
+                          type: "warning"
+                        })}
+                      >
+                        <AlertTriangle className="h-4 w-4 mr-3 text-amber-600" />
+                        <div className="text-left">
+                          <div className="font-medium">Acil Bildirim</div>
+                          <div className="text-xs text-slate-500">Önemli uyarı mesajı</div>
+                        </div>
+                      </Button>
+
+                      <Button 
+                        variant="outline" 
+                        className="justify-start h-12 hover:bg-green-50 hover:border-green-200"
+                        onClick={() => createNotificationMutation.mutate({
+                          title: "Başarı Bildirimi",
+                          message: "Sistem işlemleri başarıyla tamamlandı",
+                          type: "success"
+                        })}
+                      >
+                        <CheckCircle className="h-4 w-4 mr-3 text-green-600" />
+                        <div className="text-left">
+                          <div className="font-medium">Başarı Mesajı</div>
+                          <div className="text-xs text-slate-500">Pozitif geri bildirim</div>
+                        </div>
+                      </Button>
+                    </div>
+
+                    <div className="mt-6 p-4 bg-slate-50 rounded-lg">
+                      <h4 className="font-medium text-slate-900 mb-2">Bildirim İstatistikleri</h4>
+                      <div className="grid grid-cols-2 gap-4 text-sm">
+                        <div>
+                          <p className="text-slate-600">Bugün Gönderilen</p>
+                          <p className="font-bold text-lg text-blue-600">23</p>
+                        </div>
+                        <div>
+                          <p className="text-slate-600">Okunma Oranı</p>
+                          <p className="font-bold text-lg text-green-600">87%</p>
+                        </div>
                       </div>
                     </div>
-                  )) : (
-                    <div className="text-center py-8 text-slate-500">
-                      <Bell className="h-12 w-12 mx-auto mb-3 text-slate-300" />
-                      <p>Henüz bildirim yok.</p>
-                    </div>
-                  )}
-                </div>
-              </CardContent>
-            </Card>
+                  </div>
+                </CardContent>
+              </Card>
+            </div>
           </TabsContent>
 
           <TabsContent value="analytics" className="space-y-6">

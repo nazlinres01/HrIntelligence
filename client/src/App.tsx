@@ -21,7 +21,7 @@ import Help from "@/pages/help";
 import Settings from "@/pages/settings";
 import Notifications from "@/pages/notifications";
 import Team from "@/pages/team";
-import Profile from "@/pages/profile";
+
 import Landing from "@/pages/landing";
 import Login from "@/pages/login";
 import Register from "@/pages/register";
@@ -80,7 +80,6 @@ function Router() {
       {permissions.canManageTeam && <Route path="/team" component={Team} />}
       
       {/* Always available routes */}
-      <Route path="/profile" component={Profile} />
       <Route path="/notifications" component={Notifications} />
       <Route path="/settings" component={Settings} />
       <Route path="/help" component={Help} />
