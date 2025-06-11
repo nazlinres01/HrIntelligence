@@ -440,12 +440,12 @@ export default function Landing() {
                 <span className="text-blue-100">Demo hesabı ile sistemi deneyin</span>
               </div>
               <div className="bg-blue-800/30 rounded-lg p-4 text-sm">
-                <div className="text-blue-200 font-medium mb-2">👑 Patron Hesabı:</div>
+                <div className="text-blue-200 font-medium mb-2">👑 Admin Hesabı:</div>
                 <div className="text-blue-100">
-                  E-posta: <span className="font-mono bg-blue-900/50 px-2 py-1 rounded">patron@techcorp.com.tr</span>
+                  E-posta: <span className="font-mono bg-blue-900/50 px-2 py-1 rounded">admin@gmail.com</span>
                 </div>
                 <div className="text-blue-100 mt-1">
-                  Şifre: <span className="font-mono bg-blue-900/50 px-2 py-1 rounded">patron123</span>
+                  Şifre: <span className="font-mono bg-blue-900/50 px-2 py-1 rounded">admin123</span>
                 </div>
               </div>
             </div>
