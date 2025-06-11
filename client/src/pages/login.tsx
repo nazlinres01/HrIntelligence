@@ -74,7 +74,7 @@ export default function Login() {
     }
 
     // VPN/Proxy detection (basic)
-    if (navigator.connection && (navigator.connection as any).type === 'none') {
+    if ((navigator as any).connection && (navigator as any).connection.type === 'none') {
       warnings.push("Ağ bağlantısı anormalliği tespit edildi");
     }
 
