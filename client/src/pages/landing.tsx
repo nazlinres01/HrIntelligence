@@ -2,10 +2,12 @@ import { useState } from "react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Alert, AlertDescription } from "@/components/ui/alert";
-import { Eye, EyeOff, Mail, Lock, Building2, Users, BarChart3, CheckCircle, Shield } from "lucide-react";
+import { Eye, EyeOff, Mail, Lock, Building2, Users, BarChart3, CheckCircle, Shield, User, Zap } from "lucide-react";
 import { Link } from "wouter";
 import { queryClient } from "@/lib/queryClient";
+import { roleLabels, type UserRole } from "@/lib/permissions";
 
 export default function Landing() {
   const [isLoginMode, setIsLoginMode] = useState(true);
@@ -13,6 +15,17 @@ export default function Landing() {
   const [loginData, setLoginData] = useState({
     email: "",
     password: "",
+  });
+  const [registerData, setRegisterData] = useState({
+    firstName: "",
+    lastName: "",
+    email: "",
+    password: "",
+    role: "employee" as UserRole,
+    companyName: "",
+    phone: "",
+    department: "",
+    position: "",
   });
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState("");
@@ -47,6 +60,40 @@ export default function Landing() {
     }
   };
 
+  const handleRegisterSubmit = async (e: React.FormEvent) => {
+    e.preventDefault();
+    setIsLoading(true);
+    setError("");
+    
+    try {
+      const response = await fetch('/api/register', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify(registerData),
+      });
+
+      const data = await response.json();
+
+      if (response.ok) {
+        queryClient.invalidateQueries({ queryKey: ['/api/auth/user'] });
+        window.location.href = '/dashboard';
+      } else {
+        setError(data.message || 'Kayıt başarısız');
+      }
+    } catch (error) {
+      console.error('Register error:', error);
+      setError('Kayıt sırasında bir hata oluştu');
+    } finally {
+      setIsLoading(false);
+    }
+  };
+
+  const isOwner = registerData.role === 'owner';
+  const isHRRole = registerData.role === 'hr_manager' || registerData.role === 'hr_specialist';
+  const isDepartmentOrEmployee = registerData.role === 'department_manager' || registerData.role === 'employee';
+
   return (
     <div className="min-h-screen flex">
       {/* Sol Taraf - Login Form */}
@@ -59,7 +106,7 @@ export default function Landing() {
               <h1 className="text-3xl font-bold text-gray-900">İK360</h1>
             </div>
             <p className="text-gray-600">
-              {isLoginMode ? "Hesabınıza Giriş Yapın" : "Kayıt için ayrı sayfamızı kullanın"}
+              {isLoginMode ? "Hesabınıza Giriş Yapın" : "Yeni Hesap Oluşturun"}
             </p>
           </div>
 
@@ -149,34 +196,188 @@ export default function Landing() {
                 {isLoading ? "Giriş yapılıyor..." : "Giriş Yap"}
               </Button>
 
-              <div className="text-center text-xs text-gray-500 mt-4">
-                Hesabınız yok mu?{" "}
-                <Link href="/register" className="text-blue-600 hover:text-blue-700 font-medium">
-                  Kayıt olun
-                </Link>
-              </div>
             </form>
           ) : (
-            /* Register Redirect */
-            <div className="text-center space-y-4">
-              <p className="text-gray-600">
-                Detaylı kayıt için ayrı sayfamızı kullanın
-              </p>
-              <Link href="/register">
-                <Button className="w-full h-12 bg-blue-600 hover:bg-blue-700 text-white font-medium rounded-lg transition-colors">
-                  Kayıt Sayfasına Git
-                </Button>
-              </Link>
-              <div className="text-center text-xs text-gray-500 mt-4">
-                Zaten hesabınız var mı?{" "}
-                <button 
-                  onClick={() => setIsLoginMode(true)}
-                  className="text-blue-600 hover:text-blue-700 font-medium"
-                >
-                  Giriş yapın
-                </button>
+            /* Register Form */
+            <form onSubmit={handleRegisterSubmit} className="space-y-6">
+              <div className="space-y-4">
+                <div className="grid grid-cols-2 gap-3">
+                  <div>
+                    <Label htmlFor="firstName" className="text-sm font-medium text-gray-700">
+                      Ad
+                    </Label>
+                    <Input
+                      id="firstName"
+                      type="text"
+                      placeholder="Adınız"
+                      value={registerData.firstName}
+                      onChange={(e) => setRegisterData(prev => ({ ...prev, firstName: e.target.value }))}
+                      className="h-12 border-gray-300 focus:border-blue-500 focus:ring-blue-500"
+                      required
+                    />
+                  </div>
+
+                  <div>
+                    <Label htmlFor="lastName" className="text-sm font-medium text-gray-700">
+                      Soyad
+                    </Label>
+                    <Input
+                      id="lastName"
+                      type="text"
+                      placeholder="Soyadınız"
+                      value={registerData.lastName}
+                      onChange={(e) => setRegisterData(prev => ({ ...prev, lastName: e.target.value }))}
+                      className="h-12 border-gray-300 focus:border-blue-500 focus:ring-blue-500"
+                      required
+                    />
+                  </div>
+                </div>
+
+                <div>
+                  <Label htmlFor="role" className="text-sm font-medium text-gray-700">
+                    Rol Seçimi
+                  </Label>
+                  <Select value={registerData.role} onValueChange={(value: UserRole) => setRegisterData(prev => ({ ...prev, role: value }))}>
+                    <SelectTrigger className="h-12">
+                      <SelectValue placeholder="Rolünüzü seçin" />
+                    </SelectTrigger>
+                    <SelectContent>
+                      <SelectItem value="owner">👑 {roleLabels.owner}</SelectItem>
+                      <SelectItem value="hr_manager">🛡️ {roleLabels.hr_manager}</SelectItem>
+                      <SelectItem value="hr_specialist">👥 {roleLabels.hr_specialist}</SelectItem>
+                      <SelectItem value="department_manager">📋 {roleLabels.department_manager}</SelectItem>
+                      <SelectItem value="employee">👤 {roleLabels.employee}</SelectItem>
+                    </SelectContent>
+                  </Select>
+                </div>
+
+                {/* Şirket adı - sadece patron için */}
+                {isOwner && (
+                  <div>
+                    <Label htmlFor="companyName" className="text-sm font-medium text-gray-700">
+                      Şirket Adı
+                    </Label>
+                    <div className="relative mt-1">
+                      <Building2 className="absolute left-3 top-1/2 transform -translate-y-1/2 h-5 w-5 text-gray-400" />
+                      <Input
+                        id="companyName"
+                        type="text"
+                        placeholder="Şirket Adınız"
+                        value={registerData.companyName}
+                        onChange={(e) => setRegisterData(prev => ({ ...prev, companyName: e.target.value }))}
+                        className="pl-10 h-12 border-gray-300 focus:border-blue-500 focus:ring-blue-500"
+                        required
+                      />
+                    </div>
+                  </div>
+                )}
+
+                {/* Telefon - patron ve İK rolleri için */}
+                {(isOwner || isHRRole) && (
+                  <div>
+                    <Label htmlFor="phone" className="text-sm font-medium text-gray-700">
+                      Telefon Numarası
+                    </Label>
+                    <Input
+                      id="phone"
+                      type="tel"
+                      placeholder="0532 XXX XX XX"
+                      value={registerData.phone}
+                      onChange={(e) => setRegisterData(prev => ({ ...prev, phone: e.target.value }))}
+                      className="h-12 border-gray-300 focus:border-blue-500 focus:ring-blue-500"
+                      required
+                    />
+                  </div>
+                )}
+
+                {/* Departman ve pozisyon - departman müdürü ve çalışan için */}
+                {isDepartmentOrEmployee && (
+                  <>
+                    <div>
+                      <Label htmlFor="department" className="text-sm font-medium text-gray-700">
+                        Departman
+                      </Label>
+                      <Input
+                        id="department"
+                        type="text"
+                        placeholder="Hangi departmanda çalışıyorsunuz?"
+                        value={registerData.department}
+                        onChange={(e) => setRegisterData(prev => ({ ...prev, department: e.target.value }))}
+                        className="h-12 border-gray-300 focus:border-blue-500 focus:ring-blue-500"
+                        required
+                      />
+                    </div>
+
+                    <div>
+                      <Label htmlFor="position" className="text-sm font-medium text-gray-700">
+                        Pozisyon
+                      </Label>
+                      <Input
+                        id="position"
+                        type="text"
+                        placeholder="Pozisyonunuz nedir?"
+                        value={registerData.position}
+                        onChange={(e) => setRegisterData(prev => ({ ...prev, position: e.target.value }))}
+                        className="h-12 border-gray-300 focus:border-blue-500 focus:ring-blue-500"
+                        required
+                      />
+                    </div>
+                  </>
+                )}
+
+                <div>
+                  <Label htmlFor="register-email" className="text-sm font-medium text-gray-700">
+                    E-posta Adresi
+                  </Label>
+                  <div className="relative mt-1">
+                    <Mail className="absolute left-3 top-1/2 transform -translate-y-1/2 h-5 w-5 text-gray-400" />
+                    <Input
+                      id="register-email"
+                      type="email"
+                      placeholder="ornek@sirket.com"
+                      value={registerData.email}
+                      onChange={(e) => setRegisterData(prev => ({ ...prev, email: e.target.value }))}
+                      className="pl-10 h-12 border-gray-300 focus:border-blue-500 focus:ring-blue-500"
+                      required
+                    />
+                  </div>
+                </div>
+
+                <div>
+                  <Label htmlFor="register-password" className="text-sm font-medium text-gray-700">
+                    Şifre
+                  </Label>
+                  <div className="relative mt-1">
+                    <Lock className="absolute left-3 top-1/2 transform -translate-y-1/2 h-5 w-5 text-gray-400" />
+                    <Input
+                      id="register-password"
+                      type={showPassword ? "text" : "password"}
+                      placeholder="En az 6 karakter"
+                      value={registerData.password}
+                      onChange={(e) => setRegisterData(prev => ({ ...prev, password: e.target.value }))}
+                      className="pl-10 pr-10 h-12 border-gray-300 focus:border-blue-500 focus:ring-blue-500"
+                      required
+                      minLength={6}
+                    />
+                    <button
+                      type="button"
+                      onClick={() => setShowPassword(!showPassword)}
+                      className="absolute right-3 top-1/2 transform -translate-y-1/2 text-gray-400 hover:text-gray-600"
+                    >
+                      {showPassword ? <EyeOff className="h-5 w-5" /> : <Eye className="h-5 w-5" />}
+                    </button>
+                  </div>
+                </div>
               </div>
-            </div>
+
+              <Button
+                type="submit"
+                disabled={isLoading}
+                className="w-full h-12 bg-blue-600 hover:bg-blue-700 text-white font-medium rounded-lg transition-colors"
+              >
+                {isLoading ? "Hesap oluşturuluyor..." : "Hesap Oluştur"}
+              </Button>
+            </form>
           )}
         </div>
       </div>
