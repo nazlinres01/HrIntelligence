@@ -1428,21 +1428,11 @@ export async function registerRoutes(app: Express): Promise<Server> {
     }
   });
 
-  // Audit log endpoints for patron oversight
+  // Audit log endpoints for admin dashboard
   app.get('/api/audit-logs', async (req, res) => {
     try {
-      const userId = (req.session as any)?.userId;
-      if (!userId) {
-        return res.status(401).json({ message: "Unauthorized" });
-      }
-
-      const user = await storage.getUser(userId);
-      if (!user || (user.role !== 'admin' && user.role !== 'owner')) {
-        return res.status(403).json({ message: "Unauthorized - Admin access required" });
-      }
-      
       const limit = parseInt(req.query.limit as string) || 100;
-      const logs = await storage.getAuditLogs(limit, user.companyId ? user.companyId : undefined);
+      const logs = await storage.getAuditLogs(limit);
       res.json(logs);
     } catch (error) {
       console.error('Error fetching audit logs:', error);
@@ -1674,19 +1664,9 @@ export async function registerRoutes(app: Express): Promise<Server> {
     }
   });
 
-  // Admin dashboard specific endpoints for comprehensive management
+  // Admin dashboard - pending time entries
   app.get('/api/time-entries/pending', async (req, res) => {
     try {
-      const userId = (req.session as any)?.userId;
-      if (!userId) {
-        return res.status(401).json({ message: "Unauthorized" });
-      }
-
-      const user = await storage.getUser(userId);
-      if (!user || (user.role !== 'admin' && user.role !== 'owner' && user.role !== 'hr_manager')) {
-        return res.status(403).json({ message: "Unauthorized" });
-      }
-
       const pendingEntries = await storage.getPendingTimeEntries();
       res.json(pendingEntries);
     } catch (error) {

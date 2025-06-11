@@ -587,13 +587,9 @@ export class DatabaseStorage implements IStorage {
   }
 
   async getAuditLogs(limit: number = 100, companyId?: number): Promise<AuditLog[]> {
-    let query = db.select().from(auditLogs).orderBy(desc(auditLogs.createdAt)).limit(limit);
-    
-    if (companyId) {
-      query = query.where(eq(auditLogs.companyId, companyId)) as any;
-    }
-    
-    return await query;
+    return await db.select().from(auditLogs)
+      .orderBy(desc(auditLogs.createdAt))
+      .limit(limit);
   }
 
   async getUserAuditLogs(userId: string, limit: number = 50): Promise<AuditLog[]> {
