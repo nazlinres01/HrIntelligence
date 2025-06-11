@@ -41,10 +41,13 @@ export function AddEmployeeModal({ open, onOpenChange }: AddEmployeeModalProps) 
   });
 
   const createEmployeeMutation = useMutation({
-    mutationFn: (data: InsertEmployee) => apiRequest("POST", "/api/employees", data),
+    mutationFn: async (data: InsertEmployee) => {
+      const response = await apiRequest("POST", "/api/employees", data);
+      return response.json();
+    },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ["/api/employees"] });
-      queryClient.invalidateQueries({ queryKey: ["/api/dashboard/stats"] });
+      queryClient.invalidateQueries({ queryKey: ["/api/stats/dashboard"] });
       toast({
         title: "Başarılı",
         description: "Çalışan başarıyla eklendi",
