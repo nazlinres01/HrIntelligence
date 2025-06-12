@@ -18,9 +18,9 @@ import UserManagement from "@/pages/admin/UserManagement";
 import DepartmentManagement from "@/pages/admin/DepartmentManagement";
 import AnalyticsDashboard from "@/pages/admin/AnalyticsDashboard";
 
-// HR Management Pages
-import JobPostingsManagement from "@/pages/admin/JobPostingsManagement";
-import PayrollManagement from "@/pages/admin/PayrollManagement";
+// Enterprise HR Management Pages
+import EnterpriseJobManagement from "@/pages/admin/EnterpriseJobManagement";
+import EnterprisePayrollCenter from "@/pages/admin/EnterprisePayrollCenter";
 import LeaveManagement from "@/pages/admin/LeaveManagement";
 import PerformanceManagement from "@/pages/admin/PerformanceManagement";
 import TrainingManagement from "@/pages/admin/TrainingManagement";
@@ -99,9 +99,9 @@ function Router() {
             <Route path="/admin/departments" component={DepartmentManagement} />
             <Route path="/admin/analytics" component={AnalyticsDashboard} />
             
-            {/* HR Management Routes */}
-            <Route path="/admin/job-postings" component={JobPostingsManagement} />
-            <Route path="/admin/payroll" component={PayrollManagement} />
+            {/* Enterprise HR Management Routes */}
+            <Route path="/admin/job-postings" component={EnterpriseJobManagement} />
+            <Route path="/admin/payroll" component={EnterprisePayrollCenter} />
             <Route path="/admin/leaves" component={LeaveManagement} />
             <Route path="/admin/performance" component={PerformanceManagement} />
             <Route path="/admin/trainings" component={TrainingManagement} />
