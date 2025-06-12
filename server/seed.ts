@@ -112,6 +112,12 @@ export async function seedDatabase() {
 
 
 
+    // Get created companies for user assignment
+    const createdCompanies = await db.select().from(companies);
+    const microsoftCompany = createdCompanies.find(c => c.name === "Microsoft Türkiye A.Ş.");
+    const garantiCompany = createdCompanies.find(c => c.name === "Garanti BBVA");
+    const arcelikCompany = createdCompanies.find(c => c.name === "Arçelik A.Ş.");
+
     // Create comprehensive user base across different companies
     const allUsers = [
       // System Admin
@@ -197,7 +203,7 @@ export async function seedDatabase() {
         firstName: "Elif",
         lastName: "Çelik",
         phone: "+90 532 555 11 22",
-        companyId: allCompanies[1].id, // Microsoft Türkiye A.Ş.
+        companyId: microsoftCompany?.id || sampleCompany.id,
         role: "hr_manager",
         password: userHashedPassword,
         isActive: true,
@@ -209,7 +215,7 @@ export async function seedDatabase() {
         firstName: "Burak",
         lastName: "Yıldırım",
         phone: "+90 533 666 22 33",
-        companyId: allCompanies[1].id, // Microsoft Türkiye A.Ş.
+        companyId: microsoftCompany?.id || sampleCompany.id,
         role: "hr_specialist",
         password: userHashedPassword,
         isActive: true,
@@ -221,7 +227,7 @@ export async function seedDatabase() {
         firstName: "Selin",
         lastName: "Koç",
         phone: "+90 534 777 33 44",
-        companyId: allCompanies[1].id, // Microsoft Türkiye A.Ş.
+        companyId: microsoftCompany?.id || sampleCompany.id,
         role: "department_manager",
         password: userHashedPassword,
         isActive: true,
@@ -233,7 +239,7 @@ export async function seedDatabase() {
         firstName: "Emre",
         lastName: "Şahin",
         phone: "+90 535 888 44 55",
-        companyId: allCompanies[1].id, // Microsoft Türkiye A.Ş.
+        companyId: microsoftCompany?.id || sampleCompany.id,
         role: "employee",
         password: userHashedPassword,
         isActive: true,
@@ -247,7 +253,7 @@ export async function seedDatabase() {
         firstName: "Gökhan",
         lastName: "Akın",
         phone: "+90 532 999 55 66",
-        companyId: allCompanies[2].id, // Garanti BBVA
+        companyId: garantiCompany?.id || sampleCompany.id,
         role: "hr_manager",
         password: userHashedPassword,
         isActive: true,
@@ -259,7 +265,7 @@ export async function seedDatabase() {
         firstName: "Deniz",
         lastName: "Kurt",
         phone: "+90 533 111 66 77",
-        companyId: allCompanies[2].id, // Garanti BBVA
+        companyId: garantiCompany?.id || sampleCompany.id,
         role: "hr_specialist",
         password: userHashedPassword,
         isActive: true,
@@ -271,7 +277,7 @@ export async function seedDatabase() {
         firstName: "Ceren",
         lastName: "Bağ",
         phone: "+90 534 222 77 88",
-        companyId: allCompanies[2].id, // Garanti BBVA
+        companyId: garantiCompany?.id || sampleCompany.id,
         role: "employee",
         password: userHashedPassword,
         isActive: true,
@@ -285,7 +291,7 @@ export async function seedDatabase() {
         firstName: "Tuğba",
         lastName: "Aksoy",
         phone: "+90 535 333 88 99",
-        companyId: allCompanies[3].id, // Arçelik A.Ş.
+        companyId: arcelikCompany?.id || sampleCompany.id,
         role: "hr_manager",
         password: userHashedPassword,
         isActive: true,
@@ -297,7 +303,7 @@ export async function seedDatabase() {
         firstName: "Okan",
         lastName: "Güler",
         phone: "+90 536 444 99 00",
-        companyId: allCompanies[3].id, // Arçelik A.Ş.
+        companyId: arcelikCompany?.id || sampleCompany.id,
         role: "department_manager",
         password: userHashedPassword,
         isActive: true,
@@ -309,7 +315,7 @@ export async function seedDatabase() {
         firstName: "İrem",
         lastName: "Yılmaz",
         phone: "+90 537 555 00 11",
-        companyId: allCompanies[3].id, // Arçelik A.Ş.
+        companyId: arcelikCompany?.id || sampleCompany.id,
         role: "employee",
         password: userHashedPassword,
         isActive: false, // Inactive user for testing
@@ -335,7 +341,7 @@ export async function seedDatabase() {
         firstName: "Leyla",
         lastName: "Durmuş",
         phone: "+90 539 777 22 33",
-        companyId: allCompanies[1].id, // Microsoft Türkiye A.Ş.
+        companyId: microsoftCompany?.id || sampleCompany.id,
         role: "employee",
         password: userHashedPassword,
         isActive: true,
