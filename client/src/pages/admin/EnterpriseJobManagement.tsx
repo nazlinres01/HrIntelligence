@@ -7,7 +7,7 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
-import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog";
+import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle, DialogTrigger, DialogFooter } from "@/components/ui/dialog";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
 import { useToast } from "@/hooks/use-toast";
 import { apiRequest } from "@/lib/queryClient";
@@ -46,127 +46,35 @@ interface JobPosting {
   status: string;
   departmentId: number;
   companyId: number;
+  applicationCount?: number;
   createdAt: string;
   updatedAt: string;
-  applicationCount?: number;
-  priority: string;
-  experienceLevel: string;
 }
 
 export default function EnterpriseJobManagement() {
   const [isDialogOpen, setIsDialogOpen] = useState(false);
   const [editingJob, setEditingJob] = useState<JobPosting | null>(null);
   const [searchTerm, setSearchTerm] = useState("");
-  const [statusFilter, setStatusFilter] = useState<string>("all");
-  const [departmentFilter, setDepartmentFilter] = useState<string>("all");
+  const [statusFilter, setStatusFilter] = useState("all");
+  const [departmentFilter, setDepartmentFilter] = useState("all");
+  const [formData, setFormData] = useState({
+    title: "",
+    description: "",
+    requirements: "",
+    location: "",
+    salary: "",
+    type: "",
+    status: "active",
+    departmentId: "",
+    companyId: ""
+  });
+
   const { toast } = useToast();
   const queryClient = useQueryClient();
 
-  // Enterprise-grade job data
-  const jobPostings = [
-    {
-      id: 1,
-      title: "Senior Enterprise Architect",
-      description: "Enterprise düzeyinde sistem mimarisi tasarımı ve yönetimi. Büyük ölçekli projelerde teknik liderlik.",
-      requirements: "10+ yıl deneyim, Enterprise Architecture, Microservices, Cloud Native, TOGAF sertifikası",
-      location: "İstanbul Finansal Merkez",
-      salary: "45,000 - 65,000 TL",
-      type: "full-time",
-      status: "active",
-      departmentId: 1,
-      companyId: 1,
-      createdAt: "2024-12-01T00:00:00Z",
-      updatedAt: "2024-12-01T00:00:00Z",
-      applicationCount: 12,
-      priority: "high",
-      experienceLevel: "senior"
-    },
-    {
-      id: 2,
-      title: "Chief Technology Officer (CTO)",
-      description: "Şirketin teknoloji stratejisini belirleyecek ve teknoloji ekiplerini yönetecek üst düzey yönetici pozisyonu.",
-      requirements: "15+ yıl teknoloji deneyimi, 5+ yıl C-level deneyim, Teknoloji stratejisi, Takım yönetimi",
-      location: "İstanbul Merkez",
-      salary: "80,000 - 120,000 TL",
-      type: "full-time",
-      status: "active",
-      departmentId: 1,
-      companyId: 1,
-      createdAt: "2024-11-25T00:00:00Z",
-      updatedAt: "2024-11-25T00:00:00Z",
-      applicationCount: 8,
-      priority: "critical",
-      experienceLevel: "executive"
-    },
-    {
-      id: 3,
-      title: "Enterprise Data Scientist",
-      description: "Büyük veri setleri ile makine öğrenmesi ve AI modelleri geliştirme, iş zekası çözümleri oluşturma.",
-      requirements: "PhD/MSc veri bilimi, Python, R, TensorFlow, PyTorch, SQL, Big Data teknolojileri",
-      location: "İstanbul/Ankara",
-      salary: "35,000 - 50,000 TL",
-      type: "full-time",
-      status: "active",
-      departmentId: 2,
-      companyId: 1,
-      createdAt: "2024-12-03T00:00:00Z",
-      updatedAt: "2024-12-03T00:00:00Z",
-      applicationCount: 25,
-      priority: "high",
-      experienceLevel: "senior"
-    },
-    {
-      id: 4,
-      title: "Corporate Security Manager",
-      description: "Kurumsal siber güvenlik stratejilerini yönetme, güvenlik politikaları oluşturma ve uygulama.",
-      requirements: "CISSP, CISM sertifikaları, 8+ yıl siber güvenlik deneyimi, Risk management",
-      location: "İstanbul",
-      salary: "40,000 - 55,000 TL",
-      type: "full-time",
-      status: "urgent",
-      departmentId: 3,
-      companyId: 1,
-      createdAt: "2024-11-28T00:00:00Z",
-      updatedAt: "2024-12-01T00:00:00Z",
-      applicationCount: 15,
-      priority: "critical",
-      experienceLevel: "senior"
-    },
-    {
-      id: 5,
-      title: "Strategic Business Analyst",
-      description: "İş süreçlerini analiz etme, stratejik planlama ve corporate transformation projelerinde rol alma.",
-      requirements: "MBA, 5+ yıl business analysis, Strategic planning, Process optimization, Consulting background",
-      location: "İstanbul",
-      salary: "28,000 - 38,000 TL",
-      type: "full-time",
-      status: "active",
-      departmentId: 4,
-      companyId: 1,
-      createdAt: "2024-12-05T00:00:00Z",
-      updatedAt: "2024-12-05T00:00:00Z",
-      applicationCount: 31,
-      priority: "medium",
-      experienceLevel: "mid-senior"
-    },
-    {
-      id: 6,
-      title: "Global Product Manager",
-      description: "Uluslararası pazarlara yönelik ürün geliştirme stratejileri ve roadmap yönetimi.",
-      requirements: "Product management, International markets, Agile/Scrum, Data-driven decision making",
-      location: "İstanbul/Remote",
-      salary: "32,000 - 45,000 TL",
-      type: "hybrid",
-      status: "active",
-      departmentId: 5,
-      companyId: 1,
-      createdAt: "2024-11-30T00:00:00Z",
-      updatedAt: "2024-11-30T00:00:00Z",
-      applicationCount: 19,
-      priority: "high",
-      experienceLevel: "senior"
-    }
-  ];
+  const { data: jobPostings = [], isLoading } = useQuery({
+    queryKey: ["/api/jobs"],
+  });
 
   const { data: departments = [] } = useQuery({
     queryKey: ["/api/departments"],
@@ -176,306 +84,521 @@ export default function EnterpriseJobManagement() {
     queryKey: ["/api/companies"],
   });
 
-  const isLoading = false;
+  const createJobMutation = useMutation({
+    mutationFn: async (data: any) => {
+      return await apiRequest("POST", "/api/jobs", data);
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ["/api/jobs"] });
+      setIsDialogOpen(false);
+      resetForm();
+      toast({
+        title: "Başarılı",
+        description: "İş ilanı başarıyla oluşturuldu",
+      });
+    },
+    onError: (error: any) => {
+      toast({
+        title: "Hata",
+        description: error.message || "İş ilanı oluşturulurken hata oluştu",
+        variant: "destructive",
+      });
+    },
+  });
+
+  const updateJobMutation = useMutation({
+    mutationFn: async (data: any) => {
+      return await apiRequest("PUT", `/api/jobs/${editingJob?.id}`, data);
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ["/api/jobs"] });
+      setIsDialogOpen(false);
+      setEditingJob(null);
+      resetForm();
+      toast({
+        title: "Başarılı",
+        description: "İş ilanı başarıyla güncellendi",
+      });
+    },
+    onError: (error: any) => {
+      toast({
+        title: "Hata",
+        description: error.message || "İş ilanı güncellenirken hata oluştu",
+        variant: "destructive",
+      });
+    },
+  });
+
+  const deleteJobMutation = useMutation({
+    mutationFn: async (id: number) => {
+      return await apiRequest("DELETE", `/api/jobs/${id}`);
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ["/api/jobs"] });
+      toast({
+        title: "Başarılı",
+        description: "İş ilanı başarıyla silindi",
+      });
+    },
+    onError: (error: any) => {
+      toast({
+        title: "Hata",
+        description: error.message || "İş ilanı silinirken hata oluştu",
+        variant: "destructive",
+      });
+    },
+  });
+
+  const resetForm = () => {
+    setFormData({
+      title: "",
+      description: "",
+      requirements: "",
+      location: "",
+      salary: "",
+      type: "",
+      status: "active",
+      departmentId: "",
+      companyId: ""
+    });
+  };
+
+  const handleEdit = (job: JobPosting) => {
+    setEditingJob(job);
+    setFormData({
+      title: job.title || "",
+      description: job.description || "",
+      requirements: job.requirements || "",
+      location: job.location || "",
+      salary: job.salary || "",
+      type: job.type || "",
+      status: job.status || "active",
+      departmentId: job.departmentId?.toString() || "",
+      companyId: job.companyId?.toString() || ""
+    });
+    setIsDialogOpen(true);
+  };
+
+  const handleSubmit = (e: React.FormEvent) => {
+    e.preventDefault();
+    
+    const jobData = {
+      title: formData.title,
+      description: formData.description,
+      requirements: formData.requirements,
+      location: formData.location,
+      salary: formData.salary,
+      type: formData.type,
+      status: formData.status,
+      departmentId: formData.departmentId ? parseInt(formData.departmentId) : null,
+      companyId: formData.companyId ? parseInt(formData.companyId) : null
+    };
+
+    if (editingJob) {
+      updateJobMutation.mutate(jobData);
+    } else {
+      createJobMutation.mutate(jobData);
+    }
+  };
 
   const getStatusBadge = (status: string) => {
     switch (status) {
       case "active":
-        return <Badge className="bg-emerald-500 text-white">Aktif İlan</Badge>;
-      case "urgent":
-        return <Badge className="bg-red-500 text-white animate-pulse">Acil</Badge>;
-      case "paused":
-        return <Badge className="bg-amber-500 text-white">Askıda</Badge>;
+        return <Badge className="bg-green-100 text-green-800">Aktif</Badge>;
       case "closed":
-        return <Badge className="bg-gray-500 text-white">Kapatıldı</Badge>;
+        return <Badge className="bg-gray-100 text-gray-800">Kapalı</Badge>;
+      case "urgent":
+        return <Badge className="bg-red-100 text-red-800">Acil</Badge>;
       default:
         return <Badge variant="outline">{status}</Badge>;
     }
   };
 
-  const getPriorityIcon = (priority: string) => {
-    switch (priority) {
-      case "critical":
-        return <Star className="h-4 w-4 text-red-500 fill-red-500" />;
-      case "high":
-        return <Star className="h-4 w-4 text-orange-500 fill-orange-500" />;
-      case "medium":
-        return <Star className="h-4 w-4 text-blue-500" />;
+  const getTypeBadge = (type: string) => {
+    switch (type) {
+      case "full-time":
+        return <Badge className="bg-blue-100 text-blue-800">Tam Zamanlı</Badge>;
+      case "part-time":
+        return <Badge className="bg-purple-100 text-purple-800">Yarı Zamanlı</Badge>;
+      case "contract":
+        return <Badge className="bg-orange-100 text-orange-800">Sözleşmeli</Badge>;
+      case "internship":
+        return <Badge className="bg-yellow-100 text-yellow-800">Staj</Badge>;
       default:
-        return <Star className="h-4 w-4 text-gray-400" />;
+        return <Badge variant="outline">{type}</Badge>;
     }
   };
 
-  const getExperienceLevel = (level: string) => {
-    switch (level) {
-      case "executive":
-        return <Badge className="bg-purple-600 text-white">C-Level</Badge>;
-      case "senior":
-        return <Badge className="bg-blue-600 text-white">Senior</Badge>;
-      case "mid-senior":
-        return <Badge className="bg-green-600 text-white">Mid-Senior</Badge>;
-      default:
-        return <Badge variant="outline">{level}</Badge>;
-    }
+  const getDepartmentName = (departmentId: number) => {
+    const department = Array.isArray(departments) ? departments.find((d: any) => d.id === departmentId) : null;
+    return department?.name || "Atanmamış";
   };
 
-  const filteredJobs = jobPostings.filter((job: JobPosting) => {
+  const filteredJobs = Array.isArray(jobPostings) ? jobPostings.filter((job: JobPosting) => {
     const matchesSearch = job.title.toLowerCase().includes(searchTerm.toLowerCase()) ||
                          job.description.toLowerCase().includes(searchTerm.toLowerCase());
     const matchesStatus = statusFilter === "all" || job.status === statusFilter;
     const matchesDepartment = departmentFilter === "all" || job.departmentId.toString() === departmentFilter;
     return matchesSearch && matchesStatus && matchesDepartment;
-  });
+  }) : [];
 
   const totalApplications = filteredJobs.reduce((sum, job) => sum + (job.applicationCount || 0), 0);
   const activeJobs = filteredJobs.filter(job => job.status === "active").length;
   const urgentJobs = filteredJobs.filter(job => job.status === "urgent").length;
-  const avgApplicationsPerJob = filteredJobs.length > 0 ? Math.round(totalApplications / filteredJobs.length) : 0;
+
+  if (isLoading) {
+    return (
+      <div className="p-6">
+        <div className="flex items-center justify-center h-64">
+          <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-blue-600"></div>
+        </div>
+      </div>
+    );
+  }
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-slate-50 via-blue-50 to-indigo-50 dark:from-gray-900 dark:via-gray-800 dark:to-gray-900">
-      {/* Enterprise Header */}
-      <div className="bg-white dark:bg-gray-800 shadow-lg border-b-4 border-blue-600">
-        <div className="max-w-7xl mx-auto px-6 py-8">
+    <div className="min-h-screen bg-gradient-to-br from-gray-50 via-white to-gray-100 p-6">
+      <div className="max-w-7xl mx-auto space-y-8">
+        
+        {/* Enterprise Header */}
+        <div className="bg-gradient-to-r from-white via-gray-50 to-white rounded-2xl p-8 text-gray-800 shadow-2xl border border-gray-200">
           <div className="flex items-center justify-between">
-            <div className="flex items-center space-x-4">
-              <div className="p-3 bg-gradient-to-r from-blue-600 to-indigo-600 rounded-xl shadow-lg">
-                <Briefcase className="h-8 w-8 text-white" />
+            <div>
+              <div className="flex items-center space-x-4 mb-4">
+                <div className="p-3 bg-blue-50 border border-blue-200 rounded-xl">
+                  <Briefcase className="h-8 w-8 text-blue-600" />
+                </div>
+                <div>
+                  <h1 className="text-4xl font-bold text-gray-800">İş İlanları Yönetimi</h1>
+                  <p className="text-gray-600 text-lg">Kurumsal İnsan Kaynakları ve İşe Alım Süreçleri</p>
+                </div>
               </div>
-              <div>
-                <h1 className="text-3xl font-bold text-gray-900 dark:text-white">
-                  Executive Recruitment Hub
-                </h1>
-                <p className="text-gray-600 dark:text-gray-300 mt-1">
-                  Enterprise-level talent acquisition and strategic hiring management
-                </p>
+              <div className="flex items-center space-x-6 text-gray-700">
+                <div className="flex items-center space-x-2">
+                  <Target className="h-4 w-4 text-blue-600" />
+                  <span className="text-sm">Hedefli İşe Alım</span>
+                </div>
+                <div className="flex items-center space-x-2">
+                  <Award className="h-4 w-4 text-blue-600" />
+                  <span className="text-sm">Kaliteli Adaylar</span>
+                </div>
+                <div className="flex items-center space-x-2">
+                  <TrendingUp className="h-4 w-4 text-blue-600" />
+                  <span className="text-sm">Performans İzleme</span>
+                </div>
               </div>
             </div>
-            <div className="flex items-center space-x-3">
-              <Button variant="outline" className="bg-white border-gray-300 hover:bg-gray-50">
-                <Download className="h-4 w-4 mr-2" />
-                Export Report
-              </Button>
-              <Button className="bg-gradient-to-r from-blue-600 to-indigo-600 hover:from-blue-700 hover:to-indigo-700 text-white shadow-lg">
-                <Plus className="h-4 w-4 mr-2" />
-                Create Position
-              </Button>
+            <div className="text-right">
+              <div className="text-3xl font-bold text-gray-800">{activeJobs}</div>
+              <div className="text-gray-600">Aktif İş İlanı</div>
+              <div className="flex items-center justify-end space-x-1 mt-2">
+                <div className="w-2 h-2 bg-emerald-500 rounded-full animate-pulse"></div>
+                <span className="text-sm text-gray-700">İşe Alım Aktif</span>
+              </div>
             </div>
           </div>
         </div>
-      </div>
 
-      {/* Strategic Metrics Dashboard */}
-      <div className="max-w-7xl mx-auto px-6 py-6">
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-8">
-          <Card className="bg-gradient-to-r from-blue-500 to-blue-600 text-white border-0 shadow-xl">
-            <CardContent className="p-6">
-              <div className="flex items-center justify-between">
-                <div>
-                  <p className="text-blue-100 text-sm font-medium">Total Positions</p>
-                  <p className="text-3xl font-bold">{filteredJobs.length}</p>
-                  <p className="text-blue-100 text-xs mt-1">Active recruitment</p>
-                </div>
-                <Target className="h-12 w-12 text-blue-200" />
-              </div>
-            </CardContent>
-          </Card>
+        {/* Controls */}
+        <div className="flex items-center justify-between">
+          <div className="space-y-2">
+            <h2 className="text-2xl font-semibold text-gray-800">İş İlanları</h2>
+            <p className="text-gray-600">İş ilanlarını oluşturun ve başvuruları yönetin</p>
+          </div>
+          <div className="flex space-x-3">
+            <Button variant="outline" className="border-gray-200 text-gray-700 hover:bg-gray-50">
+              <Download className="mr-2 h-4 w-4" />
+              Rapor İndir
+            </Button>
+            <Dialog open={isDialogOpen} onOpenChange={setIsDialogOpen}>
+              <DialogTrigger asChild>
+                <Button 
+                  onClick={() => {
+                    setEditingJob(null);
+                    resetForm();
+                  }}
+                  className="bg-gradient-to-r from-blue-600 to-indigo-600 hover:from-blue-700 hover:to-indigo-700 text-white shadow-lg"
+                >
+                  <Plus className="mr-2 h-4 w-4" />
+                  Yeni İş İlanı
+                </Button>
+              </DialogTrigger>
+              <DialogContent className="bg-white border-gray-200 max-w-3xl">
+                <DialogHeader>
+                  <DialogTitle className="text-gray-800">
+                    {editingJob ? "İş İlanı Düzenle" : "Yeni İş İlanı Oluştur"}
+                  </DialogTitle>
+                  <DialogDescription className="text-gray-600">
+                    {editingJob ? "İş ilanı bilgilerini güncelleyin" : "Yeni bir iş ilanı oluşturun"}
+                  </DialogDescription>
+                </DialogHeader>
+                <form onSubmit={handleSubmit} className="space-y-6">
+                  <div className="grid grid-cols-2 gap-4">
+                    <div className="space-y-2">
+                      <Label htmlFor="title" className="text-gray-700">İş Başlığı</Label>
+                      <Input
+                        id="title"
+                        value={formData.title}
+                        onChange={(e) => setFormData({ ...formData, title: e.target.value })}
+                        required
+                        className="bg-white border-gray-200"
+                      />
+                    </div>
+                    <div className="space-y-2">
+                      <Label htmlFor="location" className="text-gray-700">Lokasyon</Label>
+                      <Input
+                        id="location"
+                        value={formData.location}
+                        onChange={(e) => setFormData({ ...formData, location: e.target.value })}
+                        required
+                        className="bg-white border-gray-200"
+                      />
+                    </div>
+                  </div>
 
-          <Card className="bg-gradient-to-r from-emerald-500 to-emerald-600 text-white border-0 shadow-xl">
-            <CardContent className="p-6">
-              <div className="flex items-center justify-between">
-                <div>
-                  <p className="text-emerald-100 text-sm font-medium">Total Applications</p>
-                  <p className="text-3xl font-bold">{totalApplications}</p>
-                  <p className="text-emerald-100 text-xs mt-1">Candidate pipeline</p>
-                </div>
-                <Users className="h-12 w-12 text-emerald-200" />
-              </div>
-            </CardContent>
-          </Card>
+                  <div className="space-y-2">
+                    <Label htmlFor="description" className="text-gray-700">İş Açıklaması</Label>
+                    <Textarea
+                      id="description"
+                      value={formData.description}
+                      onChange={(e) => setFormData({ ...formData, description: e.target.value })}
+                      required
+                      rows={4}
+                      className="bg-white border-gray-200"
+                    />
+                  </div>
 
-          <Card className="bg-gradient-to-r from-amber-500 to-orange-500 text-white border-0 shadow-xl">
-            <CardContent className="p-6">
-              <div className="flex items-center justify-between">
-                <div>
-                  <p className="text-amber-100 text-sm font-medium">Urgent Positions</p>
-                  <p className="text-3xl font-bold">{urgentJobs}</p>
-                  <p className="text-amber-100 text-xs mt-1">Immediate attention</p>
-                </div>
-                <TrendingUp className="h-12 w-12 text-amber-200" />
-              </div>
-            </CardContent>
-          </Card>
+                  <div className="space-y-2">
+                    <Label htmlFor="requirements" className="text-gray-700">Gereksinimler</Label>
+                    <Textarea
+                      id="requirements"
+                      value={formData.requirements}
+                      onChange={(e) => setFormData({ ...formData, requirements: e.target.value })}
+                      required
+                      rows={3}
+                      className="bg-white border-gray-200"
+                    />
+                  </div>
 
-          <Card className="bg-gradient-to-r from-purple-500 to-purple-600 text-white border-0 shadow-xl">
-            <CardContent className="p-6">
-              <div className="flex items-center justify-between">
-                <div>
-                  <p className="text-purple-100 text-sm font-medium">Avg Applications</p>
-                  <p className="text-3xl font-bold">{avgApplicationsPerJob}</p>
-                  <p className="text-purple-100 text-xs mt-1">Per position</p>
-                </div>
-                <Award className="h-12 w-12 text-purple-200" />
-              </div>
-            </CardContent>
-          </Card>
+                  <div className="grid grid-cols-3 gap-4">
+                    <div className="space-y-2">
+                      <Label htmlFor="salary" className="text-gray-700">Maaş</Label>
+                      <Input
+                        id="salary"
+                        value={formData.salary}
+                        onChange={(e) => setFormData({ ...formData, salary: e.target.value })}
+                        className="bg-white border-gray-200"
+                      />
+                    </div>
+                    <div className="space-y-2">
+                      <Label htmlFor="type" className="text-gray-700">Çalışma Türü</Label>
+                      <Select value={formData.type} onValueChange={(value) => setFormData({ ...formData, type: value })}>
+                        <SelectTrigger className="bg-white border-gray-200">
+                          <SelectValue placeholder="Tür seçin" />
+                        </SelectTrigger>
+                        <SelectContent>
+                          <SelectItem value="full-time">Tam Zamanlı</SelectItem>
+                          <SelectItem value="part-time">Yarı Zamanlı</SelectItem>
+                          <SelectItem value="contract">Sözleşmeli</SelectItem>
+                          <SelectItem value="internship">Staj</SelectItem>
+                        </SelectContent>
+                      </Select>
+                    </div>
+                    <div className="space-y-2">
+                      <Label htmlFor="status" className="text-gray-700">Durum</Label>
+                      <Select value={formData.status} onValueChange={(value) => setFormData({ ...formData, status: value })}>
+                        <SelectTrigger className="bg-white border-gray-200">
+                          <SelectValue placeholder="Durum seçin" />
+                        </SelectTrigger>
+                        <SelectContent>
+                          <SelectItem value="active">Aktif</SelectItem>
+                          <SelectItem value="closed">Kapalı</SelectItem>
+                          <SelectItem value="urgent">Acil</SelectItem>
+                        </SelectContent>
+                      </Select>
+                    </div>
+                  </div>
+
+                  <div className="grid grid-cols-2 gap-4">
+                    <div className="space-y-2">
+                      <Label htmlFor="department" className="text-gray-700">Departman</Label>
+                      <Select value={formData.departmentId} onValueChange={(value) => setFormData({ ...formData, departmentId: value })}>
+                        <SelectTrigger className="bg-white border-gray-200">
+                          <SelectValue placeholder="Departman seçin" />
+                        </SelectTrigger>
+                        <SelectContent>
+                          <SelectItem value="">Departman seçmeyin</SelectItem>
+                          {Array.isArray(departments) && departments.map((department: any) => (
+                            <SelectItem key={department.id} value={department.id.toString()}>
+                              {department.name}
+                            </SelectItem>
+                          ))}
+                        </SelectContent>
+                      </Select>
+                    </div>
+                    <div className="space-y-2">
+                      <Label htmlFor="company" className="text-gray-700">Şirket</Label>
+                      <Select value={formData.companyId} onValueChange={(value) => setFormData({ ...formData, companyId: value })}>
+                        <SelectTrigger className="bg-white border-gray-200">
+                          <SelectValue placeholder="Şirket seçin" />
+                        </SelectTrigger>
+                        <SelectContent>
+                          <SelectItem value="">Şirket seçmeyin</SelectItem>
+                          {Array.isArray(companies) && companies.map((company: any) => (
+                            <SelectItem key={company.id} value={company.id.toString()}>
+                              {company.name}
+                            </SelectItem>
+                          ))}
+                        </SelectContent>
+                      </Select>
+                    </div>
+                  </div>
+
+                  <DialogFooter>
+                    <Button type="button" variant="outline" onClick={() => setIsDialogOpen(false)}>
+                      İptal
+                    </Button>
+                    <Button 
+                      type="submit" 
+                      className="bg-gradient-to-r from-blue-600 to-indigo-600 hover:from-blue-700 hover:to-indigo-700"
+                      disabled={createJobMutation.isPending || updateJobMutation.isPending}
+                    >
+                      {editingJob ? "Güncelle" : "Oluştur"}
+                    </Button>
+                  </DialogFooter>
+                </form>
+              </DialogContent>
+            </Dialog>
+          </div>
         </div>
 
-        {/* Advanced Filtering System */}
-        <Card className="bg-white dark:bg-gray-800 shadow-xl border-0 mb-8">
-          <CardHeader className="pb-4">
-            <div className="flex items-center justify-between">
-              <div className="flex items-center space-x-2">
-                <Filter className="h-5 w-5 text-gray-600" />
-                <CardTitle className="text-lg">Strategic Filters</CardTitle>
-              </div>
-              <Button variant="ghost" size="sm">Reset All</Button>
-            </div>
-          </CardHeader>
-          <CardContent>
-            <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+        {/* Filters */}
+        <Card className="bg-white border-gray-200 shadow-lg">
+          <CardContent className="p-6">
+            <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
               <div className="relative">
-                <Search className="absolute left-3 top-3 h-4 w-4 text-gray-400" />
+                <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-gray-400" />
                 <Input
-                  placeholder="Search positions, skills, requirements..."
+                  placeholder="İş ilanı ara..."
                   value={searchTerm}
                   onChange={(e) => setSearchTerm(e.target.value)}
-                  className="pl-10 bg-gray-50 border-gray-200 focus:border-blue-500"
+                  className="pl-10 bg-white border-gray-200"
                 />
               </div>
+              
               <Select value={statusFilter} onValueChange={setStatusFilter}>
-                <SelectTrigger className="bg-gray-50 border-gray-200 focus:border-blue-500">
-                  <SelectValue placeholder="Status Filter" />
+                <SelectTrigger className="bg-white border-gray-200">
+                  <Filter className="h-4 w-4 mr-2" />
+                  <SelectValue placeholder="Durum Filtresi" />
                 </SelectTrigger>
                 <SelectContent>
-                  <SelectItem value="all">All Statuses</SelectItem>
-                  <SelectItem value="active">Active</SelectItem>
-                  <SelectItem value="urgent">Urgent</SelectItem>
-                  <SelectItem value="paused">Paused</SelectItem>
-                  <SelectItem value="closed">Closed</SelectItem>
+                  <SelectItem value="all">Tüm Durumlar</SelectItem>
+                  <SelectItem value="active">Aktif</SelectItem>
+                  <SelectItem value="closed">Kapalı</SelectItem>
+                  <SelectItem value="urgent">Acil</SelectItem>
                 </SelectContent>
               </Select>
+
               <Select value={departmentFilter} onValueChange={setDepartmentFilter}>
-                <SelectTrigger className="bg-gray-50 border-gray-200 focus:border-blue-500">
-                  <SelectValue placeholder="Department Filter" />
+                <SelectTrigger className="bg-white border-gray-200">
+                  <Building2 className="h-4 w-4 mr-2" />
+                  <SelectValue placeholder="Departman Filtresi" />
                 </SelectTrigger>
                 <SelectContent>
-                  <SelectItem value="all">All Departments</SelectItem>
-                  <SelectItem value="1">Technology</SelectItem>
-                  <SelectItem value="2">Data Science</SelectItem>
-                  <SelectItem value="3">Security</SelectItem>
-                  <SelectItem value="4">Strategy</SelectItem>
-                  <SelectItem value="5">Product</SelectItem>
+                  <SelectItem value="all">Tüm Departmanlar</SelectItem>
+                  {Array.isArray(departments) && departments.map((department: any) => (
+                    <SelectItem key={department.id} value={department.id.toString()}>
+                      {department.name}
+                    </SelectItem>
+                  ))}
                 </SelectContent>
               </Select>
+
+              <div className="text-right">
+                <p className="text-sm text-gray-600">
+                  <span className="font-medium">{filteredJobs.length}</span> ilan gösteriliyor
+                </p>
+              </div>
             </div>
           </CardContent>
         </Card>
 
-        {/* Executive Positions Table */}
-        <Card className="bg-white dark:bg-gray-800 shadow-xl border-0">
-          <CardHeader className="border-b border-gray-100 dark:border-gray-700">
-            <div className="flex items-center justify-between">
-              <CardTitle className="text-xl font-semibold">Executive Positions Pipeline</CardTitle>
-              <div className="flex items-center space-x-2">
-                <Button variant="ghost" size="sm">
-                  <MoreVertical className="h-4 w-4" />
-                </Button>
-              </div>
-            </div>
-          </CardHeader>
+        {/* Jobs Table */}
+        <Card className="bg-white border-gray-200 shadow-lg">
           <CardContent className="p-0">
-            <div className="overflow-x-auto">
-              <Table>
-                <TableHeader className="bg-gray-50 dark:bg-gray-700">
-                  <TableRow>
-                    <TableHead className="font-semibold">Position & Priority</TableHead>
-                    <TableHead className="font-semibold">Level & Location</TableHead>
-                    <TableHead className="font-semibold">Compensation</TableHead>
-                    <TableHead className="font-semibold">Pipeline</TableHead>
-                    <TableHead className="font-semibold">Status</TableHead>
-                    <TableHead className="font-semibold">Timeline</TableHead>
-                    <TableHead className="font-semibold text-right">Actions</TableHead>
+            <Table>
+              <TableHeader>
+                <TableRow className="border-gray-200">
+                  <TableHead className="text-gray-700 font-semibold">İş Başlığı</TableHead>
+                  <TableHead className="text-gray-700 font-semibold">Departman</TableHead>
+                  <TableHead className="text-gray-700 font-semibold">Lokasyon</TableHead>
+                  <TableHead className="text-gray-700 font-semibold">Tür</TableHead>
+                  <TableHead className="text-gray-700 font-semibold">Durum</TableHead>
+                  <TableHead className="text-gray-700 font-semibold">Başvurular</TableHead>
+                  <TableHead className="text-gray-700 font-semibold">İşlemler</TableHead>
+                </TableRow>
+              </TableHeader>
+              <TableBody>
+                {filteredJobs.map((job: JobPosting) => (
+                  <TableRow key={job.id} className="border-gray-200 hover:bg-gray-50">
+                    <TableCell>
+                      <div>
+                        <div className="font-medium text-gray-900">{job.title}</div>
+                        <div className="text-sm text-gray-600">{job.salary}</div>
+                      </div>
+                    </TableCell>
+                    <TableCell className="text-gray-700">
+                      {getDepartmentName(job.departmentId)}
+                    </TableCell>
+                    <TableCell className="text-gray-700">
+                      <div className="flex items-center space-x-1">
+                        <MapPin className="h-3 w-3 text-gray-400" />
+                        <span>{job.location}</span>
+                      </div>
+                    </TableCell>
+                    <TableCell>
+                      {getTypeBadge(job.type)}
+                    </TableCell>
+                    <TableCell>
+                      {getStatusBadge(job.status)}
+                    </TableCell>
+                    <TableCell>
+                      <div className="flex items-center space-x-1">
+                        <Users className="h-3 w-3 text-gray-400" />
+                        <span className="text-gray-700">{job.applicationCount || 0}</span>
+                      </div>
+                    </TableCell>
+                    <TableCell>
+                      <div className="flex items-center space-x-2">
+                        <Button
+                          variant="outline"
+                          size="sm"
+                          onClick={() => handleEdit(job)}
+                          className="text-blue-600 border-blue-200 hover:bg-blue-50"
+                        >
+                          <Edit className="h-3 w-3" />
+                        </Button>
+                        <Button
+                          variant="outline"
+                          size="sm"
+                          className="text-green-600 border-green-200 hover:bg-green-50"
+                        >
+                          <Eye className="h-3 w-3" />
+                        </Button>
+                        <Button
+                          variant="outline"
+                          size="sm"
+                          onClick={() => deleteJobMutation.mutate(job.id)}
+                          className="text-red-600 border-red-200 hover:bg-red-50"
+                        >
+                          <Trash2 className="h-3 w-3" />
+                        </Button>
+                      </div>
+                    </TableCell>
                   </TableRow>
-                </TableHeader>
-                <TableBody>
-                  {filteredJobs.map((job: JobPosting) => (
-                    <TableRow key={job.id} className="hover:bg-gray-50 dark:hover:bg-gray-700 border-b border-gray-100">
-                      <TableCell className="py-4">
-                        <div className="flex items-start space-x-3">
-                          {getPriorityIcon(job.priority)}
-                          <div>
-                            <h3 className="font-semibold text-gray-900 dark:text-white text-sm">
-                              {job.title}
-                            </h3>
-                            <p className="text-gray-500 text-xs mt-1 max-w-xs truncate">
-                              {job.description}
-                            </p>
-                          </div>
-                        </div>
-                      </TableCell>
-                      <TableCell>
-                        <div className="space-y-1">
-                          {getExperienceLevel(job.experienceLevel)}
-                          <div className="flex items-center text-gray-500 text-xs">
-                            <MapPin className="h-3 w-3 mr-1" />
-                            {job.location}
-                          </div>
-                        </div>
-                      </TableCell>
-                      <TableCell>
-                        <div className="flex items-center text-gray-900 dark:text-white">
-                          <DollarSign className="h-4 w-4 mr-1 text-green-600" />
-                          <span className="font-medium text-sm">{job.salary}</span>
-                        </div>
-                      </TableCell>
-                      <TableCell>
-                        <div className="flex items-center space-x-2">
-                          <Users className="h-4 w-4 text-blue-600" />
-                          <span className="font-semibold text-blue-600">{job.applicationCount}</span>
-                          <span className="text-gray-500 text-xs">candidates</span>
-                        </div>
-                      </TableCell>
-                      <TableCell>{getStatusBadge(job.status)}</TableCell>
-                      <TableCell>
-                        <div className="flex items-center text-gray-500 text-xs">
-                          <Calendar className="h-3 w-3 mr-1" />
-                          {new Date(job.createdAt).toLocaleDateString("en-US", { 
-                            month: "short", 
-                            day: "numeric" 
-                          })}
-                        </div>
-                      </TableCell>
-                      <TableCell className="text-right">
-                        <div className="flex justify-end space-x-1">
-                          <Button variant="ghost" size="sm" className="h-8 w-8 p-0">
-                            <Eye className="h-4 w-4" />
-                          </Button>
-                          <Button variant="ghost" size="sm" className="h-8 w-8 p-0">
-                            <Edit className="h-4 w-4" />
-                          </Button>
-                          <Button variant="ghost" size="sm" className="h-8 w-8 p-0 text-red-600 hover:text-red-700">
-                            <Trash2 className="h-4 w-4" />
-                          </Button>
-                        </div>
-                      </TableCell>
-                    </TableRow>
-                  ))}
-                </TableBody>
-              </Table>
-              
-              {filteredJobs.length === 0 && (
-                <div className="text-center py-12">
-                  <Briefcase className="h-16 w-16 text-gray-300 mx-auto mb-4" />
-                  <h3 className="text-lg font-medium text-gray-900 dark:text-white mb-2">
-                    No positions found
-                  </h3>
-                  <p className="text-gray-500 dark:text-gray-400">
-                    Adjust your filters or create a new position to get started.
-                  </p>
-                </div>
-              )}
-            </div>
+                ))}
+              </TableBody>
+            </Table>
           </CardContent>
         </Card>
       </div>
