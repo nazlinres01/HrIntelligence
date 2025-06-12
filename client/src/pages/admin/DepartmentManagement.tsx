@@ -15,6 +15,8 @@ import { useToast } from "@/hooks/use-toast";
 export default function DepartmentManagement() {
   const [isDialogOpen, setIsDialogOpen] = useState(false);
   const [editingDepartment, setEditingDepartment] = useState<any>(null);
+  const [searchTerm, setSearchTerm] = useState("");
+  const [selectedCompany, setSelectedCompany] = useState("all");
   const [formData, setFormData] = useState({
     name: "",
     description: "",
@@ -40,41 +42,67 @@ export default function DepartmentManagement() {
   });
 
   const createDepartmentMutation = useMutation({
-    mutationFn: (data: any) => apiRequest("/api/departments", { method: "POST", body: data }),
+    mutationFn: async (data: any) => {
+      return await apiRequest("POST", "/api/departments", data);
+    },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ["/api/departments"] });
       setIsDialogOpen(false);
       resetForm();
-      toast({ title: "Başarılı", description: "Departman başarıyla oluşturuldu" });
+      toast({
+        title: "Başarılı",
+        description: "Departman başarıyla oluşturuldu.",
+      });
     },
-    onError: () => {
-      toast({ title: "Hata", description: "Departman oluşturulurken hata oluştu", variant: "destructive" });
-    }
+    onError: (error: Error) => {
+      toast({
+        title: "Hata",
+        description: error.message,
+        variant: "destructive",
+      });
+    },
   });
 
   const updateDepartmentMutation = useMutation({
-    mutationFn: (data: any) => apiRequest(`/api/departments/${editingDepartment.id}`, { method: "PUT", body: data }),
+    mutationFn: async (data: any) => {
+      return await apiRequest("PUT", `/api/departments/${editingDepartment.id}`, data);
+    },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ["/api/departments"] });
       setIsDialogOpen(false);
       resetForm();
-      setEditingDepartment(null);
-      toast({ title: "Başarılı", description: "Departman başarıyla güncellendi" });
+      toast({
+        title: "Başarılı",
+        description: "Departman başarıyla güncellendi.",
+      });
     },
-    onError: () => {
-      toast({ title: "Hata", description: "Departman güncellenirken hata oluştu", variant: "destructive" });
-    }
+    onError: (error: Error) => {
+      toast({
+        title: "Hata",
+        description: error.message,
+        variant: "destructive",
+      });
+    },
   });
 
   const deleteDepartmentMutation = useMutation({
-    mutationFn: (id: number) => apiRequest(`/api/departments/${id}`, { method: "DELETE" }),
+    mutationFn: async (id: number) => {
+      return await apiRequest("DELETE", `/api/departments/${id}`, undefined);
+    },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ["/api/departments"] });
-      toast({ title: "Başarılı", description: "Departman başarıyla silindi" });
+      toast({
+        title: "Başarılı",
+        description: "Departman başarıyla silindi.",
+      });
     },
-    onError: () => {
-      toast({ title: "Hata", description: "Departman silinirken hata oluştu", variant: "destructive" });
-    }
+    onError: (error: Error) => {
+      toast({
+        title: "Hata",
+        description: error.message,
+        variant: "destructive",
+      });
+    },
   });
 
   const resetForm = () => {
@@ -86,6 +114,7 @@ export default function DepartmentManagement() {
       budget: "",
       goals: ""
     });
+    setEditingDepartment(null);
   };
 
   const handleEdit = (department: any) => {
@@ -96,9 +125,15 @@ export default function DepartmentManagement() {
       companyId: department.companyId?.toString() || "",
       managerId: department.managerId?.toString() || "",
       budget: department.budget?.toString() || "",
-      goals: department.goals?.join(", ") || ""
+      goals: department.goals || ""
     });
     setIsDialogOpen(true);
+  };
+
+  const handleDelete = (id: number) => {
+    if (confirm("Bu departmanı silmek istediğinizden emin misiniz?")) {
+      deleteDepartmentMutation.mutate(id);
+    }
   };
 
   const handleSubmit = (e: React.FormEvent) => {
@@ -109,8 +144,8 @@ export default function DepartmentManagement() {
       description: formData.description,
       companyId: parseInt(formData.companyId),
       managerId: formData.managerId ? parseInt(formData.managerId) : null,
-      budget: formData.budget ? parseFloat(formData.budget) : 0,
-      goals: formData.goals.split(",").map(g => g.trim()).filter(g => g)
+      budget: formData.budget ? parseFloat(formData.budget) : null,
+      goals: formData.goals
     };
 
     if (editingDepartment) {
@@ -120,22 +155,22 @@ export default function DepartmentManagement() {
     }
   };
 
-  const formatBudget = (budget: number) => {
-    return new Intl.NumberFormat('tr-TR', {
-      style: 'currency',
-      currency: 'TRY'
-    }).format(budget);
-  };
-
   const getCompanyName = (companyId: number) => {
-    const company = companies.find((c: any) => c.id === companyId);
+    const company = Array.isArray(companies) ? companies.find((c: any) => c.id === companyId) : null;
     return company?.name || "Bilinmeyen Şirket";
   };
 
   const getManagerName = (managerId: number) => {
-    const manager = employees.find((e: any) => e.id === managerId);
+    const manager = Array.isArray(employees) ? employees.find((e: any) => e.id === managerId) : null;
     return manager ? `${manager.firstName} ${manager.lastName}` : "Atanmamış";
   };
+
+  // Filter departments based on search and company
+  const filteredDepartments = Array.isArray(departments) ? departments.filter((department: any) => {
+    const matchesSearch = department.name?.toLowerCase().includes(searchTerm.toLowerCase());
+    const matchesCompany = selectedCompany === "all" || department.companyId?.toString() === selectedCompany;
+    return matchesSearch && matchesCompany;
+  }) : [];
 
   if (isLoading) {
     return (
@@ -256,11 +291,11 @@ export default function DepartmentManagement() {
             <Input
               placeholder="Departman ara..."
               className="pl-10"
-              // value={searchTerm}
-              // onChange={(e) => setSearchTerm(e.target.value)}
+              value={searchTerm}
+              onChange={(e) => setSearchTerm(e.target.value)}
             />
           </div>
-          <Select defaultValue="all">
+          <Select value={selectedCompany} onValueChange={setSelectedCompany}>
             <SelectTrigger className="w-48">
               <Filter className="h-4 w-4 mr-2" />
               <SelectValue placeholder="Şirket filtrele" />
@@ -286,198 +321,67 @@ export default function DepartmentManagement() {
         </div>
       </div>
 
-      {/* Dialog for Creating/Editing Department */}
-      <Dialog open={isDialogOpen} onOpenChange={setIsDialogOpen}>
-        <DialogContent className="sm:max-w-[500px]">
-            <DialogHeader>
-              <DialogTitle>{editingDepartment ? "Departman Düzenle" : "Yeni Departman Ekle"}</DialogTitle>
-              <DialogDescription>
-                Departman bilgilerini doldurun ve kaydedin.
-              </DialogDescription>
-            </DialogHeader>
-            <form onSubmit={handleSubmit} className="space-y-4">
-              <div className="grid grid-cols-2 gap-4">
-                <div>
-                  <Label htmlFor="name">Departman Adı</Label>
-                  <Input
-                    id="name"
-                    value={formData.name}
-                    onChange={(e) => setFormData({...formData, name: e.target.value})}
-                    required
-                  />
-                </div>
-                <div>
-                  <Label htmlFor="companyId">Şirket</Label>
-                  <Select value={formData.companyId} onValueChange={(value) => setFormData({...formData, companyId: value})}>
-                    <SelectTrigger>
-                      <SelectValue placeholder="Şirket seçin" />
-                    </SelectTrigger>
-                    <SelectContent>
-                      {companies.map((company: any) => (
-                        <SelectItem key={company.id} value={company.id.toString()}>
-                          {company.name}
-                        </SelectItem>
-                      ))}
-                    </SelectContent>
-                  </Select>
-                </div>
-              </div>
-              <div>
-                <Label htmlFor="description">Açıklama</Label>
-                <Textarea
-                  id="description"
-                  value={formData.description}
-                  onChange={(e) => setFormData({...formData, description: e.target.value})}
-                  rows={3}
-                />
-              </div>
-              <div className="grid grid-cols-2 gap-4">
-                <div>
-                  <Label htmlFor="managerId">Departman Müdürü</Label>
-                  <Select value={formData.managerId} onValueChange={(value) => setFormData({...formData, managerId: value})}>
-                    <SelectTrigger>
-                      <SelectValue placeholder="Müdür seçin" />
-                    </SelectTrigger>
-                    <SelectContent>
-                      <SelectItem value="">Atanmamış</SelectItem>
-                      {employees.map((employee: any) => (
-                        <SelectItem key={employee.id} value={employee.id.toString()}>
-                          {employee.firstName} {employee.lastName}
-                        </SelectItem>
-                      ))}
-                    </SelectContent>
-                  </Select>
-                </div>
-                <div>
-                  <Label htmlFor="budget">Bütçe (TRY)</Label>
-                  <Input
-                    id="budget"
-                    type="number"
-                    value={formData.budget}
-                    onChange={(e) => setFormData({...formData, budget: e.target.value})}
-                    placeholder="0"
-                  />
-                </div>
-              </div>
-              <div>
-                <Label htmlFor="goals">Hedefler (virgülle ayırın)</Label>
-                <Textarea
-                  id="goals"
-                  value={formData.goals}
-                  onChange={(e) => setFormData({...formData, goals: e.target.value})}
-                  placeholder="Satış artışı, Müşteri memnuniyeti, Kalite iyileştirme"
-                  rows={2}
-                />
-              </div>
-              <DialogFooter>
-                <Button type="button" variant="outline" onClick={() => setIsDialogOpen(false)}>
-                  İptal
-                </Button>
-                <Button type="submit" disabled={createDepartmentMutation.isPending || updateDepartmentMutation.isPending}>
-                  {editingDepartment ? "Güncelle" : "Oluştur"}
-                </Button>
-              </DialogFooter>
-            </form>
-          </DialogContent>
-        </Dialog>
-      </div>
-
-      <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-3">
-        {departments.map((department: any) => (
-          <Card key={department.id} className="hover:shadow-lg transition-shadow duration-200">
-            <CardHeader>
-              <div className="flex items-start justify-between">
-                <div className="flex items-center space-x-3">
-                  <div className="p-2 bg-purple-100 dark:bg-purple-900 rounded-lg">
-                    <Target className="h-6 w-6 text-purple-600 dark:text-purple-400" />
+      {/* Department Cards */}
+      {filteredDepartments.length > 0 ? (
+        <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-3">
+          {filteredDepartments.map((department: any) => (
+            <Card key={department.id} className="hover:shadow-lg transition-shadow duration-200 bg-white dark:bg-gray-800">
+              <CardHeader>
+                <div className="flex items-start justify-between">
+                  <div className="flex items-center space-x-3">
+                    <div className="p-2 bg-purple-100 dark:bg-purple-900 rounded-lg">
+                      <Target className="h-6 w-6 text-purple-600 dark:text-purple-400" />
+                    </div>
+                    <div>
+                      <CardTitle className="text-lg">{department.name}</CardTitle>
+                      <CardDescription>{getCompanyName(department.companyId)}</CardDescription>
+                    </div>
                   </div>
-                  <div>
-                    <CardTitle className="text-lg">{department.name}</CardTitle>
-                    <CardDescription>{getCompanyName(department.companyId)}</CardDescription>
-                  </div>
+                  <Badge variant="outline">
+                    {department.employeeCount || 0} çalışan
+                  </Badge>
                 </div>
-                <Badge variant="outline">
-                  {department.employeeCount || 0} çalışan
-                </Badge>
-              </div>
-            </CardHeader>
-            <CardContent>
-              <div className="space-y-3">
-                {department.description && (
-                  <p className="text-sm text-gray-600 dark:text-gray-400 line-clamp-2">
-                    {department.description}
-                  </p>
-                )}
-                
-                <div className="space-y-2">
+              </CardHeader>
+              <CardContent>
+                <div className="space-y-3">
                   <div className="flex items-center justify-between text-sm">
-                    <div className="flex items-center text-gray-600 dark:text-gray-400">
-                      <User className="h-4 w-4 mr-2" />
-                      Müdür
+                    <span className="font-medium text-gray-600 dark:text-gray-400">Müdür:</span>
+                    <span className="text-gray-900 dark:text-white">{getManagerName(department.managerId)}</span>
+                  </div>
+                  {department.budget && (
+                    <div className="flex items-center justify-between text-sm">
+                      <span className="font-medium text-gray-600 dark:text-gray-400">Bütçe:</span>
+                      <span className="text-gray-900 dark:text-white">₺{department.budget?.toLocaleString()}</span>
                     </div>
-                    <span className="font-medium">{getManagerName(department.managerId)}</span>
-                  </div>
-                  
-                  <div className="flex items-center justify-between text-sm">
-                    <div className="flex items-center text-gray-600 dark:text-gray-400">
-                      <DollarSign className="h-4 w-4 mr-2" />
-                      Bütçe
-                    </div>
-                    <span className="font-medium">{formatBudget(department.budget || 0)}</span>
-                  </div>
-                  
-                  <div className="flex items-center justify-between text-sm">
-                    <div className="flex items-center text-gray-600 dark:text-gray-400">
-                      <Users className="h-4 w-4 mr-2" />
-                      Çalışan
-                    </div>
-                    <span className="font-medium">{department.employeeCount || 0} kişi</span>
-                  </div>
-                </div>
-
-                {department.goals && department.goals.length > 0 && (
-                  <div className="pt-2 border-t border-gray-200 dark:border-gray-700">
-                    <p className="text-xs text-gray-500 dark:text-gray-400 mb-2">Hedefler:</p>
-                    <div className="flex flex-wrap gap-1">
-                      {department.goals.slice(0, 3).map((goal: string, index: number) => (
-                        <Badge key={index} variant="secondary" className="text-xs">
-                          {goal}
-                        </Badge>
-                      ))}
-                      {department.goals.length > 3 && (
-                        <Badge variant="outline" className="text-xs">
-                          +{department.goals.length - 3} daha
-                        </Badge>
-                      )}
-                    </div>
-                  </div>
-                )}
-
-                <div className="flex items-center justify-between pt-4 border-t border-gray-200 dark:border-gray-700">
-                  <div className="text-xs text-gray-500 dark:text-gray-400">
-                    Oluşturulma: {new Date(department.createdAt).toLocaleDateString('tr-TR')}
-                  </div>
-                  <div className="flex space-x-2">
-                    <Button size="sm" variant="outline" onClick={() => handleEdit(department)}>
+                  )}
+                  {department.description && (
+                    <p className="text-sm text-gray-600 dark:text-gray-400 line-clamp-2">
+                      {department.description}
+                    </p>
+                  )}
+                  <div className="flex justify-end space-x-2 pt-2">
+                    <Button
+                      variant="outline"
+                      size="sm"
+                      onClick={() => handleEdit(department)}
+                    >
                       <Edit className="h-4 w-4" />
                     </Button>
-                    <Button 
-                      size="sm" 
-                      variant="outline" 
-                      onClick={() => deleteDepartmentMutation.mutate(department.id)}
-                      disabled={deleteDepartmentMutation.isPending}
+                    <Button
+                      variant="outline"
+                      size="sm"
+                      onClick={() => handleDelete(department.id)}
+                      className="text-red-600 hover:text-red-700 hover:bg-red-50"
                     >
                       <Trash2 className="h-4 w-4" />
                     </Button>
                   </div>
                 </div>
-              </div>
-            </CardContent>
-          </Card>
-        ))}
-      </div>
-
-      {departments.length === 0 && (
+              </CardContent>
+            </Card>
+          ))}
+        </div>
+      ) : (
         <div className="text-center py-12">
           <Target className="h-12 w-12 text-gray-400 mx-auto mb-4" />
           <h3 className="text-lg font-medium text-gray-900 dark:text-white mb-2">Henüz departman yok</h3>
@@ -488,6 +392,101 @@ export default function DepartmentManagement() {
           </Button>
         </div>
       )}
+
+      {/* Dialog for Creating/Editing Department */}
+      <Dialog open={isDialogOpen} onOpenChange={setIsDialogOpen}>
+        <DialogContent className="sm:max-w-[500px]">
+          <DialogHeader>
+            <DialogTitle>{editingDepartment ? "Departman Düzenle" : "Yeni Departman Ekle"}</DialogTitle>
+            <DialogDescription>
+              Departman bilgilerini doldurun ve kaydedin.
+            </DialogDescription>
+          </DialogHeader>
+          <form onSubmit={handleSubmit} className="space-y-4">
+            <div className="grid grid-cols-2 gap-4">
+              <div>
+                <Label htmlFor="name">Departman Adı</Label>
+                <Input
+                  id="name"
+                  value={formData.name}
+                  onChange={(e) => setFormData({...formData, name: e.target.value})}
+                  required
+                />
+              </div>
+              <div>
+                <Label htmlFor="companyId">Şirket</Label>
+                <Select value={formData.companyId} onValueChange={(value) => setFormData({...formData, companyId: value})}>
+                  <SelectTrigger>
+                    <SelectValue placeholder="Şirket seçin" />
+                  </SelectTrigger>
+                  <SelectContent>
+                    {Array.isArray(companies) && companies.map((company: any) => (
+                      <SelectItem key={company.id} value={company.id.toString()}>
+                        {company.name}
+                      </SelectItem>
+                    ))}
+                  </SelectContent>
+                </Select>
+              </div>
+            </div>
+            <div>
+              <Label htmlFor="description">Açıklama</Label>
+              <Textarea
+                id="description"
+                value={formData.description}
+                onChange={(e) => setFormData({...formData, description: e.target.value})}
+                placeholder="Departman açıklaması..."
+                rows={3}
+              />
+            </div>
+            <div className="grid grid-cols-2 gap-4">
+              <div>
+                <Label htmlFor="managerId">Departman Müdürü</Label>
+                <Select value={formData.managerId} onValueChange={(value) => setFormData({...formData, managerId: value})}>
+                  <SelectTrigger>
+                    <SelectValue placeholder="Müdür seçin" />
+                  </SelectTrigger>
+                  <SelectContent>
+                    {Array.isArray(employees) && employees.map((employee: any) => (
+                      <SelectItem key={employee.id} value={employee.id.toString()}>
+                        {employee.firstName} {employee.lastName}
+                      </SelectItem>
+                    ))}
+                  </SelectContent>
+                </Select>
+              </div>
+              <div>
+                <Label htmlFor="budget">Bütçe (TRY)</Label>
+                <Input
+                  id="budget"
+                  type="number"
+                  value={formData.budget}
+                  onChange={(e) => setFormData({...formData, budget: e.target.value})}
+                  placeholder="0"
+                />
+              </div>
+            </div>
+            <div>
+              <Label htmlFor="goals">Hedefler (virgülle ayırın)</Label>
+              <Textarea
+                id="goals"
+                value={formData.goals}
+                onChange={(e) => setFormData({...formData, goals: e.target.value})}
+                placeholder="Satış artışı, Müşteri memnuniyeti, Kalite iyileştirme"
+                rows={2}
+              />
+            </div>
+            <DialogFooter>
+              <Button type="button" variant="outline" onClick={() => setIsDialogOpen(false)}>
+                İptal
+              </Button>
+              <Button type="submit" disabled={createDepartmentMutation.isPending || updateDepartmentMutation.isPending}>
+                {editingDepartment ? "Güncelle" : "Oluştur"}
+              </Button>
+            </DialogFooter>
+          </form>
+        </DialogContent>
+      </Dialog>
     </div>
   );
 }
