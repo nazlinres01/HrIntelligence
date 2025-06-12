@@ -2,7 +2,8 @@ import express, { type Request, Response, NextFunction } from "express";
 import session from "express-session";
 import { registerRoutes } from "./routes";
 import { setupVite, serveStatic, log } from "./vite";
-import { seedDatabase } from "./seed";
+import "./db"; // Initialize MongoDB connection
+import { seedMongoDatabase } from "./seed-mongo";
 
 const app = express();
 app.use(express.json());
