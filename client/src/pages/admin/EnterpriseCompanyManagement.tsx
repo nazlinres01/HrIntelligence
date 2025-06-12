@@ -199,7 +199,7 @@ export default function EnterpriseCompanyManagement() {
       <div className="max-w-7xl mx-auto space-y-8">
         
         {/* Enterprise Header */}
-        <div className="bg-gradient-to-r from-slate-800 via-gray-800 to-slate-900 rounded-2xl p-8 text-white shadow-2xl">
+        <div className="bg-gradient-to-r from-emerald-600 via-teal-600 to-emerald-700 rounded-2xl p-8 text-white shadow-2xl">
           <div className="flex items-center justify-between">
             <div>
               <div className="flex items-center space-x-4 mb-4">
@@ -208,10 +208,10 @@ export default function EnterpriseCompanyManagement() {
                 </div>
                 <div>
                   <h1 className="text-4xl font-bold">Kurumsal Organizasyon Yönetimi</h1>
-                  <p className="text-slate-300 text-lg">Şirket Hiyerarşisi ve Organizasyonel Yapı Kontrolü</p>
+                  <p className="text-emerald-100 text-lg">Şirket Hiyerarşisi ve Organizasyonel Yapı Kontrolü</p>
                 </div>
               </div>
-              <div className="flex items-center space-x-6 text-slate-300">
+              <div className="flex items-center space-x-6 text-emerald-100">
                 <div className="flex items-center space-x-2">
                   <Shield className="h-4 w-4" />
                   <span className="text-sm">Kurumsal Yönetişim</span>
@@ -228,7 +228,7 @@ export default function EnterpriseCompanyManagement() {
             </div>
             <div className="text-right">
               <div className="text-3xl font-bold">{companyStats.total}</div>
-              <div className="text-slate-300">Toplam Şirket Sayısı</div>
+              <div className="text-emerald-100">Toplam Şirket Sayısı</div>
               <div className="flex items-center justify-end space-x-1 mt-2">
                 <div className="w-2 h-2 bg-emerald-400 rounded-full animate-pulse"></div>
                 <span className="text-sm">Sistem Operasyonel</span>

@@ -283,7 +283,7 @@ export default function EnterpriseSidebar() {
         </div>
 
         {/* Enterprise User Profile */}
-        <div className="p-4 border-t border-gray-200 bg-gray-50">
+        <div className="p-4 border-t border-gray-200 bg-white">
           <div className={cn("flex items-center space-x-3", isCollapsed && "justify-center")}>
             <Avatar className="ring-2 ring-blue-500/30">
               <AvatarImage src={userData.profileImageUrl} />
@@ -316,16 +316,16 @@ export default function EnterpriseSidebar() {
               <Button 
                 variant="ghost" 
                 size="sm" 
-                className="flex-1 text-gray-300 hover:text-white hover:bg-gray-800 justify-start"
+                className="flex-1 text-gray-700 hover:text-blue-600 hover:bg-blue-50 justify-start"
               >
                 <Settings className="h-4 w-4 mr-2" />
-                Settings
+                Ayarlar
               </Button>
               <Button 
                 variant="ghost" 
                 size="sm"
                 onClick={() => logout.mutate()}
-                className="text-gray-300 hover:text-red-400 hover:bg-red-900/20"
+                className="text-gray-700 hover:text-red-600 hover:bg-red-50"
               >
                 <LogOut className="h-4 w-4" />
               </Button>

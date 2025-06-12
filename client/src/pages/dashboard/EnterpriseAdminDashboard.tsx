@@ -146,11 +146,11 @@ export default function EnterpriseAdminDashboard() {
       <div className="max-w-7xl mx-auto space-y-8">
         
         {/* Executive Header */}
-        <div className="bg-gradient-to-r from-slate-800 via-gray-800 to-slate-900 rounded-2xl p-8 text-white shadow-2xl">
+        <div className="bg-gradient-to-r from-blue-600 via-indigo-600 to-blue-700 rounded-2xl p-8 text-white shadow-2xl">
           <div className="flex items-center justify-between">
             <div>
               <h1 className="text-4xl font-bold mb-2">Executive Dashboard</h1>
-              <p className="text-slate-300 text-lg">Kurumsal İnsan Kaynakları Yönetim Sistemi • Gerçek Zamanlı İş Analitiği</p>
+              <p className="text-blue-100 text-lg">Kurumsal İnsan Kaynakları Yönetim Sistemi • Gerçek Zamanlı İş Analitiği</p>
               <div className="flex items-center space-x-6 mt-4">
                 <div className="flex items-center space-x-2">
                   <Shield className="h-4 w-4" />
@@ -168,7 +168,7 @@ export default function EnterpriseAdminDashboard() {
             </div>
             <div className="text-right">
               <div className="text-3xl font-bold">{new Date().toLocaleDateString('tr-TR')}</div>
-              <div className="text-slate-300">Bugün • {new Date().toLocaleTimeString('tr-TR', { hour: '2-digit', minute: '2-digit' })}</div>
+              <div className="text-blue-100">Bugün • {new Date().toLocaleTimeString('tr-TR', { hour: '2-digit', minute: '2-digit' })}</div>
               <div className="flex items-center justify-end space-x-1 mt-2">
                 <div className="w-2 h-2 bg-emerald-400 rounded-full animate-pulse"></div>
                 <span className="text-sm">Sistem Operasyonel</span>
