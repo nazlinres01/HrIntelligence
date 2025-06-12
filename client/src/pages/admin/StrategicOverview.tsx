@@ -57,29 +57,29 @@ export default function StrategicOverview() {
 
   // Strategic metrics calculations
   const getStrategicMetrics = () => {
-    const totalEmployees = employees.length;
-    const totalCompanies = companies.length;
-    const totalDepartments = departments.length;
+    const totalEmployees = (employees as any[]).length;
+    const totalCompanies = (companies as any[]).length;
+    const totalDepartments = (departments as any[]).length;
     
     // Financial metrics
-    const totalPayrollCost = payrolls.reduce((sum: number, payroll: any) => {
+    const totalPayrollCost = (payrolls as any[]).reduce((sum: number, payroll: any) => {
       return sum + (parseFloat(payroll.baseSalary || 0) + parseFloat(payroll.bonus || 0));
     }, 0);
 
     const avgSalaryPerEmployee = totalEmployees > 0 ? totalPayrollCost / totalEmployees : 0;
 
     // Performance metrics
-    const avgPerformanceScore = performance.length > 0 
-      ? performance.reduce((sum: number, perf: any) => sum + (perf.overallScore || 0), 0) / performance.length 
+    const avgPerformanceScore = (performance as any[]).length > 0 
+      ? (performance as any[]).reduce((sum: number, perf: any) => sum + (perf.overallScore || 0), 0) / (performance as any[]).length 
       : 0;
 
-    const highPerformers = performance.filter((perf: any) => (perf.overallScore || 0) >= 4.0).length;
-    const performanceSuccessRate = performance.length > 0 ? (highPerformers / performance.length) * 100 : 0;
+    const highPerformers = (performance as any[]).filter((perf: any) => (perf.overallScore || 0) >= 4.0).length;
+    const performanceSuccessRate = (performance as any[]).length > 0 ? (highPerformers / (performance as any[]).length) * 100 : 0;
 
     // Training & Development
-    const activeTrainings = trainings.filter((training: any) => training.status === 'active').length;
-    const completedTrainings = trainings.filter((training: any) => training.status === 'completed').length;
-    const trainingCompletionRate = trainings.length > 0 ? (completedTrainings / trainings.length) * 100 : 0;
+    const activeTrainings = (trainings as any[]).filter((training: any) => training.status === 'active').length;
+    const completedTrainings = (trainings as any[]).filter((training: any) => training.status === 'completed').length;
+    const trainingCompletionRate = (trainings as any[]).length > 0 ? (completedTrainings / (trainings as any[]).length) * 100 : 0;
 
     // Strategic KPIs (mock data representing strategic metrics)
     const employeeRetentionRate = 94.2;
