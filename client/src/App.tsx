@@ -16,11 +16,14 @@ import EmployeeDashboard from "@/pages/dashboard/EmployeeDashboard";
 import CompanyManagement from "@/pages/admin/CompanyManagement";
 import UserManagement from "@/pages/admin/UserManagement";
 import DepartmentManagement from "@/pages/admin/DepartmentManagement";
-import RecruitmentManagement from "@/pages/admin/RecruitmentManagement";
 import AnalyticsDashboard from "@/pages/admin/AnalyticsDashboard";
-import FinancialReports from "@/pages/admin/FinancialReports";
-import HRReports from "@/pages/admin/HRReports";
-import AuditLogs from "@/pages/admin/AuditLogs";
+
+// HR Management Pages
+import JobPostingsManagement from "@/pages/admin/JobPostingsManagement";
+import PayrollManagement from "@/pages/admin/PayrollManagement";
+import LeaveManagement from "@/pages/admin/LeaveManagement";
+import PerformanceManagement from "@/pages/admin/PerformanceManagement";
+import TrainingManagement from "@/pages/admin/TrainingManagement";
 
 // Other Pages
 import Employees from "@/pages/employees";
@@ -95,6 +98,13 @@ function Router() {
             <Route path="/admin/users" component={UserManagement} />
             <Route path="/admin/departments" component={DepartmentManagement} />
             <Route path="/admin/analytics" component={AnalyticsDashboard} />
+            
+            {/* HR Management Routes */}
+            <Route path="/admin/job-postings" component={JobPostingsManagement} />
+            <Route path="/admin/payroll" component={PayrollManagement} />
+            <Route path="/admin/leaves" component={LeaveManagement} />
+            <Route path="/admin/performance" component={PerformanceManagement} />
+            <Route path="/admin/trainings" component={TrainingManagement} />
             
             <Route component={NotFound} />
           </Switch>

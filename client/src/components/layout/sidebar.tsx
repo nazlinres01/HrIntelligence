@@ -28,6 +28,7 @@ import {
   Briefcase,
   Award,
   BookOpen,
+  DollarSign,
   MessageSquare,
   PieChart,
   Zap
@@ -58,6 +59,16 @@ const getRoleBasedNavigation = (userRole: UserRole): NavigationSection[] => {
             { name: "Şirket Yönetimi", href: "/admin/companies", icon: Building2, show: true },
             { name: "Departman Yönetimi", href: "/admin/departments", icon: Target, show: true },
             { name: "Analytics Dashboard", href: "/admin/analytics", icon: BarChart3, show: true },
+          ]
+        },
+        {
+          title: "İK İşlemleri",
+          items: [
+            { name: "İş İlanları", href: "/admin/job-postings", icon: Briefcase, show: true },
+            { name: "Bordro Yönetimi", href: "/admin/payroll", icon: DollarSign, show: true },
+            { name: "İzin Yönetimi", href: "/admin/leaves", icon: Calendar, show: true },
+            { name: "Performans", href: "/admin/performance", icon: TrendingUp, show: true },
+            { name: "Eğitimler", href: "/admin/trainings", icon: BookOpen, show: true },
           ]
         }
       ];
