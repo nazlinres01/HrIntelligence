@@ -94,6 +94,132 @@ export async function seedDatabase() {
         website: "https://www.microsoft.com/tr-tr",
         taxNumber: "1122334455",
         employeeCount: 850
+      },
+      {
+        name: "Garanti BBVA",
+        industry: "Bankacılık ve Finans",
+        size: "enterprise",
+        description: "Türkiye'nin öncü dijital bankalarından biri. Bireysel ve kurumsal bankacılık hizmetleri sunmaktadır.",
+        address: {
+          street: "Levent Mahallesi, Büyükdere Cad. No:63-65",
+          city: "İstanbul",
+          country: "Türkiye"
+        },
+        contactInfo: {
+          phone: "+90 212 318 18 18",
+          email: "info@garantibbva.com.tr"
+        },
+        website: "https://www.garantibbva.com.tr",
+        taxNumber: "6677889900",
+        employeeCount: 17500
+      },
+      {
+        name: "Arçelik A.Ş.",
+        industry: "Ev Aletleri ve Teknoloji",
+        size: "enterprise",
+        description: "Türkiye'nin en büyük ev aletleri üreticilerinden biri. Beyaz eşya, küçük ev aletleri ve tüketici elektroniği üretimi yapmaktadır.",
+        address: {
+          street: "Karaağaç Cad. No:2-6 Sütlüce",
+          city: "İstanbul",
+          country: "Türkiye"
+        },
+        contactInfo: {
+          phone: "+90 212 314 34 34",
+          email: "info@arcelik.com"
+        },
+        website: "https://www.arcelik.com.tr",
+        taxNumber: "3344556677",
+        employeeCount: 12800
+      },
+      {
+        name: "Türk Telekom A.Ş.",
+        industry: "Telekomünikasyon",
+        size: "enterprise",
+        description: "Türkiye'nin lider telekomünikasyon şirketi. Fiber internet, mobil iletişim ve dijital hizmetler sunmaktadır.",
+        address: {
+          street: "Turgut Özal Bulvarı No:06103",
+          city: "Ankara",
+          country: "Türkiye"
+        },
+        contactInfo: {
+          phone: "+90 312 313 13 13",
+          email: "info@turktelekom.com.tr"
+        },
+        website: "https://www.turktelekom.com.tr",
+        taxNumber: "7788990011",
+        employeeCount: 23400
+      },
+      {
+        name: "Koç Holding A.Ş.",
+        industry: "Çok Sektörlü Holding",
+        size: "enterprise",
+        description: "Türkiye'nin en büyük sanayi ve hizmet gruplarından biri. Otomotiv, enerji, finans ve dayanıklı tüketim malları sektörlerinde faaliyet göstermektedir.",
+        address: {
+          street: "Nakkaştepe Aziz Berker Sok. No:1",
+          city: "İstanbul",
+          country: "Türkiye"
+        },
+        contactInfo: {
+          phone: "+90 216 531 00 00",
+          email: "info@koc.com.tr"
+        },
+        website: "https://www.koc.com.tr",
+        taxNumber: "9900112233",
+        employeeCount: 95000
+      },
+      {
+        name: "Akbank T.A.Ş.",
+        industry: "Bankacılık ve Finans",
+        size: "enterprise",
+        description: "Türkiye'nin önde gelen özel bankalarından biri. Bireysel, ticari ve kurumsal bankacılık hizmetleri sunmaktadır.",
+        address: {
+          street: "Sabancı Center 4.Levent",
+          city: "İstanbul",
+          country: "Türkiye"
+        },
+        contactInfo: {
+          phone: "+90 212 385 55 55",
+          email: "info@akbank.com"
+        },
+        website: "https://www.akbank.com",
+        taxNumber: "4455667788",
+        employeeCount: 14200
+      },
+      {
+        name: "Trendyol Group",
+        industry: "E-Ticaret ve Teknoloji",
+        size: "large",
+        description: "Türkiye'nin en büyük e-ticaret platformu. Online alışveriş, hızlı teslimat ve dijital ödeme çözümleri sunmaktadır.",
+        address: {
+          street: "Kuştepe Mahallesi, Mecidiyeköy Yolu Cad. No:12",
+          city: "İstanbul",
+          country: "Türkiye"
+        },
+        contactInfo: {
+          phone: "+90 212 999 88 77",
+          email: "info@trendyol.com"
+        },
+        website: "https://www.trendyol.com",
+        taxNumber: "2233445566",
+        employeeCount: 8500
+      },
+      {
+        name: "Getir",
+        industry: "Hızlı Teslimat ve Teknoloji",
+        size: "large",
+        description: "Ultra hızlı teslimat hizmeti sunan teknoloji şirketi. Dakikalar içinde teslimat yaparak yaşam tarzını değiştiren platform.",
+        address: {
+          street: "Maslak Mahallesi, Bilim Sokak No:5",
+          city: "İstanbul",
+          country: "Türkiye"
+        },
+        contactInfo: {
+          phone: "+90 212 777 66 55",
+          email: "info@getir.com"
+        },
+        website: "https://www.getir.com",
+        taxNumber: "5566778899",
+        employeeCount: 2800
       }
     ];
 
@@ -495,6 +621,197 @@ export async function seedDatabase() {
         password: userHashedPassword,
         isActive: true,
         lastLoginAt: new Date(Date.now() - 7 * 60 * 60 * 1000) // 7 hours ago
+      },
+
+      // Additional users for new companies
+      // Türk Telekom users
+      {
+        id: "hr_manager_006",
+        email: "canan.demir@turktelekom.com.tr",
+        firstName: "Canan",
+        lastName: "Demir",
+        phone: "+90 542 123 45 67",
+        companyId: otherCompanies.find((c: any) => c.name === "Türk Telekom A.Ş.")?.id || sampleCompany.id,
+        role: "hr_manager",
+        password: userHashedPassword,
+        isActive: true,
+        lastLoginAt: new Date(Date.now() - 45 * 60 * 1000) // 45 minutes ago
+      },
+      {
+        id: "dept_manager_005",
+        email: "kemal.ozturk@turktelekom.com.tr",
+        firstName: "Kemal",
+        lastName: "Öztürk",
+        phone: "+90 543 234 56 78",
+        companyId: otherCompanies.find((c: any) => c.name === "Türk Telekom A.Ş.")?.id || sampleCompany.id,
+        role: "department_manager",
+        password: userHashedPassword,
+        isActive: true,
+        lastLoginAt: new Date(Date.now() - 2 * 60 * 60 * 1000) // 2 hours ago
+      },
+      {
+        id: "employee_012",
+        email: "deniz.kaya@turktelekom.com.tr",
+        firstName: "Deniz",
+        lastName: "Kaya",
+        phone: "+90 544 345 67 89",
+        companyId: otherCompanies.find((c: any) => c.name === "Türk Telekom A.Ş.")?.id || sampleCompany.id,
+        role: "employee",
+        password: userHashedPassword,
+        isActive: true,
+        lastLoginAt: new Date(Date.now() - 6 * 60 * 60 * 1000) // 6 hours ago
+      },
+
+      // Koç Holding users
+      {
+        id: "hr_manager_007",
+        email: "elif.akman@koc.com.tr",
+        firstName: "Elif",
+        lastName: "Akman",
+        phone: "+90 545 456 78 90",
+        companyId: otherCompanies.find((c: any) => c.name === "Koç Holding A.Ş.")?.id || sampleCompany.id,
+        role: "hr_manager",
+        password: userHashedPassword,
+        isActive: true,
+        lastLoginAt: new Date(Date.now() - 1 * 60 * 60 * 1000) // 1 hour ago
+      },
+      {
+        id: "dept_manager_006",
+        email: "bulent.celik@koc.com.tr",
+        firstName: "Bülent",
+        lastName: "Çelik",
+        phone: "+90 546 567 89 01",
+        companyId: otherCompanies.find((c: any) => c.name === "Koç Holding A.Ş.")?.id || sampleCompany.id,
+        role: "department_manager",
+        password: userHashedPassword,
+        isActive: true,
+        lastLoginAt: new Date(Date.now() - 3 * 60 * 60 * 1000) // 3 hours ago
+      },
+      {
+        id: "employee_013",
+        email: "seda.ozkan@koc.com.tr",
+        firstName: "Seda",
+        lastName: "Özkan",
+        phone: "+90 547 678 90 12",
+        companyId: otherCompanies.find((c: any) => c.name === "Koç Holding A.Ş.")?.id || sampleCompany.id,
+        role: "employee",
+        password: userHashedPassword,
+        isActive: true,
+        lastLoginAt: new Date(Date.now() - 4 * 60 * 60 * 1000) // 4 hours ago
+      },
+
+      // Akbank users
+      {
+        id: "hr_manager_008",
+        email: "gokhan.yilmaz@akbank.com",
+        firstName: "Gökhan",
+        lastName: "Yılmaz",
+        phone: "+90 548 789 01 23",
+        companyId: otherCompanies.find((c: any) => c.name === "Akbank T.A.Ş.")?.id || sampleCompany.id,
+        role: "hr_manager",
+        password: userHashedPassword,
+        isActive: true,
+        lastLoginAt: new Date(Date.now() - 20 * 60 * 1000) // 20 minutes ago
+      },
+      {
+        id: "dept_manager_007",
+        email: "pinar.arslan@akbank.com",
+        firstName: "Pınar",
+        lastName: "Arslan",
+        phone: "+90 549 890 12 34",
+        companyId: otherCompanies.find((c: any) => c.name === "Akbank T.A.Ş.")?.id || sampleCompany.id,
+        role: "department_manager",
+        password: userHashedPassword,
+        isActive: true,
+        lastLoginAt: new Date(Date.now() - 5 * 60 * 60 * 1000) // 5 hours ago
+      },
+      {
+        id: "employee_014",
+        email: "cem.duran@akbank.com",
+        firstName: "Cem",
+        lastName: "Duran",
+        phone: "+90 530 901 23 45",
+        companyId: otherCompanies.find((c: any) => c.name === "Akbank T.A.Ş.")?.id || sampleCompany.id,
+        role: "employee",
+        password: userHashedPassword,
+        isActive: true,
+        lastLoginAt: new Date(Date.now() - 9 * 60 * 60 * 1000) // 9 hours ago
+      },
+
+      // Trendyol users
+      {
+        id: "hr_manager_009",
+        email: "merve.sahin@trendyol.com",
+        firstName: "Merve",
+        lastName: "Şahin",
+        phone: "+90 531 012 34 56",
+        companyId: otherCompanies.find((c: any) => c.name === "Trendyol Group")?.id || sampleCompany.id,
+        role: "hr_manager",
+        password: userHashedPassword,
+        isActive: true,
+        lastLoginAt: new Date(Date.now() - 10 * 60 * 1000) // 10 minutes ago
+      },
+      {
+        id: "dept_manager_008",
+        email: "furkan.koc@trendyol.com",
+        firstName: "Furkan",
+        lastName: "Koç",
+        phone: "+90 532 123 45 67",
+        companyId: otherCompanies.find((c: any) => c.name === "Trendyol Group")?.id || sampleCompany.id,
+        role: "department_manager",
+        password: userHashedPassword,
+        isActive: true,
+        lastLoginAt: new Date(Date.now() - 1 * 60 * 60 * 1000) // 1 hour ago
+      },
+      {
+        id: "employee_015",
+        email: "basak.aydin@trendyol.com",
+        firstName: "Başak",
+        lastName: "Aydın",
+        phone: "+90 533 234 56 78",
+        companyId: otherCompanies.find((c: any) => c.name === "Trendyol Group")?.id || sampleCompany.id,
+        role: "employee",
+        password: userHashedPassword,
+        isActive: true,
+        lastLoginAt: new Date(Date.now() - 8 * 60 * 60 * 1000) // 8 hours ago
+      },
+
+      // Getir users
+      {
+        id: "hr_manager_010",
+        email: "tugba.erdem@getir.com",
+        firstName: "Tuğba",
+        lastName: "Erdem",
+        phone: "+90 534 345 67 89",
+        companyId: otherCompanies.find((c: any) => c.name === "Getir")?.id || sampleCompany.id,
+        role: "hr_manager",
+        password: userHashedPassword,
+        isActive: true,
+        lastLoginAt: new Date(Date.now() - 15 * 60 * 1000) // 15 minutes ago
+      },
+      {
+        id: "dept_manager_009",
+        email: "onur.guven@getir.com",
+        firstName: "Onur",
+        lastName: "Güven",
+        phone: "+90 535 456 78 90",
+        companyId: otherCompanies.find((c: any) => c.name === "Getir")?.id || sampleCompany.id,
+        role: "department_manager",
+        password: userHashedPassword,
+        isActive: true,
+        lastLoginAt: new Date(Date.now() - 2 * 60 * 60 * 1000) // 2 hours ago
+      },
+      {
+        id: "employee_016",
+        email: "duygu.ozturk@getir.com",
+        firstName: "Duygu",
+        lastName: "Öztürk",
+        phone: "+90 536 567 89 01",
+        companyId: otherCompanies.find((c: any) => c.name === "Getir")?.id || sampleCompany.id,
+        role: "employee",
+        password: userHashedPassword,
+        isActive: false, // Inactive user for variety
+        lastLoginAt: new Date(Date.now() - 20 * 24 * 60 * 60 * 1000) // 20 days ago
       }
     ];
 
