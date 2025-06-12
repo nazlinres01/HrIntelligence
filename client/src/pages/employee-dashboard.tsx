@@ -1,342 +1,306 @@
+import { useState } from "react";
+import { Link, useLocation } from "wouter";
+import { useAuth } from "@/hooks/useAuth";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
-import { Progress } from "@/components/ui/progress";
-import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog";
-import { Input } from "@/components/ui/input";
-import { Label } from "@/components/ui/label";
-import { Textarea } from "@/components/ui/textarea";
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
-import { useQuery, useMutation } from "@tanstack/react-query";
-import { queryClient } from "@/lib/queryClient";
-import { useState } from "react";
-import { useToast } from "@/hooks/use-toast";
+import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { 
-  User, 
   Calendar, 
+  BarChart3, 
+  BookOpen, 
+  Settings, 
+  Bell,
+  Home,
   Clock,
-  Target,
-  Award,
   FileText,
-  MessageSquare,
+  User,
+  MessageCircle,
   CheckCircle,
-  TrendingUp,
-  DollarSign,
-  Plus,
-  Edit,
-  Send,
-  Upload
+  LogOut,
+  ChevronLeft,
+  ChevronRight,
+  Activity
 } from "lucide-react";
 
-export default function EmployeeDashboard() {
-  const [isLeaveDialogOpen, setIsLeaveDialogOpen] = useState(false);
-  const [isExpenseDialogOpen, setIsExpenseDialogOpen] = useState(false);
-  const [isTimeDialogOpen, setIsTimeDialogOpen] = useState(false);
-  const [isMessageDialogOpen, setIsMessageDialogOpen] = useState(false);
-  const [isProfileDialogOpen, setIsProfileDialogOpen] = useState(false);
+interface SidebarProps {
+  isCollapsed: boolean;
+  onToggle: () => void;
+}
 
-  const { toast } = useToast();
+function Sidebar({ isCollapsed, onToggle }: SidebarProps) {
+  const [location, setLocation] = useLocation();
 
-  // Mock data for demonstration - would be replaced with real API calls
-  const personalStats = {
-    activeTasks: 8,
-    urgentTasks: 2,
-    monthlyPerformance: 92,
-    monthlySalary: "15500"
-  };
-
-  const leaveBalance = {
-    remaining: 12,
-    total: 22,
-    history: [
-      { type: "Yıllık İzin", startDate: "2024-12-15", endDate: "2024-12-20", days: 5, status: "approved" },
-      { type: "Hastalık İzni", startDate: "2024-11-10", endDate: "2024-11-12", days: 2, status: "approved" },
-      { type: "Kişisel İzin", startDate: "2024-10-25", endDate: "2024-10-25", days: 1, status: "pending" }
-    ]
-  };
-
-  const myTasks = {
-    active: [
-      { title: "Aylık Satış Raporu Hazırlama", dueDate: "2024-12-20", progress: 75, priority: "high" },
-      { title: "Müşteri Geri Bildirim Analizi", dueDate: "2024-12-18", progress: 45, priority: "medium" },
-      { title: "Proje Dokümantasyonu", dueDate: "2024-12-25", progress: 20, priority: "low" },
-      { title: "Takım Toplantısı Hazırlık", dueDate: "2024-12-17", progress: 90, priority: "high" }
-    ]
-  };
-
-  const leaveRequestMutation = useMutation({
-    mutationFn: async (data: any) => {
-      const response = await fetch('/api/leaves', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify(data)
-      });
-      if (!response.ok) throw new Error('Failed to submit leave request');
-      return response.json();
-    },
-    onSuccess: () => {
-      toast({
-        title: "İzin Talebi Gönderildi",
-        description: "İzin talebiniz yöneticinize iletildi.",
-      });
-      setIsLeaveDialogOpen(false);
-      queryClient.invalidateQueries({ queryKey: ['/api/leaves/balance'] });
-    },
-    onError: () => {
-      toast({
-        title: "Hata",
-        description: "İzin talebi gönderilirken bir hata oluştu.",
-        variant: "destructive",
-      });
-    }
-  });
-
-  const handleLeaveRequest = (formData: FormData) => {
-    const data = {
-      type: formData.get('type'),
-      startDate: formData.get('startDate'),
-      endDate: formData.get('endDate'),
-      reason: formData.get('reason'),
-    };
-    leaveRequestMutation.mutate(data);
-  };
+  const menuItems = [
+    { icon: Home, label: "Dashboard", path: "/employee" },
+    { icon: User, label: "Profilim", path: "/employee/profile" },
+    { icon: Calendar, label: "İzin Talepleri", path: "/employee/leaves" },
+    { icon: BarChart3, label: "Performansım", path: "/employee/performance" },
+    { icon: BookOpen, label: "Eğitimlerim", path: "/employee/trainings" },
+    { icon: Clock, label: "Mesai Takibi", path: "/employee/timesheet" },
+    { icon: FileText, label: "Belgelerim", path: "/employee/documents" },
+    { icon: MessageCircle, label: "Mesajlar", path: "/employee/messages" },
+    { icon: Settings, label: "Ayarlar", path: "/employee/settings" },
+  ];
 
   return (
-    <div className="min-h-screen bg-slate-50 dark:bg-slate-900">
-      <div className="p-6 space-y-6">
-        <div className="max-w-7xl mx-auto space-y-6">
-          {/* Corporate Header */}
-          <div className="bg-white dark:bg-slate-800 rounded-lg shadow-sm border border-slate-200 dark:border-slate-700 p-6">
+    <div className={`${isCollapsed ? 'w-16' : 'w-64'} bg-gradient-to-b from-emerald-600 to-emerald-800 text-white h-screen fixed left-0 top-0 transition-all duration-300 z-50 shadow-2xl`}>
+      {/* Header */}
+      <div className="p-4 border-b border-emerald-500/30">
+        <div className="flex items-center justify-between">
+          {!isCollapsed && (
+            <div>
+              <h1 className="text-xl font-bold text-white">Çalışan Paneli</h1>
+              <p className="text-emerald-200 text-sm">Kişisel Dashboard</p>
+            </div>
+          )}
+          <Button
+            variant="ghost"
+            size="sm"
+            onClick={onToggle}
+            className="text-white hover:bg-emerald-700/50"
+          >
+            {isCollapsed ? <ChevronRight className="h-4 w-4" /> : <ChevronLeft className="h-4 w-4" />}
+          </Button>
+        </div>
+      </div>
+
+      {/* Navigation */}
+      <nav className="mt-6 px-2">
+        {menuItems.map((item) => {
+          const Icon = item.icon;
+          const isActive = location === item.path;
+          
+          return (
+            <Link key={item.path} href={item.path}>
+              <div className={`flex items-center px-3 py-3 mb-1 rounded-lg transition-all cursor-pointer group ${
+                isActive 
+                  ? 'bg-emerald-500 text-white shadow-lg' 
+                  : 'text-emerald-100 hover:bg-emerald-700/50 hover:text-white'
+              }`}>
+                <Icon className="h-5 w-5 flex-shrink-0" />
+                {!isCollapsed && (
+                  <span className="ml-3 font-medium">{item.label}</span>
+                )}
+                {isCollapsed && (
+                  <div className="absolute left-16 bg-gray-900 text-white px-2 py-1 rounded shadow-lg opacity-0 group-hover:opacity-100 transition-opacity whitespace-nowrap z-50">
+                    {item.label}
+                  </div>
+                )}
+              </div>
+            </Link>
+          );
+        })}
+      </nav>
+
+      {/* User Section */}
+      <div className="absolute bottom-0 left-0 right-0 p-4 border-t border-emerald-500/30">
+        <div className="flex items-center space-x-3">
+          <Avatar className="h-8 w-8">
+            <AvatarImage src="/placeholder-avatar.jpg" />
+            <AvatarFallback className="bg-emerald-500 text-white">ÇL</AvatarFallback>
+          </Avatar>
+          {!isCollapsed && (
+            <div className="flex-1 min-w-0">
+              <p className="text-sm font-medium text-white truncate">Çalışan</p>
+              <p className="text-xs text-emerald-200 truncate">employee@company.com</p>
+            </div>
+          )}
+        </div>
+        
+        <div className="mt-3 flex space-x-2">
+          <Button
+            variant="ghost"
+            size="sm"
+            className="flex-1 text-emerald-200 hover:bg-emerald-700/50 hover:text-white"
+          >
+            <Settings className="h-4 w-4" />
+            {!isCollapsed && <span className="ml-2">Ayarlar</span>}
+          </Button>
+          <Button
+            variant="ghost"
+            size="sm"
+            onClick={() => window.location.href = '/api/logout'}
+            className="text-emerald-200 hover:bg-red-500/20 hover:text-red-300"
+          >
+            <LogOut className="h-4 w-4" />
+          </Button>
+        </div>
+      </div>
+    </div>
+  );
+}
+
+export default function EmployeeDashboard() {
+  const { user } = useAuth();
+  const [isSidebarCollapsed, setIsSidebarCollapsed] = useState(false);
+
+  return (
+    <div className="min-h-screen bg-gray-50">
+      <Sidebar 
+        isCollapsed={isSidebarCollapsed} 
+        onToggle={() => setIsSidebarCollapsed(!isSidebarCollapsed)} 
+      />
+      
+      <div className={`${isSidebarCollapsed ? 'ml-16' : 'ml-64'} transition-all duration-300`}>
+        {/* Header */}
+        <header className="bg-white shadow-sm border-b">
+          <div className="px-6 py-4">
             <div className="flex items-center justify-between">
               <div>
-                <h1 className="text-3xl font-bold text-slate-900 dark:text-white">
-                  Çalışan Paneli
-                </h1>
-                <p className="text-slate-600 dark:text-slate-300 mt-1">
-                  Kişisel performans ve iş takibi
-                </p>
+                <h1 className="text-2xl font-bold text-gray-900">Kişisel Dashboard</h1>
+                <p className="text-gray-600">Hoş geldiniz, {user?.firstName || 'Çalışan'}</p>
               </div>
-              <div className="flex space-x-2">
-                <Dialog open={isLeaveDialogOpen} onOpenChange={setIsLeaveDialogOpen}>
-                  <DialogTrigger asChild>
-                    <Button variant="outline" size="sm" className="border-slate-300 dark:border-slate-600">
-                      <Calendar className="h-4 w-4 mr-2" />
-                      İzin Talep Et
-                    </Button>
-                  </DialogTrigger>
-                  <DialogContent className="sm:max-w-[425px]">
-                    <DialogHeader>
-                      <DialogTitle>İzin Talebi Oluştur</DialogTitle>
-                      <DialogDescription>
-                        Yeni bir izin talebi oluşturun. Talebiniz yöneticinize iletilecektir.
-                      </DialogDescription>
-                    </DialogHeader>
-                    <form onSubmit={(e) => {
-                      e.preventDefault();
-                      handleLeaveRequest(new FormData(e.currentTarget));
-                    }} className="space-y-4">
-                      <div className="space-y-2">
-                        <Label htmlFor="type">İzin Türü</Label>
-                        <Select name="type" required>
-                          <SelectTrigger>
-                            <SelectValue placeholder="İzin türünü seçin" />
-                          </SelectTrigger>
-                          <SelectContent>
-                            <SelectItem value="annual">Yıllık İzin</SelectItem>
-                            <SelectItem value="sick">Hastalık İzni</SelectItem>
-                            <SelectItem value="personal">Kişisel İzin</SelectItem>
-                            <SelectItem value="maternity">Doğum İzni</SelectItem>
-                            <SelectItem value="paternity">Babalık İzni</SelectItem>
-                          </SelectContent>
-                        </Select>
-                      </div>
-                      <div className="grid grid-cols-2 gap-4">
-                        <div className="space-y-2">
-                          <Label htmlFor="startDate">Başlangıç Tarihi</Label>
-                          <Input name="startDate" type="date" required />
-                        </div>
-                        <div className="space-y-2">
-                          <Label htmlFor="endDate">Bitiş Tarihi</Label>
-                          <Input name="endDate" type="date" required />
-                        </div>
-                      </div>
-                      <div className="space-y-2">
-                        <Label htmlFor="reason">İzin Nedeni</Label>
-                        <Textarea 
-                          name="reason" 
-                          placeholder="İzin nedeninizi açıklayın..."
-                          required
-                        />
-                      </div>
-                      <div className="flex justify-end space-x-2">
-                        <Button type="button" variant="outline" onClick={() => setIsLeaveDialogOpen(false)}>
-                          İptal
-                        </Button>
-                        <Button type="submit" disabled={leaveRequestMutation.isPending}>
-                          {leaveRequestMutation.isPending ? "Gönderiliyor..." : "Talep Gönder"}
-                        </Button>
-                      </div>
-                    </form>
-                  </DialogContent>
-                </Dialog>
-
-                <Button size="sm" className="bg-slate-900 hover:bg-slate-800 dark:bg-slate-700 dark:hover:bg-slate-600">
-                  <FileText className="h-4 w-4 mr-2" />
-                  Gider Raporu
+              <div className="flex items-center space-x-4">
+                <Button variant="outline" size="sm">
+                  <Bell className="h-4 w-4 mr-2" />
+                  Bildirimler
+                  <Badge variant="destructive" className="ml-2">2</Badge>
                 </Button>
               </div>
             </div>
           </div>
+        </header>
 
-          {/* Corporate Personal Metrics */}
-          <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-4">
-            <Card className="bg-white dark:bg-slate-800 border-slate-200 dark:border-slate-700 hover:shadow-md transition-shadow duration-200">
-              <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-                <CardTitle className="text-sm font-medium text-slate-700 dark:text-slate-300">Aktif Görevler</CardTitle>
-                <Clock className="h-4 w-4 text-slate-500" />
+        {/* Main Content */}
+        <main className="p-6">
+          {/* Stats Cards */}
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-8">
+            <Card className="bg-gradient-to-r from-emerald-500 to-emerald-600 text-white">
+              <CardHeader className="pb-2">
+                <CardTitle className="text-sm font-medium opacity-90">Kalan İzin Günü</CardTitle>
               </CardHeader>
               <CardContent>
-                <div className="text-2xl font-bold text-slate-900 dark:text-white">{personalStats.activeTasks}</div>
-                <p className="text-xs text-slate-600 dark:text-slate-400">
-                  {personalStats.urgentTasks} acil
-                </p>
+                <div className="text-3xl font-bold">18</div>
+                <div className="text-sm opacity-80">Bu yıl</div>
               </CardContent>
             </Card>
 
-            <Card className="bg-white dark:bg-slate-800 border-slate-200 dark:border-slate-700 hover:shadow-md transition-shadow duration-200">
-              <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-                <CardTitle className="text-sm font-medium text-slate-700 dark:text-slate-300">Bu Ay Performans</CardTitle>
-                <Target className="h-4 w-4 text-slate-500" />
+            <Card className="bg-gradient-to-r from-blue-500 to-blue-600 text-white">
+              <CardHeader className="pb-2">
+                <CardTitle className="text-sm font-medium opacity-90">Tamamlanan Eğitimler</CardTitle>
               </CardHeader>
               <CardContent>
-                <div className="text-2xl font-bold text-slate-900 dark:text-white">{personalStats.monthlyPerformance}%</div>
-                <p className="text-xs text-slate-600 dark:text-slate-400">
-                  +5% geçen aya göre
-                </p>
+                <div className="text-3xl font-bold">12</div>
+                <div className="text-sm opacity-80">Bu yıl</div>
               </CardContent>
             </Card>
 
-            <Card className="bg-white dark:bg-slate-800 border-slate-200 dark:border-slate-700 hover:shadow-md transition-shadow duration-200">
-              <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-                <CardTitle className="text-sm font-medium text-slate-700 dark:text-slate-300">Kalan İzin</CardTitle>
-                <Calendar className="h-4 w-4 text-slate-500" />
+            <Card className="bg-gradient-to-r from-orange-500 to-orange-600 text-white">
+              <CardHeader className="pb-2">
+                <CardTitle className="text-sm font-medium opacity-90">Performans Puanı</CardTitle>
               </CardHeader>
               <CardContent>
-                <div className="text-2xl font-bold text-slate-900 dark:text-white">{leaveBalance.remaining}</div>
-                <p className="text-xs text-slate-600 dark:text-slate-400">
-                  {leaveBalance.total} günden
-                </p>
+                <div className="text-3xl font-bold">4.2</div>
+                <div className="text-sm opacity-80">5 üzerinden</div>
               </CardContent>
             </Card>
 
-            <Card className="bg-white dark:bg-slate-800 border-slate-200 dark:border-slate-700 hover:shadow-md transition-shadow duration-200">
-              <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-                <CardTitle className="text-sm font-medium text-slate-700 dark:text-slate-300">Bu Ay Bordro</CardTitle>
-                <DollarSign className="h-4 w-4 text-slate-500" />
+            <Card className="bg-gradient-to-r from-purple-500 to-purple-600 text-white">
+              <CardHeader className="pb-2">
+                <CardTitle className="text-sm font-medium opacity-90">Çalışma Günü</CardTitle>
               </CardHeader>
               <CardContent>
-                <div className="text-2xl font-bold text-slate-900 dark:text-white">₺{personalStats.monthlySalary}</div>
-                <p className="text-xs text-slate-600 dark:text-slate-400">
-                  Net maaş
-                </p>
+                <div className="text-3xl font-bold">245</div>
+                <div className="text-sm opacity-80">Bu yıl</div>
               </CardContent>
             </Card>
           </div>
 
-          {/* Corporate My Tasks and Quick Actions */}
-          <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-7">
-            <Card className="col-span-4 bg-white dark:bg-slate-800 border-slate-200 dark:border-slate-700">
+          {/* Quick Actions */}
+          <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 mb-8">
+            <Card>
               <CardHeader>
-                <CardTitle className="text-slate-900 dark:text-white">Görevlerim</CardTitle>
-                <CardDescription className="text-slate-600 dark:text-slate-400">
-                  Aktif görevler ve tamamlanma durumu
-                </CardDescription>
+                <CardTitle className="flex items-center">
+                  <CheckCircle className="h-5 w-5 mr-2 text-emerald-600" />
+                  Hızlı İşlemler
+                </CardTitle>
+                <CardDescription>Sık kullanılan işlemler</CardDescription>
               </CardHeader>
-              <CardContent>
-                <div className="space-y-4">
-                  {myTasks.active.slice(0, 5).map((task: any, index: number) => (
-                    <div key={index} className="flex items-center justify-between p-3 border border-slate-200 dark:border-slate-700 rounded-lg bg-slate-50 dark:bg-slate-750">
-                      <div className="flex items-center space-x-3">
-                        <div className={`w-2 h-2 rounded-full ${task.priority === 'high' ? 'bg-red-500' : task.priority === 'medium' ? 'bg-yellow-500' : 'bg-green-500'}`}></div>
-                        <div>
-                          <p className="text-sm font-medium text-slate-900 dark:text-white">{task.title}</p>
-                          <p className="text-xs text-slate-600 dark:text-slate-400">
-                            Son teslim: {task.dueDate}
-                          </p>
-                        </div>
-                      </div>
-                      <div className="flex items-center space-x-3">
-                        <Progress value={task.progress} className="w-16" />
-                        <span className="text-sm font-medium text-slate-700 dark:text-slate-300">{task.progress}%</span>
-                        <Badge variant={task.priority === 'high' ? 'destructive' : task.priority === 'medium' ? 'default' : 'secondary'}>
-                          {task.priority === 'high' ? 'Acil' : task.priority === 'medium' ? 'Orta' : 'Düşük'}
-                        </Badge>
-                      </div>
-                    </div>
-                  ))}
+              <CardContent className="space-y-3">
+                <Button className="w-full justify-start bg-emerald-50 text-emerald-700 hover:bg-emerald-100">
+                  <Calendar className="h-4 w-4 mr-2" />
+                  İzin Talep Et
+                </Button>
+                <Button className="w-full justify-start bg-blue-50 text-blue-700 hover:bg-blue-100">
+                  <Clock className="h-4 w-4 mr-2" />
+                  Mesai Giriş/Çıkış
+                </Button>
+                <Button className="w-full justify-start bg-orange-50 text-orange-700 hover:bg-orange-100">
+                  <BookOpen className="h-4 w-4 mr-2" />
+                  Eğitim Başvurusu
+                </Button>
+                <Button className="w-full justify-start bg-purple-50 text-purple-700 hover:bg-purple-100">
+                  <FileText className="h-4 w-4 mr-2" />
+                  Belge Talebi
+                </Button>
+              </CardContent>
+            </Card>
+
+            <Card>
+              <CardHeader>
+                <CardTitle className="flex items-center">
+                  <Activity className="h-5 w-5 mr-2 text-emerald-600" />
+                  Son Aktivitelerim
+                </CardTitle>
+                <CardDescription>Kişisel işlem geçmişi</CardDescription>
+              </CardHeader>
+              <CardContent className="space-y-4">
+                <div className="flex items-center space-x-3">
+                  <div className="w-2 h-2 bg-green-500 rounded-full"></div>
+                  <div className="flex-1">
+                    <p className="text-sm font-medium">İzin talebim onaylandı</p>
+                    <p className="text-xs text-gray-500">2 gün önce</p>
+                  </div>
+                </div>
+                <div className="flex items-center space-x-3">
+                  <div className="w-2 h-2 bg-blue-500 rounded-full"></div>
+                  <div className="flex-1">
+                    <p className="text-sm font-medium">React eğitimini tamamladım</p>
+                    <p className="text-xs text-gray-500">1 hafta önce</p>
+                  </div>
+                </div>
+                <div className="flex items-center space-x-3">
+                  <div className="w-2 h-2 bg-orange-500 rounded-full"></div>
+                  <div className="flex-1">
+                    <p className="text-sm font-medium">Performans değerlendirmesi yapıldı</p>
+                    <p className="text-xs text-gray-500">2 hafta önce</p>
+                  </div>
                 </div>
               </CardContent>
             </Card>
-
-            {/* Quick Actions */}
-            <Card className="col-span-3 bg-white dark:bg-slate-800 border-slate-200 dark:border-slate-700">
-              <CardHeader>
-                <CardTitle className="text-slate-900 dark:text-white">Hızlı İşlemler</CardTitle>
-                <CardDescription className="text-slate-600 dark:text-slate-400">
-                  Günlük kullanılan araçlar
-                </CardDescription>
-              </CardHeader>
-              <CardContent className="space-y-2">
-                <Button variant="outline" className="w-full justify-start border-slate-300 dark:border-slate-600 text-slate-700 dark:text-slate-300">
-                  <Clock className="h-4 w-4 mr-2" />
-                  Mesai Kaydı
-                </Button>
-                <Button variant="outline" className="w-full justify-start border-slate-300 dark:border-slate-600 text-slate-700 dark:text-slate-300">
-                  <Target className="h-4 w-4 mr-2" />
-                  Performans Takibi
-                </Button>
-                <Button variant="outline" className="w-full justify-start border-slate-300 dark:border-slate-600 text-slate-700 dark:text-slate-300">
-                  <MessageSquare className="h-4 w-4 mr-2" />
-                  Mesaj Gönder
-                </Button>
-                <Button variant="outline" className="w-full justify-start border-slate-300 dark:border-slate-600 text-slate-700 dark:text-slate-300">
-                  <User className="h-4 w-4 mr-2" />
-                  Profil Güncelle
-                </Button>
-              </CardContent>
-            </Card>
           </div>
 
-          {/* Corporate Leave History */}
-          <Card className="bg-white dark:bg-slate-800 border-slate-200 dark:border-slate-700">
+          {/* Personal Info & Status */}
+          <Card>
             <CardHeader>
-              <CardTitle className="text-slate-900 dark:text-white">İzin Geçmişi</CardTitle>
-              <CardDescription className="text-slate-600 dark:text-slate-400">
-                Son izin talepleri ve durumları
-              </CardDescription>
+              <CardTitle className="flex items-center">
+                <User className="h-5 w-5 mr-2 text-emerald-600" />
+                Kişisel Bilgiler & Durum
+              </CardTitle>
+              <CardDescription>Çalışan profil özeti</CardDescription>
             </CardHeader>
             <CardContent>
-              <div className="space-y-4">
-                {leaveBalance.history.map((leave: any, index: number) => (
-                  <div key={index} className="flex items-center justify-between p-3 border border-slate-200 dark:border-slate-700 rounded-lg bg-slate-50 dark:bg-slate-750">
-                    <div className="flex items-center space-x-3">
-                      <div className={`w-2 h-2 rounded-full ${leave.status === 'approved' ? 'bg-green-500' : leave.status === 'pending' ? 'bg-yellow-500' : 'bg-red-500'}`}></div>
-                      <div>
-                        <p className="text-sm font-medium text-slate-900 dark:text-white">{leave.type}</p>
-                        <p className="text-xs text-slate-600 dark:text-slate-400">
-                          {leave.startDate} - {leave.endDate} ({leave.days} gün)
-                        </p>
-                      </div>
-                    </div>
-                    <Badge variant={leave.status === 'approved' ? 'default' : leave.status === 'pending' ? 'secondary' : 'destructive'}>
-                      {leave.status === 'approved' ? 'Onaylandı' : leave.status === 'pending' ? 'Beklemede' : 'Reddedildi'}
-                    </Badge>
-                  </div>
-                ))}
+              <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+                <div className="text-center p-4 bg-emerald-50 rounded-lg">
+                  <div className="text-2xl font-bold text-emerald-600">Yazılım Geliştirme</div>
+                  <div className="text-sm text-gray-600">Departman</div>
+                  <div className="text-xs text-gray-500 mt-1">Senior Developer</div>
+                </div>
+                <div className="text-center p-4 bg-blue-50 rounded-lg">
+                  <div className="text-2xl font-bold text-blue-600">3.5 Yıl</div>
+                  <div className="text-sm text-gray-600">Şirkette Çalışma</div>
+                  <div className="text-xs text-gray-500 mt-1">01/2021'den beri</div>
+                </div>
+                <div className="text-center p-4 bg-green-50 rounded-lg">
+                  <div className="text-2xl font-bold text-green-600">Aktif</div>
+                  <div className="text-sm text-gray-600">Çalışma Durumu</div>
+                  <div className="text-xs text-gray-500 mt-1">Tam zamanlı</div>
+                </div>
               </div>
             </CardContent>
           </Card>
-        </div>
+        </main>
       </div>
     </div>
   );
