@@ -122,7 +122,7 @@ export async function seedDatabase() {
         phone: "+90 532 111 22 33",
         companyId: sampleCompany.id,
         role: "hr_manager",
-        password: "password123",
+        password: userHashedPassword,
         isActive: true
       },
       {
@@ -133,7 +133,7 @@ export async function seedDatabase() {
         phone: "+90 533 444 55 66",
         companyId: sampleCompany.id,
         role: "hr_specialist",
-        password: "password123",
+        password: userHashedPassword,
         isActive: true
       },
       {
@@ -144,7 +144,7 @@ export async function seedDatabase() {
         phone: "+90 534 777 88 99",
         companyId: sampleCompany.id,
         role: "hr_specialist",
-        password: "password123",
+        password: userHashedPassword,
         isActive: true
       },
       {
@@ -155,7 +155,7 @@ export async function seedDatabase() {
         phone: "+90 535 123 45 67",
         companyId: sampleCompany.id,
         role: "admin",
-        password: "admin123",
+        password: adminHashedPassword,
         isActive: true
       }
     ];
