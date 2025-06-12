@@ -43,8 +43,8 @@ export default function CompanyManagement() {
   const filteredCompanies = (companies as any[]).filter((company: any) => {
     const matchesSearch = company.name?.toLowerCase().includes(searchTerm.toLowerCase()) ||
                          company.industry?.toLowerCase().includes(searchTerm.toLowerCase());
-    const matchesIndustry = !selectedIndustry || company.industry === selectedIndustry;
-    const matchesSize = !selectedSize || company.size === selectedSize;
+    const matchesIndustry = selectedIndustry === "all" || company.industry === selectedIndustry;
+    const matchesSize = selectedSize === "all" || company.size === selectedSize;
     
     return matchesSearch && matchesIndustry && matchesSize;
   });
@@ -293,7 +293,7 @@ export default function CompanyManagement() {
                   <SelectValue placeholder="Sektör filtrele" />
                 </SelectTrigger>
                 <SelectContent>
-                  <SelectItem value="">Tüm Sektörler</SelectItem>
+                  <SelectItem value="all">Tüm Sektörler</SelectItem>
                   {industries.map((industry) => (
                     <SelectItem key={industry} value={industry}>{industry}</SelectItem>
                   ))}
@@ -306,7 +306,7 @@ export default function CompanyManagement() {
                   <SelectValue placeholder="Büyüklük filtrele" />
                 </SelectTrigger>
                 <SelectContent>
-                  <SelectItem value="">Tüm Büyüklükler</SelectItem>
+                  <SelectItem value="all">Tüm Büyüklükler</SelectItem>
                   {sizes.map((size) => (
                     <SelectItem key={size} value={size}>{getSizeLabel(size)}</SelectItem>
                   ))}
