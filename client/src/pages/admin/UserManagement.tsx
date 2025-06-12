@@ -9,7 +9,8 @@ import { Dialog, DialogContent, DialogDescription, DialogFooter, DialogHeader, D
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Badge } from "@/components/ui/badge";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
-import { Users, Plus, Edit, Trash2, Building2, UserCheck, UserX, Download, Search, Filter, Mail, Phone } from "lucide-react";
+import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
+import { Users, Plus, Edit, Trash2, Building2, UserCheck, UserX, Download, Search, Filter, Mail, Phone, Shield, Activity } from "lucide-react";
 import { useToast } from "@/hooks/use-toast";
 
 export default function UserManagement() {
@@ -55,13 +56,13 @@ export default function UserManagement() {
       resetForm();
       toast({
         title: "Başarılı",
-        description: "Kullanıcı başarıyla oluşturuldu.",
+        description: "Kullanıcı başarıyla oluşturuldu",
       });
     },
-    onError: (error: Error) => {
+    onError: (error: any) => {
       toast({
         title: "Hata",
-        description: error.message,
+        description: error.message || "Kullanıcı oluşturulurken hata oluştu",
         variant: "destructive",
       });
     },
@@ -74,16 +75,17 @@ export default function UserManagement() {
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ["/api/users"] });
       setIsDialogOpen(false);
+      setEditingUser(null);
       resetForm();
       toast({
         title: "Başarılı",
-        description: "Kullanıcı başarıyla güncellendi.",
+        description: "Kullanıcı başarıyla güncellendi",
       });
     },
-    onError: (error: Error) => {
+    onError: (error: any) => {
       toast({
         title: "Hata",
-        description: error.message,
+        description: error.message || "Kullanıcı güncellenirken hata oluştu",
         variant: "destructive",
       });
     },
@@ -91,19 +93,19 @@ export default function UserManagement() {
 
   const deleteUserMutation = useMutation({
     mutationFn: async (id: string) => {
-      return await apiRequest("DELETE", `/api/users/${id}`, undefined);
+      return await apiRequest("DELETE", `/api/users/${id}`);
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ["/api/users"] });
       toast({
         title: "Başarılı",
-        description: "Kullanıcı başarıyla silindi.",
+        description: "Kullanıcı başarıyla silindi",
       });
     },
-    onError: (error: Error) => {
+    onError: (error: any) => {
       toast({
         title: "Hata",
-        description: error.message,
+        description: error.message || "Kullanıcı silinirken hata oluştu",
         variant: "destructive",
       });
     },
@@ -121,7 +123,6 @@ export default function UserManagement() {
       phone: "",
       position: ""
     });
-    setEditingUser(null);
   };
 
   const handleEdit = (user: any) => {
@@ -138,12 +139,6 @@ export default function UserManagement() {
       position: user.position || ""
     });
     setIsDialogOpen(true);
-  };
-
-  const handleDelete = (id: string) => {
-    if (confirm("Bu kullanıcıyı silmek istediğinizden emin misiniz?")) {
-      deleteUserMutation.mutate(id);
-    }
   };
 
   const handleSubmit = (e: React.FormEvent) => {
@@ -198,11 +193,13 @@ export default function UserManagement() {
   // Filter users based on search, role, and company
   const filteredUsers = Array.isArray(users) ? users.filter((user: any) => {
     const matchesSearch = 
-      user.firstName?.toLowerCase().includes(searchTerm.toLowerCase()) ||
-      user.lastName?.toLowerCase().includes(searchTerm.toLowerCase()) ||
-      user.email?.toLowerCase().includes(searchTerm.toLowerCase());
+      `${user.firstName} ${user.lastName}`.toLowerCase().includes(searchTerm.toLowerCase()) ||
+      user.email?.toLowerCase().includes(searchTerm.toLowerCase()) ||
+      user.role?.toLowerCase().includes(searchTerm.toLowerCase());
+    
     const matchesRole = selectedRole === "all" || user.role === selectedRole;
     const matchesCompany = selectedCompany === "all" || user.companyId?.toString() === selectedCompany;
+    
     return matchesSearch && matchesRole && matchesCompany;
   }) : [];
 
@@ -239,14 +236,22 @@ export default function UserManagement() {
                   <span className="text-sm">Güvenli Erişim</span>
                 </div>
                 <div className="flex items-center space-x-2">
-                  <Building2 className="h-4 w-4 text-blue-600" />
-                  <span className="text-sm">Merkezi Yönetim</span>
+                  <Shield className="h-4 w-4 text-blue-600" />
+                  <span className="text-sm">Rol Tabanlı Yetkilendirme</span>
+                </div>
+                <div className="flex items-center space-x-2">
+                  <Activity className="h-4 w-4 text-blue-600" />
+                  <span className="text-sm">Gerçek Zamanlı Senkronizasyon</span>
                 </div>
               </div>
             </div>
             <div className="text-right">
               <div className="text-3xl font-bold text-gray-800">{filteredUsers.length}</div>
               <div className="text-gray-600">Toplam Kullanıcı</div>
+              <div className="flex items-center justify-end space-x-1 mt-2">
+                <div className="w-2 h-2 bg-emerald-500 rounded-full animate-pulse"></div>
+                <span className="text-sm text-gray-700">Sistem Operasyonel</span>
+              </div>
             </div>
           </div>
         </div>
@@ -275,290 +280,361 @@ export default function UserManagement() {
                   Yeni Kullanıcı Ekle
                 </Button>
               </DialogTrigger>
+              <DialogContent className="bg-white border-gray-200 max-w-2xl">
+                <DialogHeader>
+                  <DialogTitle className="text-gray-800">
+                    {editingUser ? "Kullanıcı Düzenle" : "Yeni Kullanıcı Ekle"}
+                  </DialogTitle>
+                  <DialogDescription className="text-gray-600">
+                    {editingUser ? "Kullanıcı bilgilerini güncelleyin" : "Sisteme yeni kullanıcı ekleyin"}
+                  </DialogDescription>
+                </DialogHeader>
+                <form onSubmit={handleSubmit} className="space-y-6">
+                  <div className="grid grid-cols-2 gap-4">
+                    <div className="space-y-2">
+                      <Label htmlFor="firstName" className="text-gray-700">Ad</Label>
+                      <Input
+                        id="firstName"
+                        value={formData.firstName}
+                        onChange={(e) => setFormData({ ...formData, firstName: e.target.value })}
+                        required
+                        className="bg-white border-gray-200"
+                      />
+                    </div>
+                    <div className="space-y-2">
+                      <Label htmlFor="lastName" className="text-gray-700">Soyad</Label>
+                      <Input
+                        id="lastName"
+                        value={formData.lastName}
+                        onChange={(e) => setFormData({ ...formData, lastName: e.target.value })}
+                        required
+                        className="bg-white border-gray-200"
+                      />
+                    </div>
+                  </div>
+
+                  <div className="space-y-2">
+                    <Label htmlFor="email" className="text-gray-700">E-posta</Label>
+                    <Input
+                      id="email"
+                      type="email"
+                      value={formData.email}
+                      onChange={(e) => setFormData({ ...formData, email: e.target.value })}
+                      required
+                      className="bg-white border-gray-200"
+                    />
+                  </div>
+
+                  <div className="space-y-2">
+                    <Label htmlFor="password" className="text-gray-700">
+                      {editingUser ? "Yeni Şifre (boş bırakabilirsiniz)" : "Şifre"}
+                    </Label>
+                    <Input
+                      id="password"
+                      type="password"
+                      value={formData.password}
+                      onChange={(e) => setFormData({ ...formData, password: e.target.value })}
+                      required={!editingUser}
+                      className="bg-white border-gray-200"
+                    />
+                  </div>
+
+                  <div className="grid grid-cols-2 gap-4">
+                    <div className="space-y-2">
+                      <Label htmlFor="role" className="text-gray-700">Rol</Label>
+                      <Select value={formData.role} onValueChange={(value) => setFormData({ ...formData, role: value })}>
+                        <SelectTrigger className="bg-white border-gray-200">
+                          <SelectValue placeholder="Rol seçin" />
+                        </SelectTrigger>
+                        <SelectContent>
+                          <SelectItem value="Admin">Admin</SelectItem>
+                          <SelectItem value="İK Müdürü">İK Müdürü</SelectItem>
+                          <SelectItem value="İK">İK</SelectItem>
+                          <SelectItem value="Departman Müdürü">Departman Müdürü</SelectItem>
+                          <SelectItem value="Çalışan">Çalışan</SelectItem>
+                        </SelectContent>
+                      </Select>
+                    </div>
+                    <div className="space-y-2">
+                      <Label htmlFor="position" className="text-gray-700">Pozisyon</Label>
+                      <Input
+                        id="position"
+                        value={formData.position}
+                        onChange={(e) => setFormData({ ...formData, position: e.target.value })}
+                        className="bg-white border-gray-200"
+                      />
+                    </div>
+                  </div>
+
+                  <div className="grid grid-cols-2 gap-4">
+                    <div className="space-y-2">
+                      <Label htmlFor="company" className="text-gray-700">Şirket</Label>
+                      <Select value={formData.companyId} onValueChange={(value) => setFormData({ ...formData, companyId: value })}>
+                        <SelectTrigger className="bg-white border-gray-200">
+                          <SelectValue placeholder="Şirket seçin" />
+                        </SelectTrigger>
+                        <SelectContent>
+                          <SelectItem value="">Şirket seçmeyin</SelectItem>
+                          {Array.isArray(companies) && companies.map((company: any) => (
+                            <SelectItem key={company.id} value={company.id.toString()}>
+                              {company.name}
+                            </SelectItem>
+                          ))}
+                        </SelectContent>
+                      </Select>
+                    </div>
+                    <div className="space-y-2">
+                      <Label htmlFor="department" className="text-gray-700">Departman</Label>
+                      <Select value={formData.departmentId} onValueChange={(value) => setFormData({ ...formData, departmentId: value })}>
+                        <SelectTrigger className="bg-white border-gray-200">
+                          <SelectValue placeholder="Departman seçin" />
+                        </SelectTrigger>
+                        <SelectContent>
+                          <SelectItem value="">Departman seçmeyin</SelectItem>
+                          {Array.isArray(departments) && departments.map((department: any) => (
+                            <SelectItem key={department.id} value={department.id.toString()}>
+                              {department.name}
+                            </SelectItem>
+                          ))}
+                        </SelectContent>
+                      </Select>
+                    </div>
+                  </div>
+
+                  <div className="space-y-2">
+                    <Label htmlFor="phone" className="text-gray-700">Telefon</Label>
+                    <Input
+                      id="phone"
+                      value={formData.phone}
+                      onChange={(e) => setFormData({ ...formData, phone: e.target.value })}
+                      className="bg-white border-gray-200"
+                    />
+                  </div>
+
+                  <DialogFooter>
+                    <Button type="button" variant="outline" onClick={() => setIsDialogOpen(false)}>
+                      İptal
+                    </Button>
+                    <Button 
+                      type="submit" 
+                      className="bg-gradient-to-r from-blue-600 to-indigo-600 hover:from-blue-700 hover:to-indigo-700"
+                      disabled={createUserMutation.isPending || updateUserMutation.isPending}
+                    >
+                      {editingUser ? "Güncelle" : "Oluştur"}
+                    </Button>
+                  </DialogFooter>
+                </form>
+              </DialogContent>
             </Dialog>
           </div>
         </div>
-      </div>
 
-      {/* Statistics Cards */}
-      <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-4">
-        <Card className="bg-white dark:bg-gray-800 border-gray-200 dark:border-gray-700">
-          <CardContent className="flex items-center p-6">
-            <div className="p-3 bg-blue-100 dark:bg-blue-900/30 rounded-full mr-4">
-              <Users className="h-6 w-6 text-blue-600" />
-            </div>
-            <div>
-              <div className="text-3xl font-bold text-gray-900 dark:text-white">
-                {Array.isArray(users) ? users.length : 0}
+        {/* Filters */}
+        <Card className="bg-white border-gray-200 shadow-lg">
+          <CardContent className="p-6">
+            <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
+              <div className="relative">
+                <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-gray-400" />
+                <Input
+                  placeholder="Kullanıcı ara..."
+                  value={searchTerm}
+                  onChange={(e) => setSearchTerm(e.target.value)}
+                  className="pl-10 bg-white border-gray-200"
+                />
               </div>
-              <p className="text-sm text-blue-600 dark:text-blue-400 font-medium">
-                Toplam Kullanıcı
-              </p>
+              
+              <Select value={selectedRole} onValueChange={setSelectedRole}>
+                <SelectTrigger className="bg-white border-gray-200">
+                  <Filter className="h-4 w-4 mr-2" />
+                  <SelectValue placeholder="Rol Filtresi" />
+                </SelectTrigger>
+                <SelectContent>
+                  <SelectItem value="all">Tüm Roller</SelectItem>
+                  <SelectItem value="Admin">Admin</SelectItem>
+                  <SelectItem value="İK Müdürü">İK Müdürü</SelectItem>
+                  <SelectItem value="İK">İK</SelectItem>
+                  <SelectItem value="Departman Müdürü">Departman Müdürü</SelectItem>
+                  <SelectItem value="Çalışan">Çalışan</SelectItem>
+                </SelectContent>
+              </Select>
+
+              <Select value={selectedCompany} onValueChange={setSelectedCompany}>
+                <SelectTrigger className="bg-white border-gray-200">
+                  <Building2 className="h-4 w-4 mr-2" />
+                  <SelectValue placeholder="Şirket Filtresi" />
+                </SelectTrigger>
+                <SelectContent>
+                  <SelectItem value="all">Tüm Şirketler</SelectItem>
+                  {Array.isArray(companies) && companies.map((company: any) => (
+                    <SelectItem key={company.id} value={company.id.toString()}>
+                      {company.name}
+                    </SelectItem>
+                  ))}
+                </SelectContent>
+              </Select>
+
+              <div className="text-right">
+                <p className="text-sm text-gray-600">
+                  <span className="font-medium">{filteredUsers.length}</span> kullanıcı gösteriliyor
+                </p>
+              </div>
             </div>
           </CardContent>
         </Card>
 
-        <Card className="bg-white dark:bg-gray-800 border-gray-200 dark:border-gray-700">
-          <CardContent className="flex items-center p-6">
-            <div className="p-3 bg-green-100 dark:bg-green-900/30 rounded-full mr-4">
-              <UserCheck className="h-6 w-6 text-green-600" />
-            </div>
-            <div>
-              <div className="text-3xl font-bold text-gray-900 dark:text-white">
-                {Array.isArray(users) ? users.filter((u: any) => u.isActive).length : 0}
-              </div>
-              <p className="text-sm text-green-600 dark:text-green-400 font-medium">
-                Aktif Kullanıcı
-              </p>
-            </div>
+        {/* Users Table */}
+        <Card className="bg-white border-gray-200 shadow-lg">
+          <CardContent className="p-0">
+            <Table>
+              <TableHeader>
+                <TableRow className="border-gray-200">
+                  <TableHead className="text-gray-700 font-semibold">Kullanıcı</TableHead>
+                  <TableHead className="text-gray-700 font-semibold">Rol</TableHead>
+                  <TableHead className="text-gray-700 font-semibold">Şirket</TableHead>
+                  <TableHead className="text-gray-700 font-semibold">Departman</TableHead>
+                  <TableHead className="text-gray-700 font-semibold">İletişim</TableHead>
+                  <TableHead className="text-gray-700 font-semibold">İşlemler</TableHead>
+                </TableRow>
+              </TableHeader>
+              <TableBody>
+                {filteredUsers.map((user: any) => (
+                  <TableRow key={user.id} className="border-gray-200 hover:bg-gray-50">
+                    <TableCell>
+                      <div className="flex items-center space-x-3">
+                        <Avatar className="h-10 w-10">
+                          <AvatarImage src={user.profileImageUrl} />
+                          <AvatarFallback className="bg-blue-100 text-blue-700">
+                            {user.firstName?.[0]}{user.lastName?.[0]}
+                          </AvatarFallback>
+                        </Avatar>
+                        <div>
+                          <div className="font-medium text-gray-900">
+                            {user.firstName} {user.lastName}
+                          </div>
+                          <div className="text-sm text-gray-600">{user.email}</div>
+                        </div>
+                      </div>
+                    </TableCell>
+                    <TableCell>
+                      <Badge className={getRoleColor(user.role)}>
+                        {user.role}
+                      </Badge>
+                    </TableCell>
+                    <TableCell className="text-gray-700">
+                      {user.companyId ? getCompanyName(user.companyId) : "Atanmamış"}
+                    </TableCell>
+                    <TableCell className="text-gray-700">
+                      {user.departmentId ? getDepartmentName(user.departmentId) : "Atanmamış"}
+                    </TableCell>
+                    <TableCell>
+                      <div className="space-y-1">
+                        {user.email && (
+                          <div className="flex items-center space-x-1 text-sm text-gray-600">
+                            <Mail className="h-3 w-3" />
+                            <span>{user.email}</span>
+                          </div>
+                        )}
+                        {user.phone && (
+                          <div className="flex items-center space-x-1 text-sm text-gray-600">
+                            <Phone className="h-3 w-3" />
+                            <span>{user.phone}</span>
+                          </div>
+                        )}
+                      </div>
+                    </TableCell>
+                    <TableCell>
+                      <div className="flex items-center space-x-2">
+                        <Button
+                          variant="outline"
+                          size="sm"
+                          onClick={() => handleEdit(user)}
+                          className="text-blue-600 border-blue-200 hover:bg-blue-50"
+                        >
+                          <Edit className="h-3 w-3" />
+                        </Button>
+                        <Button
+                          variant="outline"
+                          size="sm"
+                          onClick={() => deleteUserMutation.mutate(user.id)}
+                          className="text-red-600 border-red-200 hover:bg-red-50"
+                        >
+                          <Trash2 className="h-3 w-3" />
+                        </Button>
+                      </div>
+                    </TableCell>
+                  </TableRow>
+                ))}
+              </TableBody>
+            </Table>
           </CardContent>
         </Card>
 
-        <Card className="bg-white dark:bg-gray-800 border-gray-200 dark:border-gray-700">
-          <CardContent className="flex items-center p-6">
-            <div className="p-3 bg-orange-100 dark:bg-orange-900/30 rounded-full mr-4">
-              <UserX className="h-6 w-6 text-orange-600" />
-            </div>
-            <div>
-              <div className="text-3xl font-bold text-gray-900 dark:text-white">
-                {Array.isArray(users) ? users.filter((u: any) => !u.isActive).length : 0}
-              </div>
-              <p className="text-sm text-orange-600 dark:text-orange-400 font-medium">
-                Pasif Kullanıcı
-              </p>
-            </div>
-          </CardContent>
-        </Card>
-
-        <Card className="bg-white dark:bg-gray-800 border-gray-200 dark:border-gray-700">
-          <CardContent className="flex items-center p-6">
-            <div className="p-3 bg-purple-100 dark:bg-purple-900/30 rounded-full mr-4">
-              <Building2 className="h-6 w-6 text-purple-600" />
-            </div>
-            <div>
-              <div className="text-3xl font-bold text-gray-900 dark:text-white">
-                {Array.isArray(companies) ? companies.length : 0}
-              </div>
-              <p className="text-sm text-purple-600 dark:text-purple-400 font-medium">
-                Bağlı Şirket
-              </p>
-            </div>
-          </CardContent>
-        </Card>
-      </div>
-
-      {/* Search and Filter Controls */}
-      <div className="flex flex-col sm:flex-row gap-4 items-start sm:items-center justify-between bg-white dark:bg-gray-800 p-6 rounded-lg border border-gray-200 dark:border-gray-700">
-        <div className="flex flex-1 gap-4">
-          <div className="relative flex-1 max-w-sm">
-            <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 h-4 w-4" />
-            <Input
-              placeholder="Kullanıcı ara..."
-              className="pl-10"
-              value={searchTerm}
-              onChange={(e) => setSearchTerm(e.target.value)}
-            />
-          </div>
-          <Select value={selectedRole} onValueChange={setSelectedRole}>
-            <SelectTrigger className="w-40">
-              <Filter className="h-4 w-4 mr-2" />
-              <SelectValue placeholder="Rol filtrele" />
-            </SelectTrigger>
-            <SelectContent>
-              <SelectItem value="all">Tüm Roller</SelectItem>
-              <SelectItem value="Admin">Admin</SelectItem>
-              <SelectItem value="İK Müdürü">İK Müdürü</SelectItem>
-              <SelectItem value="İK">İK</SelectItem>
-              <SelectItem value="Departman Müdürü">Departman Müdürü</SelectItem>
-              <SelectItem value="Çalışan">Çalışan</SelectItem>
-            </SelectContent>
-          </Select>
-          <Select value={selectedCompany} onValueChange={setSelectedCompany}>
-            <SelectTrigger className="w-48">
-              <Building2 className="h-4 w-4 mr-2" />
-              <SelectValue placeholder="Şirket filtrele" />
-            </SelectTrigger>
-            <SelectContent>
-              <SelectItem value="all">Tüm Şirketler</SelectItem>
-              {Array.isArray(companies) && companies.map((company: any) => (
-                <SelectItem key={company.id} value={company.id.toString()}>
-                  {company.name}
-                </SelectItem>
-              ))}
-            </SelectContent>
-          </Select>
-        </div>
-        <div className="flex gap-2">
-          <Button variant="outline" size="sm">
-            Sırala
-          </Button>
-          <Button variant="outline" size="sm">
-            <Filter className="h-4 w-4 mr-2" />
-            Filtrele
-          </Button>
-        </div>
-      </div>
-
-      {/* User Cards */}
-      {filteredUsers.length > 0 ? (
-        <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-3">
-          {filteredUsers.map((user: any) => (
-            <Card key={user.id} className="hover:shadow-lg transition-shadow duration-200 bg-white dark:bg-gray-800">
-              <CardHeader>
-                <div className="flex items-start justify-between">
-                  <div className="flex items-center space-x-3">
-                    <Avatar className="h-12 w-12">
-                      <AvatarImage src={user.profileImageUrl} />
-                      <AvatarFallback className="bg-blue-100 text-blue-600">
-                        {user.firstName?.[0]}{user.lastName?.[0]}
-                      </AvatarFallback>
-                    </Avatar>
-                    <div>
-                      <CardTitle className="text-lg">{user.firstName} {user.lastName}</CardTitle>
-                      <CardDescription>{user.position || user.role}</CardDescription>
-                    </div>
-                  </div>
-                  <Badge className={getRoleColor(user.role)}>
-                    {user.role}
-                  </Badge>
-                </div>
-              </CardHeader>
-              <CardContent>
-                <div className="space-y-3">
-                  <div className="flex items-center space-x-2 text-sm">
-                    <Mail className="h-4 w-4 text-gray-400" />
-                    <span className="text-gray-900 dark:text-white">{user.email}</span>
-                  </div>
-                  {user.phone && (
-                    <div className="flex items-center space-x-2 text-sm">
-                      <Phone className="h-4 w-4 text-gray-400" />
-                      <span className="text-gray-900 dark:text-white">{user.phone}</span>
-                    </div>
-                  )}
-                  <div className="flex items-center justify-between text-sm">
-                    <span className="font-medium text-gray-600 dark:text-gray-400">Şirket:</span>
-                    <span className="text-gray-900 dark:text-white">{getCompanyName(user.companyId)}</span>
-                  </div>
-                  <div className="flex items-center justify-between text-sm">
-                    <span className="font-medium text-gray-600 dark:text-gray-400">Departman:</span>
-                    <span className="text-gray-900 dark:text-white">{getDepartmentName(user.departmentId)}</span>
-                  </div>
-                  <div className="flex items-center justify-between text-sm">
-                    <span className="font-medium text-gray-600 dark:text-gray-400">Durum:</span>
-                    <Badge variant={user.isActive ? "default" : "secondary"}>
-                      {user.isActive ? "Aktif" : "Pasif"}
-                    </Badge>
-                  </div>
-                  <div className="flex justify-end space-x-2 pt-2">
-                    <Button
-                      variant="outline"
-                      size="sm"
-                      onClick={() => handleEdit(user)}
-                    >
-                      <Edit className="h-4 w-4" />
-                    </Button>
-                    <Button
-                      variant="outline"
-                      size="sm"
-                      onClick={() => handleDelete(user.id)}
-                      className="text-red-600 hover:text-red-700 hover:bg-red-50"
-                    >
-                      <Trash2 className="h-4 w-4" />
-                    </Button>
-                  </div>
-                </div>
-              </CardContent>
-            </Card>
-          ))}
-        </div>
-      ) : (
-        <div className="text-center py-12">
-          <Users className="h-12 w-12 text-gray-400 mx-auto mb-4" />
-          <h3 className="text-lg font-medium text-gray-900 dark:text-white mb-2">Henüz kullanıcı yok</h3>
-          <p className="text-gray-600 dark:text-gray-400 mb-4">İlk kullanıcınızı ekleyerek başlayın</p>
-          <Button onClick={() => setIsDialogOpen(true)}>
-            <Plus className="h-4 w-4 mr-2" />
-            Yeni Kullanıcı Ekle
-          </Button>
-        </div>
-      )}
-
-      {/* Dialog for Creating/Editing User */}
-      <Dialog open={isDialogOpen} onOpenChange={setIsDialogOpen}>
-        <DialogContent className="sm:max-w-[600px]">
+        {/* Create/Edit User Dialog */}
+        <Dialog open={isDialogOpen} onOpenChange={setIsDialogOpen}>
+          <DialogContent className="bg-white border-gray-200 max-w-2xl">
           <DialogHeader>
-            <DialogTitle>{editingUser ? "Kullanıcı Düzenle" : "Yeni Kullanıcı Ekle"}</DialogTitle>
-            <DialogDescription>
-              Kullanıcı bilgilerini doldurun ve kaydedin.
+            <DialogTitle className="text-gray-800">
+              {editingUser ? "Kullanıcı Düzenle" : "Yeni Kullanıcı Ekle"}
+            </DialogTitle>
+            <DialogDescription className="text-gray-600">
+              {editingUser ? "Kullanıcı bilgilerini güncelleyin" : "Sisteme yeni kullanıcı ekleyin"}
             </DialogDescription>
           </DialogHeader>
-          <form onSubmit={handleSubmit} className="space-y-4">
+          <form onSubmit={handleSubmit} className="space-y-6">
             <div className="grid grid-cols-2 gap-4">
-              <div>
-                <Label htmlFor="firstName">Ad</Label>
+              <div className="space-y-2">
+                <Label htmlFor="firstName" className="text-gray-700">Ad</Label>
                 <Input
                   id="firstName"
                   value={formData.firstName}
-                  onChange={(e) => setFormData({...formData, firstName: e.target.value})}
+                  onChange={(e) => setFormData({ ...formData, firstName: e.target.value })}
                   required
+                  className="bg-white border-gray-200"
                 />
               </div>
-              <div>
-                <Label htmlFor="lastName">Soyad</Label>
+              <div className="space-y-2">
+                <Label htmlFor="lastName" className="text-gray-700">Soyad</Label>
                 <Input
                   id="lastName"
                   value={formData.lastName}
-                  onChange={(e) => setFormData({...formData, lastName: e.target.value})}
+                  onChange={(e) => setFormData({ ...formData, lastName: e.target.value })}
                   required
+                  className="bg-white border-gray-200"
                 />
               </div>
             </div>
+
+            <div className="space-y-2">
+              <Label htmlFor="email" className="text-gray-700">E-posta</Label>
+              <Input
+                id="email"
+                type="email"
+                value={formData.email}
+                onChange={(e) => setFormData({ ...formData, email: e.target.value })}
+                required
+                className="bg-white border-gray-200"
+              />
+            </div>
+
+            <div className="space-y-2">
+              <Label htmlFor="password" className="text-gray-700">
+                {editingUser ? "Yeni Şifre (boş bırakabilirsiniz)" : "Şifre"}
+              </Label>
+              <Input
+                id="password"
+                type="password"
+                value={formData.password}
+                onChange={(e) => setFormData({ ...formData, password: e.target.value })}
+                required={!editingUser}
+                className="bg-white border-gray-200"
+              />
+            </div>
+
             <div className="grid grid-cols-2 gap-4">
-              <div>
-                <Label htmlFor="email">E-posta</Label>
-                <Input
-                  id="email"
-                  type="email"
-                  value={formData.email}
-                  onChange={(e) => setFormData({...formData, email: e.target.value})}
-                  required
-                />
-              </div>
-              <div>
-                <Label htmlFor="phone">Telefon</Label>
-                <Input
-                  id="phone"
-                  value={formData.phone}
-                  onChange={(e) => setFormData({...formData, phone: e.target.value})}
-                />
-              </div>
-            </div>
-            <div className="grid grid-cols-2 gap-4">
-              <div>
-                <Label htmlFor="password">Şifre</Label>
-                <Input
-                  id="password"
-                  type="password"
-                  value={formData.password}
-                  onChange={(e) => setFormData({...formData, password: e.target.value})}
-                  required={!editingUser}
-                  placeholder={editingUser ? "Değiştirmek için yeni şifre girin" : ""}
-                />
-              </div>
-              <div>
-                <Label htmlFor="position">Pozisyon</Label>
-                <Input
-                  id="position"
-                  value={formData.position}
-                  onChange={(e) => setFormData({...formData, position: e.target.value})}
-                />
-              </div>
-            </div>
-            <div className="grid grid-cols-3 gap-4">
-              <div>
-                <Label htmlFor="role">Rol</Label>
-                <Select value={formData.role} onValueChange={(value) => setFormData({...formData, role: value})}>
-                  <SelectTrigger>
+              <div className="space-y-2">
+                <Label htmlFor="role" className="text-gray-700">Rol</Label>
+                <Select value={formData.role} onValueChange={(value) => setFormData({ ...formData, role: value })}>
+                  <SelectTrigger className="bg-white border-gray-200">
                     <SelectValue placeholder="Rol seçin" />
                   </SelectTrigger>
                   <SelectContent>
@@ -570,13 +646,26 @@ export default function UserManagement() {
                   </SelectContent>
                 </Select>
               </div>
-              <div>
-                <Label htmlFor="companyId">Şirket</Label>
-                <Select value={formData.companyId} onValueChange={(value) => setFormData({...formData, companyId: value})}>
-                  <SelectTrigger>
+              <div className="space-y-2">
+                <Label htmlFor="position" className="text-gray-700">Pozisyon</Label>
+                <Input
+                  id="position"
+                  value={formData.position}
+                  onChange={(e) => setFormData({ ...formData, position: e.target.value })}
+                  className="bg-white border-gray-200"
+                />
+              </div>
+            </div>
+
+            <div className="grid grid-cols-2 gap-4">
+              <div className="space-y-2">
+                <Label htmlFor="company" className="text-gray-700">Şirket</Label>
+                <Select value={formData.companyId} onValueChange={(value) => setFormData({ ...formData, companyId: value })}>
+                  <SelectTrigger className="bg-white border-gray-200">
                     <SelectValue placeholder="Şirket seçin" />
                   </SelectTrigger>
                   <SelectContent>
+                    <SelectItem value="">Şirket seçmeyin</SelectItem>
                     {Array.isArray(companies) && companies.map((company: any) => (
                       <SelectItem key={company.id} value={company.id.toString()}>
                         {company.name}
@@ -585,13 +674,14 @@ export default function UserManagement() {
                   </SelectContent>
                 </Select>
               </div>
-              <div>
-                <Label htmlFor="departmentId">Departman</Label>
-                <Select value={formData.departmentId} onValueChange={(value) => setFormData({...formData, departmentId: value})}>
-                  <SelectTrigger>
+              <div className="space-y-2">
+                <Label htmlFor="department" className="text-gray-700">Departman</Label>
+                <Select value={formData.departmentId} onValueChange={(value) => setFormData({ ...formData, departmentId: value })}>
+                  <SelectTrigger className="bg-white border-gray-200">
                     <SelectValue placeholder="Departman seçin" />
                   </SelectTrigger>
                   <SelectContent>
+                    <SelectItem value="">Departman seçmeyin</SelectItem>
                     {Array.isArray(departments) && departments.map((department: any) => (
                       <SelectItem key={department.id} value={department.id.toString()}>
                         {department.name}
@@ -601,17 +691,33 @@ export default function UserManagement() {
                 </Select>
               </div>
             </div>
+
+            <div className="space-y-2">
+              <Label htmlFor="phone" className="text-gray-700">Telefon</Label>
+              <Input
+                id="phone"
+                value={formData.phone}
+                onChange={(e) => setFormData({ ...formData, phone: e.target.value })}
+                className="bg-white border-gray-200"
+              />
+            </div>
+
             <DialogFooter>
               <Button type="button" variant="outline" onClick={() => setIsDialogOpen(false)}>
                 İptal
               </Button>
-              <Button type="submit" disabled={createUserMutation.isPending || updateUserMutation.isPending}>
+              <Button 
+                type="submit" 
+                className="bg-gradient-to-r from-blue-600 to-indigo-600 hover:from-blue-700 hover:to-indigo-700"
+                disabled={createUserMutation.isPending || updateUserMutation.isPending}
+              >
                 {editingUser ? "Güncelle" : "Oluştur"}
               </Button>
             </DialogFooter>
           </form>
         </DialogContent>
-      </Dialog>
+        </Dialog>
+      </div>
     </div>
   );
 }

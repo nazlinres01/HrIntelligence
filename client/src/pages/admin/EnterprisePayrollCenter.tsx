@@ -220,31 +220,34 @@ export default function EnterprisePayrollCenter() {
   };
 
   return (
-    <div className="min-h-screen bg-gradient-to-b from-slate-900 via-gray-900 to-black">
-      {/* Financial Header */}
-      <div className="bg-gradient-to-r from-emerald-600 via-teal-600 to-cyan-600 shadow-2xl">
-        <div className="max-w-7xl mx-auto px-6 py-12">
+    <div className="min-h-screen bg-gradient-to-br from-gray-50 via-white to-gray-100 p-6">
+      <div className="max-w-7xl mx-auto space-y-8">
+        
+        {/* Enterprise Header */}
+        <div className="bg-gradient-to-r from-white via-gray-50 to-white rounded-2xl p-8 text-gray-800 shadow-2xl border border-gray-200">
           <div className="flex items-center justify-between">
-            <div className="flex items-center space-x-6">
-              <div className="p-4 bg-white/20 backdrop-blur rounded-2xl">
-                <Calculator className="h-10 w-10 text-white" />
+            <div>
+              <div className="flex items-center space-x-4 mb-4">
+                <div className="p-3 bg-blue-50 border border-blue-200 rounded-xl">
+                  <DollarSign className="h-8 w-8 text-blue-600" />
+                </div>
+                <div>
+                  <h1 className="text-4xl font-bold text-gray-800">Bordro Merkezi</h1>
+                  <p className="text-gray-600 text-lg">Kapsamlı Maaş ve Ödeme Yönetimi</p>
+                </div>
               </div>
-              <div>
-                <h1 className="text-4xl font-bold text-white mb-2">
-                  Enterprise Payroll Center
-                </h1>
-                <p className="text-emerald-100 text-lg">
-                  Comprehensive compensation management and financial reporting
-                </p>
-                <div className="flex items-center mt-3 space-x-4">
-                  <div className="flex items-center text-white/90">
-                    <Shield className="h-4 w-4 mr-2" />
-                    <span className="text-sm font-medium">SOX Compliant</span>
-                  </div>
-                  <div className="flex items-center text-white/90">
-                    <CheckCircle className="h-4 w-4 mr-2" />
-                    <span className="text-sm font-medium">GDPR Secured</span>
-                  </div>
+              <div className="flex items-center space-x-6 text-gray-700">
+                <div className="flex items-center space-x-2">
+                  <Shield className="h-4 w-4 text-blue-600" />
+                  <span className="text-sm">Güvenli Finansal İşlemler</span>
+                </div>
+                <div className="flex items-center space-x-2">
+                  <Calculator className="h-4 w-4 text-blue-600" />
+                  <span className="text-sm">Otomatik Hesaplama</span>
+                </div>
+                <div className="flex items-center space-x-2">
+                  <FileText className="h-4 w-4 text-blue-600" />
+                  <span className="text-sm">Yasal Uyumluluk</span>
                 </div>
               </div>
             </div>
