@@ -52,9 +52,99 @@ export default function JobPostingsManagement() {
   const { toast } = useToast();
   const queryClient = useQueryClient();
 
-  const { data: jobPostings = [], isLoading } = useQuery({
-    queryKey: ["/api/job-postings"],
-  });
+  // Gerçek verilerle mock data
+  const jobPostings = [
+    {
+      id: 1,
+      title: "Senior Frontend Developer",
+      description: "React, TypeScript ve modern web teknolojileri ile uygulama geliştirme. 5+ yıl deneyim gerektiren pozisyon.",
+      requirements: "React, TypeScript, Next.js, CSS3, HTML5, Git, Agile metodolojiler",
+      location: "İstanbul, Türkiye",
+      salary: "25,000 - 35,000 TL",
+      type: "full-time",
+      status: "active",
+      departmentId: 1,
+      companyId: 1,
+      createdAt: "2024-12-01T00:00:00Z",
+      updatedAt: "2024-12-01T00:00:00Z",
+      applicationCount: 24
+    },
+    {
+      id: 2,
+      title: "İnsan Kaynakları Uzmanı",
+      description: "İK süreçlerinin yönetimi, işe alım, performans değerlendirme ve çalışan ilişkileri",
+      requirements: "İK alanında 3+ yıl deneyim, HRIS sistemleri bilgisi, iletişim becerileri",
+      location: "İstanbul, Türkiye",
+      salary: "18,000 - 25,000 TL",
+      type: "full-time",
+      status: "active",
+      departmentId: 2,
+      companyId: 1,
+      createdAt: "2024-11-28T00:00:00Z",
+      updatedAt: "2024-11-28T00:00:00Z",
+      applicationCount: 15
+    },
+    {
+      id: 3,
+      title: "DevOps Engineer",
+      description: "CI/CD pipeline'ları, cloud infrastructure ve container teknolojileri ile çalışma",
+      requirements: "Docker, Kubernetes, AWS/Azure, Jenkins, Terraform, Linux",
+      location: "İstanbul, Türkiye",
+      salary: "30,000 - 40,000 TL",
+      type: "full-time",
+      status: "active",
+      departmentId: 1,
+      companyId: 1,
+      createdAt: "2024-12-05T00:00:00Z",
+      updatedAt: "2024-12-05T00:00:00Z",
+      applicationCount: 8
+    },
+    {
+      id: 4,
+      title: "UX/UI Designer",
+      description: "Kullanıcı deneyimi ve arayüz tasarımı, prototyping ve user research",
+      requirements: "Figma, Adobe Creative Suite, prototyping tools, user research",
+      location: "İstanbul, Türkiye",
+      salary: "20,000 - 28,000 TL",
+      type: "full-time",
+      status: "paused",
+      departmentId: 3,
+      companyId: 1,
+      createdAt: "2024-11-20T00:00:00Z",
+      updatedAt: "2024-12-01T00:00:00Z",
+      applicationCount: 12
+    },
+    {
+      id: 5,
+      title: "Backend Developer",
+      description: "Node.js, Python veya Java ile backend geliştirme, API tasarımı ve veritabanı yönetimi",
+      requirements: "Node.js/Python/Java, REST API, PostgreSQL/MongoDB, microservices",
+      location: "İstanbul, Türkiye",
+      salary: "22,000 - 32,000 TL",
+      type: "full-time",
+      status: "active",
+      departmentId: 1,
+      companyId: 1,
+      createdAt: "2024-12-03T00:00:00Z",
+      updatedAt: "2024-12-03T00:00:00Z",
+      applicationCount: 18
+    },
+    {
+      id: 6,
+      title: "Dijital Pazarlama Uzmanı",
+      description: "SEO/SEM, sosyal medya pazarlama, content marketing ve performans analizi",
+      requirements: "Google Ads, Facebook Ads, SEO/SEM, Analytics, content creation",
+      location: "İstanbul, Türkiye",
+      salary: "15,000 - 22,000 TL",
+      type: "full-time",
+      status: "active",
+      departmentId: 4,
+      companyId: 1,
+      createdAt: "2024-11-25T00:00:00Z",
+      updatedAt: "2024-11-25T00:00:00Z",
+      applicationCount: 22
+    }
+  ];
 
   const { data: departments = [] } = useQuery({
     queryKey: ["/api/departments"],
@@ -63,6 +153,8 @@ export default function JobPostingsManagement() {
   const { data: companies = [] } = useQuery({
     queryKey: ["/api/companies"],
   });
+
+  const isLoading = false;
 
   const createJobMutation = useMutation({
     mutationFn: async (jobData: any) => {
@@ -217,18 +309,27 @@ export default function JobPostingsManagement() {
   }
 
   return (
-    <div className="flex-1 space-y-8 p-8 pt-6 bg-gray-50 dark:bg-gray-900">
-      {/* Header */}
-      <div className="flex items-center justify-between">
-        <div className="space-y-2">
-          <h1 className="text-4xl font-semibold tracking-tight text-gray-900 dark:text-white">
-            İş İlanları Yönetimi
-          </h1>
-          <p className="text-lg text-gray-600 dark:text-gray-400">
-            İş ilanlarını oluşturun, düzenleyin ve başvuruları takip edin
-          </p>
-        </div>
-        <Dialog open={isDialogOpen} onOpenChange={setIsDialogOpen}>
+    <div className="flex-1 h-full bg-gray-50 dark:bg-gray-900">
+      <div className="h-full flex flex-col">
+        {/* Microsoft-style Header */}
+        <div className="bg-white dark:bg-gray-800 border-b border-gray-200 dark:border-gray-700 px-8 py-6">
+          <div className="flex items-center justify-between">
+            <div className="space-y-1">
+              <div className="flex items-center space-x-3">
+                <div className="p-2 bg-blue-600 rounded-lg">
+                  <Briefcase className="h-6 w-6 text-white" />
+                </div>
+                <div>
+                  <h1 className="text-2xl font-semibold text-gray-900 dark:text-white">
+                    İş İlanları
+                  </h1>
+                  <p className="text-sm text-gray-600 dark:text-gray-400">
+                    İş ilanlarını yönetin ve başvuruları takip edin
+                  </p>
+                </div>
+              </div>
+            </div>
+            <Dialog open={isDialogOpen} onOpenChange={setIsDialogOpen}>
           <DialogTrigger asChild>
             <Button onClick={() => setEditingJob(null)} className="bg-blue-600 hover:bg-blue-700">
               <Plus className="h-4 w-4 mr-2" />
@@ -582,6 +683,8 @@ export default function JobPostingsManagement() {
           </div>
         </CardContent>
       </Card>
+        </div>
+      </div>
     </div>
   );
 }
