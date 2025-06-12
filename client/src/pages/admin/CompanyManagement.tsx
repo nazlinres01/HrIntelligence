@@ -40,18 +40,18 @@ export default function CompanyManagement() {
   });
 
   // Filter companies based on search and filters
-  const filteredCompanies = (companies as any[]).filter((company: any) => {
+  const filteredCompanies = Array.isArray(companies) ? companies.filter((company: any) => {
     const matchesSearch = company.name?.toLowerCase().includes(searchTerm.toLowerCase()) ||
                          company.industry?.toLowerCase().includes(searchTerm.toLowerCase());
     const matchesIndustry = selectedIndustry === "all" || company.industry === selectedIndustry;
     const matchesSize = selectedSize === "all" || company.size === selectedSize;
     
     return matchesSearch && matchesIndustry && matchesSize;
-  });
+  }) : [];
 
   // Get unique industries and sizes for filters
-  const industries = Array.from(new Set((companies as any[]).map((c: any) => c.industry).filter(Boolean)));
-  const sizes = Array.from(new Set((companies as any[]).map((c: any) => c.size).filter(Boolean)));
+  const industries = Array.isArray(companies) ? Array.from(new Set(companies.map((c: any) => c.industry).filter(Boolean))) : [];
+  const sizes = Array.isArray(companies) ? Array.from(new Set(companies.map((c: any) => c.size).filter(Boolean))) : [];
 
   const createCompanyMutation = useMutation({
     mutationFn: (data: any) => apiRequest("/api/companies", "POST", data),
@@ -225,7 +225,7 @@ export default function CompanyManagement() {
             </div>
             <div>
               <p className="text-sm font-medium text-gray-600 dark:text-gray-400">Toplam Şirket</p>
-              <p className="text-2xl font-bold text-gray-900 dark:text-white">{(companies as any[]).length}</p>
+              <p className="text-2xl font-bold text-gray-900 dark:text-white">{Array.isArray(companies) ? companies.length : 0}</p>
             </div>
           </CardContent>
         </Card>
@@ -238,7 +238,7 @@ export default function CompanyManagement() {
             <div>
               <p className="text-sm font-medium text-gray-600 dark:text-gray-400">Toplam Çalışan</p>
               <p className="text-2xl font-bold text-gray-900 dark:text-white">
-                {(companies as any[]).reduce((sum: number, company: any) => sum + (company.employeeCount || 0), 0)}
+                {Array.isArray(companies) ? companies.reduce((sum: number, company: any) => sum + (company.employeeCount || 0), 0) : 0}
               </p>
             </div>
           </CardContent>
