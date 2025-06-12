@@ -18,6 +18,8 @@ import UserManagement from "@/pages/admin/UserManagement";
 import DepartmentManagement from "@/pages/admin/DepartmentManagement";
 import RecruitmentManagement from "@/pages/admin/RecruitmentManagement";
 import AnalyticsDashboard from "@/pages/admin/AnalyticsDashboard";
+import FinancialReports from "@/pages/admin/FinancialReports";
+import HRReports from "@/pages/admin/HRReports";
 import AuditLogs from "@/pages/admin/AuditLogs";
 
 // Other Pages
@@ -89,6 +91,8 @@ function Router() {
       {userRole === 'admin' && <Route path="/departments" component={DepartmentManagement} />}
       {userRole === 'admin' && <Route path="/recruitment" component={RecruitmentManagement} />}
       {userRole === 'admin' && <Route path="/analytics" component={AnalyticsDashboard} />}
+      {userRole === 'admin' && <Route path="/reports" component={HRReports} />}
+      {userRole === 'admin' && <Route path="/financial-reports" component={FinancialReports} />}
       {userRole === 'admin' && <Route path="/audit" component={AuditLogs} />}
       
       {/* Conditional routes based on permissions */}
