@@ -9,7 +9,7 @@ import { Textarea } from "@/components/ui/textarea";
 import { Dialog, DialogContent, DialogDescription, DialogFooter, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Badge } from "@/components/ui/badge";
-import { Target, Plus, Edit, Trash2, Users, DollarSign, Building2, User } from "lucide-react";
+import { Target, Plus, Edit, Trash2, Users, DollarSign, Building2, User, Download, Search, Filter } from "lucide-react";
 import { useToast } from "@/hooks/use-toast";
 
 export default function DepartmentManagement() {
@@ -148,20 +148,147 @@ export default function DepartmentManagement() {
   }
 
   return (
-    <div className="p-6 space-y-6">
+    <div className="flex-1 space-y-8 p-8 pt-6 bg-gray-50 dark:bg-gray-900">
+      {/* Microsoft Fluent Header */}
       <div className="flex items-center justify-between">
-        <div>
-          <h1 className="text-2xl font-semibold text-gray-900 dark:text-white">Departman Yönetimi</h1>
-          <p className="text-gray-600 dark:text-gray-400 mt-1">Departmanları yönetin ve organize edin</p>
+        <div className="space-y-2">
+          <h1 className="text-4xl font-semibold tracking-tight text-gray-900 dark:text-white">
+            Departman Yönetimi
+          </h1>
+          <p className="text-lg text-gray-600 dark:text-gray-400">
+            Departmanları yönetin, organize edin ve yapısal hiyerarşiyi düzenleyin
+          </p>
         </div>
-        <Dialog open={isDialogOpen} onOpenChange={setIsDialogOpen}>
-          <DialogTrigger asChild>
-            <Button className="bg-blue-600 hover:bg-blue-700" onClick={() => { setEditingDepartment(null); resetForm(); }}>
-              <Plus className="h-4 w-4 mr-2" />
-              Yeni Departman
-            </Button>
-          </DialogTrigger>
-          <DialogContent className="sm:max-w-[500px]">
+        <div className="flex space-x-3">
+          <Button variant="outline" className="border-gray-200 text-gray-700 hover:bg-gray-50 dark:border-gray-700 dark:text-gray-300">
+            <Download className="mr-2 h-4 w-4" />
+            Dışa Aktar
+          </Button>
+          <Dialog open={isDialogOpen} onOpenChange={setIsDialogOpen}>
+            <DialogTrigger asChild>
+              <Button 
+                onClick={() => {
+                  setEditingDepartment(null);
+                  resetForm();
+                }}
+                className="bg-blue-600 hover:bg-blue-700 text-white shadow-lg"
+              >
+                <Plus className="mr-2 h-4 w-4" />
+                Yeni Departman Ekle
+              </Button>
+            </DialogTrigger>
+          </Dialog>
+        </div>
+      </div>
+
+      {/* Statistics Cards */}
+      <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-4">
+        <Card className="bg-white dark:bg-gray-800 border-gray-200 dark:border-gray-700">
+          <CardContent className="flex items-center p-6">
+            <div className="p-3 bg-blue-100 dark:bg-blue-900/30 rounded-full mr-4">
+              <Target className="h-6 w-6 text-blue-600" />
+            </div>
+            <div>
+              <div className="text-3xl font-bold text-gray-900 dark:text-white">
+                {Array.isArray(departments) ? departments.length : 0}
+              </div>
+              <p className="text-sm text-blue-600 dark:text-blue-400 font-medium">
+                Toplam Departman
+              </p>
+            </div>
+          </CardContent>
+        </Card>
+
+        <Card className="bg-white dark:bg-gray-800 border-gray-200 dark:border-gray-700">
+          <CardContent className="flex items-center p-6">
+            <div className="p-3 bg-green-100 dark:bg-green-900/30 rounded-full mr-4">
+              <Users className="h-6 w-6 text-green-600" />
+            </div>
+            <div>
+              <div className="text-3xl font-bold text-gray-900 dark:text-white">
+                {Array.isArray(employees) ? employees.length : 0}
+              </div>
+              <p className="text-sm text-green-600 dark:text-green-400 font-medium">
+                Toplam Çalışan
+              </p>
+            </div>
+          </CardContent>
+        </Card>
+
+        <Card className="bg-white dark:bg-gray-800 border-gray-200 dark:border-gray-700">
+          <CardContent className="flex items-center p-6">
+            <div className="p-3 bg-purple-100 dark:bg-purple-900/30 rounded-full mr-4">
+              <Building2 className="h-6 w-6 text-purple-600" />
+            </div>
+            <div>
+              <div className="text-3xl font-bold text-gray-900 dark:text-white">
+                {Array.isArray(companies) ? companies.length : 0}
+              </div>
+              <p className="text-sm text-purple-600 dark:text-purple-400 font-medium">
+                Aktif Şirket
+              </p>
+            </div>
+          </CardContent>
+        </Card>
+
+        <Card className="bg-white dark:bg-gray-800 border-gray-200 dark:border-gray-700">
+          <CardContent className="flex items-center p-6">
+            <div className="p-3 bg-orange-100 dark:bg-orange-900/30 rounded-full mr-4">
+              <DollarSign className="h-6 w-6 text-orange-600" />
+            </div>
+            <div>
+              <div className="text-3xl font-bold text-gray-900 dark:text-white">
+                ₺2.4M
+              </div>
+              <p className="text-sm text-orange-600 dark:text-orange-400 font-medium">
+                Toplam Bütçe
+              </p>
+            </div>
+          </CardContent>
+        </Card>
+      </div>
+
+      {/* Search and Filter Controls */}
+      <div className="flex flex-col sm:flex-row gap-4 items-start sm:items-center justify-between bg-white dark:bg-gray-800 p-6 rounded-lg border border-gray-200 dark:border-gray-700">
+        <div className="flex flex-1 gap-4">
+          <div className="relative flex-1 max-w-sm">
+            <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 h-4 w-4" />
+            <Input
+              placeholder="Departman ara..."
+              className="pl-10"
+              // value={searchTerm}
+              // onChange={(e) => setSearchTerm(e.target.value)}
+            />
+          </div>
+          <Select defaultValue="all">
+            <SelectTrigger className="w-48">
+              <Filter className="h-4 w-4 mr-2" />
+              <SelectValue placeholder="Şirket filtrele" />
+            </SelectTrigger>
+            <SelectContent>
+              <SelectItem value="all">Tüm Şirketler</SelectItem>
+              {Array.isArray(companies) && companies.map((company: any) => (
+                <SelectItem key={company.id} value={company.id.toString()}>
+                  {company.name}
+                </SelectItem>
+              ))}
+            </SelectContent>
+          </Select>
+        </div>
+        <div className="flex gap-2">
+          <Button variant="outline" size="sm">
+            Sırala
+          </Button>
+          <Button variant="outline" size="sm">
+            <Filter className="h-4 w-4 mr-2" />
+            Filtrele
+          </Button>
+        </div>
+      </div>
+
+      {/* Dialog for Creating/Editing Department */}
+      <Dialog open={isDialogOpen} onOpenChange={setIsDialogOpen}>
+        <DialogContent className="sm:max-w-[500px]">
             <DialogHeader>
               <DialogTitle>{editingDepartment ? "Departman Düzenle" : "Yeni Departman Ekle"}</DialogTitle>
               <DialogDescription>
