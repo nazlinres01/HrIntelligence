@@ -51,31 +51,13 @@ const getRoleBasedNavigation = (userRole: UserRole): NavigationSection[] => {
     case 'owner':
       return [
         {
-          title: "Ana Panel",
+          title: "Yönetim Paneli",
           items: [
-            { name: "Dashboard", href: "/", icon: LayoutDashboard, show: true },
+            { name: "Ana Dashboard", href: "/", icon: LayoutDashboard, show: true },
+            { name: "Kullanıcı Yönetimi", href: "/admin/users", icon: Users, show: true },
             { name: "Şirket Yönetimi", href: "/admin/companies", icon: Building2, show: true },
-            { name: "Kullanıcılar", href: "/admin/users", icon: Users, show: true },
-            { name: "Departmanlar", href: "/departments", icon: Target, show: true },
-          ]
-        },
-        {
-          title: "İnsan Kaynakları",
-          items: [
-            { name: "Çalışanlar", href: "/employees", icon: UserCircle, show: true },
-            { name: "İşe Alım", href: "/recruitment", icon: Briefcase, show: true },
-            { name: "Performans", href: "/performance", icon: TrendingUp, show: true },
-            { name: "Bordro", href: "/payroll", icon: CreditCard, show: true },
-            { name: "İzin Yönetimi", href: "/leaves", icon: Calendar, show: true },
-          ]
-        },
-        {
-          title: "Analiz & Raporlar",
-          items: [
-            { name: "Dashboard Analytics", href: "/analytics", icon: PieChart, show: true },
-            { name: "İK Raporları", href: "/reports", icon: FileText, show: true },
-            { name: "Finansal Raporlar", href: "/financial-reports", icon: BarChart3, show: true },
-            { name: "Denetim Kayıtları", href: "/audit", icon: Clock, show: true },
+            { name: "Departman Yönetimi", href: "/admin/departments", icon: Target, show: true },
+            { name: "Analytics Dashboard", href: "/admin/analytics", icon: BarChart3, show: true },
           ]
         }
       ];
@@ -84,29 +66,12 @@ const getRoleBasedNavigation = (userRole: UserRole): NavigationSection[] => {
     case 'ik_müdürü':
       return [
         {
-          title: "Ana Panel",
-          items: [
-            { name: "Dashboard", href: "/", icon: LayoutDashboard, show: true },
-            { name: "Çalışanlar", href: "/employees", icon: Users, show: true },
-            { name: "Departmanlar", href: "/departments", icon: Target, show: true },
-          ]
-        },
-        {
           title: "İK Yönetimi",
           items: [
-            { name: "İşe Alım Süreci", href: "/recruitment", icon: Briefcase, show: true },
-            { name: "Performans Yönetimi", href: "/performance", icon: TrendingUp, show: true },
-            { name: "Bordro İşlemleri", href: "/payroll", icon: CreditCard, show: true },
-            { name: "İzin Onayları", href: "/leaves", icon: Calendar, show: true },
-            { name: "Disiplin İşlemleri", href: "/discipline", icon: Shield, show: true },
-          ]
-        },
-        {
-          title: "Raporlar & Analiz",
-          items: [
-            { name: "İK Raporları", href: "/hr-reports", icon: FileText, show: true },
-            { name: "Performans Analizi", href: "/performance-analytics", icon: BarChart3, show: true },
-            { name: "Bordro Raporları", href: "/payroll-reports", icon: PieChart, show: true },
+            { name: "Ana Dashboard", href: "/", icon: LayoutDashboard, show: true },
+            { name: "Kullanıcı Yönetimi", href: "/admin/users", icon: Users, show: true },
+            { name: "Departman Yönetimi", href: "/admin/departments", icon: Target, show: true },
+            { name: "Analytics Dashboard", href: "/admin/analytics", icon: BarChart3, show: true },
           ]
         }
       ];
@@ -115,28 +80,11 @@ const getRoleBasedNavigation = (userRole: UserRole): NavigationSection[] => {
     case 'ik':
       return [
         {
-          title: "Ana Panel",
+          title: "İK Panel",
           items: [
-            { name: "Dashboard", href: "/", icon: LayoutDashboard, show: true },
-            { name: "Çalışan Kayıtları", href: "/employee-records", icon: Users, show: true },
-            { name: "Özlük İşlemleri", href: "/personnel-operations", icon: FileText, show: true },
-          ]
-        },
-        {
-          title: "İK İşlemleri",
-          items: [
-            { name: "İzin İşlemleri", href: "/leave-operations", icon: Calendar, show: true },
-            { name: "Performans Takibi", href: "/performance-tracking", icon: TrendingUp, show: true },
-            { name: "Bordro Hazırlığı", href: "/payroll-preparation", icon: CreditCard, show: true },
-            { name: "Belge Yönetimi", href: "/document-management", icon: FileText, show: true },
-          ]
-        },
-        {
-          title: "Destek & Formlar",
-          items: [
-            { name: "Çalışan Talepleri", href: "/employee-requests", icon: Bell, show: true },
-            { name: "İK Formları", href: "/hr-forms", icon: FileText, show: true },
-            { name: "Eğitim Kayıtları", href: "/training-records", icon: BookOpen, show: true },
+            { name: "Ana Dashboard", href: "/", icon: LayoutDashboard, show: true },
+            { name: "Departman Yönetimi", href: "/admin/departments", icon: Target, show: true },
+            { name: "Analytics Dashboard", href: "/admin/analytics", icon: BarChart3, show: true },
           ]
         }
       ];
@@ -145,28 +93,11 @@ const getRoleBasedNavigation = (userRole: UserRole): NavigationSection[] => {
     case 'departman_müdürü':
       return [
         {
-          title: "Ana Panel",
+          title: "Departman Panel",
           items: [
-            { name: "Dashboard", href: "/", icon: LayoutDashboard, show: true },
-            { name: "Ekibim", href: "/my-team", icon: Users, show: true },
-            { name: "Proje Yönetimi", href: "/projects", icon: Target, show: true },
-          ]
-        },
-        {
-          title: "Ekip Yönetimi",
-          items: [
-            { name: "Performans Değerlendirme", href: "/team-performance", icon: TrendingUp, show: true },
-            { name: "İzin Onayları", href: "/leave-approvals", icon: Calendar, show: true },
-            { name: "Mesai Takibi", href: "/time-tracking", icon: Clock, show: true },
-            { name: "Harcama Onayları", href: "/expense-approvals", icon: CreditCard, show: true },
-          ]
-        },
-        {
-          title: "Raporlar",
-          items: [
-            { name: "Departman Raporları", href: "/department-reports", icon: FileText, show: true },
-            { name: "Verimlilik Analizi", href: "/productivity-analysis", icon: BarChart3, show: true },
-            { name: "Takım Performansı", href: "/team-analytics", icon: Award, show: true },
+            { name: "Ana Dashboard", href: "/", icon: LayoutDashboard, show: true },
+            { name: "Departman Yönetimi", href: "/admin/departments", icon: Target, show: true },
+            { name: "Analytics Dashboard", href: "/admin/analytics", icon: BarChart3, show: true },
           ]
         }
       ];
@@ -175,29 +106,10 @@ const getRoleBasedNavigation = (userRole: UserRole): NavigationSection[] => {
     case 'çalışan':
       return [
         {
-          title: "Ana Panel",
+          title: "Çalışan Panel",
           items: [
-            { name: "Dashboard", href: "/", icon: LayoutDashboard, show: true },
-            { name: "Profilim", href: "/my-profile", icon: UserCircle, show: true },
-            { name: "Mesai Takibi", href: "/time-tracking", icon: Clock, show: true },
-          ]
-        },
-        {
-          title: "Taleplerim",
-          items: [
-            { name: "İzin Talebi", href: "/leave-request", icon: Calendar, show: true },
-            { name: "Harcama Talebi", href: "/expense-request", icon: CreditCard, show: true },
-            { name: "Destek Talebi", href: "/support-request", icon: HelpCircle, show: true },
-            { name: "Mesajlarım", href: "/messages", icon: MessageSquare, show: true },
-          ]
-        },
-        {
-          title: "Kişisel",
-          items: [
-            { name: "Performansım", href: "/my-performance", icon: TrendingUp, show: true },
-            { name: "Bordro Bilgileri", href: "/my-payroll", icon: FileText, show: true },
-            { name: "Eğitimlerim", href: "/my-trainings", icon: BookOpen, show: true },
-            { name: "Başarılarım", href: "/my-achievements", icon: Award, show: true },
+            { name: "Ana Dashboard", href: "/", icon: LayoutDashboard, show: true },
+            { name: "Analytics Dashboard", href: "/admin/analytics", icon: BarChart3, show: true },
           ]
         }
       ];
@@ -208,8 +120,6 @@ const getRoleBasedNavigation = (userRole: UserRole): NavigationSection[] => {
           title: "Ana Panel",
           items: [
             { name: "Dashboard", href: "/", icon: LayoutDashboard, show: true },
-            { name: "Çalışanlar", href: "/employees", icon: Users, show: true },
-            { name: "Performans", href: "/performance", icon: BarChart3, show: true },
           ]
         }
       ];
