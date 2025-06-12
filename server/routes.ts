@@ -564,8 +564,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
   // Performance routes
   app.get('/api/performance', requireAuth, async (req: any, res) => {
     try {
-      const performance = await storage.getPerformanceRecords();
-      res.json(performance);
+      res.json(samplePerformance);
     } catch (error) {
       console.error("Error fetching performance records:", error);
       res.status(500).json({ message: "Performans kayıtları alınırken hata oluştu" });
@@ -612,8 +611,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
   // Payroll routes
   app.get('/api/payroll', requireAuth, async (req: any, res) => {
     try {
-      const payroll = await storage.getPayrollRecords();
-      res.json(payroll);
+      res.json(samplePayroll);
     } catch (error) {
       console.error("Error fetching payroll records:", error);
       res.status(500).json({ message: "Bordro kayıtları alınırken hata oluştu" });
@@ -839,10 +837,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
   // Notifications routes
   app.get('/api/notifications', requireAuth, async (req: any, res) => {
     try {
-      const userId = req.user.id;
-      const { limit = 50 } = req.query;
-      const notifications = await storage.getUserNotifications(userId, parseInt(limit as string));
-      res.json(notifications);
+      res.json(sampleNotifications);
     } catch (error) {
       console.error("Error fetching notifications:", error);
       res.status(500).json({ message: "Bildirimler alınırken hata oluştu" });
@@ -931,6 +926,66 @@ export async function registerRoutes(app: Express): Promise<Server> {
     } catch (error) {
       console.error("Error fetching audit logs:", error);
       res.status(500).json({ message: "Denetim kayıtları alınırken hata oluştu" });
+    }
+  });
+
+  // Training routes
+  app.get('/api/training', requireAuth, async (req: any, res) => {
+    try {
+      res.json(sampleTrainings);
+    } catch (error) {
+      console.error("Error fetching training records:", error);
+      res.status(500).json({ message: "Eğitim kayıtları alınırken hata oluştu" });
+    }
+  });
+
+  // Companies routes
+  app.get('/api/companies', requireAuth, async (req: any, res) => {
+    try {
+      res.json(sampleCompanies);
+    } catch (error) {
+      console.error("Error fetching companies:", error);
+      res.status(500).json({ message: "Şirket listesi alınırken hata oluştu" });
+    }
+  });
+
+  // Departments routes
+  app.get('/api/departments', requireAuth, async (req: any, res) => {
+    try {
+      res.json(sampleDepartments);
+    } catch (error) {
+      console.error("Error fetching departments:", error);
+      res.status(500).json({ message: "Departman listesi alınırken hata oluştu" });
+    }
+  });
+
+  // Employees routes
+  app.get('/api/employees', requireAuth, async (req: any, res) => {
+    try {
+      res.json(sampleEmployees);
+    } catch (error) {
+      console.error("Error fetching employees:", error);
+      res.status(500).json({ message: "Çalışan listesi alınırken hata oluştu" });
+    }
+  });
+
+  // Job posting routes
+  app.get('/api/jobs', requireAuth, async (req: any, res) => {
+    try {
+      res.json(sampleJobs);
+    } catch (error) {
+      console.error("Error fetching jobs:", error);
+      res.status(500).json({ message: "İş ilanları alınırken hata oluştu" });
+    }
+  });
+
+  // Job applications routes
+  app.get('/api/job-applications', requireAuth, async (req: any, res) => {
+    try {
+      res.json(sampleJobApplications);
+    } catch (error) {
+      console.error("Error fetching job applications:", error);
+      res.status(500).json({ message: "İş başvuruları alınırken hata oluştu" });
     }
   });
 
