@@ -383,7 +383,7 @@ export async function seedDatabase() {
       
       // Garanti BBVA users
       {
-        id: "hr_manager_004",
+        id: "hr_manager_005",
         email: "sema.aksoy@garantibbva.com.tr",
         firstName: "Sema",
         lastName: "Aksoy",
@@ -447,7 +447,7 @@ export async function seedDatabase() {
       
       // Microsoft employees with different roles
       {
-        id: "hr_specialist_003",
+        id: "hr_specialist_005",
         email: "tuna.gunes@microsoft.com",
         firstName: "Tuna",
         lastName: "Güneş",
@@ -485,7 +485,7 @@ export async function seedDatabase() {
         lastLoginAt: new Date(Date.now() - 3 * 60 * 60 * 1000) // 3 hours ago
       },
       {
-        id: "hr_specialist_004",
+        id: "hr_specialist_006",
         email: "sibel.aydin@arcelik.com",
         firstName: "Sibel",
         lastName: "Aydın",
