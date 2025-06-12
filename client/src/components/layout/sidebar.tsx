@@ -266,14 +266,14 @@ export default function Sidebar() {
       <div className="p-4">
         <div className="flex items-center space-x-3 p-3 rounded-xl bg-gray-50 dark:bg-gray-800/50 border border-gray-200 dark:border-gray-700">
           <Avatar className="h-10 w-10">
-            <AvatarImage src={(user as any).profileImageUrl} />
+            <AvatarImage src={userData.profileImageUrl} />
             <AvatarFallback className="bg-gradient-to-br from-blue-500 to-indigo-600 text-white font-medium">
               {userInitials}
             </AvatarFallback>
           </Avatar>
           <div className="flex-1 min-w-0">
             <p className="text-sm font-medium text-gray-900 dark:text-white truncate">
-              {(user as any).firstName} {(user as any).lastName}
+              {userData.firstName} {userData.lastName}
             </p>
             <p className="text-xs text-blue-600 dark:text-blue-400 font-medium">
               {roleLabels[userRole] || userRole}
