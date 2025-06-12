@@ -13,7 +13,7 @@ import DepartmentManagerDashboard from "@/pages/dashboard/DepartmentManagerDashb
 import EmployeeDashboard from "@/pages/dashboard/EmployeeDashboard";
 
 // Admin Management Pages
-import CompanyManagement from "@/pages/admin/CompanyManagement";
+import EnterpriseCompanyManagement from "@/pages/admin/EnterpriseCompanyManagement";
 import UserManagement from "@/pages/admin/UserManagement";
 import DepartmentManagement from "@/pages/admin/DepartmentManagement";
 import AnalyticsDashboard from "@/pages/admin/AnalyticsDashboard";
@@ -75,7 +75,7 @@ function Router() {
       case 'çalışan':
         return EmployeeDashboard;
       default:
-        return AdminDashboard;
+        return EnterpriseAdminDashboard;
     }
   };
 
@@ -91,7 +91,7 @@ function Router() {
             <Route path="/dashboard" component={DashboardComponent} />
 
             {/* Enterprise Admin Routes */}
-            <Route path="/admin/companies" component={CompanyManagement} />
+            <Route path="/admin/companies" component={EnterpriseCompanyManagement} />
             <Route path="/admin/users" component={UserManagement} />
             <Route path="/admin/departments" component={DepartmentManagement} />
             <Route path="/admin/analytics" component={AnalyticsDashboard} />
