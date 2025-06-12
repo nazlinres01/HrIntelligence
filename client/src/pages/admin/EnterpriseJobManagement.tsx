@@ -1,7 +1,7 @@
 import { useState } from "react";
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { Button } from "@/components/ui/button";
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
+import { Card, CardContent } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
@@ -12,27 +12,7 @@ import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@
 import { useToast } from "@/hooks/use-toast";
 import { apiRequest } from "@/lib/queryClient";
 import { 
-  Plus, 
-  Search, 
-  Edit, 
-  Trash2, 
-  Eye, 
-  Users,
-  Calendar,
-  MapPin,
-  Briefcase,
-  DollarSign,
-  Clock,
-  CheckCircle,
-  XCircle,
-  Building2,
-  TrendingUp,
-  Target,
-  Award,
-  Filter,
-  Download,
-  MoreVertical,
-  Star
+  Plus, Search, Edit, Trash2, Eye, Users, MapPin, Briefcase, TrendingUp, Target, Award, Filter, Download, Building2
 } from "lucide-react";
 
 interface JobPosting {
@@ -242,9 +222,7 @@ export default function EnterpriseJobManagement() {
     return matchesSearch && matchesStatus && matchesDepartment;
   }) : [];
 
-  const totalApplications = filteredJobs.reduce((sum, job) => sum + (job.applicationCount || 0), 0);
   const activeJobs = filteredJobs.filter(job => job.status === "active").length;
-  const urgentJobs = filteredJobs.filter(job => job.status === "urgent").length;
 
   if (isLoading) {
     return (
@@ -378,80 +356,6 @@ export default function EnterpriseJobManagement() {
                       rows={3}
                       className="bg-white border-gray-200"
                     />
-                  </div>
-
-                  <div className="grid grid-cols-3 gap-4">
-                    <div className="space-y-2">
-                      <Label htmlFor="salary" className="text-gray-700">Maaş</Label>
-                      <Input
-                        id="salary"
-                        value={formData.salary}
-                        onChange={(e) => setFormData({ ...formData, salary: e.target.value })}
-                        className="bg-white border-gray-200"
-                      />
-                    </div>
-                    <div className="space-y-2">
-                      <Label htmlFor="type" className="text-gray-700">Çalışma Türü</Label>
-                      <Select value={formData.type} onValueChange={(value) => setFormData({ ...formData, type: value })}>
-                        <SelectTrigger className="bg-white border-gray-200">
-                          <SelectValue placeholder="Tür seçin" />
-                        </SelectTrigger>
-                        <SelectContent>
-                          <SelectItem value="full-time">Tam Zamanlı</SelectItem>
-                          <SelectItem value="part-time">Yarı Zamanlı</SelectItem>
-                          <SelectItem value="contract">Sözleşmeli</SelectItem>
-                          <SelectItem value="internship">Staj</SelectItem>
-                        </SelectContent>
-                      </Select>
-                    </div>
-                    <div className="space-y-2">
-                      <Label htmlFor="status" className="text-gray-700">Durum</Label>
-                      <Select value={formData.status} onValueChange={(value) => setFormData({ ...formData, status: value })}>
-                        <SelectTrigger className="bg-white border-gray-200">
-                          <SelectValue placeholder="Durum seçin" />
-                        </SelectTrigger>
-                        <SelectContent>
-                          <SelectItem value="active">Aktif</SelectItem>
-                          <SelectItem value="closed">Kapalı</SelectItem>
-                          <SelectItem value="urgent">Acil</SelectItem>
-                        </SelectContent>
-                      </Select>
-                    </div>
-                  </div>
-
-                  <div className="grid grid-cols-2 gap-4">
-                    <div className="space-y-2">
-                      <Label htmlFor="department" className="text-gray-700">Departman</Label>
-                      <Select value={formData.departmentId} onValueChange={(value) => setFormData({ ...formData, departmentId: value })}>
-                        <SelectTrigger className="bg-white border-gray-200">
-                          <SelectValue placeholder="Departman seçin" />
-                        </SelectTrigger>
-                        <SelectContent>
-                          <SelectItem value="">Departman seçmeyin</SelectItem>
-                          {Array.isArray(departments) && departments.map((department: any) => (
-                            <SelectItem key={department.id} value={department.id.toString()}>
-                              {department.name}
-                            </SelectItem>
-                          ))}
-                        </SelectContent>
-                      </Select>
-                    </div>
-                    <div className="space-y-2">
-                      <Label htmlFor="company" className="text-gray-700">Şirket</Label>
-                      <Select value={formData.companyId} onValueChange={(value) => setFormData({ ...formData, companyId: value })}>
-                        <SelectTrigger className="bg-white border-gray-200">
-                          <SelectValue placeholder="Şirket seçin" />
-                        </SelectTrigger>
-                        <SelectContent>
-                          <SelectItem value="">Şirket seçmeyin</SelectItem>
-                          {Array.isArray(companies) && companies.map((company: any) => (
-                            <SelectItem key={company.id} value={company.id.toString()}>
-                              {company.name}
-                            </SelectItem>
-                          ))}
-                        </SelectContent>
-                      </Select>
-                    </div>
                   </div>
 
                   <DialogFooter>

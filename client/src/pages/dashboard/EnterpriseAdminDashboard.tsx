@@ -383,26 +383,33 @@ export default function EnterpriseAdminDashboard() {
               </div>
             </CardHeader>
             <CardContent className="space-y-4">
-              {activities && (activities as any[]).slice(0, 6).map((activity: any, index: number) => (
-                <div key={index} className="flex items-start space-x-3 p-3 bg-gray-50 rounded-lg border border-gray-200">
-                  <div className={`p-1.5 rounded-full ${
-                    activity.type.includes('added') ? 'bg-emerald-100 text-emerald-600' :
-                    activity.type.includes('updated') ? 'bg-blue-100 text-blue-600' :
-                    'bg-indigo-100 text-indigo-600'
-                  }`}>
-                    {activity.type.includes('employee') ? <Users className="h-3 w-3" /> :
-                     activity.type.includes('payroll') ? <DollarSign className="h-3 w-3" /> :
-                     <FileText className="h-3 w-3" />}
-                  </div>
-                  <div className="flex-1 min-w-0">
-                    <div className="text-sm text-gray-800">{activity.description}</div>
-                    <div className="text-xs text-gray-600 mt-1">
-                      {new Date(activity.timestamp).toLocaleDateString('tr-TR')} • 
-                      {new Date(activity.timestamp).toLocaleTimeString('tr-TR', { hour: '2-digit', minute: '2-digit' })}
+              {activities && Array.isArray(activities) ? 
+                (activities as any[]).slice(0, 6).map((activity: any, index: number) => {
+                  return (
+                    <div key={index} className="flex items-start space-x-3 p-3 bg-gray-50 rounded-lg border border-gray-200">
+                      <div className={`p-1.5 rounded-full ${
+                        activity.type?.includes('added') ? 'bg-emerald-100 text-emerald-600' :
+                        activity.type?.includes('updated') ? 'bg-blue-100 text-blue-600' :
+                        'bg-indigo-100 text-indigo-600'
+                      }`}>
+                        {activity.type?.includes('employee') ? <Users className="h-3 w-3" /> :
+                         activity.type?.includes('payroll') ? <DollarSign className="h-3 w-3" /> :
+                         <FileText className="h-3 w-3" />}
+                      </div>
+                      <div className="flex-1 min-w-0">
+                        <div className="text-sm text-gray-800">{activity.description}</div>
+                        <div className="text-xs text-gray-600 mt-1">
+                          {activity.timestamp && new Date(activity.timestamp).toLocaleDateString('tr-TR')} • 
+                          {activity.timestamp && new Date(activity.timestamp).toLocaleTimeString('tr-TR', { hour: '2-digit', minute: '2-digit' })}
+                        </div>
+                      </div>
                     </div>
-                  </div>
+                  );
+                }) : (
+                <div className="text-center text-gray-500 py-4">
+                  Henüz aktivite bulunmuyor
                 </div>
-              ))}
+              )}
             </CardContent>
           </Card>
         </div>
