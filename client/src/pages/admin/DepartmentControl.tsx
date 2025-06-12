@@ -109,7 +109,7 @@ export default function DepartmentControl() {
 
   // Filter departments
   const filteredDepartments = React.useMemo(() => {
-    return departments.filter((dept: any) => {
+    return (departments as any[]).filter((dept: any) => {
       const matchesSearch = dept.name?.toLowerCase()?.includes(searchTerm.toLowerCase()) ||
                            dept.description?.toLowerCase()?.includes(searchTerm.toLowerCase());
       const matchesManager = managerFilter === "all" || dept.manager === managerFilter;
@@ -122,16 +122,16 @@ export default function DepartmentControl() {
   };
 
   const getDepartmentStats = () => {
-    const totalDepartments = departments.length;
-    const totalEmployees = employees.length;
-    const avgEmployeesPerDept = departments.length > 0 ? Math.round(employees.length / departments.length) : 0;
-    const departmentsWithBudget = departments.filter((d: any) => d.budget && parseFloat(d.budget) > 0).length;
+    const totalDepartments = (departments as any[]).length;
+    const totalEmployees = (employees as any[]).length;
+    const avgEmployeesPerDept = (departments as any[]).length > 0 ? Math.round((employees as any[]).length / (departments as any[]).length) : 0;
+    const departmentsWithBudget = (departments as any[]).filter((d: any) => d.budget && parseFloat(d.budget) > 0).length;
     
     return { totalDepartments, totalEmployees, avgEmployeesPerDept, departmentsWithBudget };
   };
 
   const getEmployeesByDepartment = (departmentId: string) => {
-    return employees.filter((emp: any) => emp.departmentId === departmentId);
+    return (employees as any[]).filter((emp: any) => emp.departmentId === departmentId);
   };
 
   const formatCurrency = (amount: number) => {
@@ -212,7 +212,7 @@ export default function DepartmentControl() {
                                 </SelectTrigger>
                               </FormControl>
                               <SelectContent className="bg-white">
-                                {employees.map((employee: any) => (
+                                {(employees as any[]).map((employee: any) => (
                                   <SelectItem key={employee.id} value={employee.id}>
                                     {employee.firstName} {employee.lastName}
                                   </SelectItem>
@@ -268,7 +268,7 @@ export default function DepartmentControl() {
                             </FormControl>
                             <SelectContent className="bg-white">
                               <SelectItem value="">Hiçbiri</SelectItem>
-                              {departments.map((dept: any) => (
+                              {(departments as any[]).map((dept: any) => (
                                 <SelectItem key={dept.id} value={dept.id}>
                                   {dept.name}
                                 </SelectItem>
@@ -390,7 +390,7 @@ export default function DepartmentControl() {
             </SelectTrigger>
             <SelectContent className="bg-white">
               <SelectItem value="all">Tüm Müdürler</SelectItem>
-              {employees.map((employee: any) => (
+              {(employees as any[]).map((employee: any) => (
                 <SelectItem key={employee.id} value={employee.id}>
                   {employee.firstName} {employee.lastName}
                 </SelectItem>
@@ -420,7 +420,7 @@ export default function DepartmentControl() {
                 <tbody>
                   {filteredDepartments.map((department: any) => {
                     const deptEmployees = getEmployeesByDepartment(department.id);
-                    const manager = employees.find((emp: any) => emp.id === department.manager);
+                    const manager = (employees as any[]).find((emp: any) => emp.id === department.manager);
                     
                     return (
                       <tr key={department.id} className="border-b border-gray-100">
