@@ -112,8 +112,23 @@ export async function seedDatabase() {
 
 
 
-    // Create HR team users for the company
-    const hrTeamUsers = [
+    // Create comprehensive user base across different companies
+    const allUsers = [
+      // System Admin
+      {
+        id: "admin_001",
+        email: "admin@gmail.com",
+        firstName: "System",
+        lastName: "Admin",
+        phone: "+90 535 123 45 67",
+        companyId: sampleCompany.id,
+        role: "admin",
+        password: adminHashedPassword,
+        isActive: true,
+        lastLoginAt: new Date(Date.now() - 2 * 60 * 60 * 1000) // 2 hours ago
+      },
+
+      // TechCorp Türkiye users
       {
         id: "hr_manager_001",
         email: "fatma.yilmaz@techcorp.com.tr",
@@ -123,7 +138,8 @@ export async function seedDatabase() {
         companyId: sampleCompany.id,
         role: "hr_manager",
         password: userHashedPassword,
-        isActive: true
+        isActive: true,
+        lastLoginAt: new Date(Date.now() - 5 * 60 * 60 * 1000) // 5 hours ago
       },
       {
         id: "hr_specialist_001", 
@@ -134,7 +150,8 @@ export async function seedDatabase() {
         companyId: sampleCompany.id,
         role: "hr_specialist",
         password: userHashedPassword,
-        isActive: true
+        isActive: true,
+        lastLoginAt: new Date(Date.now() - 1 * 24 * 60 * 60 * 1000) // 1 day ago
       },
       {
         id: "hr_specialist_002",
@@ -145,22 +162,188 @@ export async function seedDatabase() {
         companyId: sampleCompany.id,
         role: "hr_specialist",
         password: userHashedPassword,
-        isActive: true
+        isActive: true,
+        lastLoginAt: new Date(Date.now() - 3 * 24 * 60 * 60 * 1000) // 3 days ago
       },
       {
-        id: "admin_001",
-        email: "admin@gmail.com",
-        firstName: "System",
-        lastName: "Admin",
-        phone: "+90 535 123 45 67",
+        id: "dept_manager_001",
+        email: "ali.ozkan@techcorp.com.tr",
+        firstName: "Ali",
+        lastName: "Özkan",
+        phone: "+90 536 789 12 34",
         companyId: sampleCompany.id,
-        role: "admin",
-        password: adminHashedPassword,
-        isActive: true
+        role: "department_manager",
+        password: userHashedPassword,
+        isActive: true,
+        lastLoginAt: new Date(Date.now() - 6 * 60 * 60 * 1000) // 6 hours ago
+      },
+      {
+        id: "employee_001",
+        email: "zeynep.arslan@techcorp.com.tr",
+        firstName: "Zeynep",
+        lastName: "Arslan",
+        phone: "+90 537 654 32 10",
+        companyId: sampleCompany.id,
+        role: "employee",
+        password: userHashedPassword,
+        isActive: true,
+        lastLoginAt: new Date(Date.now() - 2 * 24 * 60 * 60 * 1000) // 2 days ago
+      },
+
+      // Microsoft Türkiye users
+      {
+        id: "hr_manager_002",
+        email: "elif.celik@microsoft.com",
+        firstName: "Elif",
+        lastName: "Çelik",
+        phone: "+90 532 555 11 22",
+        companyId: allCompanies[1].id, // Microsoft Türkiye A.Ş.
+        role: "hr_manager",
+        password: userHashedPassword,
+        isActive: true,
+        lastLoginAt: new Date(Date.now() - 4 * 60 * 60 * 1000) // 4 hours ago
+      },
+      {
+        id: "hr_specialist_003",
+        email: "burak.yildirim@microsoft.com",
+        firstName: "Burak",
+        lastName: "Yıldırım",
+        phone: "+90 533 666 22 33",
+        companyId: allCompanies[1].id, // Microsoft Türkiye A.Ş.
+        role: "hr_specialist",
+        password: userHashedPassword,
+        isActive: true,
+        lastLoginAt: new Date(Date.now() - 1 * 60 * 60 * 1000) // 1 hour ago
+      },
+      {
+        id: "dept_manager_002",
+        email: "selin.koc@microsoft.com",
+        firstName: "Selin",
+        lastName: "Koç",
+        phone: "+90 534 777 33 44",
+        companyId: allCompanies[1].id, // Microsoft Türkiye A.Ş.
+        role: "department_manager",
+        password: userHashedPassword,
+        isActive: true,
+        lastLoginAt: new Date(Date.now() - 8 * 60 * 60 * 1000) // 8 hours ago
+      },
+      {
+        id: "employee_002",
+        email: "emre.sahin@microsoft.com",
+        firstName: "Emre",
+        lastName: "Şahin",
+        phone: "+90 535 888 44 55",
+        companyId: allCompanies[1].id, // Microsoft Türkiye A.Ş.
+        role: "employee",
+        password: userHashedPassword,
+        isActive: true,
+        lastLoginAt: new Date(Date.now() - 4 * 24 * 60 * 60 * 1000) // 4 days ago
+      },
+
+      // Garanti BBVA users
+      {
+        id: "hr_manager_003",
+        email: "gokhan.akin@garantibbva.com.tr",
+        firstName: "Gökhan",
+        lastName: "Akın",
+        phone: "+90 532 999 55 66",
+        companyId: allCompanies[2].id, // Garanti BBVA
+        role: "hr_manager",
+        password: userHashedPassword,
+        isActive: true,
+        lastLoginAt: new Date(Date.now() - 12 * 60 * 60 * 1000) // 12 hours ago
+      },
+      {
+        id: "hr_specialist_004",
+        email: "deniz.kurt@garantibbva.com.tr",
+        firstName: "Deniz",
+        lastName: "Kurt",
+        phone: "+90 533 111 66 77",
+        companyId: allCompanies[2].id, // Garanti BBVA
+        role: "hr_specialist",
+        password: userHashedPassword,
+        isActive: true,
+        lastLoginAt: new Date(Date.now() - 6 * 24 * 60 * 60 * 1000) // 6 days ago
+      },
+      {
+        id: "employee_003",
+        email: "ceren.bag@garantibbva.com.tr",
+        firstName: "Ceren",
+        lastName: "Bağ",
+        phone: "+90 534 222 77 88",
+        companyId: allCompanies[2].id, // Garanti BBVA
+        role: "employee",
+        password: userHashedPassword,
+        isActive: true,
+        lastLoginAt: new Date(Date.now() - 5 * 24 * 60 * 60 * 1000) // 5 days ago
+      },
+
+      // Arçelik users
+      {
+        id: "hr_manager_004",
+        email: "tugba.aksoy@arcelik.com",
+        firstName: "Tuğba",
+        lastName: "Aksoy",
+        phone: "+90 535 333 88 99",
+        companyId: allCompanies[3].id, // Arçelik A.Ş.
+        role: "hr_manager",
+        password: userHashedPassword,
+        isActive: true,
+        lastLoginAt: new Date(Date.now() - 7 * 60 * 60 * 1000) // 7 hours ago
+      },
+      {
+        id: "dept_manager_003",
+        email: "okan.guler@arcelik.com",
+        firstName: "Okan",
+        lastName: "Güler",
+        phone: "+90 536 444 99 00",
+        companyId: allCompanies[3].id, // Arçelik A.Ş.
+        role: "department_manager",
+        password: userHashedPassword,
+        isActive: true,
+        lastLoginAt: new Date(Date.now() - 1 * 60 * 60 * 1000) // 1 hour ago
+      },
+      {
+        id: "employee_004",
+        email: "irem.yilmaz@arcelik.com",
+        firstName: "İrem",
+        lastName: "Yılmaz",
+        phone: "+90 537 555 00 11",
+        companyId: allCompanies[3].id, // Arçelik A.Ş.
+        role: "employee",
+        password: userHashedPassword,
+        isActive: false, // Inactive user for testing
+        lastLoginAt: new Date(Date.now() - 30 * 24 * 60 * 60 * 1000) // 30 days ago
+      },
+
+      // Additional users for variety
+      {
+        id: "employee_005",
+        email: "hakan.celik@techcorp.com.tr",
+        firstName: "Hakan",
+        lastName: "Çelik",
+        phone: "+90 538 666 11 22",
+        companyId: sampleCompany.id,
+        role: "employee",
+        password: userHashedPassword,
+        isActive: true,
+        lastLoginAt: new Date(Date.now() - 10 * 60 * 60 * 1000) // 10 hours ago
+      },
+      {
+        id: "employee_006",
+        email: "leyla.durmus@microsoft.com",
+        firstName: "Leyla",
+        lastName: "Durmuş",
+        phone: "+90 539 777 22 33",
+        companyId: allCompanies[1].id, // Microsoft Türkiye A.Ş.
+        role: "employee",
+        password: userHashedPassword,
+        isActive: true,
+        lastLoginAt: new Date(Date.now() - 2 * 60 * 60 * 1000) // 2 hours ago
       }
     ];
 
-    await db.insert(users).values(hrTeamUsers);
+    await db.insert(users).values(allUsers);
 
     // Create realistic employees with Turkish company structure
     const sampleEmployees = [
