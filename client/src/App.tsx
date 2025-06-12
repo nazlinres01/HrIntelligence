@@ -32,6 +32,7 @@ import Help from "@/pages/help";
 import Settings from "@/pages/settings";
 import Notifications from "@/pages/notifications";
 import Team from "@/pages/team";
+import TestPage from "@/pages/test";
 
 import Login from "@/pages/login";
 import Register from "@/pages/register";
@@ -109,6 +110,7 @@ function Router() {
           <Route path="/notifications" component={Notifications} />
           <Route path="/settings" component={Settings} />
           <Route path="/help" component={Help} />
+          <Route path="/test" component={TestPage} />
           
           <Route component={NotFound} />
         </Switch>
