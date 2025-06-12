@@ -101,6 +101,19 @@ function Router() {
             <Route path="/admin/job-postings" component={EnterpriseJobManagement} />
             <Route path="/admin/payroll" component={EnterprisePayrollCenter} />
             
+            {/* HR Management Routes */}
+            <Route path="/employees" component={Employees} />
+            <Route path="/performance" component={Performance} />
+            <Route path="/leaves" component={Leaves} />
+            <Route path="/training" component={Training} />
+            <Route path="/payroll" component={Payroll} />
+            <Route path="/reports" component={Reports} />
+            <Route path="/settings" component={Settings} />
+            <Route path="/notifications" component={Notifications} />
+            <Route path="/team" component={Team} />
+            <Route path="/help" component={Help} />
+            <Route path="/test" component={TestPage} />
+            
             <Route component={NotFound} />
           </Switch>
         </div>

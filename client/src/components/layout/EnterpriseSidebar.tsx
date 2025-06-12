@@ -85,9 +85,9 @@ const getRoleBasedNavigation = (userRole: UserRole): NavigationSection[] => {
           items: [
             { name: "Yetenek Kazanımı", href: "/admin/job-postings", icon: Briefcase, show: true, description: "Stratejik işe alım süreçleri" },
             { name: "Ücret & Haklar Yönetimi", href: "/admin/payroll", icon: DollarSign, show: true, description: "Bordro ve maaş yönetimi" },
-            { name: "İzin & Devamsızlık", href: "/admin/leaves", icon: Calendar, show: true, description: "İzin talep ve onay süreçleri" },
-            { name: "Performans Değerlendirme", href: "/admin/performance", icon: TrendingUp, show: true, description: "KPI takip ve analiz" },
-            { name: "Eğitim & Gelişim", href: "/admin/trainings", icon: BookOpen, show: true, description: "Personel gelişim programları" },
+            { name: "İzin & Devamsızlık", href: "/leaves", icon: Calendar, show: true, description: "İzin talep ve onay süreçleri" },
+            { name: "Performans Değerlendirme", href: "/performance", icon: TrendingUp, show: true, description: "KPI takip ve analiz" },
+            { name: "Eğitim & Gelişim", href: "/training", icon: BookOpen, show: true, description: "Personel gelişim programları" },
           ]
         }
       ];
@@ -313,14 +313,16 @@ export default function EnterpriseSidebar() {
           
           {!isCollapsed && (
             <div className="mt-3 flex items-center space-x-2">
-              <Button 
-                variant="ghost" 
-                size="sm" 
-                className="flex-1 text-gray-700 hover:text-blue-600 hover:bg-blue-50 justify-start"
-              >
-                <Settings className="h-4 w-4 mr-2" />
-                Ayarlar
-              </Button>
+              <Link href="/settings" className="flex-1">
+                <Button 
+                  variant="ghost" 
+                  size="sm" 
+                  className="w-full text-gray-700 hover:text-blue-600 hover:bg-blue-50 justify-start"
+                >
+                  <Settings className="h-4 w-4 mr-2" />
+                  Ayarlar
+                </Button>
+              </Link>
               <Button 
                 variant="ghost" 
                 size="sm"

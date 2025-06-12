@@ -14,7 +14,7 @@ import { Textarea } from "@/components/ui/textarea";
 import { Separator } from "@/components/ui/separator";
 import { Badge } from "@/components/ui/badge";
 import { 
-  Settings, 
+  Settings as SettingsIcon, 
   User, 
   Bell, 
   Shield, 
@@ -79,13 +79,13 @@ export default function Settings() {
   const profileForm = useForm<ProfileFormData>({
     resolver: zodResolver(profileSchema),
     defaultValues: {
-      firstName: user?.firstName || "",
-      lastName: user?.lastName || "",
-      email: user?.email || "",
-      phone: user?.phone || "",
-      department: user?.department || "",
-      position: user?.position || "",
-      bio: user?.bio || ""
+      firstName: (user as any)?.firstName || "",
+      lastName: (user as any)?.lastName || "",
+      email: (user as any)?.email || "",
+      phone: (user as any)?.phone || "",
+      department: (user as any)?.department || "",
+      position: (user as any)?.position || "",
+      bio: (user as any)?.bio || ""
     }
   });
 
@@ -227,7 +227,7 @@ export default function Settings() {
               <span>Bildirimler</span>
             </TabsTrigger>
             <TabsTrigger value="preferences" className="flex items-center space-x-2">
-              <Settings className="h-4 w-4" />
+              <SettingsIcon className="h-4 w-4" />
               <span>Tercihler</span>
             </TabsTrigger>
             <TabsTrigger value="data" className="flex items-center space-x-2">
