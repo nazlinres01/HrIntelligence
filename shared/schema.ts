@@ -20,8 +20,9 @@ export const companies = pgTable("companies", {
   industry: varchar("industry"),
   size: varchar("size"), // startup, small, medium, large, enterprise
   description: text("description"),
-  address: jsonb("address"), // {street, city, country}
-  contactInfo: jsonb("contact_info"), // {phone, email}
+  address: text("address"),
+  phone: varchar("phone"),
+  email: varchar("email"),
   website: varchar("website"),
   taxNumber: varchar("tax_number"),
   employeeCount: integer("employee_count").default(0),
@@ -308,6 +309,84 @@ export type ExpenseReport = typeof expenseReports.$inferSelect;
 export type InsertExpenseReport = z.infer<typeof insertExpenseReportSchema>;
 export type Message = typeof messages.$inferSelect;
 export type InsertMessage = z.infer<typeof insertMessageSchema>;
+
+// Training programs table
+export const trainings = pgTable("trainings", {
+  id: serial("id").primaryKey(),
+  title: varchar("title").notNull(),
+  description: text("description"),
+  instructor: varchar("instructor"),
+  category: varchar("category").notNull(),
+  duration: integer("duration"), // hours
+  startDate: date("start_date"),
+  endDate: date("end_date"),
+  maxParticipants: integer("max_participants"),
+  location: varchar("location"),
+  status: varchar("status").default("scheduled"), // scheduled, active, completed, cancelled
+  objectives: text("objectives"),
+  requirements: text("requirements"),
+  createdAt: timestamp("created_at").defaultNow(),
+  updatedAt: timestamp("updated_at").defaultNow(),
+});
+
+// Job postings table
+export const jobs = pgTable("jobs", {
+  id: serial("id").primaryKey(),
+  title: varchar("title").notNull(),
+  department: varchar("department").notNull(),
+  location: varchar("location").notNull(),
+  type: varchar("type").notNull(), // full-time, part-time, contract
+  description: text("description").notNull(),
+  requirements: text("requirements").notNull(),
+  salary: varchar("salary"),
+  status: varchar("status").default("active"), // active, closed, draft
+  postedDate: date("posted_date").notNull(),
+  closingDate: date("closing_date"),
+  createdAt: timestamp("created_at").defaultNow(),
+  updatedAt: timestamp("updated_at").defaultNow(),
+});
+
+// Job applications table
+export const jobApplications = pgTable("job_applications", {
+  id: serial("id").primaryKey(),
+  jobId: integer("job_id").references(() => jobs.id).notNull(),
+  candidateName: varchar("candidate_name").notNull(),
+  candidateEmail: varchar("candidate_email").notNull(),
+  phone: varchar("phone"),
+  resumeUrl: varchar("resume_url"),
+  coverLetter: text("cover_letter"),
+  status: varchar("status").default("under_review"), // under_review, interview_scheduled, rejected, hired
+  appliedDate: date("applied_date").notNull(),
+  experience: varchar("experience"),
+  education: varchar("education"),
+  createdAt: timestamp("created_at").defaultNow(),
+  updatedAt: timestamp("updated_at").defaultNow(),
+});
+
+export const insertTrainingSchema = createInsertSchema(trainings).omit({
+  id: true,
+  createdAt: true,
+  updatedAt: true,
+});
+
+export const insertJobSchema = createInsertSchema(jobs).omit({
+  id: true,
+  createdAt: true,
+  updatedAt: true,
+});
+
+export const insertJobApplicationSchema = createInsertSchema(jobApplications).omit({
+  id: true,
+  createdAt: true,
+  updatedAt: true,
+});
+
+export type Training = typeof trainings.$inferSelect;
+export type InsertTraining = z.infer<typeof insertTrainingSchema>;
+export type Job = typeof jobs.$inferSelect;
+export type InsertJob = z.infer<typeof insertJobSchema>;
+export type JobApplication = typeof jobApplications.$inferSelect;
+export type InsertJobApplication = z.infer<typeof insertJobApplicationSchema>;
 
 // Permission type for role-based access control
 export type Permission = {

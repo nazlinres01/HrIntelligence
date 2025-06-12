@@ -1245,7 +1245,8 @@ export async function registerRoutes(app: Express): Promise<Server> {
   // Employees routes
   app.get('/api/employees', requireAuth, async (req: any, res) => {
     try {
-      res.json(sampleEmployees);
+      const employees = await storage.getEmployees();
+      res.json(employees);
     } catch (error) {
       console.error("Error fetching employees:", error);
       res.status(500).json({ message: "Çalışan listesi alınırken hata oluştu" });
@@ -1255,17 +1256,27 @@ export async function registerRoutes(app: Express): Promise<Server> {
   app.post('/api/employees', requireAuth, async (req: any, res) => {
     try {
       const employeeData = req.body;
-      // Generate new ID
-      const newId = Math.max(...sampleEmployees.map(e => e.id)) + 1;
-      const newEmployee = {
-        id: newId,
-        companyId: 489, // Default company
-        departmentId: 1302, // Default department
-        ...employeeData,
-        status: 'active'
-      };
+      const userId = req.user.id;
+      const user = await storage.getUser(userId);
       
-      sampleEmployees.push(newEmployee);
+      if (!user?.companyId) {
+        return res.status(400).json({ message: "Şirket bilgisi bulunamadı" });
+      }
+
+      employeeData.companyId = user.companyId;
+      const newEmployee = await storage.createEmployee(employeeData);
+      
+      // Create audit log
+      await storage.createAuditLog({
+        action: "employee_created",
+        resource: "employee",
+        resourceId: newEmployee.id.toString(),
+        userId: userId,
+        companyId: user.companyId,
+        details: `Yeni çalışan eklendi: ${newEmployee.firstName} ${newEmployee.lastName}`,
+        ipAddress: req.ip
+      });
+
       res.status(201).json(newEmployee);
     } catch (error) {
       console.error("Error creating employee:", error);
@@ -1277,14 +1288,27 @@ export async function registerRoutes(app: Express): Promise<Server> {
     try {
       const { id } = req.params;
       const updateData = req.body;
-      const employeeIndex = sampleEmployees.findIndex(e => e.id === parseInt(id));
+      const userId = req.user.id;
+      const user = await storage.getUser(userId);
       
-      if (employeeIndex === -1) {
+      const updatedEmployee = await storage.updateEmployee(parseInt(id), updateData);
+      
+      if (!updatedEmployee) {
         return res.status(404).json({ message: "Çalışan bulunamadı" });
       }
       
-      sampleEmployees[employeeIndex] = { ...sampleEmployees[employeeIndex], ...updateData };
-      res.json(sampleEmployees[employeeIndex]);
+      // Create audit log
+      await storage.createAuditLog({
+        action: "employee_updated",
+        resource: "employee",
+        resourceId: id,
+        userId: userId,
+        companyId: user?.companyId || 0,
+        details: `Çalışan bilgileri güncellendi: ${updatedEmployee.firstName} ${updatedEmployee.lastName}`,
+        ipAddress: req.ip
+      });
+
+      res.json(updatedEmployee);
     } catch (error) {
       console.error("Error updating employee:", error);
       res.status(500).json({ message: "Çalışan güncellenirken hata oluştu" });
@@ -1294,13 +1318,26 @@ export async function registerRoutes(app: Express): Promise<Server> {
   app.delete('/api/employees/:id', requireAuth, async (req: any, res) => {
     try {
       const { id } = req.params;
-      const employeeIndex = sampleEmployees.findIndex(e => e.id === parseInt(id));
+      const userId = req.user.id;
+      const user = await storage.getUser(userId);
       
-      if (employeeIndex === -1) {
+      const deleted = await storage.deleteEmployee(parseInt(id));
+      
+      if (!deleted) {
         return res.status(404).json({ message: "Çalışan bulunamadı" });
       }
       
-      sampleEmployees.splice(employeeIndex, 1);
+      // Create audit log
+      await storage.createAuditLog({
+        action: "employee_deleted",
+        resource: "employee",
+        resourceId: id,
+        userId: userId,
+        companyId: user?.companyId || 0,
+        details: `Çalışan silindi`,
+        ipAddress: req.ip
+      });
+
       res.json({ message: "Çalışan başarıyla silindi" });
     } catch (error) {
       console.error("Error deleting employee:", error);
