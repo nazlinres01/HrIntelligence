@@ -146,10 +146,10 @@ export default function EnterpriseAdminDashboard() {
       <div className="max-w-7xl mx-auto space-y-8">
         
         {/* Executive Header */}
-        <div className="bg-gradient-to-r from-white via-gray-50 to-white rounded-2xl p-8 text-gray-800 shadow-2xl border border-gray-200">
+        <div className="mb-8">
           <div className="flex items-center justify-between">
             <div>
-              <h1 className="text-4xl font-bold mb-2">Executive Dashboard</h1>
+              <h1 className="text-4xl font-bold mb-2 text-gray-900">Executive Dashboard</h1>
               <p className="text-gray-600 text-lg">Kurumsal İnsan Kaynakları Yönetim Sistemi • Gerçek Zamanlı İş Analitiği</p>
               <div className="flex items-center space-x-6 mt-4 text-gray-700">
                 <div className="flex items-center space-x-2">
