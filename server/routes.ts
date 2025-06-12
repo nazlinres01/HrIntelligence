@@ -19,6 +19,18 @@ import { z } from "zod";
 import { db } from "./db";
 import { sql, desc, eq } from "drizzle-orm";
 import bcrypt from "bcrypt";
+import { 
+  sampleCompanies, 
+  sampleDepartments, 
+  sampleEmployees, 
+  sampleLeaves, 
+  samplePerformance, 
+  sampleTrainings, 
+  samplePayroll, 
+  sampleNotifications, 
+  sampleJobs, 
+  sampleJobApplications 
+} from "./sample-data";
 
 export async function registerRoutes(app: Express): Promise<Server> {
   // Session configuration
@@ -472,8 +484,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
   // Leave routes
   app.get('/api/leaves', requireAuth, async (req: any, res) => {
     try {
-      const leaves = await storage.getLeaves();
-      res.json(leaves);
+      res.json(sampleLeaves);
     } catch (error) {
       console.error("Error fetching leaves:", error);
       res.status(500).json({ message: "İzin listesi alınırken hata oluştu" });

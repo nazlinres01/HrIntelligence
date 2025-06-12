@@ -88,7 +88,6 @@ const getRoleBasedNavigation = (userRole: UserRole): NavigationSection[] => {
             { name: "İzin & Devamsızlık", href: "/leaves", icon: Calendar, show: true, description: "İzin talep ve onay süreçleri" },
             { name: "Performans Değerlendirme", href: "/performance", icon: TrendingUp, show: true, description: "KPI takip ve analiz" },
             { name: "Eğitim & Gelişim", href: "/training", icon: BookOpen, show: true, description: "Personel gelişim programları" },
-            { name: "Bildirimler", href: "/notifications", icon: Bell, show: true, description: "Sistem bildirimleri ve duyurular" },
           ]
         }
       ];
@@ -314,6 +313,15 @@ export default function EnterpriseSidebar() {
           
           {!isCollapsed && (
             <div className="mt-3 flex items-center space-x-2">
+              <Link href="/notifications" className="flex-shrink-0">
+                <Button 
+                  variant="ghost" 
+                  size="sm" 
+                  className="text-gray-700 hover:text-blue-600 hover:bg-blue-50 p-2"
+                >
+                  <Bell className="h-4 w-4" />
+                </Button>
+              </Link>
               <Link href="/settings" className="flex-1">
                 <Button 
                   variant="ghost" 
