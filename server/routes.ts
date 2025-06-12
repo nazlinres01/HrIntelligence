@@ -145,7 +145,6 @@ export async function registerRoutes(app: Express): Promise<Server> {
 
       // Find user
       const user = await storage.getUserByEmail(email.toLowerCase());
-      console.log('Login attempt:', email.toLowerCase(), 'User found:', !!user);
       if (!user) {
         return res.status(401).json({ message: "E-posta veya şifre hatalı" });
       }
@@ -157,9 +156,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
 
       // Verify password
       const bcrypt = await import('bcrypt');
-      console.log('Password check for:', user.email, 'Hash exists:', !!user.password);
       const passwordValid = await bcrypt.compare(password, user.password);
-      console.log('Password valid:', passwordValid);
       if (!passwordValid) {
         // Log failed attempt
         await storage.createAuditLog({
