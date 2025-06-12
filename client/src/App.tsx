@@ -90,28 +90,11 @@ function Router() {
             <Route path="/" component={DashboardComponent} />
             <Route path="/dashboard" component={DashboardComponent} />
 
-            {/* Admin Management Routes */}
+            {/* Streamlined Admin Routes */}
             <Route path="/admin/companies" component={CompanyManagement} />
             <Route path="/admin/users" component={UserManagement} />
-            <Route path="/company" component={CompanyManagement} />
-            <Route path="/users" component={UserManagement} />
-            <Route path="/departments" component={DepartmentManagement} />
-            <Route path="/recruitment" component={RecruitmentManagement} />
-            <Route path="/analytics" component={AnalyticsDashboard} />
-            <Route path="/reports" component={HRReports} />
-            <Route path="/financial-reports" component={FinancialReports} />
-            <Route path="/audit" component={AuditLogs} />
-            
-            {/* Other routes */}
-            <Route path="/employees" component={Employees} />
-            <Route path="/performance" component={Performance} />
-            <Route path="/leaves" component={Leaves} />
-            <Route path="/payroll" component={Payroll} />
-            <Route path="/team" component={Team} />
-            <Route path="/notifications" component={Notifications} />
-            <Route path="/settings" component={Settings} />
-            <Route path="/help" component={Help} />
-            <Route path="/test" component={TestPage} />
+            <Route path="/admin/departments" component={DepartmentManagement} />
+            <Route path="/admin/analytics" component={AnalyticsDashboard} />
             
             <Route component={NotFound} />
           </Switch>

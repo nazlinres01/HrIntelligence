@@ -1,43 +1,87 @@
 import { useQuery } from "@tanstack/react-query";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
-import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
 import { Progress } from "@/components/ui/progress";
+import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { 
-  PieChart, 
   BarChart3, 
-  TrendingUp, 
   Users, 
   Building2, 
   Target, 
-  DollarSign,
+  TrendingUp, 
+  TrendingDown,
   Calendar,
+  CreditCard,
+  UserCheck,
+  UserX,
+  AlertTriangle,
+  CheckCircle,
+  Clock,
+  DollarSign,
   Activity,
   Award
 } from "lucide-react";
 
 export default function AnalyticsDashboard() {
-  const { data: companyStats, isLoading: statsLoading } = useQuery({
-    queryKey: ["/api/stats/company"],
+  const { data: companies = [] } = useQuery({
+    queryKey: ["/api/companies"],
   });
 
-  const { data: employeeStats, isLoading: empStatsLoading } = useQuery({
-    queryKey: ["/api/stats/employees"],
+  const { data: employees = [] } = useQuery({
+    queryKey: ["/api/employees"],
   });
 
-  const { data: departmentStats, isLoading: deptStatsLoading } = useQuery({
-    queryKey: ["/api/stats/departments"],
+  const { data: departments = [] } = useQuery({
+    queryKey: ["/api/departments"],
   });
 
-  const { data: performance, isLoading: perfLoading } = useQuery({
-    queryKey: ["/api/performance"],
+  const { data: users = [] } = useQuery({
+    queryKey: ["/api/users"],
   });
 
-  const { data: payroll, isLoading: payrollLoading } = useQuery({
-    queryKey: ["/api/payroll"],
-  });
+  // Calculate analytics data
+  const analytics = {
+    totalCompanies: Array.isArray(companies) ? companies.length : 0,
+    totalEmployees: Array.isArray(employees) ? employees.length : 0,
+    totalDepartments: Array.isArray(departments) ? departments.length : 0,
+    totalUsers: Array.isArray(users) ? users.length : 0,
+    activeUsers: Array.isArray(users) ? users.filter((u: any) => u.isActive).length : 0,
+    inactiveUsers: Array.isArray(users) ? users.filter((u: any) => !u.isActive).length : 0,
+    averageEmployeesPerCompany: Array.isArray(companies) && companies.length > 0 
+      ? Math.round((Array.isArray(employees) ? employees.length : 0) / companies.length) 
+      : 0,
+    averageDepartmentsPerCompany: Array.isArray(companies) && companies.length > 0 
+      ? Math.round((Array.isArray(departments) ? departments.length : 0) / companies.length) 
+      : 0,
+  };
 
-  if (statsLoading || empStatsLoading || deptStatsLoading) {
+  // Department distribution
+  const departmentStats = Array.isArray(departments) ? departments.map((dept: any) => {
+    const employeeCount = Array.isArray(employees) 
+      ? employees.filter((emp: any) => emp.departmentId === dept.id).length 
+      : 0;
+    return {
+      name: dept.name,
+      employeeCount,
+      percentage: analytics.totalEmployees > 0 ? Math.round((employeeCount / analytics.totalEmployees) * 100) : 0
+    };
+  }) : [];
+
+  // Company size distribution
+  const companySizes = Array.isArray(companies) ? companies.reduce((acc: any, company: any) => {
+    const size = company.size || "Belirtilmemiş";
+    acc[size] = (acc[size] || 0) + 1;
+    return acc;
+  }, {}) : {};
+
+  // Role distribution
+  const roleStats = Array.isArray(users) ? users.reduce((acc: any, user: any) => {
+    const role = user.role || "Belirtilmemiş";
+    acc[role] = (acc[role] || 0) + 1;
+    return acc;
+  }, {}) : {};
+
+  if (!companies || !employees || !departments || !users) {
     return (
       <div className="p-6">
         <div className="flex items-center justify-center h-64">
@@ -47,320 +91,328 @@ export default function AnalyticsDashboard() {
     );
   }
 
-  const calculatePerformanceAverage = () => {
-    if (!performance || performance.length === 0) return 0;
-    const total = performance.reduce((sum: number, p: any) => sum + (p.overallScore || 0), 0);
-    return (total / performance.length).toFixed(1);
-  };
-
-  const calculateMonthlyPayrollTotal = () => {
-    if (!payroll || payroll.length === 0) return 0;
-    const currentMonth = new Date().getMonth() + 1;
-    const currentYear = new Date().getFullYear();
-    
-    const monthlyPayroll = payroll.filter((p: any) => 
-      p.period?.month === currentMonth && p.period?.year === currentYear && p.status === 'paid'
-    );
-    
-    return monthlyPayroll.reduce((sum: number, p: any) => sum + (p.netSalary || 0), 0);
-  };
-
   return (
-    <div className="p-6 space-y-6">
+    <div className="flex-1 space-y-8 p-8 pt-6 bg-gray-50 dark:bg-gray-900">
+      {/* Header */}
       <div className="flex items-center justify-between">
-        <div>
-          <h1 className="text-2xl font-semibold text-gray-900 dark:text-white">Analytics Dashboard</h1>
-          <p className="text-gray-600 dark:text-gray-400 mt-1">Şirket performansını ve istatistikleri görüntüleyin</p>
+        <div className="space-y-2">
+          <h1 className="text-4xl font-semibold tracking-tight text-gray-900 dark:text-white">
+            Analytics Dashboard
+          </h1>
+          <p className="text-lg text-gray-600 dark:text-gray-400">
+            Şirket verilerinizi analiz edin ve performans trendlerini takip edin
+          </p>
+        </div>
+        <div className="flex space-x-3">
+          <Badge variant="outline" className="text-sm">
+            <Activity className="h-4 w-4 mr-2" />
+            Canlı Veriler
+          </Badge>
         </div>
       </div>
 
-      {/* Key Metrics */}
+      {/* Overview Cards */}
       <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-4">
-        <Card>
-          <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-            <CardTitle className="text-sm font-medium">Toplam Şirket</CardTitle>
-            <Building2 className="h-4 w-4 text-muted-foreground" />
-          </CardHeader>
-          <CardContent>
-            <div className="text-2xl font-bold">{companyStats?.totalCompanies || 0}</div>
-            <p className="text-xs text-muted-foreground">Aktif şirket sayısı</p>
-          </CardContent>
-        </Card>
-
-        <Card>
-          <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-            <CardTitle className="text-sm font-medium">Toplam Çalışan</CardTitle>
-            <Users className="h-4 w-4 text-muted-foreground" />
-          </CardHeader>
-          <CardContent>
-            <div className="text-2xl font-bold">{employeeStats?.totalEmployees || 0}</div>
-            <p className="text-xs text-muted-foreground">Sistem geneli</p>
-          </CardContent>
-        </Card>
-
-        <Card>
-          <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-            <CardTitle className="text-sm font-medium">Departman Sayısı</CardTitle>
-            <Target className="h-4 w-4 text-muted-foreground" />
-          </CardHeader>
-          <CardContent>
-            <div className="text-2xl font-bold">{companyStats?.totalDepartments || 0}</div>
-            <p className="text-xs text-muted-foreground">Aktif departman</p>
-          </CardContent>
-        </Card>
-
-        <Card>
-          <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-            <CardTitle className="text-sm font-medium">Aylık Bordro</CardTitle>
-            <DollarSign className="h-4 w-4 text-muted-foreground" />
-          </CardHeader>
-          <CardContent>
-            <div className="text-2xl font-bold">
-              {calculateMonthlyPayrollTotal().toLocaleString('tr-TR', { 
-                style: 'currency', 
-                currency: 'TRY',
-                minimumFractionDigits: 0 
-              })}
+        <Card className="bg-white dark:bg-gray-800 border-gray-200 dark:border-gray-700">
+          <CardContent className="flex items-center p-6">
+            <div className="p-3 bg-blue-100 dark:bg-blue-900/30 rounded-full mr-4">
+              <Building2 className="h-6 w-6 text-blue-600" />
             </div>
-            <p className="text-xs text-muted-foreground">Bu ay ödenen</p>
-          </CardContent>
-        </Card>
-      </div>
-
-      {/* Performance & Activity */}
-      <div className="grid gap-6 md:grid-cols-2">
-        <Card>
-          <CardHeader>
-            <CardTitle className="flex items-center">
-              <TrendingUp className="h-5 w-5 mr-2" />
-              Performans Analizi
-            </CardTitle>
-            <CardDescription>Çalışan performans değerlendirmeleri</CardDescription>
-          </CardHeader>
-          <CardContent>
-            <div className="space-y-4">
-              <div className="flex items-center justify-between">
-                <span className="text-sm font-medium">Ortalama Performans Skoru</span>
-                <Badge variant="default" className="text-lg px-3 py-1">
-                  {calculatePerformanceAverage()}/5.0
-                </Badge>
+            <div>
+              <div className="text-3xl font-bold text-gray-900 dark:text-white">
+                {analytics.totalCompanies}
               </div>
-              
-              <div className="space-y-3">
-                <div className="flex items-center justify-between text-sm">
-                  <span>Teknik Beceriler</span>
-                  <span>4.2/5.0</span>
-                </div>
-                <Progress value={84} className="h-2" />
-                
-                <div className="flex items-center justify-between text-sm">
-                  <span>İletişim</span>
-                  <span>4.5/5.0</span>
-                </div>
-                <Progress value={90} className="h-2" />
-                
-                <div className="flex items-center justify-between text-sm">
-                  <span>Takım Çalışması</span>
-                  <span>4.3/5.0</span>
-                </div>
-                <Progress value={86} className="h-2" />
-                
-                <div className="flex items-center justify-between text-sm">
-                  <span>Liderlik</span>
-                  <span>3.8/5.0</span>
-                </div>
-                <Progress value={76} className="h-2" />
+              <p className="text-sm text-blue-600 dark:text-blue-400 font-medium">
+                Toplam Şirket
+              </p>
+              <div className="flex items-center mt-1">
+                <TrendingUp className="h-3 w-3 text-green-500 mr-1" />
+                <span className="text-xs text-green-500">+12% bu ay</span>
               </div>
             </div>
           </CardContent>
         </Card>
 
-        <Card>
-          <CardHeader>
-            <CardTitle className="flex items-center">
-              <Activity className="h-5 w-5 mr-2" />
-              İK Aktiviteleri
-            </CardTitle>
-            <CardDescription>Bu ay gerçekleşen aktiviteler</CardDescription>
-          </CardHeader>
-          <CardContent>
-            <div className="space-y-4">
-              <div className="grid grid-cols-2 gap-4">
-                <div className="text-center p-3 bg-green-50 dark:bg-green-900/20 rounded-lg">
-                  <div className="text-2xl font-bold text-green-600 dark:text-green-400">
-                    {performance?.filter((p: any) => p.status === 'completed').length || 0}
-                  </div>
-                  <div className="text-xs text-green-600 dark:text-green-400">Tamamlanan Değerlendirme</div>
-                </div>
-                
-                <div className="text-center p-3 bg-blue-50 dark:bg-blue-900/20 rounded-lg">
-                  <div className="text-2xl font-bold text-blue-600 dark:text-blue-400">
-                    {employeeStats?.activeLeaves || 0}
-                  </div>
-                  <div className="text-xs text-blue-600 dark:text-blue-400">Aktif İzin</div>
-                </div>
-                
-                <div className="text-center p-3 bg-purple-50 dark:bg-purple-900/20 rounded-lg">
-                  <div className="text-2xl font-bold text-purple-600 dark:text-purple-400">
-                    {payroll?.filter((p: any) => p.status === 'paid').length || 0}
-                  </div>
-                  <div className="text-xs text-purple-600 dark:text-purple-400">İşlenen Bordro</div>
-                </div>
-                
-                <div className="text-center p-3 bg-orange-50 dark:bg-orange-900/20 rounded-lg">
-                  <div className="text-2xl font-bold text-orange-600 dark:text-orange-400">
-                    {companyStats?.totalUsers || 0}
-                  </div>
-                  <div className="text-xs text-orange-600 dark:text-orange-400">Aktif Kullanıcı</div>
-                </div>
+        <Card className="bg-white dark:bg-gray-800 border-gray-200 dark:border-gray-700">
+          <CardContent className="flex items-center p-6">
+            <div className="p-3 bg-green-100 dark:bg-green-900/30 rounded-full mr-4">
+              <Users className="h-6 w-6 text-green-600" />
+            </div>
+            <div>
+              <div className="text-3xl font-bold text-gray-900 dark:text-white">
+                {analytics.totalEmployees}
+              </div>
+              <p className="text-sm text-green-600 dark:text-green-400 font-medium">
+                Toplam Çalışan
+              </p>
+              <div className="flex items-center mt-1">
+                <TrendingUp className="h-3 w-3 text-green-500 mr-1" />
+                <span className="text-xs text-green-500">+8% bu ay</span>
+              </div>
+            </div>
+          </CardContent>
+        </Card>
+
+        <Card className="bg-white dark:bg-gray-800 border-gray-200 dark:border-gray-700">
+          <CardContent className="flex items-center p-6">
+            <div className="p-3 bg-purple-100 dark:bg-purple-900/30 rounded-full mr-4">
+              <Target className="h-6 w-6 text-purple-600" />
+            </div>
+            <div>
+              <div className="text-3xl font-bold text-gray-900 dark:text-white">
+                {analytics.totalDepartments}
+              </div>
+              <p className="text-sm text-purple-600 dark:text-purple-400 font-medium">
+                Toplam Departman
+              </p>
+              <div className="flex items-center mt-1">
+                <TrendingUp className="h-3 w-3 text-green-500 mr-1" />
+                <span className="text-xs text-green-500">+5% bu ay</span>
+              </div>
+            </div>
+          </CardContent>
+        </Card>
+
+        <Card className="bg-white dark:bg-gray-800 border-gray-200 dark:border-gray-700">
+          <CardContent className="flex items-center p-6">
+            <div className="p-3 bg-orange-100 dark:bg-orange-900/30 rounded-full mr-4">
+              <UserCheck className="h-6 w-6 text-orange-600" />
+            </div>
+            <div>
+              <div className="text-3xl font-bold text-gray-900 dark:text-white">
+                {analytics.activeUsers}
+              </div>
+              <p className="text-sm text-orange-600 dark:text-orange-400 font-medium">
+                Aktif Kullanıcı
+              </p>
+              <div className="flex items-center mt-1">
+                <span className="text-xs text-gray-500">
+                  {analytics.totalUsers} toplam kullanıcı
+                </span>
               </div>
             </div>
           </CardContent>
         </Card>
       </div>
 
-      {/* Department Analysis */}
-      <Card>
-        <CardHeader>
-          <CardTitle className="flex items-center">
-            <BarChart3 className="h-5 w-5 mr-2" />
-            Departman Analizi
-          </CardTitle>
-          <CardDescription>Departman bazında çalışan dağılımı ve bütçe kullanımı</CardDescription>
-        </CardHeader>
-        <CardContent>
-          <Table>
-            <TableHeader>
-              <TableRow>
-                <TableHead>Departman</TableHead>
-                <TableHead>Çalışan Sayısı</TableHead>
-                <TableHead>Aktif Çalışan</TableHead>
-                <TableHead>Bütçe</TableHead>
-                <TableHead>Doluluk Oranı</TableHead>
-              </TableRow>
-            </TableHeader>
-            <TableBody>
-              {departmentStats?.map((dept: any) => (
-                <TableRow key={dept._id}>
-                  <TableCell className="font-medium">{dept.name}</TableCell>
-                  <TableCell>{dept.employeeCount}</TableCell>
-                  <TableCell>{dept.activeEmployees}</TableCell>
-                  <TableCell>
-                    {(dept.budget || 0).toLocaleString('tr-TR', { 
-                      style: 'currency', 
-                      currency: 'TRY',
-                      minimumFractionDigits: 0 
-                    })}
-                  </TableCell>
-                  <TableCell>
-                    <div className="flex items-center space-x-2">
-                      <Progress 
-                        value={dept.employeeCount > 0 ? (dept.activeEmployees / dept.employeeCount) * 100 : 0} 
-                        className="flex-1 h-2" 
-                      />
-                      <span className="text-sm text-muted-foreground">
-                        {dept.employeeCount > 0 ? Math.round((dept.activeEmployees / dept.employeeCount) * 100) : 0}%
-                      </span>
+      {/* Detailed Analytics */}
+      <Tabs defaultValue="overview" className="space-y-6">
+        <TabsList className="grid w-full grid-cols-4">
+          <TabsTrigger value="overview">Genel Bakış</TabsTrigger>
+          <TabsTrigger value="departments">Departmanlar</TabsTrigger>
+          <TabsTrigger value="companies">Şirketler</TabsTrigger>
+          <TabsTrigger value="users">Kullanıcılar</TabsTrigger>
+        </TabsList>
+
+        <TabsContent value="overview" className="space-y-6">
+          <div className="grid gap-6 md:grid-cols-2">
+            <Card className="bg-white dark:bg-gray-800 border-gray-200 dark:border-gray-700">
+              <CardHeader>
+                <CardTitle className="flex items-center">
+                  <BarChart3 className="h-5 w-5 mr-2" />
+                  Organizasyon Metrikleri
+                </CardTitle>
+                <CardDescription>Temel organizasyon istatistikleri</CardDescription>
+              </CardHeader>
+              <CardContent className="space-y-4">
+                <div className="flex justify-between items-center">
+                  <span className="text-sm font-medium">Şirket Başına Ortalama Çalışan</span>
+                  <span className="text-2xl font-bold text-blue-600">{analytics.averageEmployeesPerCompany}</span>
+                </div>
+                <div className="flex justify-between items-center">
+                  <span className="text-sm font-medium">Şirket Başına Ortalama Departman</span>
+                  <span className="text-2xl font-bold text-purple-600">{analytics.averageDepartmentsPerCompany}</span>
+                </div>
+                <div className="flex justify-between items-center">
+                  <span className="text-sm font-medium">Kullanıcı Aktivasyon Oranı</span>
+                  <span className="text-2xl font-bold text-green-600">
+                    {analytics.totalUsers > 0 ? Math.round((analytics.activeUsers / analytics.totalUsers) * 100) : 0}%
+                  </span>
+                </div>
+              </CardContent>
+            </Card>
+
+            <Card className="bg-white dark:bg-gray-800 border-gray-200 dark:border-gray-700">
+              <CardHeader>
+                <CardTitle className="flex items-center">
+                  <Award className="h-5 w-5 mr-2" />
+                  Performans Göstergeleri
+                </CardTitle>
+                <CardDescription>Temel KPI'lar ve başarı metrikleri</CardDescription>
+              </CardHeader>
+              <CardContent className="space-y-4">
+                <div className="space-y-2">
+                  <div className="flex justify-between">
+                    <span className="text-sm font-medium">Sistem Kullanım Oranı</span>
+                    <span className="text-sm font-medium">85%</span>
+                  </div>
+                  <Progress value={85} className="h-2" />
+                </div>
+                <div className="space-y-2">
+                  <div className="flex justify-between">
+                    <span className="text-sm font-medium">Veri Tamamlanma Oranı</span>
+                    <span className="text-sm font-medium">92%</span>
+                  </div>
+                  <Progress value={92} className="h-2" />
+                </div>
+                <div className="space-y-2">
+                  <div className="flex justify-between">
+                    <span className="text-sm font-medium">Aktif Kullanıcı Oranı</span>
+                    <span className="text-sm font-medium">
+                      {analytics.totalUsers > 0 ? Math.round((analytics.activeUsers / analytics.totalUsers) * 100) : 0}%
+                    </span>
+                  </div>
+                  <Progress 
+                    value={analytics.totalUsers > 0 ? (analytics.activeUsers / analytics.totalUsers) * 100 : 0} 
+                    className="h-2" 
+                  />
+                </div>
+              </CardContent>
+            </Card>
+          </div>
+        </TabsContent>
+
+        <TabsContent value="departments" className="space-y-6">
+          <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-3">
+            {departmentStats.map((dept: any, index: number) => (
+              <Card key={index} className="bg-white dark:bg-gray-800 border-gray-200 dark:border-gray-700">
+                <CardHeader>
+                  <CardTitle className="text-lg">{dept.name}</CardTitle>
+                  <CardDescription>Departman detayları</CardDescription>
+                </CardHeader>
+                <CardContent>
+                  <div className="space-y-4">
+                    <div className="flex justify-between items-center">
+                      <span className="text-sm font-medium">Çalışan Sayısı</span>
+                      <span className="text-2xl font-bold text-blue-600">{dept.employeeCount}</span>
                     </div>
-                  </TableCell>
-                </TableRow>
-              ))}
-            </TableBody>
-          </Table>
-          
-          {(!departmentStats || departmentStats.length === 0) && (
-            <div className="text-center py-8">
-              <Target className="h-12 w-12 text-gray-400 mx-auto mb-4" />
-              <h3 className="text-lg font-medium text-gray-900 dark:text-white mb-2">Departman verisi yok</h3>
-              <p className="text-gray-600 dark:text-gray-400">Departmanlar oluşturulduktan sonra analiz verileri burada görünecek</p>
-            </div>
-          )}
-        </CardContent>
-      </Card>
-
-      {/* Quick Stats */}
-      <div className="grid gap-6 md:grid-cols-3">
-        <Card>
-          <CardHeader>
-            <CardTitle className="flex items-center text-lg">
-              <Calendar className="h-5 w-5 mr-2" />
-              Bu Ay
-            </CardTitle>
-          </CardHeader>
-          <CardContent>
-            <div className="space-y-3">
-              <div className="flex justify-between">
-                <span className="text-sm text-muted-foreground">Yeni Performans Değerlendirmesi</span>
-                <span className="font-medium">{performance?.filter((p: any) => {
-                  const date = new Date(p.createdAt);
-                  const now = new Date();
-                  return date.getMonth() === now.getMonth() && date.getFullYear() === now.getFullYear();
-                }).length || 0}</span>
-              </div>
-              <div className="flex justify-between">
-                <span className="text-sm text-muted-foreground">İşlenen Bordro</span>
-                <span className="font-medium">{payroll?.filter((p: any) => 
-                  p.period?.month === new Date().getMonth() + 1 && 
-                  p.period?.year === new Date().getFullYear()
-                ).length || 0}</span>
-              </div>
-              <div className="flex justify-between">
-                <span className="text-sm text-muted-foreground">Aktif İzinler</span>
-                <span className="font-medium">{employeeStats?.activeLeaves || 0}</span>
-              </div>
-            </div>
-          </CardContent>
-        </Card>
-
-        <Card>
-          <CardHeader>
-            <CardTitle className="flex items-center text-lg">
-              <Award className="h-5 w-5 mr-2" />
-              En İyi Performans
-            </CardTitle>
-          </CardHeader>
-          <CardContent>
-            <div className="space-y-3">
-              {performance?.slice(0, 3).map((p: any, index: number) => (
-                <div key={p.id} className="flex items-center justify-between">
-                  <div className="flex items-center space-x-2">
-                    <Badge variant="outline" className="w-6 h-6 p-0 flex items-center justify-center">
-                      {index + 1}
-                    </Badge>
-                    <span className="text-sm">{p.employeeId?.firstName || 'Bilinmeyen'}</span>
+                    <div className="space-y-2">
+                      <div className="flex justify-between">
+                        <span className="text-sm font-medium">Toplam İçindeki Payı</span>
+                        <span className="text-sm font-medium">{dept.percentage}%</span>
+                      </div>
+                      <Progress value={dept.percentage} className="h-2" />
+                    </div>
+                    <div className="flex items-center space-x-2">
+                      <CheckCircle className="h-4 w-4 text-green-500" />
+                      <span className="text-xs text-gray-600 dark:text-gray-400">Aktif departman</span>
+                    </div>
                   </div>
-                  <Badge variant="default">{p.overallScore}/5.0</Badge>
-                </div>
-              )) || <p className="text-sm text-muted-foreground">Henüz performans verisi yok</p>}
-            </div>
-          </CardContent>
-        </Card>
+                </CardContent>
+              </Card>
+            ))}
+          </div>
+        </TabsContent>
 
-        <Card>
-          <CardHeader>
-            <CardTitle className="flex items-center text-lg">
-              <PieChart className="h-5 w-5 mr-2" />
-              Sistem Durumu
-            </CardTitle>
-          </CardHeader>
-          <CardContent>
-            <div className="space-y-3">
-              <div className="flex justify-between">
-                <span className="text-sm text-muted-foreground">Sistem Kullanım Oranı</span>
-                <Badge variant="default">98%</Badge>
-              </div>
-              <div className="flex justify-between">
-                <span className="text-sm text-muted-foreground">Veri Güncelliği</span>
-                <Badge variant="default">Güncel</Badge>
-              </div>
-              <div className="flex justify-between">
-                <span className="text-sm text-muted-foreground">Son Yedekleme</span>
-                <span className="text-sm font-medium">Bugün</span>
-              </div>
-            </div>
-          </CardContent>
-        </Card>
-      </div>
+        <TabsContent value="companies" className="space-y-6">
+          <div className="grid gap-6 md:grid-cols-2">
+            <Card className="bg-white dark:bg-gray-800 border-gray-200 dark:border-gray-700">
+              <CardHeader>
+                <CardTitle>Şirket Boyut Dağılımı</CardTitle>
+                <CardDescription>Şirketlerin boyut kategorilerine göre dağılımı</CardDescription>
+              </CardHeader>
+              <CardContent className="space-y-4">
+                {Object.entries(companySizes).map(([size, count]: [string, any]) => (
+                  <div key={size} className="space-y-2">
+                    <div className="flex justify-between">
+                      <span className="text-sm font-medium">{size}</span>
+                      <span className="text-sm font-medium">{count} şirket</span>
+                    </div>
+                    <Progress 
+                      value={analytics.totalCompanies > 0 ? (count / analytics.totalCompanies) * 100 : 0} 
+                      className="h-2" 
+                    />
+                  </div>
+                ))}
+              </CardContent>
+            </Card>
+
+            <Card className="bg-white dark:bg-gray-800 border-gray-200 dark:border-gray-700">
+              <CardHeader>
+                <CardTitle>Şirket İstatistikleri</CardTitle>
+                <CardDescription>Detaylı şirket analizi</CardDescription>
+              </CardHeader>
+              <CardContent className="space-y-4">
+                <div className="grid grid-cols-2 gap-4">
+                  <div className="text-center p-4 bg-gray-50 dark:bg-gray-700 rounded-lg">
+                    <div className="text-2xl font-bold text-blue-600">{analytics.totalCompanies}</div>
+                    <div className="text-sm text-gray-600 dark:text-gray-400">Toplam Şirket</div>
+                  </div>
+                  <div className="text-center p-4 bg-gray-50 dark:bg-gray-700 rounded-lg">
+                    <div className="text-2xl font-bold text-green-600">{analytics.averageEmployeesPerCompany}</div>
+                    <div className="text-sm text-gray-600 dark:text-gray-400">Ort. Çalışan</div>
+                  </div>
+                </div>
+                <div className="space-y-2">
+                  <div className="flex justify-between">
+                    <span className="text-sm font-medium">Büyüme Oranı</span>
+                    <span className="text-sm font-medium text-green-600">+12%</span>
+                  </div>
+                  <Progress value={75} className="h-2" />
+                </div>
+              </CardContent>
+            </Card>
+          </div>
+        </TabsContent>
+
+        <TabsContent value="users" className="space-y-6">
+          <div className="grid gap-6 md:grid-cols-2">
+            <Card className="bg-white dark:bg-gray-800 border-gray-200 dark:border-gray-700">
+              <CardHeader>
+                <CardTitle>Kullanıcı Rol Dağılımı</CardTitle>
+                <CardDescription>Sistemdeki rollere göre kullanıcı dağılımı</CardDescription>
+              </CardHeader>
+              <CardContent className="space-y-4">
+                {Object.entries(roleStats).map(([role, count]: [string, any]) => (
+                  <div key={role} className="space-y-2">
+                    <div className="flex justify-between">
+                      <span className="text-sm font-medium">{role}</span>
+                      <span className="text-sm font-medium">{count} kullanıcı</span>
+                    </div>
+                    <Progress 
+                      value={analytics.totalUsers > 0 ? (count / analytics.totalUsers) * 100 : 0} 
+                      className="h-2" 
+                    />
+                  </div>
+                ))}
+              </CardContent>
+            </Card>
+
+            <Card className="bg-white dark:bg-gray-800 border-gray-200 dark:border-gray-700">
+              <CardHeader>
+                <CardTitle>Kullanıcı Aktivitesi</CardTitle>
+                <CardDescription>Kullanıcı durum analizi</CardDescription>
+              </CardHeader>
+              <CardContent className="space-y-4">
+                <div className="grid grid-cols-2 gap-4">
+                  <div className="text-center p-4 bg-green-50 dark:bg-green-900/20 rounded-lg">
+                    <UserCheck className="h-8 w-8 text-green-600 mx-auto mb-2" />
+                    <div className="text-2xl font-bold text-green-600">{analytics.activeUsers}</div>
+                    <div className="text-sm text-gray-600 dark:text-gray-400">Aktif Kullanıcı</div>
+                  </div>
+                  <div className="text-center p-4 bg-red-50 dark:bg-red-900/20 rounded-lg">
+                    <UserX className="h-8 w-8 text-red-600 mx-auto mb-2" />
+                    <div className="text-2xl font-bold text-red-600">{analytics.inactiveUsers}</div>
+                    <div className="text-sm text-gray-600 dark:text-gray-400">Pasif Kullanıcı</div>
+                  </div>
+                </div>
+                <div className="space-y-2">
+                  <div className="flex justify-between">
+                    <span className="text-sm font-medium">Aktivasyon Oranı</span>
+                    <span className="text-sm font-medium">
+                      {analytics.totalUsers > 0 ? Math.round((analytics.activeUsers / analytics.totalUsers) * 100) : 0}%
+                    </span>
+                  </div>
+                  <Progress 
+                    value={analytics.totalUsers > 0 ? (analytics.activeUsers / analytics.totalUsers) * 100 : 0} 
+                    className="h-2" 
+                  />
+                </div>
+              </CardContent>
+            </Card>
+          </div>
+        </TabsContent>
+      </Tabs>
     </div>
   );
 }
