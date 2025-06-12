@@ -86,14 +86,14 @@ function Router() {
       <Route path="/dashboard" component={DashboardComponent} />
 
       {/* Admin Management Routes */}
-      {userRole === 'admin' && <Route path="/company" component={CompanyManagement} />}
-      {userRole === 'admin' && <Route path="/users" component={UserManagement} />}
-      {userRole === 'admin' && <Route path="/departments" component={DepartmentManagement} />}
-      {userRole === 'admin' && <Route path="/recruitment" component={RecruitmentManagement} />}
-      {userRole === 'admin' && <Route path="/analytics" component={AnalyticsDashboard} />}
-      {userRole === 'admin' && <Route path="/reports" component={HRReports} />}
-      {userRole === 'admin' && <Route path="/financial-reports" component={FinancialReports} />}
-      {userRole === 'admin' && <Route path="/audit" component={AuditLogs} />}
+      {(userRole === 'admin' || userRole === 'owner') && <Route path="/company" component={CompanyManagement} />}
+      {(userRole === 'admin' || userRole === 'owner') && <Route path="/users" component={UserManagement} />}
+      {(userRole === 'admin' || userRole === 'owner' || userRole === 'hr_manager') && <Route path="/departments" component={DepartmentManagement} />}
+      {(userRole === 'admin' || userRole === 'owner' || userRole === 'hr_manager') && <Route path="/recruitment" component={RecruitmentManagement} />}
+      {(userRole === 'admin' || userRole === 'owner') && <Route path="/analytics" component={AnalyticsDashboard} />}
+      {(userRole === 'admin' || userRole === 'owner' || userRole === 'hr_manager') && <Route path="/reports" component={HRReports} />}
+      {(userRole === 'admin' || userRole === 'owner') && <Route path="/financial-reports" component={FinancialReports} />}
+      {(userRole === 'admin' || userRole === 'owner') && <Route path="/audit" component={AuditLogs} />}
       
       {/* Conditional routes based on permissions */}
       {permissions.canViewEmployees && <Route path="/employees" component={Employees} />}
