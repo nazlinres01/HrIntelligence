@@ -253,7 +253,7 @@ export default function Sidebar() {
   return (
     <div className="flex h-screen w-64 flex-col bg-white dark:bg-gray-900 border-r border-gray-200 dark:border-gray-800">
       {/* Header */}
-      <div className="flex h-16 items-center justify-between px-6 border-b border-gray-200 dark:border-gray-800">
+      <div className="flex h-16 items-center justify-between px-6 border-b border-gray-200 dark:border-gray-800 flex-shrink-0">
         <div className="flex items-center space-x-3">
           <div className="w-8 h-8 bg-gradient-to-br from-blue-500 to-indigo-600 rounded-lg flex items-center justify-center shadow-sm">
             <Building2 className="h-5 w-5 text-white" />
@@ -263,7 +263,7 @@ export default function Sidebar() {
       </div>
 
       {/* User Profile */}
-      <div className="p-4">
+      <div className="p-4 flex-shrink-0">
         <div className="flex items-center space-x-3 p-3 rounded-xl bg-gray-50 dark:bg-gray-800/50 border border-gray-200 dark:border-gray-700">
           <Avatar className="h-10 w-10">
             <AvatarImage src={userData.profileImageUrl} />
@@ -283,7 +283,7 @@ export default function Sidebar() {
       </div>
 
       {/* Navigation */}
-      <nav className="flex-1 px-4 pb-4 space-y-6 overflow-y-auto">
+      <nav className="flex-1 px-4 space-y-6 overflow-y-auto scrollbar-thin scrollbar-thumb-gray-300 dark:scrollbar-thumb-gray-600 scrollbar-track-transparent">
         {navigation.map((section) => (
           <div key={section.title}>
             <h3 className="px-3 text-xs font-semibold text-gray-500 dark:text-gray-400 uppercase tracking-wider mb-3">
@@ -322,7 +322,7 @@ export default function Sidebar() {
       </nav>
 
       {/* Footer */}
-      <div className="p-4 space-y-2 border-t border-gray-200 dark:border-gray-800">
+      <div className="p-4 space-y-2 border-t border-gray-200 dark:border-gray-800 flex-shrink-0">
         <Link href="/notifications">
           <Button
             variant="ghost"

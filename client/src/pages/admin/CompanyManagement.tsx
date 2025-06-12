@@ -183,7 +183,7 @@ export default function CompanyManagement() {
   }
 
   return (
-    <div className="flex-1 space-y-8 p-8 pt-6 bg-gray-50 dark:bg-gray-900 min-h-screen">
+    <div className="flex-1 space-y-8 p-8 pt-6 bg-gray-50 dark:bg-gray-900">
       {/* Microsoft Fluent Header */}
       <div className="flex items-center justify-between">
         <div className="space-y-2">
