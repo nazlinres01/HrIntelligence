@@ -76,10 +76,7 @@ export default function EnterprisePayrollCenter() {
 
   const createPayrollMutation = useMutation({
     mutationFn: async (data: PayrollFormData) => {
-      return apiRequest("/api/payroll", {
-        method: "POST",
-        body: JSON.stringify(data)
-      });
+      return apiRequest("POST", "/api/payroll", data);
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ["/api/payroll"] });
@@ -101,9 +98,7 @@ export default function EnterprisePayrollCenter() {
 
   const deletePayrollMutation = useMutation({
     mutationFn: async (id: string) => {
-      return apiRequest(`/api/payroll/${id}`, {
-        method: "DELETE"
-      });
+      return apiRequest("DELETE", `/api/payroll/${id}`);
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ["/api/payroll"] });
@@ -116,7 +111,7 @@ export default function EnterprisePayrollCenter() {
 
   // Filter payrolls
   const filteredPayrolls = React.useMemo(() => {
-    return payrolls.filter((payroll: any) => {
+    return (payrolls as any[]).filter((payroll: any) => {
       const matchesSearch = payroll.employee?.firstName?.toLowerCase()?.includes(searchTerm.toLowerCase()) ||
                            payroll.employee?.lastName?.toLowerCase()?.includes(searchTerm.toLowerCase()) ||
                            payroll.employeeId?.toLowerCase()?.includes(searchTerm.toLowerCase());
