@@ -647,9 +647,9 @@ export async function registerRoutes(app: Express): Promise<Server> {
   });
 
   // Team management routes
-  app.get('/api/team/members', isAuthenticated, async (req: any, res) => {
+  app.get('/api/team/members', requireAuth, async (req: any, res) => {
     try {
-      const userId = req.user.claims.sub;
+      const userId = req.user.id;
       const user = await storage.getUser(userId);
       
       if (!user?.companyId) {
@@ -786,7 +786,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
   });
 
   // Activities routes
-  app.get('/api/activities', isAuthenticated, async (req: any, res) => {
+  app.get('/api/activities', requireAuth, async (req: any, res) => {
     try {
       const { limit = 10 } = req.query;
       const activities = await storage.getActivities(parseInt(limit as string));
@@ -798,9 +798,9 @@ export async function registerRoutes(app: Express): Promise<Server> {
   });
 
   // Notifications routes
-  app.get('/api/notifications', isAuthenticated, async (req: any, res) => {
+  app.get('/api/notifications', requireAuth, async (req: any, res) => {
     try {
-      const userId = req.user.claims.sub;
+      const userId = req.user.id;
       const { limit = 50 } = req.query;
       const notifications = await storage.getUserNotifications(userId, parseInt(limit as string));
       res.json(notifications);
@@ -810,9 +810,9 @@ export async function registerRoutes(app: Express): Promise<Server> {
     }
   });
 
-  app.get('/api/notifications/unread-count', isAuthenticated, async (req: any, res) => {
+  app.get('/api/notifications/unread-count', requireAuth, async (req: any, res) => {
     try {
-      const userId = req.user.claims.sub;
+      const userId = req.user.id;
       const count = await storage.getUnreadNotificationCount(userId);
       res.json({ count });
     } catch (error) {
@@ -881,9 +881,9 @@ export async function registerRoutes(app: Express): Promise<Server> {
   });
 
   // Audit logs routes
-  app.get('/api/audit-logs', isAuthenticated, async (req: any, res) => {
+  app.get('/api/audit-logs', requireAuth, async (req: any, res) => {
     try {
-      const userId = req.user.claims.sub;
+      const userId = req.user.id;
       const user = await storage.getUser(userId);
       const { limit = 100 } = req.query;
       
