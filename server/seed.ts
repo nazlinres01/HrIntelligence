@@ -99,24 +99,57 @@ export async function seedDatabase() {
 
     const [sampleCompany, ...otherCompanies] = await db.insert(companies).values(sampleCompanies).returning();
 
-    // Create departments for the company
-    const sampleDepartments = [
-      { companyId: sampleCompany.id, name: "Yazılım Geliştirme", description: "Yazılım ürünleri ve teknoloji geliştirme", employeeCount: 15 },
-      { companyId: sampleCompany.id, name: "Pazarlama ve Satış", description: "Müşteri kazanımı ve marka yönetimi", employeeCount: 12 },
-      { companyId: sampleCompany.id, name: "İnsan Kaynakları", description: "Personel yönetimi ve organizasyon geliştirme", employeeCount: 6 },
-      { companyId: sampleCompany.id, name: "Finans ve Muhasebe", description: "Mali işler ve finansal planlama", employeeCount: 8 },
-      { companyId: sampleCompany.id, name: "Operasyon", description: "İş süreçleri ve operasyonel faaliyetler", employeeCount: 10 }
-    ];
-
-    await db.insert(departments).values(sampleDepartments);
-
-
-
     // Get created companies for user assignment
     const createdCompanies = await db.select().from(companies);
     const microsoftCompany = createdCompanies.find(c => c.name === "Microsoft Türkiye A.Ş.");
     const garantiCompany = createdCompanies.find(c => c.name === "Garanti BBVA");
     const arcelikCompany = createdCompanies.find(c => c.name === "Arçelik A.Ş.");
+
+    // Create comprehensive departments for all companies
+    const allDepartments = [
+      // TechCorp Yazılım A.Ş. departments
+      { companyId: sampleCompany.id, name: "Yazılım Geliştirme", description: "Frontend, Backend ve Mobil uygulama geliştirme", employeeCount: 18 },
+      { companyId: sampleCompany.id, name: "Pazarlama ve Satış", description: "Dijital pazarlama, müşteri kazanımı ve satış süreçleri", employeeCount: 14 },
+      { companyId: sampleCompany.id, name: "İnsan Kaynakları", description: "Personel yönetimi, eğitim ve organizasyon geliştirme", employeeCount: 8 },
+      { companyId: sampleCompany.id, name: "Finans ve Muhasebe", description: "Mali işler, bütçe planlama ve finansal analiz", employeeCount: 10 },
+      { companyId: sampleCompany.id, name: "Operasyon ve Proje Yönetimi", description: "İş süreçleri, proje koordinasyonu ve kalite kontrol", employeeCount: 12 },
+      { companyId: sampleCompany.id, name: "Ar-Ge ve İnovasyon", description: "Yeni teknolojiler, araştırma ve geliştirme", employeeCount: 15 },
+      
+      // Microsoft Türkiye departments
+      ...(microsoftCompany ? [
+        { companyId: microsoftCompany.id, name: "Bulut Çözümleri", description: "Azure ve hibrit bulut teknolojileri", employeeCount: 85 },
+        { companyId: microsoftCompany.id, name: "Yapay Zeka ve Makine Öğrenmesi", description: "AI/ML çözümleri ve araştırma", employeeCount: 65 },
+        { companyId: microsoftCompany.id, name: "İş Uygulamaları", description: "Office 365, Teams ve kurumsal uygulamalar", employeeCount: 95 },
+        { companyId: microsoftCompany.id, name: "Satış ve İş Geliştirme", description: "Kurumsal satış ve ortaklık yönetimi", employeeCount: 120 },
+        { companyId: microsoftCompany.id, name: "Teknik Destek", description: "Müşteri desteği ve teknik danışmanlık", employeeCount: 75 },
+        { companyId: microsoftCompany.id, name: "İnsan Kaynakları", description: "Talent management ve organizasyon gelişimi", employeeCount: 25 },
+        { companyId: microsoftCompany.id, name: "Finans ve Operasyon", description: "Mali işler ve operasyonel süreçler", employeeCount: 35 }
+      ] : []),
+      
+      // Garanti BBVA departments
+      ...(garantiCompany ? [
+        { companyId: garantiCompany.id, name: "Bireysel Bankacılık", description: "Bireysel müşteri hizmetleri ve ürünleri", employeeCount: 180 },
+        { companyId: garantiCompany.id, name: "Kurumsal Bankacılık", description: "KOBİ ve kurumsal müşteri hizmetleri", employeeCount: 145 },
+        { companyId: garantiCompany.id, name: "Dijital Bankacılık", description: "Mobil ve internet bankacılığı", employeeCount: 95 },
+        { companyId: garantiCompany.id, name: "Risk Yönetimi", description: "Kredi riski ve operasyonel risk", employeeCount: 75 },
+        { companyId: garantiCompany.id, name: "Bilgi Teknolojileri", description: "Sistem geliştirme ve altyapı", employeeCount: 120 },
+        { companyId: garantiCompany.id, name: "İnsan Kaynakları", description: "Personel ve yetenek yönetimi", employeeCount: 45 },
+        { companyId: garantiCompany.id, name: "Mali İşler", description: "Muhasebe, bütçe ve finansal planlama", employeeCount: 65 }
+      ] : []),
+      
+      // Arçelik A.Ş. departments
+      ...(arcelikCompany ? [
+        { companyId: arcelikCompany.id, name: "Ürün Geliştirme", description: "Beyaz eşya tasarım ve geliştirme", employeeCount: 250 },
+        { companyId: arcelikCompany.id, name: "Üretim ve Kalite", description: "Fabrika operasyonları ve kalite kontrol", employeeCount: 850 },
+        { companyId: arcelikCompany.id, name: "Satış ve Pazarlama", description: "Yurt içi ve yurt dışı satış", employeeCount: 320 },
+        { companyId: arcelikCompany.id, name: "Ar-Ge ve İnovasyon", description: "Teknoloji araştırma ve yenilik", employeeCount: 180 },
+        { companyId: arcelikCompany.id, name: "Tedarik Zinciri", description: "Satın alma ve lojistik", employeeCount: 145 },
+        { companyId: arcelikCompany.id, name: "İnsan Kaynakları", description: "Personel yönetimi ve gelişim", employeeCount: 85 },
+        { companyId: arcelikCompany.id, name: "Finans ve Muhasebe", description: "Mali işler ve finansal raporlama", employeeCount: 95 }
+      ] : [])
+    ];
+
+    await db.insert(departments).values(allDepartments);
 
     // Create comprehensive user base across different companies
     const allUsers = [
@@ -346,6 +379,122 @@ export async function seedDatabase() {
         password: userHashedPassword,
         isActive: true,
         lastLoginAt: new Date(Date.now() - 2 * 60 * 60 * 1000) // 2 hours ago
+      },
+      
+      // Garanti BBVA users
+      {
+        id: "hr_manager_004",
+        email: "sema.aksoy@garantibbva.com.tr",
+        firstName: "Sema",
+        lastName: "Aksoy",
+        phone: "+90 540 888 33 44",
+        companyId: garantiCompany?.id || sampleCompany.id,
+        role: "hr_manager",
+        password: userHashedPassword,
+        isActive: true,
+        lastLoginAt: new Date(Date.now() - 30 * 60 * 1000) // 30 minutes ago
+      },
+      {
+        id: "dept_manager_004",
+        email: "burak.koc@garantibbva.com.tr",
+        firstName: "Burak",
+        lastName: "Koç",
+        phone: "+90 541 999 44 55",
+        companyId: garantiCompany?.id || sampleCompany.id,
+        role: "department_manager",
+        password: userHashedPassword,
+        isActive: true,
+        lastLoginAt: new Date(Date.now() - 4 * 60 * 60 * 1000) // 4 hours ago
+      },
+      {
+        id: "employee_007",
+        email: "nazli.yildirim@garantibbva.com.tr",
+        firstName: "Nazlı",
+        lastName: "Yıldırım",
+        phone: "+90 542 111 55 66",
+        companyId: garantiCompany?.id || sampleCompany.id,
+        role: "employee",
+        password: userHashedPassword,
+        isActive: true,
+        lastLoginAt: new Date(Date.now() - 8 * 60 * 60 * 1000) // 8 hours ago
+      },
+      
+      // More TechCorp employees
+      {
+        id: "employee_008",
+        email: "emre.sahin@techcorp.com.tr",
+        firstName: "Emre",
+        lastName: "Şahin",
+        phone: "+90 543 222 66 77",
+        companyId: sampleCompany.id,
+        role: "employee",
+        password: userHashedPassword,
+        isActive: true,
+        lastLoginAt: new Date(Date.now() - 5 * 60 * 60 * 1000) // 5 hours ago
+      },
+      {
+        id: "employee_009",
+        email: "derya.kurt@techcorp.com.tr",
+        firstName: "Derya",
+        lastName: "Kurt",
+        phone: "+90 544 333 77 88",
+        companyId: sampleCompany.id,
+        role: "employee",
+        password: userHashedPassword,
+        isActive: false, // Another inactive user
+        lastLoginAt: new Date(Date.now() - 15 * 24 * 60 * 60 * 1000) // 15 days ago
+      },
+      
+      // Microsoft employees with different roles
+      {
+        id: "hr_specialist_003",
+        email: "tuna.gunes@microsoft.com",
+        firstName: "Tuna",
+        lastName: "Güneş",
+        phone: "+90 545 444 88 99",
+        companyId: microsoftCompany?.id || sampleCompany.id,
+        role: "hr_specialist",
+        password: userHashedPassword,
+        isActive: true,
+        lastLoginAt: new Date(Date.now() - 12 * 60 * 60 * 1000) // 12 hours ago
+      },
+      {
+        id: "employee_010",
+        email: "ceyda.polat@microsoft.com",
+        firstName: "Ceyda",
+        lastName: "Polat",
+        phone: "+90 546 555 99 00",
+        companyId: microsoftCompany?.id || sampleCompany.id,
+        role: "employee",
+        password: userHashedPassword,
+        isActive: true,
+        lastLoginAt: new Date(Date.now() - 1 * 60 * 60 * 1000) // 1 hour ago
+      },
+      
+      // Arçelik additional employees
+      {
+        id: "employee_011",
+        email: "murat.eren@arcelik.com",
+        firstName: "Murat",
+        lastName: "Eren",
+        phone: "+90 547 666 00 11",
+        companyId: arcelikCompany?.id || sampleCompany.id,
+        role: "employee",
+        password: userHashedPassword,
+        isActive: true,
+        lastLoginAt: new Date(Date.now() - 3 * 60 * 60 * 1000) // 3 hours ago
+      },
+      {
+        id: "hr_specialist_004",
+        email: "sibel.aydin@arcelik.com",
+        firstName: "Sibel",
+        lastName: "Aydın",
+        phone: "+90 548 777 11 22",
+        companyId: arcelikCompany?.id || sampleCompany.id,
+        role: "hr_specialist",
+        password: userHashedPassword,
+        isActive: true,
+        lastLoginAt: new Date(Date.now() - 7 * 60 * 60 * 1000) // 7 hours ago
       }
     ];
 
