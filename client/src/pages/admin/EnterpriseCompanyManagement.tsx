@@ -466,7 +466,7 @@ export default function EnterpriseCompanyManagement() {
         {/* Companies Grid */}
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
           {filteredCompanies.map((company: any) => (
-            <Card key={company.id} className="bg-gray-800/50 border-gray-700 hover:bg-gray-800/70 transition-all duration-300 group">
+            <Card key={company.id} className="bg-white border-gray-200 hover:shadow-xl transition-all duration-300 group hover:border-gray-300">
               <CardHeader className="pb-4">
                 <div className="flex items-start justify-between">
                   <div className="flex items-center space-x-3">
@@ -474,16 +474,16 @@ export default function EnterpriseCompanyManagement() {
                       <Building2 className="h-5 w-5 text-white" />
                     </div>
                     <div>
-                      <CardTitle className="text-white group-hover:text-emerald-400 transition-colors">
+                      <CardTitle className="text-gray-800 group-hover:text-emerald-600 transition-colors">
                         {company.name}
                       </CardTitle>
-                      <CardDescription className="text-gray-400">
+                      <CardDescription className="text-gray-600">
                         {company.industry || "Genel"}
                       </CardDescription>
                     </div>
                   </div>
                   <div className="flex items-center space-x-2">
-                    <Badge className={company.isActive !== false ? "bg-green-500/20 text-green-400 border-green-500/30" : "bg-red-500/20 text-red-400 border-red-500/30"}>
+                    <Badge className={company.isActive !== false ? "bg-emerald-100 text-emerald-700 border-emerald-200" : "bg-red-100 text-red-700 border-red-200"}>
                       {company.isActive !== false ? "Aktif" : "Pasif"}
                     </Badge>
                   </div>
@@ -493,30 +493,35 @@ export default function EnterpriseCompanyManagement() {
               <CardContent className="space-y-4">
                 <div className="space-y-3">
                   <div className="flex items-center justify-between">
-                    <div className="flex items-center space-x-2 text-gray-400">
+                    <div className="flex items-center space-x-2 text-gray-600">
                       <Users className="h-4 w-4" />
                       <span className="text-sm">Çalışanlar</span>
                     </div>
-                    <span className="text-white font-medium">{getCompanyEmployeeCount(company.id)}</span>
+                    <span className="text-gray-800 font-medium">{getCompanyEmployeeCount(company.id)}</span>
                   </div>
                   
                   <div className="flex items-center justify-between">
-                    <div className="flex items-center space-x-2 text-gray-400">
+                    <div className="flex items-center space-x-2 text-gray-600">
                       <Target className="h-4 w-4" />
                       <span className="text-sm">Departmanlar</span>
                     </div>
-                    <span className="text-white font-medium">{getCompanyDepartmentCount(company.id)}</span>
+                    <span className="text-gray-800 font-medium">{getCompanyDepartmentCount(company.id)}</span>
                   </div>
 
                   {company.address && (
-                    <div className="flex items-start space-x-2 text-gray-400">
+                    <div className="flex items-start space-x-2 text-gray-600">
                       <MapPin className="h-4 w-4 mt-0.5" />
-                      <span className="text-xs flex-1">{company.address}</span>
+                      <span className="text-xs flex-1">
+                        {typeof company.address === 'string' 
+                          ? company.address 
+                          : `${company.address.street || ''}, ${company.address.city || ''}, ${company.address.country || ''}`
+                        }
+                      </span>
                     </div>
                   )}
 
                   {company.email && (
-                    <div className="flex items-center space-x-2 text-gray-400">
+                    <div className="flex items-center space-x-2 text-gray-600">
                       <Mail className="h-4 w-4" />
                       <span className="text-xs">{company.email}</span>
                     </div>

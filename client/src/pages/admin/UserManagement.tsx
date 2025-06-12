@@ -217,36 +217,66 @@ export default function UserManagement() {
   }
 
   return (
-    <div className="flex-1 space-y-8 p-8 pt-6 bg-gray-50 dark:bg-gray-900">
-      {/* Microsoft Fluent Header */}
-      <div className="flex items-center justify-between">
-        <div className="space-y-2">
-          <h1 className="text-4xl font-semibold tracking-tight text-gray-900 dark:text-white">
-            Kullanıcı Yönetimi
-          </h1>
-          <p className="text-lg text-gray-600 dark:text-gray-400">
-            Sistem kullanıcılarını yönetin, roller atayın ve erişim kontrolü sağlayın
-          </p>
+    <div className="min-h-screen bg-gradient-to-br from-gray-50 via-white to-gray-100 p-6">
+      <div className="max-w-7xl mx-auto space-y-8">
+        
+        {/* Enterprise Header */}
+        <div className="bg-gradient-to-r from-white via-gray-50 to-white rounded-2xl p-8 text-gray-800 shadow-2xl border border-gray-200">
+          <div className="flex items-center justify-between">
+            <div>
+              <div className="flex items-center space-x-4 mb-4">
+                <div className="p-3 bg-blue-50 border border-blue-200 rounded-xl">
+                  <Users className="h-8 w-8 text-blue-600" />
+                </div>
+                <div>
+                  <h1 className="text-4xl font-bold text-gray-800">Kullanıcı Yönetimi</h1>
+                  <p className="text-gray-600 text-lg">Sistem Kullanıcıları ve Rol Yönetimi</p>
+                </div>
+              </div>
+              <div className="flex items-center space-x-6 text-gray-700">
+                <div className="flex items-center space-x-2">
+                  <UserCheck className="h-4 w-4 text-blue-600" />
+                  <span className="text-sm">Güvenli Erişim</span>
+                </div>
+                <div className="flex items-center space-x-2">
+                  <Building2 className="h-4 w-4 text-blue-600" />
+                  <span className="text-sm">Merkezi Yönetim</span>
+                </div>
+              </div>
+            </div>
+            <div className="text-right">
+              <div className="text-3xl font-bold text-gray-800">{filteredUsers.length}</div>
+              <div className="text-gray-600">Toplam Kullanıcı</div>
+            </div>
+          </div>
         </div>
-        <div className="flex space-x-3">
-          <Button variant="outline" className="border-gray-200 text-gray-700 hover:bg-gray-50 dark:border-gray-700 dark:text-gray-300">
-            <Download className="mr-2 h-4 w-4" />
-            Dışa Aktar
-          </Button>
-          <Dialog open={isDialogOpen} onOpenChange={setIsDialogOpen}>
-            <DialogTrigger asChild>
-              <Button 
-                onClick={() => {
-                  setEditingUser(null);
-                  resetForm();
-                }}
-                className="bg-blue-600 hover:bg-blue-700 text-white shadow-lg"
-              >
-                <Plus className="mr-2 h-4 w-4" />
-                Yeni Kullanıcı Ekle
-              </Button>
-            </DialogTrigger>
-          </Dialog>
+
+        {/* Controls */}
+        <div className="flex items-center justify-between">
+          <div className="space-y-2">
+            <h2 className="text-2xl font-semibold text-gray-800">Kullanıcı Listesi</h2>
+            <p className="text-gray-600">Sistem kullanıcılarını yönetin ve roller atayın</p>
+          </div>
+          <div className="flex space-x-3">
+            <Button variant="outline" className="border-gray-200 text-gray-700 hover:bg-gray-50">
+              <Download className="mr-2 h-4 w-4" />
+              Dışa Aktar
+            </Button>
+            <Dialog open={isDialogOpen} onOpenChange={setIsDialogOpen}>
+              <DialogTrigger asChild>
+                <Button 
+                  onClick={() => {
+                    setEditingUser(null);
+                    resetForm();
+                  }}
+                  className="bg-gradient-to-r from-blue-600 to-indigo-600 hover:from-blue-700 hover:to-indigo-700 text-white shadow-lg"
+                >
+                  <Plus className="mr-2 h-4 w-4" />
+                  Yeni Kullanıcı Ekle
+                </Button>
+              </DialogTrigger>
+            </Dialog>
+          </div>
         </div>
       </div>
 
