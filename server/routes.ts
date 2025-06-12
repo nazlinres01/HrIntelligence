@@ -279,7 +279,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
   });
 
   // Get all companies
-  app.get('/api/companies', requireAuth, async (req: any, res) => {
+  app.get('/api/companies', isAuthenticated, async (req: any, res) => {
     try {
       const companies = await storage.getAllCompanies();
       res.json(companies);
@@ -290,7 +290,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
   });
 
   // Get all users
-  app.get('/api/users', requireAuth, async (req: any, res) => {
+  app.get('/api/users', isAuthenticated, async (req: any, res) => {
     try {
       const users = await storage.getAllUsers();
       res.json(users);
