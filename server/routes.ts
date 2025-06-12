@@ -2,9 +2,9 @@ import type { Express } from "express";
 import { createServer, type Server } from "http";
 import { storage } from "./storage";
 import { setupAuth, isAuthenticated } from "./replitAuth";
-import { requireAuth, requireRole } from "./middleware/auth";
 import session from "express-session";
 import connectPg from "connect-pg-simple";
+import { requireAuth, requireRole } from "./middleware/auth";
 import { insertEmployeeSchema, insertLeaveSchema, insertPerformanceSchema, insertPayrollSchema, insertDepartmentSchema, users } from "@shared/schema";
 import { 
   sanitizeInput, 
