@@ -1,150 +1,123 @@
 import React, { useState } from "react";
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
-import { apiRequest } from "@/lib/queryClient";
-import { useToast } from "@/hooks/use-toast";
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
-import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import { Dialog, DialogContent, DialogDescription, DialogFooter, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog";
+import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog";
 import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from "@/components/ui/form";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Textarea } from "@/components/ui/textarea";
-import { Progress } from "@/components/ui/progress";
-import { TrendingUp, Target, Award, Plus, Search, Download, Star, Users, BarChart3, Calendar } from "lucide-react";
+import { useToast } from "@/hooks/use-toast";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { z } from "zod";
-import { format } from "date-fns";
-import { tr } from "date-fns/locale";
+import { 
+  Star, 
+  Plus, 
+  Search, 
+  Filter, 
+  Download,
+  TrendingUp,
+  Users,
+  Target,
+  Award,
+  Eye,
+  Edit,
+  Trash2,
+  BarChart3,
+  Calendar,
+  CheckCircle
+} from "lucide-react";
+import { apiRequest } from "@/lib/queryClient";
 
 const performanceSchema = z.object({
   employeeId: z.string().min(1, "Çalışan seçimi gerekli"),
-  period: z.string().min(1, "Değerlendirme dönemi gerekli"),
-  overallScore: z.number().min(1).max(10),
-  goals: z.string().min(10, "Hedefler en az 10 karakter olmalı"),
-  achievements: z.string().min(10, "Başarılar en az 10 karakter olmalı"),
-  areasForImprovement: z.string().min(10, "Gelişim alanları en az 10 karakter olmalı"),
-  nextPeriodGoals: z.string().min(10, "Gelecek dönem hedefleri en az 10 karakter olmalı"),
-  managerComments: z.string().optional(),
-  skillsAssessment: z.object({
-    communication: z.number().min(1).max(5),
-    teamwork: z.number().min(1).max(5),
-    problemSolving: z.number().min(1).max(5),
-    leadership: z.number().min(1).max(5),
-    technical: z.number().min(1).max(5),
-    timeManagement: z.number().min(1).max(5)
-  })
+  reviewPeriod: z.string().min(1, "Değerlendirme dönemi gerekli"),
+  goals: z.string().min(10, "En az 10 karakter hedef açıklaması gerekli"),
+  achievements: z.string().min(10, "En az 10 karakter başarı açıklaması gerekli"),
+  skillsRating: z.string().min(1, "Beceri puanı gerekli"),
+  communicationRating: z.string().min(1, "İletişim puanı gerekli"),
+  teamworkRating: z.string().min(1, "Takım çalışması puanı gerekli"),
+  overallScore: z.string().min(1, "Genel puan gerekli"),
+  feedback: z.string().min(10, "En az 10 karakter geri bildirim gerekli"),
+  improvementAreas: z.string().optional(),
+  nextGoals: z.string().optional()
 });
 
 type PerformanceFormData = z.infer<typeof performanceSchema>;
 
-const skillLabels = {
-  communication: "İletişim",
-  teamwork: "Takım Çalışması",
-  problemSolving: "Problem Çözme",
-  leadership: "Liderlik",
-  technical: "Teknik Beceriler",
-  timeManagement: "Zaman Yönetimi"
-};
-
-const getScoreColor = (score: number) => {
-  if (score >= 8) return "text-green-600";
-  if (score >= 6) return "text-yellow-600";
-  return "text-red-600";
-};
-
-const getScoreLabel = (score: number) => {
-  if (score >= 8) return "Mükemmel";
-  if (score >= 6) return "İyi";
-  if (score >= 4) return "Orta";
-  return "Geliştirilmeli";
-};
-
-export default function Performance() {
+export default function PerformancePage() {
   const [searchTerm, setSearchTerm] = useState("");
   const [periodFilter, setPeriodFilter] = useState("all");
+  const [scoreFilter, setScoreFilter] = useState("all");
   const [isDialogOpen, setIsDialogOpen] = useState(false);
   const { toast } = useToast();
   const queryClient = useQueryClient();
+
+  const { data: performance = [], isLoading: performanceLoading } = useQuery<any[]>({
+    queryKey: ["/api/performance"]
+  });
+
+  const { data: employees = [] } = useQuery<any[]>({
+    queryKey: ["/api/employees"]
+  });
 
   const form = useForm<PerformanceFormData>({
     resolver: zodResolver(performanceSchema),
     defaultValues: {
       employeeId: "",
-      period: "",
-      overallScore: 5,
+      reviewPeriod: "",
       goals: "",
       achievements: "",
-      areasForImprovement: "",
-      nextPeriodGoals: "",
-      managerComments: "",
-      skillsAssessment: {
-        communication: 3,
-        teamwork: 3,
-        problemSolving: 3,
-        leadership: 3,
-        technical: 3,
-        timeManagement: 3
-      }
+      skillsRating: "",
+      communicationRating: "",
+      teamworkRating: "",
+      overallScore: "",
+      feedback: "",
+      improvementAreas: "",
+      nextGoals: ""
     }
   });
 
-  // Fetch performance records
-  const { data: performances = [], isLoading: performancesLoading } = useQuery({
-    queryKey: ["/api/performance"]
-  });
-
-  // Fetch employees for dropdown
-  const { data: employees = [] } = useQuery({
-    queryKey: ["/api/employees"]
-  });
-
-  // Performance statistics
-  const performanceStats = React.useMemo(() => {
-    const total = performances.length;
-    const excellent = performances.filter((p: any) => p.overallScore >= 8).length;
-    const good = performances.filter((p: any) => p.overallScore >= 6 && p.overallScore < 8).length;
-    const needsImprovement = performances.filter((p: any) => p.overallScore < 6).length;
-    const avgScore = performances.length > 0 
-      ? (performances.reduce((sum: number, p: any) => sum + p.overallScore, 0) / performances.length).toFixed(1)
-      : 0;
-    
-    return { total, excellent, good, needsImprovement, avgScore };
-  }, [performances]);
-
-  // Filter performances
-  const filteredPerformances = React.useMemo(() => {
-    return performances.filter((performance: any) => {
-      const matchesSearch = performance.employee?.firstName?.toLowerCase()?.includes(searchTerm.toLowerCase()) ||
-                           performance.employee?.lastName?.toLowerCase()?.includes(searchTerm.toLowerCase()) ||
-                           performance.period?.toLowerCase()?.includes(searchTerm.toLowerCase());
-      const matchesPeriod = periodFilter === "all" || performance.period === periodFilter;
-      return matchesSearch && matchesPeriod;
-    });
-  }, [performances, searchTerm, periodFilter]);
-
-  // Create performance mutation
   const createPerformanceMutation = useMutation({
     mutationFn: async (data: PerformanceFormData) => {
-      const response = await apiRequest("POST", "/api/performance", data);
-      return response.json();
+      return apiRequest("POST", "/api/performance", data);
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ["/api/performance"] });
+      setIsDialogOpen(false);
+      form.reset();
+      toast({
+        title: "Başarılı",
+        description: "Performans değerlendirmesi başarıyla oluşturuldu",
+      });
+    },
+    onError: () => {
+      toast({
+        title: "Hata",
+        description: "Performans değerlendirmesi oluşturulurken bir hata oluştu",
+        variant: "destructive",
+      });
+    }
+  });
+
+  const deletePerformanceMutation = useMutation({
+    mutationFn: async (id: string) => {
+      return apiRequest("DELETE", `/api/performance/${id}`);
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ["/api/performance"] });
       toast({
-        title: "Performans değerlendirmesi oluşturuldu",
-        description: "Değerlendirme başarıyla kaydedildi."
+        title: "Başarılı",
+        description: "Performans değerlendirmesi başarıyla silindi",
       });
-      setIsDialogOpen(false);
-      form.reset();
     },
-    onError: (error: any) => {
+    onError: () => {
       toast({
         title: "Hata",
-        description: error.message || "Performans değerlendirmesi oluşturulurken hata oluştu",
-        variant: "destructive"
+        description: "Performans değerlendirmesi silinirken bir hata oluştu",
+        variant: "destructive",
       });
     }
   });
@@ -153,7 +126,62 @@ export default function Performance() {
     createPerformanceMutation.mutate(data);
   };
 
-  if (performancesLoading) {
+  const handleDelete = (id: string) => {
+    if (confirm("Bu performans değerlendirmesini silmek istediğinizden emin misiniz?")) {
+      deletePerformanceMutation.mutate(id);
+    }
+  };
+
+  const getEmployeeName = (employeeId: string) => {
+    const employee = (employees as any[]).find((emp: any) => emp.id.toString() === employeeId);
+    return employee ? `${employee.firstName} ${employee.lastName}` : 'Bilinmeyen Çalışan';
+  };
+
+  const getScoreBadge = (score: number) => {
+    if (score >= 4.5) return <Badge className="bg-green-100 text-green-800">Mükemmel</Badge>;
+    if (score >= 4.0) return <Badge className="bg-blue-100 text-blue-800">Çok İyi</Badge>;
+    if (score >= 3.5) return <Badge className="bg-yellow-100 text-yellow-800">İyi</Badge>;
+    if (score >= 3.0) return <Badge className="bg-orange-100 text-orange-800">Orta</Badge>;
+    return <Badge className="bg-red-100 text-red-800">Geliştirilmeli</Badge>;
+  };
+
+  const filteredPerformance = (performance as any[]).filter((perf: any) => {
+    const employeeName = getEmployeeName(perf.employeeId);
+    const matchesSearch = employeeName.toLowerCase().includes(searchTerm.toLowerCase()) ||
+                         perf.goals?.toLowerCase().includes(searchTerm.toLowerCase());
+    const matchesPeriod = periodFilter === "all" || perf.reviewPeriod === periodFilter;
+    const score = parseFloat(perf.overallScore || 0);
+    let matchesScore = true;
+    
+    if (scoreFilter === "excellent") matchesScore = score >= 4.5;
+    else if (scoreFilter === "good") matchesScore = score >= 4.0 && score < 4.5;
+    else if (scoreFilter === "average") matchesScore = score >= 3.0 && score < 4.0;
+    else if (scoreFilter === "poor") matchesScore = score < 3.0;
+    
+    return matchesSearch && matchesPeriod && matchesScore;
+  });
+
+  // Analytics calculations
+  const getPerformanceStats = () => {
+    const totalReviews = (performance as any[]).length;
+    const avgScore = (performance as any[]).length > 0 
+      ? (performance as any[]).reduce((sum: number, perf: any) => sum + parseFloat(perf.overallScore || 0), 0) / (performance as any[]).length
+      : 0;
+    const highPerformers = (performance as any[]).filter((perf: any) => parseFloat(perf.overallScore || 0) >= 4.0).length;
+    const completedReviews = (performance as any[]).filter((perf: any) => perf.overallScore && parseFloat(perf.overallScore) > 0).length;
+
+    return {
+      totalReviews,
+      avgScore: Math.round(avgScore * 10) / 10,
+      highPerformers,
+      completedReviews,
+      completionRate: totalReviews > 0 ? Math.round((completedReviews / totalReviews) * 100) : 0
+    };
+  };
+
+  const stats = getPerformanceStats();
+
+  if (performanceLoading) {
     return (
       <div className="p-8">
         <div className="animate-pulse space-y-6">
@@ -175,418 +203,465 @@ export default function Performance() {
         <div className="flex flex-col lg:flex-row lg:items-center lg:justify-between mb-8">
           <div>
             <h1 className="text-3xl font-bold text-gray-900 mb-2">Performans Değerlendirme</h1>
-            <p className="text-gray-600">Çalışan performansını değerlendirin ve takip edin</p>
+            <p className="text-gray-600">Çalışan performans değerlendirmeleri ve analiz raporları</p>
           </div>
-          <Dialog open={isDialogOpen} onOpenChange={setIsDialogOpen}>
-            <DialogTrigger asChild>
-              <Button className="bg-blue-600 hover:bg-blue-700 text-white">
-                <Plus className="h-4 w-4 mr-2" />
-                Yeni Değerlendirme
-              </Button>
-            </DialogTrigger>
-            <DialogContent className="sm:max-w-2xl bg-white max-h-[90vh] overflow-y-auto">
-              <DialogHeader>
-                <DialogTitle className="text-gray-900">Yeni Performans Değerlendirmesi</DialogTitle>
-                <DialogDescription className="text-gray-600">
-                  Çalışan için detaylı performans değerlendirmesi yapın
-                </DialogDescription>
-              </DialogHeader>
-              <Form {...form}>
-                <form onSubmit={form.handleSubmit(handleSubmit)} className="space-y-6">
-                  <div className="grid grid-cols-2 gap-4">
-                    <FormField
-                      control={form.control}
-                      name="employeeId"
-                      render={({ field }) => (
-                        <FormItem>
-                          <FormLabel className="text-gray-700">Çalışan</FormLabel>
-                          <Select onValueChange={field.onChange} defaultValue={field.value}>
-                            <FormControl>
-                              <SelectTrigger className="bg-white border-gray-300">
-                                <SelectValue placeholder="Çalışan seçin" />
-                              </SelectTrigger>
-                            </FormControl>
-                            <SelectContent className="bg-white">
-                              {employees.map((employee: any) => (
-                                <SelectItem key={employee.id} value={employee.id}>
-                                  {employee.firstName} {employee.lastName}
-                                </SelectItem>
-                              ))}
-                            </SelectContent>
-                          </Select>
-                          <FormMessage />
-                        </FormItem>
-                      )}
-                    />
-
-                    <FormField
-                      control={form.control}
-                      name="period"
-                      render={({ field }) => (
-                        <FormItem>
-                          <FormLabel className="text-gray-700">Değerlendirme Dönemi</FormLabel>
-                          <Select onValueChange={field.onChange} defaultValue={field.value}>
-                            <FormControl>
-                              <SelectTrigger className="bg-white border-gray-300">
-                                <SelectValue placeholder="Dönem seçin" />
-                              </SelectTrigger>
-                            </FormControl>
-                            <SelectContent className="bg-white">
-                              <SelectItem value="2024-Q1">2024 - 1. Çeyrek</SelectItem>
-                              <SelectItem value="2024-Q2">2024 - 2. Çeyrek</SelectItem>
-                              <SelectItem value="2024-Q3">2024 - 3. Çeyrek</SelectItem>
-                              <SelectItem value="2024-Q4">2024 - 4. Çeyrek</SelectItem>
-                              <SelectItem value="2024-Annual">2024 - Yıllık</SelectItem>
-                            </SelectContent>
-                          </Select>
-                          <FormMessage />
-                        </FormItem>
-                      )}
-                    />
-                  </div>
-
-                  <FormField
-                    control={form.control}
-                    name="overallScore"
-                    render={({ field }) => (
-                      <FormItem>
-                        <FormLabel className="text-gray-700">Genel Puan (1-10)</FormLabel>
-                        <FormControl>
-                          <Input 
-                            type="number" 
-                            min="1" 
-                            max="10" 
-                            {...field}
-                            onChange={(e) => field.onChange(Number(e.target.value))}
-                            className="bg-white border-gray-300"
-                          />
-                        </FormControl>
-                        <FormMessage />
-                      </FormItem>
-                    )}
-                  />
-
-                  {/* Skills Assessment */}
-                  <div className="space-y-4">
-                    <h3 className="text-lg font-medium text-gray-900">Beceri Değerlendirmesi (1-5)</h3>
+          <div className="flex space-x-3">
+            <Button variant="outline" className="border-gray-300 text-gray-700">
+              <Download className="h-4 w-4 mr-2" />
+              Rapor İndir
+            </Button>
+            <Dialog open={isDialogOpen} onOpenChange={setIsDialogOpen}>
+              <DialogTrigger asChild>
+                <Button className="bg-blue-600 hover:bg-blue-700 text-white">
+                  <Plus className="h-4 w-4 mr-2" />
+                  Yeni Değerlendirme
+                </Button>
+              </DialogTrigger>
+              <DialogContent className="sm:max-w-4xl bg-white max-h-[90vh] overflow-y-auto">
+                <DialogHeader>
+                  <DialogTitle className="text-gray-900">Yeni Performans Değerlendirmesi</DialogTitle>
+                </DialogHeader>
+                <Form {...form}>
+                  <form onSubmit={form.handleSubmit(handleSubmit)} className="space-y-6">
                     <div className="grid grid-cols-2 gap-4">
-                      {Object.entries(skillLabels).map(([key, label]) => (
-                        <FormField
-                          key={key}
-                          control={form.control}
-                          name={`skillsAssessment.${key as keyof typeof skillLabels}`}
-                          render={({ field }) => (
-                            <FormItem>
-                              <FormLabel className="text-gray-700">{label}</FormLabel>
-                              <FormControl>
-                                <Input 
-                                  type="number" 
-                                  min="1" 
-                                  max="5" 
-                                  {...field}
-                                  onChange={(e) => field.onChange(Number(e.target.value))}
-                                  className="bg-white border-gray-300"
-                                />
-                              </FormControl>
-                              <FormMessage />
-                            </FormItem>
-                          )}
-                        />
-                      ))}
+                      <FormField
+                        control={form.control}
+                        name="employeeId"
+                        render={({ field }) => (
+                          <FormItem>
+                            <FormLabel className="text-gray-700">Çalışan</FormLabel>
+                            <FormControl>
+                              <Select onValueChange={field.onChange} value={field.value}>
+                                <SelectTrigger className="border-gray-300">
+                                  <SelectValue placeholder="Çalışan seçin" />
+                                </SelectTrigger>
+                                <SelectContent className="bg-white">
+                                  {(employees as any[]).map((employee: any) => (
+                                    <SelectItem key={employee.id} value={employee.id.toString()}>
+                                      {employee.firstName} {employee.lastName}
+                                    </SelectItem>
+                                  ))}
+                                </SelectContent>
+                              </Select>
+                            </FormControl>
+                            <FormMessage />
+                          </FormItem>
+                        )}
+                      />
+
+                      <FormField
+                        control={form.control}
+                        name="reviewPeriod"
+                        render={({ field }) => (
+                          <FormItem>
+                            <FormLabel className="text-gray-700">Değerlendirme Dönemi</FormLabel>
+                            <FormControl>
+                              <Select onValueChange={field.onChange} value={field.value}>
+                                <SelectTrigger className="border-gray-300">
+                                  <SelectValue placeholder="Dönem seçin" />
+                                </SelectTrigger>
+                                <SelectContent className="bg-white">
+                                  <SelectItem value="Q1-2024">Q1 2024</SelectItem>
+                                  <SelectItem value="Q2-2024">Q2 2024</SelectItem>
+                                  <SelectItem value="Q3-2024">Q3 2024</SelectItem>
+                                  <SelectItem value="Q4-2024">Q4 2024</SelectItem>
+                                  <SelectItem value="Yıllık-2024">Yıllık 2024</SelectItem>
+                                </SelectContent>
+                              </Select>
+                            </FormControl>
+                            <FormMessage />
+                          </FormItem>
+                        )}
+                      />
                     </div>
-                  </div>
 
-                  <FormField
-                    control={form.control}
-                    name="goals"
-                    render={({ field }) => (
-                      <FormItem>
-                        <FormLabel className="text-gray-700">Dönem Hedefleri</FormLabel>
-                        <FormControl>
-                          <Textarea 
-                            placeholder="Bu dönemde belirlenen hedefleri açıklayın"
-                            {...field}
-                            className="bg-white border-gray-300 min-h-[80px]"
-                          />
-                        </FormControl>
-                        <FormMessage />
-                      </FormItem>
-                    )}
-                  />
+                    <div className="grid grid-cols-2 gap-4">
+                      <FormField
+                        control={form.control}
+                        name="goals"
+                        render={({ field }) => (
+                          <FormItem>
+                            <FormLabel className="text-gray-700">Hedefler</FormLabel>
+                            <FormControl>
+                              <Textarea
+                                placeholder="Dönem hedeflerini açıklayın"
+                                {...field}
+                                className="border-gray-300"
+                                rows={3}
+                              />
+                            </FormControl>
+                            <FormMessage />
+                          </FormItem>
+                        )}
+                      />
 
-                  <FormField
-                    control={form.control}
-                    name="achievements"
-                    render={({ field }) => (
-                      <FormItem>
-                        <FormLabel className="text-gray-700">Başarılar</FormLabel>
-                        <FormControl>
-                          <Textarea 
-                            placeholder="Çalışanın önemli başarılarını açıklayın"
-                            {...field}
-                            className="bg-white border-gray-300 min-h-[80px]"
-                          />
-                        </FormControl>
-                        <FormMessage />
-                      </FormItem>
-                    )}
-                  />
+                      <FormField
+                        control={form.control}
+                        name="achievements"
+                        render={({ field }) => (
+                          <FormItem>
+                            <FormLabel className="text-gray-700">Başarılar</FormLabel>
+                            <FormControl>
+                              <Textarea
+                                placeholder="Elde edilen başarıları açıklayın"
+                                {...field}
+                                className="border-gray-300"
+                                rows={3}
+                              />
+                            </FormControl>
+                            <FormMessage />
+                          </FormItem>
+                        )}
+                      />
+                    </div>
 
-                  <FormField
-                    control={form.control}
-                    name="areasForImprovement"
-                    render={({ field }) => (
-                      <FormItem>
-                        <FormLabel className="text-gray-700">Gelişim Alanları</FormLabel>
-                        <FormControl>
-                          <Textarea 
-                            placeholder="Geliştirilmesi gereken alanları belirtin"
-                            {...field}
-                            className="bg-white border-gray-300 min-h-[80px]"
-                          />
-                        </FormControl>
-                        <FormMessage />
-                      </FormItem>
-                    )}
-                  />
+                    <div className="grid grid-cols-4 gap-4">
+                      <FormField
+                        control={form.control}
+                        name="skillsRating"
+                        render={({ field }) => (
+                          <FormItem>
+                            <FormLabel className="text-gray-700">Beceri Puanı</FormLabel>
+                            <FormControl>
+                              <Select onValueChange={field.onChange} value={field.value}>
+                                <SelectTrigger className="border-gray-300">
+                                  <SelectValue placeholder="Puan" />
+                                </SelectTrigger>
+                                <SelectContent className="bg-white">
+                                  <SelectItem value="5">5 - Mükemmel</SelectItem>
+                                  <SelectItem value="4">4 - Çok İyi</SelectItem>
+                                  <SelectItem value="3">3 - İyi</SelectItem>
+                                  <SelectItem value="2">2 - Orta</SelectItem>
+                                  <SelectItem value="1">1 - Zayıf</SelectItem>
+                                </SelectContent>
+                              </Select>
+                            </FormControl>
+                            <FormMessage />
+                          </FormItem>
+                        )}
+                      />
 
-                  <FormField
-                    control={form.control}
-                    name="nextPeriodGoals"
-                    render={({ field }) => (
-                      <FormItem>
-                        <FormLabel className="text-gray-700">Gelecek Dönem Hedefleri</FormLabel>
-                        <FormControl>
-                          <Textarea 
-                            placeholder="Bir sonraki dönem için hedefleri belirleyin"
-                            {...field}
-                            className="bg-white border-gray-300 min-h-[80px]"
-                          />
-                        </FormControl>
-                        <FormMessage />
-                      </FormItem>
-                    )}
-                  />
+                      <FormField
+                        control={form.control}
+                        name="communicationRating"
+                        render={({ field }) => (
+                          <FormItem>
+                            <FormLabel className="text-gray-700">İletişim</FormLabel>
+                            <FormControl>
+                              <Select onValueChange={field.onChange} value={field.value}>
+                                <SelectTrigger className="border-gray-300">
+                                  <SelectValue placeholder="Puan" />
+                                </SelectTrigger>
+                                <SelectContent className="bg-white">
+                                  <SelectItem value="5">5 - Mükemmel</SelectItem>
+                                  <SelectItem value="4">4 - Çok İyi</SelectItem>
+                                  <SelectItem value="3">3 - İyi</SelectItem>
+                                  <SelectItem value="2">2 - Orta</SelectItem>
+                                  <SelectItem value="1">1 - Zayıf</SelectItem>
+                                </SelectContent>
+                              </Select>
+                            </FormControl>
+                            <FormMessage />
+                          </FormItem>
+                        )}
+                      />
 
-                  <FormField
-                    control={form.control}
-                    name="managerComments"
-                    render={({ field }) => (
-                      <FormItem>
-                        <FormLabel className="text-gray-700">Yönetici Yorumları (Opsiyonel)</FormLabel>
-                        <FormControl>
-                          <Textarea 
-                            placeholder="Ek yorumlar ve öneriler"
-                            {...field}
-                            className="bg-white border-gray-300 min-h-[80px]"
-                          />
-                        </FormControl>
-                        <FormMessage />
-                      </FormItem>
-                    )}
-                  />
+                      <FormField
+                        control={form.control}
+                        name="teamworkRating"
+                        render={({ field }) => (
+                          <FormItem>
+                            <FormLabel className="text-gray-700">Takım Çalışması</FormLabel>
+                            <FormControl>
+                              <Select onValueChange={field.onChange} value={field.value}>
+                                <SelectTrigger className="border-gray-300">
+                                  <SelectValue placeholder="Puan" />
+                                </SelectTrigger>
+                                <SelectContent className="bg-white">
+                                  <SelectItem value="5">5 - Mükemmel</SelectItem>
+                                  <SelectItem value="4">4 - Çok İyi</SelectItem>
+                                  <SelectItem value="3">3 - İyi</SelectItem>
+                                  <SelectItem value="2">2 - Orta</SelectItem>
+                                  <SelectItem value="1">1 - Zayıf</SelectItem>
+                                </SelectContent>
+                              </Select>
+                            </FormControl>
+                            <FormMessage />
+                          </FormItem>
+                        )}
+                      />
 
-                  <DialogFooter>
-                    <Button
-                      type="button"
-                      variant="outline"
-                      onClick={() => setIsDialogOpen(false)}
-                      className="border-gray-300"
-                    >
-                      İptal
-                    </Button>
-                    <Button
-                      type="submit"
-                      disabled={createPerformanceMutation.isPending}
-                      className="bg-blue-600 hover:bg-blue-700 text-white"
-                    >
-                      {createPerformanceMutation.isPending ? "Kaydediliyor..." : "Kaydet"}
-                    </Button>
-                  </DialogFooter>
-                </form>
-              </Form>
-            </DialogContent>
-          </Dialog>
+                      <FormField
+                        control={form.control}
+                        name="overallScore"
+                        render={({ field }) => (
+                          <FormItem>
+                            <FormLabel className="text-gray-700">Genel Puan</FormLabel>
+                            <FormControl>
+                              <Select onValueChange={field.onChange} value={field.value}>
+                                <SelectTrigger className="border-gray-300">
+                                  <SelectValue placeholder="Puan" />
+                                </SelectTrigger>
+                                <SelectContent className="bg-white">
+                                  <SelectItem value="5">5.0 - Mükemmel</SelectItem>
+                                  <SelectItem value="4.5">4.5 - Çok İyi</SelectItem>
+                                  <SelectItem value="4">4.0 - İyi</SelectItem>
+                                  <SelectItem value="3.5">3.5 - Orta Üstü</SelectItem>
+                                  <SelectItem value="3">3.0 - Orta</SelectItem>
+                                  <SelectItem value="2.5">2.5 - Orta Altı</SelectItem>
+                                  <SelectItem value="2">2.0 - Zayıf</SelectItem>
+                                </SelectContent>
+                              </Select>
+                            </FormControl>
+                            <FormMessage />
+                          </FormItem>
+                        )}
+                      />
+                    </div>
+
+                    <FormField
+                      control={form.control}
+                      name="feedback"
+                      render={({ field }) => (
+                        <FormItem>
+                          <FormLabel className="text-gray-700">Geri Bildirim</FormLabel>
+                          <FormControl>
+                            <Textarea
+                              placeholder="Performans geri bildirimi yazın"
+                              {...field}
+                              className="border-gray-300"
+                              rows={4}
+                            />
+                          </FormControl>
+                          <FormMessage />
+                        </FormItem>
+                      )}
+                    />
+
+                    <div className="grid grid-cols-2 gap-4">
+                      <FormField
+                        control={form.control}
+                        name="improvementAreas"
+                        render={({ field }) => (
+                          <FormItem>
+                            <FormLabel className="text-gray-700">Gelişim Alanları</FormLabel>
+                            <FormControl>
+                              <Textarea
+                                placeholder="Geliştirilmesi gereken alanları belirtin"
+                                {...field}
+                                className="border-gray-300"
+                                rows={3}
+                              />
+                            </FormControl>
+                            <FormMessage />
+                          </FormItem>
+                        )}
+                      />
+
+                      <FormField
+                        control={form.control}
+                        name="nextGoals"
+                        render={({ field }) => (
+                          <FormItem>
+                            <FormLabel className="text-gray-700">Gelecek Hedefler</FormLabel>
+                            <FormControl>
+                              <Textarea
+                                placeholder="Bir sonraki dönem hedeflerini belirtin"
+                                {...field}
+                                className="border-gray-300"
+                                rows={3}
+                              />
+                            </FormControl>
+                            <FormMessage />
+                          </FormItem>
+                        )}
+                      />
+                    </div>
+
+                    <div className="flex justify-end space-x-3">
+                      <Button 
+                        type="button" 
+                        variant="outline" 
+                        onClick={() => setIsDialogOpen(false)}
+                        className="border-gray-300 text-gray-700"
+                      >
+                        İptal
+                      </Button>
+                      <Button 
+                        type="submit" 
+                        disabled={createPerformanceMutation.isPending}
+                        className="bg-blue-600 hover:bg-blue-700 text-white"
+                      >
+                        {createPerformanceMutation.isPending ? "Oluşturuluyor..." : "Değerlendirme Oluştur"}
+                      </Button>
+                    </div>
+                  </form>
+                </Form>
+              </DialogContent>
+            </Dialog>
+          </div>
         </div>
 
-        {/* Statistics Cards */}
-        <div className="grid grid-cols-1 md:grid-cols-5 gap-6 mb-8">
-          <Card className="bg-white border-gray-200">
-            <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-              <CardTitle className="text-sm font-medium text-gray-600">Toplam Değerlendirme</CardTitle>
-              <BarChart3 className="h-4 w-4 text-gray-400" />
-            </CardHeader>
-            <CardContent>
-              <div className="text-2xl font-semibold text-gray-900">{performanceStats.total}</div>
+        {/* Stats Cards */}
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-8">
+          <Card className="bg-gradient-to-br from-blue-50 to-blue-100 border-blue-200">
+            <CardContent className="p-6">
+              <div className="flex items-center justify-between">
+                <div>
+                  <p className="text-blue-600 text-sm font-medium mb-1">Toplam Değerlendirme</p>
+                  <p className="text-2xl font-bold text-blue-900">{stats.totalReviews}</p>
+                </div>
+                <Star className="h-8 w-8 text-blue-600" />
+              </div>
             </CardContent>
           </Card>
 
-          <Card className="bg-white border-gray-200">
-            <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-              <CardTitle className="text-sm font-medium text-gray-600">Ortalama Puan</CardTitle>
-              <Target className="h-4 w-4 text-blue-500" />
-            </CardHeader>
-            <CardContent>
-              <div className="text-2xl font-semibold text-gray-900">{performanceStats.avgScore}</div>
+          <Card className="bg-gradient-to-br from-green-50 to-green-100 border-green-200">
+            <CardContent className="p-6">
+              <div className="flex items-center justify-between">
+                <div>
+                  <p className="text-green-600 text-sm font-medium mb-1">Ortalama Puan</p>
+                  <p className="text-2xl font-bold text-green-900">{stats.avgScore}/5.0</p>
+                </div>
+                <TrendingUp className="h-8 w-8 text-green-600" />
+              </div>
             </CardContent>
           </Card>
 
-          <Card className="bg-white border-gray-200">
-            <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-              <CardTitle className="text-sm font-medium text-gray-600">Mükemmel</CardTitle>
-              <Award className="h-4 w-4 text-green-500" />
-            </CardHeader>
-            <CardContent>
-              <div className="text-2xl font-semibold text-gray-900">{performanceStats.excellent}</div>
+          <Card className="bg-gradient-to-br from-purple-50 to-purple-100 border-purple-200">
+            <CardContent className="p-6">
+              <div className="flex items-center justify-between">
+                <div>
+                  <p className="text-purple-600 text-sm font-medium mb-1">Yüksek Performans</p>
+                  <p className="text-2xl font-bold text-purple-900">{stats.highPerformers}</p>
+                </div>
+                <Award className="h-8 w-8 text-purple-600" />
+              </div>
             </CardContent>
           </Card>
 
-          <Card className="bg-white border-gray-200">
-            <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-              <CardTitle className="text-sm font-medium text-gray-600">İyi</CardTitle>
-              <TrendingUp className="h-4 w-4 text-yellow-500" />
-            </CardHeader>
-            <CardContent>
-              <div className="text-2xl font-semibold text-gray-900">{performanceStats.good}</div>
-            </CardContent>
-          </Card>
-
-          <Card className="bg-white border-gray-200">
-            <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-              <CardTitle className="text-sm font-medium text-gray-600">Geliştirilmeli</CardTitle>
-              <Users className="h-4 w-4 text-red-500" />
-            </CardHeader>
-            <CardContent>
-              <div className="text-2xl font-semibold text-gray-900">{performanceStats.needsImprovement}</div>
+          <Card className="bg-gradient-to-br from-orange-50 to-orange-100 border-orange-200">
+            <CardContent className="p-6">
+              <div className="flex items-center justify-between">
+                <div>
+                  <p className="text-orange-600 text-sm font-medium mb-1">Tamamlanma Oranı</p>
+                  <p className="text-2xl font-bold text-orange-900">%{stats.completionRate}</p>
+                </div>
+                <CheckCircle className="h-8 w-8 text-orange-600" />
+              </div>
             </CardContent>
           </Card>
         </div>
 
         {/* Filters */}
-        <Card className="bg-white border-gray-200 mb-6">
-          <CardContent className="p-6">
-            <div className="flex flex-col md:flex-row gap-4">
-              <div className="flex-1">
-                <div className="relative">
-                  <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-gray-400" />
-                  <Input
-                    placeholder="Çalışan adı veya dönem ara..."
-                    value={searchTerm}
-                    onChange={(e) => setSearchTerm(e.target.value)}
-                    className="pl-10 bg-white border-gray-300"
-                  />
-                </div>
-              </div>
-              <Select value={periodFilter} onValueChange={setPeriodFilter}>
-                <SelectTrigger className="w-48 bg-white border-gray-300">
-                  <SelectValue placeholder="Dönem filtrele" />
-                </SelectTrigger>
-                <SelectContent className="bg-white">
-                  <SelectItem value="all">Tüm Dönemler</SelectItem>
-                  <SelectItem value="2024-Q1">2024 - 1. Çeyrek</SelectItem>
-                  <SelectItem value="2024-Q2">2024 - 2. Çeyrek</SelectItem>
-                  <SelectItem value="2024-Q3">2024 - 3. Çeyrek</SelectItem>
-                  <SelectItem value="2024-Q4">2024 - 4. Çeyrek</SelectItem>
-                  <SelectItem value="2024-Annual">2024 - Yıllık</SelectItem>
-                </SelectContent>
-              </Select>
-              <Button variant="outline" className="border-gray-300">
-                <Download className="h-4 w-4 mr-2" />
-                Rapor İndir
-              </Button>
-            </div>
-          </CardContent>
-        </Card>
+        <div className="flex flex-col sm:flex-row gap-4 mb-6">
+          <div className="relative flex-1">
+            <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 h-4 w-4" />
+            <Input
+              placeholder="Çalışan veya hedef ara"
+              value={searchTerm}
+              onChange={(e) => setSearchTerm(e.target.value)}
+              className="pl-10 border-gray-300"
+            />
+          </div>
+          <Select value={periodFilter} onValueChange={setPeriodFilter}>
+            <SelectTrigger className="w-full sm:w-48 border-gray-300">
+              <SelectValue placeholder="Dönem filtrele" />
+            </SelectTrigger>
+            <SelectContent className="bg-white">
+              <SelectItem value="all">Tüm Dönemler</SelectItem>
+              <SelectItem value="Q1-2024">Q1 2024</SelectItem>
+              <SelectItem value="Q2-2024">Q2 2024</SelectItem>
+              <SelectItem value="Q3-2024">Q3 2024</SelectItem>
+              <SelectItem value="Q4-2024">Q4 2024</SelectItem>
+            </SelectContent>
+          </Select>
+          <Select value={scoreFilter} onValueChange={setScoreFilter}>
+            <SelectTrigger className="w-full sm:w-48 border-gray-300">
+              <SelectValue placeholder="Puan filtrele" />
+            </SelectTrigger>
+            <SelectContent className="bg-white">
+              <SelectItem value="all">Tüm Puanlar</SelectItem>
+              <SelectItem value="excellent">Mükemmel (4.5+)</SelectItem>
+              <SelectItem value="good">İyi (4.0-4.4)</SelectItem>
+              <SelectItem value="average">Orta (3.0-3.9)</SelectItem>
+              <SelectItem value="poor">Zayıf (3.0-)</SelectItem>
+            </SelectContent>
+          </Select>
+        </div>
 
-        {/* Performance Records */}
+        {/* Performance Table */}
         <Card className="bg-white border-gray-200">
-          <CardHeader>
+          <CardHeader className="border-b border-gray-200">
             <CardTitle className="text-gray-900">Performans Değerlendirmeleri</CardTitle>
-            <CardDescription className="text-gray-600">
-              Çalışan performans değerlendirmelerini görüntüleyin ve analiz edin
-            </CardDescription>
           </CardHeader>
-          <CardContent>
-            <div className="space-y-6">
-              {filteredPerformances.map((performance: any) => (
-                <div key={performance.id} className="border border-gray-200 rounded-lg p-6 bg-gray-50">
-                  <div className="flex items-start justify-between mb-4">
-                    <div className="flex items-center space-x-4">
-                      <div className="w-12 h-12 bg-blue-100 rounded-full flex items-center justify-center">
-                        <Star className="h-6 w-6 text-blue-600" />
-                      </div>
-                      <div>
-                        <h3 className="font-medium text-gray-900">
-                          {performance.employee?.firstName} {performance.employee?.lastName}
-                        </h3>
-                        <p className="text-sm text-gray-600">{performance.period}</p>
-                        <p className="text-xs text-gray-500">
-                          {performance.createdAt && format(new Date(performance.createdAt), 'dd MMM yyyy', { locale: tr })}
-                        </p>
-                      </div>
-                    </div>
-                    
-                    <div className="text-right">
-                      <div className="flex items-center space-x-2">
-                        <span className="text-sm text-gray-600">Genel Puan:</span>
-                        <Badge className={`${getScoreColor(performance.overallScore)} bg-transparent border`}>
-                          {performance.overallScore}/10 - {getScoreLabel(performance.overallScore)}
-                        </Badge>
-                      </div>
-                    </div>
-                  </div>
-
-                  {/* Skills Progress Bars */}
-                  {performance.skillsAssessment && (
-                    <div className="grid grid-cols-2 md:grid-cols-3 gap-4 mb-4">
-                      {Object.entries(performance.skillsAssessment).map(([skill, score]: [string, any]) => (
-                        <div key={skill} className="space-y-1">
-                          <div className="flex justify-between text-sm">
-                            <span className="text-gray-600">{skillLabels[skill as keyof typeof skillLabels]}</span>
-                            <span className="text-gray-900">{score}/5</span>
+          <CardContent className="p-0">
+            <div className="overflow-x-auto">
+              <table className="w-full">
+                <thead className="bg-gray-50 border-b border-gray-200">
+                  <tr>
+                    <th className="text-left py-3 px-6 text-xs font-medium text-gray-500 uppercase tracking-wider">Çalışan</th>
+                    <th className="text-left py-3 px-6 text-xs font-medium text-gray-500 uppercase tracking-wider">Dönem</th>
+                    <th className="text-left py-3 px-6 text-xs font-medium text-gray-500 uppercase tracking-wider">Genel Puan</th>
+                    <th className="text-left py-3 px-6 text-xs font-medium text-gray-500 uppercase tracking-wider">Hedefler</th>
+                    <th className="text-left py-3 px-6 text-xs font-medium text-gray-500 uppercase tracking-wider">Durum</th>
+                    <th className="text-left py-3 px-6 text-xs font-medium text-gray-500 uppercase tracking-wider">İşlemler</th>
+                  </tr>
+                </thead>
+                <tbody className="divide-y divide-gray-200">
+                  {filteredPerformance.map((perf: any, index) => (
+                    <tr key={perf.id} className={index % 2 === 0 ? 'bg-white' : 'bg-gray-50'}>
+                      <td className="py-4 px-6">
+                        <div className="flex items-center">
+                          <div className="w-8 h-8 bg-blue-100 rounded-full flex items-center justify-center mr-3">
+                            <Users className="h-4 w-4 text-blue-600" />
                           </div>
-                          <Progress value={(score / 5) * 100} className="h-2" />
+                          <div>
+                            <p className="text-sm font-medium text-gray-900">
+                              {getEmployeeName(perf.employeeId)}
+                            </p>
+                          </div>
                         </div>
-                      ))}
-                    </div>
-                  )}
-
-                  <Tabs defaultValue="goals" className="w-full">
-                    <TabsList className="grid w-full grid-cols-4 bg-gray-100">
-                      <TabsTrigger value="goals" className="text-sm">Hedefler</TabsTrigger>
-                      <TabsTrigger value="achievements" className="text-sm">Başarılar</TabsTrigger>
-                      <TabsTrigger value="improvements" className="text-sm">Gelişim</TabsTrigger>
-                      <TabsTrigger value="next" className="text-sm">Gelecek</TabsTrigger>
-                    </TabsList>
-                    <TabsContent value="goals" className="mt-4">
-                      <p className="text-sm text-gray-700">{performance.goals}</p>
-                    </TabsContent>
-                    <TabsContent value="achievements" className="mt-4">
-                      <p className="text-sm text-gray-700">{performance.achievements}</p>
-                    </TabsContent>
-                    <TabsContent value="improvements" className="mt-4">
-                      <p className="text-sm text-gray-700">{performance.areasForImprovement}</p>
-                    </TabsContent>
-                    <TabsContent value="next" className="mt-4">
-                      <p className="text-sm text-gray-700">{performance.nextPeriodGoals}</p>
-                    </TabsContent>
-                  </Tabs>
-
-                  {performance.managerComments && (
-                    <div className="mt-4 p-3 bg-blue-50 rounded-lg border border-blue-200">
-                      <h4 className="text-sm font-medium text-blue-900 mb-1">Yönetici Yorumları</h4>
-                      <p className="text-sm text-blue-800">{performance.managerComments}</p>
-                    </div>
-                  )}
-                </div>
-              ))}
-              
-              {filteredPerformances.length === 0 && (
-                <div className="text-center py-8 text-gray-500">
-                  <Star className="h-12 w-12 mx-auto mb-4 text-gray-300" />
-                  <p>Henüz performans değerlendirmesi bulunmuyor</p>
-                </div>
-              )}
+                      </td>
+                      <td className="py-4 px-6">
+                        <Badge className="bg-blue-100 text-blue-800">
+                          {perf.reviewPeriod}
+                        </Badge>
+                      </td>
+                      <td className="py-4 px-6">
+                        <div className="flex items-center space-x-2">
+                          <span className="text-lg font-bold text-gray-900">{perf.overallScore}</span>
+                          <Star className="h-4 w-4 text-yellow-500" />
+                        </div>
+                      </td>
+                      <td className="py-4 px-6 text-sm text-gray-900 max-w-xs truncate">
+                        {perf.goals}
+                      </td>
+                      <td className="py-4 px-6">
+                        {getScoreBadge(parseFloat(perf.overallScore || 0))}
+                      </td>
+                      <td className="py-4 px-6">
+                        <div className="flex space-x-2">
+                          <Button variant="ghost" size="sm" className="text-blue-600 hover:bg-blue-50">
+                            <Eye className="h-4 w-4" />
+                          </Button>
+                          <Button variant="ghost" size="sm" className="text-gray-600 hover:bg-gray-50">
+                            <Edit className="h-4 w-4" />
+                          </Button>
+                          <Button 
+                            variant="ghost" 
+                            size="sm" 
+                            onClick={() => handleDelete(perf.id)}
+                            className="text-red-600 hover:bg-red-50"
+                          >
+                            <Trash2 className="h-4 w-4" />
+                          </Button>
+                        </div>
+                      </td>
+                    </tr>
+                  ))}
+                </tbody>
+              </table>
             </div>
           </CardContent>
         </Card>
