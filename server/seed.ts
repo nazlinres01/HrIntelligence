@@ -1,5 +1,6 @@
 import { db } from "./db";
 import { companies, users, employees, departments, leaves, performance, payroll, activities, notifications } from "@shared/schema";
+import bcrypt from "bcrypt";
 
 export async function seedDatabase() {
   try {
@@ -15,6 +16,10 @@ export async function seedDatabase() {
     await db.delete(companies);
 
     console.log("Seeding database with comprehensive Turkish company data...");
+
+    // Generate hashed passwords
+    const adminHashedPassword = await bcrypt.hash("admin123", 12);
+    const userHashedPassword = await bcrypt.hash("password123", 12);
 
     // Create sample companies
     const sampleCompanies = [
