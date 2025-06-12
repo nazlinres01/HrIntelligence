@@ -538,7 +538,12 @@ export default function CompanyStructure() {
                     {company.address && (
                       <div className="flex items-start space-x-2 text-sm text-gray-600">
                         <MapPin className="h-4 w-4 mt-0.5" />
-                        <span className="line-clamp-2">{company.address}</span>
+                        <span className="line-clamp-2">
+                          {typeof company.address === 'object' 
+                            ? `${company.address.street || ''}, ${company.address.city || ''}, ${company.address.country || ''}`
+                            : company.address
+                          }
+                        </span>
                       </div>
                     )}
                     
