@@ -52,11 +52,11 @@ export default function DepartmentControl() {
   const { toast } = useToast();
   const queryClient = useQueryClient();
 
-  const { data: departments = [], isLoading: departmentsLoading } = useQuery({
+  const { data: departments = [], isLoading: departmentsLoading } = useQuery<any[]>({
     queryKey: ["/api/departments"]
   });
 
-  const { data: employees = [] } = useQuery({
+  const { data: employees = [] } = useQuery<any[]>({
     queryKey: ["/api/employees"]
   });
 
@@ -74,10 +74,7 @@ export default function DepartmentControl() {
 
   const createDepartmentMutation = useMutation({
     mutationFn: async (data: DepartmentFormData) => {
-      return apiRequest("/api/departments", {
-        method: "POST",
-        body: JSON.stringify(data)
-      });
+      return apiRequest("POST", "/api/departments", data);
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ["/api/departments"] });
@@ -99,9 +96,7 @@ export default function DepartmentControl() {
 
   const deleteDepartmentMutation = useMutation({
     mutationFn: async (id: string) => {
-      return apiRequest(`/api/departments/${id}`, {
-        method: "DELETE"
-      });
+      return apiRequest("DELETE", `/api/departments/${id}`);
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ["/api/departments"] });

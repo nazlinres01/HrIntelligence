@@ -59,15 +59,15 @@ export default function TalentAcquisition() {
   const { toast } = useToast();
   const queryClient = useQueryClient();
 
-  const { data: jobs = [], isLoading: jobsLoading } = useQuery({
+  const { data: jobs = [], isLoading: jobsLoading } = useQuery<any[]>({
     queryKey: ["/api/jobs"]
   });
 
-  const { data: applications = [] } = useQuery({
+  const { data: applications = [] } = useQuery<any[]>({
     queryKey: ["/api/job-applications"]
   });
 
-  const { data: departments = [] } = useQuery({
+  const { data: departments = [] } = useQuery<any[]>({
     queryKey: ["/api/departments"]
   });
 
@@ -124,7 +124,7 @@ export default function TalentAcquisition() {
 
   // Filter jobs
   const filteredJobs = React.useMemo(() => {
-    return jobs.filter((job: any) => {
+    return (jobs as any[]).filter((job: any) => {
       const matchesSearch = job.title?.toLowerCase()?.includes(searchTerm.toLowerCase()) ||
                            job.department?.toLowerCase()?.includes(searchTerm.toLowerCase());
       const matchesStatus = statusFilter === "all" || job.status === statusFilter;
@@ -138,16 +138,16 @@ export default function TalentAcquisition() {
   };
 
   const getJobStats = () => {
-    const activeJobs = jobs.filter((j: any) => j.status === 'active').length;
-    const totalApplications = applications.length;
-    const pendingApplications = applications.filter((a: any) => a.status === 'pending').length;
-    const hiredCandidates = applications.filter((a: any) => a.status === 'hired').length;
+    const activeJobs = (jobs as any[]).filter((j: any) => j.status === 'active').length;
+    const totalApplications = (applications as any[]).length;
+    const pendingApplications = (applications as any[]).filter((a: any) => a.status === 'pending').length;
+    const hiredCandidates = (applications as any[]).filter((a: any) => a.status === 'hired').length;
     
     return { activeJobs, totalApplications, pendingApplications, hiredCandidates };
   };
 
   const getApplicationsByJob = (jobId: string) => {
-    return applications.filter((app: any) => app.jobId === jobId);
+    return (applications as any[]).filter((app: any) => app.jobId === jobId);
   };
 
   const stats = getJobStats();
@@ -221,7 +221,7 @@ export default function TalentAcquisition() {
                                 </SelectTrigger>
                               </FormControl>
                               <SelectContent className="bg-white">
-                                {departments.map((dept: any) => (
+                                {(departments as any[]).map((dept: any) => (
                                   <SelectItem key={dept.id} value={dept.name}>
                                     {dept.name}
                                   </SelectItem>
@@ -472,7 +472,7 @@ export default function TalentAcquisition() {
             </SelectTrigger>
             <SelectContent className="bg-white">
               <SelectItem value="all">Tüm Departmanlar</SelectItem>
-              {departments.map((dept: any) => (
+              {(departments as any[]).map((dept: any) => (
                 <SelectItem key={dept.id} value={dept.name}>{dept.name}</SelectItem>
               ))}
             </SelectContent>
