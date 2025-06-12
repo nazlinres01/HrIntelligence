@@ -57,11 +57,11 @@ export default function UserManagement() {
   const { toast } = useToast();
   const queryClient = useQueryClient();
 
-  const { data: users = [], isLoading: usersLoading } = useQuery({
+  const { data: users = [], isLoading: usersLoading } = useQuery<any[]>({
     queryKey: ["/api/users"]
   });
 
-  const { data: departments = [] } = useQuery({
+  const { data: departments = [] } = useQuery<any[]>({
     queryKey: ["/api/departments"]
   });
 
@@ -116,10 +116,7 @@ export default function UserManagement() {
 
   const toggleUserStatusMutation = useMutation({
     mutationFn: async ({ id, isActive }: { id: string; isActive: boolean }) => {
-      return apiRequest(`/api/users/${id}`, {
-        method: "PATCH",
-        body: JSON.stringify({ isActive })
-      });
+      return apiRequest("PATCH", `/api/users/${id}`, { isActive });
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ["/api/users"] });
@@ -132,7 +129,7 @@ export default function UserManagement() {
 
   // Filter users
   const filteredUsers = React.useMemo(() => {
-    return users.filter((user: any) => {
+    return (users as any[]).filter((user: any) => {
       const matchesSearch = user.firstName?.toLowerCase()?.includes(searchTerm.toLowerCase()) ||
                            user.lastName?.toLowerCase()?.includes(searchTerm.toLowerCase()) ||
                            user.email?.toLowerCase()?.includes(searchTerm.toLowerCase());
@@ -149,10 +146,10 @@ export default function UserManagement() {
   };
 
   const getUserStats = () => {
-    const totalUsers = users.length;
-    const activeUsers = users.filter((u: any) => u.isActive).length;
-    const adminUsers = users.filter((u: any) => u.role === 'admin').length;
-    const employeeUsers = users.filter((u: any) => u.role === 'employee').length;
+    const totalUsers = (users as any[]).length;
+    const activeUsers = (users as any[]).filter((u: any) => u.isActive).length;
+    const adminUsers = (users as any[]).filter((u: any) => u.role === 'admin').length;
+    const employeeUsers = (users as any[]).filter((u: any) => u.role === 'employee').length;
     
     return { totalUsers, activeUsers, adminUsers, employeeUsers };
   };
@@ -294,7 +291,7 @@ export default function UserManagement() {
                               </FormControl>
                               <SelectContent className="bg-white">
                                 <SelectItem value="">Seçiniz</SelectItem>
-                                {departments.map((dept: any) => (
+                                {(departments as any[]).map((dept: any) => (
                                   <SelectItem key={dept.id} value={dept.name}>
                                     {dept.name}
                                   </SelectItem>
@@ -535,7 +532,6 @@ export default function UserManagement() {
                             onCheckedChange={(checked) => 
                               toggleUserStatusMutation.mutate({ id: user.id, isActive: checked })
                             }
-                            size="sm"
                           />
                         </div>
                       </td>
