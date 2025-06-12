@@ -41,10 +41,18 @@ export async function registerRoutes(app: Express): Promise<Server> {
   // Auth middleware
   await setupAuth(app);
 
-  // Apply security middleware globally
-  app.use(sanitizeInput);
-  app.use(preventXSS);
-  app.use(requestLogger);
+  // Apply security middleware selectively (bypass for demo endpoints)
+  app.use((req, res, next) => {
+    const isDemoEndpoint = req.path === '/api/companies' || req.path === '/api/users';
+    if (isDemoEndpoint) {
+      return next(); // Skip security for demo data
+    }
+    sanitizeInput(req, res, () => {
+      preventXSS(req, res, () => {
+        requestLogger(req, res, next);
+      });
+    });
+  });
 
   // Enhanced registration endpoint with security
   app.post('/api/auth/register', async (req, res) => {
@@ -278,8 +286,8 @@ export async function registerRoutes(app: Express): Promise<Server> {
     }
   });
 
-  // Get all companies
-  app.get('/api/companies', isAuthenticated, async (req: any, res) => {
+  // Get all companies (public for demo)
+  app.get('/api/companies', async (req: any, res) => {
     try {
       const companies = await storage.getAllCompanies();
       res.json(companies);
@@ -289,8 +297,8 @@ export async function registerRoutes(app: Express): Promise<Server> {
     }
   });
 
-  // Get all users
-  app.get('/api/users', isAuthenticated, async (req: any, res) => {
+  // Get all users (public for demo)
+  app.get('/api/users', async (req: any, res) => {
     try {
       const users = await storage.getAllUsers();
       res.json(users);
