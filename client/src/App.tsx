@@ -86,6 +86,8 @@ function Router() {
       <Route path="/dashboard" component={DashboardComponent} />
 
       {/* Admin Management Routes */}
+      {(userRole === 'admin' || userRole === 'owner') && <Route path="/admin/companies" component={CompanyManagement} />}
+      {(userRole === 'admin' || userRole === 'owner') && <Route path="/admin/users" component={UserManagement} />}
       {(userRole === 'admin' || userRole === 'owner') && <Route path="/company" component={CompanyManagement} />}
       {(userRole === 'admin' || userRole === 'owner') && <Route path="/users" component={UserManagement} />}
       {(userRole === 'admin' || userRole === 'owner' || userRole === 'hr_manager') && <Route path="/departments" component={DepartmentManagement} />}

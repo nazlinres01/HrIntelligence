@@ -54,8 +54,8 @@ const getRoleBasedNavigation = (userRole: UserRole): NavigationSection[] => {
           title: "Ana Panel",
           items: [
             { name: "Dashboard", href: "/", icon: LayoutDashboard, show: true },
-            { name: "Şirket Yönetimi", href: "/company", icon: Building2, show: true },
-            { name: "Kullanıcılar", href: "/users", icon: Users, show: true },
+            { name: "Şirket Yönetimi", href: "/admin/companies", icon: Building2, show: true },
+            { name: "Kullanıcılar", href: "/admin/users", icon: Users, show: true },
             { name: "Departmanlar", href: "/departments", icon: Target, show: true },
           ]
         },
