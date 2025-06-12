@@ -491,6 +491,66 @@ export async function registerRoutes(app: Express): Promise<Server> {
     }
   });
 
+  app.post('/api/leaves', requireAuth, async (req: any, res) => {
+    try {
+      const leaveData = req.body;
+      const newId = Math.max(...sampleLeaves.map(l => l.id)) + 1;
+      const newLeave = {
+        id: newId,
+        appliedDate: new Date().toISOString().split('T')[0],
+        status: 'pending',
+        approvedBy: null,
+        approvedDate: null,
+        ...leaveData
+      };
+      
+      sampleLeaves.push(newLeave);
+      res.status(201).json(newLeave);
+    } catch (error) {
+      console.error("Error creating leave:", error);
+      res.status(500).json({ message: "İzin talebi oluşturulurken hata oluştu" });
+    }
+  });
+
+  app.put('/api/leaves/:id', requireAuth, async (req: any, res) => {
+    try {
+      const { id } = req.params;
+      const updateData = req.body;
+      const leaveIndex = sampleLeaves.findIndex(l => l.id === parseInt(id));
+      
+      if (leaveIndex === -1) {
+        return res.status(404).json({ message: "İzin talebi bulunamadı" });
+      }
+      
+      if (updateData.status === 'approved') {
+        updateData.approvedDate = new Date().toISOString().split('T')[0];
+      }
+      
+      sampleLeaves[leaveIndex] = { ...sampleLeaves[leaveIndex], ...updateData };
+      res.json(sampleLeaves[leaveIndex]);
+    } catch (error) {
+      console.error("Error updating leave:", error);
+      res.status(500).json({ message: "İzin talebi güncellenirken hata oluştu" });
+    }
+  });
+
+  app.delete('/api/leaves/:id', requireAuth, async (req: any, res) => {
+    try {
+      const { id } = req.params;
+      const leaveIndex = sampleLeaves.findIndex(l => l.id === parseInt(id));
+      
+      if (leaveIndex === -1) {
+        return res.status(404).json({ message: "İzin talebi bulunamadı" });
+      }
+      
+      sampleLeaves.splice(leaveIndex, 1);
+      res.json({ message: "İzin talebi başarıyla silindi" });
+    } catch (error) {
+      console.error("Error deleting leave:", error);
+      res.status(500).json({ message: "İzin talebi silinirken hata oluştu" });
+    }
+  });
+
   app.get('/api/leaves/employee/:employeeId', isAuthenticated, async (req: any, res) => {
     try {
       const { employeeId } = req.params;
@@ -571,6 +631,58 @@ export async function registerRoutes(app: Express): Promise<Server> {
     }
   });
 
+  app.post('/api/performance', requireAuth, async (req: any, res) => {
+    try {
+      const performanceData = req.body;
+      const newId = Math.max(...samplePerformance.map(p => p.id)) + 1;
+      const newPerformance = {
+        id: newId,
+        ...performanceData
+      };
+      
+      samplePerformance.push(newPerformance);
+      res.status(201).json(newPerformance);
+    } catch (error) {
+      console.error("Error creating performance:", error);
+      res.status(500).json({ message: "Performans değerlendirmesi oluşturulurken hata oluştu" });
+    }
+  });
+
+  app.put('/api/performance/:id', requireAuth, async (req: any, res) => {
+    try {
+      const { id } = req.params;
+      const updateData = req.body;
+      const performanceIndex = samplePerformance.findIndex(p => p.id === parseInt(id));
+      
+      if (performanceIndex === -1) {
+        return res.status(404).json({ message: "Performans kaydı bulunamadı" });
+      }
+      
+      samplePerformance[performanceIndex] = { ...samplePerformance[performanceIndex], ...updateData };
+      res.json(samplePerformance[performanceIndex]);
+    } catch (error) {
+      console.error("Error updating performance:", error);
+      res.status(500).json({ message: "Performans kaydı güncellenirken hata oluştu" });
+    }
+  });
+
+  app.delete('/api/performance/:id', requireAuth, async (req: any, res) => {
+    try {
+      const { id } = req.params;
+      const performanceIndex = samplePerformance.findIndex(p => p.id === parseInt(id));
+      
+      if (performanceIndex === -1) {
+        return res.status(404).json({ message: "Performans kaydı bulunamadı" });
+      }
+      
+      samplePerformance.splice(performanceIndex, 1);
+      res.json({ message: "Performans kaydı başarıyla silindi" });
+    } catch (error) {
+      console.error("Error deleting performance:", error);
+      res.status(500).json({ message: "Performans kaydı silinirken hata oluştu" });
+    }
+  });
+
   app.get('/api/performance/employee/:employeeId', isAuthenticated, async (req: any, res) => {
     try {
       const { employeeId } = req.params;
@@ -615,6 +727,59 @@ export async function registerRoutes(app: Express): Promise<Server> {
     } catch (error) {
       console.error("Error fetching payroll records:", error);
       res.status(500).json({ message: "Bordro kayıtları alınırken hata oluştu" });
+    }
+  });
+
+  app.post('/api/payroll', requireAuth, async (req: any, res) => {
+    try {
+      const payrollData = req.body;
+      const newId = Math.max(...samplePayroll.map(p => p.id)) + 1;
+      const newPayroll = {
+        id: newId,
+        status: 'pending',
+        ...payrollData
+      };
+      
+      samplePayroll.push(newPayroll);
+      res.status(201).json(newPayroll);
+    } catch (error) {
+      console.error("Error creating payroll:", error);
+      res.status(500).json({ message: "Bordro oluşturulurken hata oluştu" });
+    }
+  });
+
+  app.put('/api/payroll/:id', requireAuth, async (req: any, res) => {
+    try {
+      const { id } = req.params;
+      const updateData = req.body;
+      const payrollIndex = samplePayroll.findIndex(p => p.id === parseInt(id));
+      
+      if (payrollIndex === -1) {
+        return res.status(404).json({ message: "Bordro kaydı bulunamadı" });
+      }
+      
+      samplePayroll[payrollIndex] = { ...samplePayroll[payrollIndex], ...updateData };
+      res.json(samplePayroll[payrollIndex]);
+    } catch (error) {
+      console.error("Error updating payroll:", error);
+      res.status(500).json({ message: "Bordro güncellenirken hata oluştu" });
+    }
+  });
+
+  app.delete('/api/payroll/:id', requireAuth, async (req: any, res) => {
+    try {
+      const { id } = req.params;
+      const payrollIndex = samplePayroll.findIndex(p => p.id === parseInt(id));
+      
+      if (payrollIndex === -1) {
+        return res.status(404).json({ message: "Bordro kaydı bulunamadı" });
+      }
+      
+      samplePayroll.splice(payrollIndex, 1);
+      res.json({ message: "Bordro kaydı başarıyla silindi" });
+    } catch (error) {
+      console.error("Error deleting payroll:", error);
+      res.status(500).json({ message: "Bordro silinirken hata oluştu" });
     }
   });
 
@@ -939,6 +1104,68 @@ export async function registerRoutes(app: Express): Promise<Server> {
     }
   });
 
+  app.get('/api/trainings', requireAuth, async (req: any, res) => {
+    try {
+      res.json(sampleTrainings);
+    } catch (error) {
+      console.error("Error fetching training records:", error);
+      res.status(500).json({ message: "Eğitim kayıtları alınırken hata oluştu" });
+    }
+  });
+
+  app.post('/api/training', requireAuth, async (req: any, res) => {
+    try {
+      const trainingData = req.body;
+      const newId = Math.max(...sampleTrainings.map(t => t.id)) + 1;
+      const newTraining = {
+        id: newId,
+        status: 'scheduled',
+        ...trainingData
+      };
+      
+      sampleTrainings.push(newTraining);
+      res.status(201).json(newTraining);
+    } catch (error) {
+      console.error("Error creating training:", error);
+      res.status(500).json({ message: "Eğitim programı oluşturulurken hata oluştu" });
+    }
+  });
+
+  app.put('/api/training/:id', requireAuth, async (req: any, res) => {
+    try {
+      const { id } = req.params;
+      const updateData = req.body;
+      const trainingIndex = sampleTrainings.findIndex(t => t.id === parseInt(id));
+      
+      if (trainingIndex === -1) {
+        return res.status(404).json({ message: "Eğitim programı bulunamadı" });
+      }
+      
+      sampleTrainings[trainingIndex] = { ...sampleTrainings[trainingIndex], ...updateData };
+      res.json(sampleTrainings[trainingIndex]);
+    } catch (error) {
+      console.error("Error updating training:", error);
+      res.status(500).json({ message: "Eğitim programı güncellenirken hata oluştu" });
+    }
+  });
+
+  app.delete('/api/training/:id', requireAuth, async (req: any, res) => {
+    try {
+      const { id } = req.params;
+      const trainingIndex = sampleTrainings.findIndex(t => t.id === parseInt(id));
+      
+      if (trainingIndex === -1) {
+        return res.status(404).json({ message: "Eğitim programı bulunamadı" });
+      }
+      
+      sampleTrainings.splice(trainingIndex, 1);
+      res.json({ message: "Eğitim programı başarıyla silindi" });
+    } catch (error) {
+      console.error("Error deleting training:", error);
+      res.status(500).json({ message: "Eğitim programı silinirken hata oluştu" });
+    }
+  });
+
   // Companies routes
   app.get('/api/companies', requireAuth, async (req: any, res) => {
     try {
@@ -959,6 +1186,62 @@ export async function registerRoutes(app: Express): Promise<Server> {
     }
   });
 
+  app.post('/api/departments', requireAuth, async (req: any, res) => {
+    try {
+      const departmentData = req.body;
+      const newId = Math.max(...sampleDepartments.map(d => d.id)) + 1;
+      const newDepartment = {
+        id: newId,
+        companyId: 489,
+        employeeCount: 0,
+        budget: "0",
+        location: "İstanbul Ofis",
+        ...departmentData
+      };
+      
+      sampleDepartments.push(newDepartment);
+      res.status(201).json(newDepartment);
+    } catch (error) {
+      console.error("Error creating department:", error);
+      res.status(500).json({ message: "Departman oluşturulurken hata oluştu" });
+    }
+  });
+
+  app.put('/api/departments/:id', requireAuth, async (req: any, res) => {
+    try {
+      const { id } = req.params;
+      const updateData = req.body;
+      const deptIndex = sampleDepartments.findIndex(d => d.id === parseInt(id));
+      
+      if (deptIndex === -1) {
+        return res.status(404).json({ message: "Departman bulunamadı" });
+      }
+      
+      sampleDepartments[deptIndex] = { ...sampleDepartments[deptIndex], ...updateData };
+      res.json(sampleDepartments[deptIndex]);
+    } catch (error) {
+      console.error("Error updating department:", error);
+      res.status(500).json({ message: "Departman güncellenirken hata oluştu" });
+    }
+  });
+
+  app.delete('/api/departments/:id', requireAuth, async (req: any, res) => {
+    try {
+      const { id } = req.params;
+      const deptIndex = sampleDepartments.findIndex(d => d.id === parseInt(id));
+      
+      if (deptIndex === -1) {
+        return res.status(404).json({ message: "Departman bulunamadı" });
+      }
+      
+      sampleDepartments.splice(deptIndex, 1);
+      res.json({ message: "Departman başarıyla silindi" });
+    } catch (error) {
+      console.error("Error deleting department:", error);
+      res.status(500).json({ message: "Departman silinirken hata oluştu" });
+    }
+  });
+
   // Employees routes
   app.get('/api/employees', requireAuth, async (req: any, res) => {
     try {
@@ -966,6 +1249,62 @@ export async function registerRoutes(app: Express): Promise<Server> {
     } catch (error) {
       console.error("Error fetching employees:", error);
       res.status(500).json({ message: "Çalışan listesi alınırken hata oluştu" });
+    }
+  });
+
+  app.post('/api/employees', requireAuth, async (req: any, res) => {
+    try {
+      const employeeData = req.body;
+      // Generate new ID
+      const newId = Math.max(...sampleEmployees.map(e => e.id)) + 1;
+      const newEmployee = {
+        id: newId,
+        companyId: 489, // Default company
+        departmentId: 1302, // Default department
+        ...employeeData,
+        status: 'active'
+      };
+      
+      sampleEmployees.push(newEmployee);
+      res.status(201).json(newEmployee);
+    } catch (error) {
+      console.error("Error creating employee:", error);
+      res.status(500).json({ message: "Çalışan oluşturulurken hata oluştu" });
+    }
+  });
+
+  app.put('/api/employees/:id', requireAuth, async (req: any, res) => {
+    try {
+      const { id } = req.params;
+      const updateData = req.body;
+      const employeeIndex = sampleEmployees.findIndex(e => e.id === parseInt(id));
+      
+      if (employeeIndex === -1) {
+        return res.status(404).json({ message: "Çalışan bulunamadı" });
+      }
+      
+      sampleEmployees[employeeIndex] = { ...sampleEmployees[employeeIndex], ...updateData };
+      res.json(sampleEmployees[employeeIndex]);
+    } catch (error) {
+      console.error("Error updating employee:", error);
+      res.status(500).json({ message: "Çalışan güncellenirken hata oluştu" });
+    }
+  });
+
+  app.delete('/api/employees/:id', requireAuth, async (req: any, res) => {
+    try {
+      const { id } = req.params;
+      const employeeIndex = sampleEmployees.findIndex(e => e.id === parseInt(id));
+      
+      if (employeeIndex === -1) {
+        return res.status(404).json({ message: "Çalışan bulunamadı" });
+      }
+      
+      sampleEmployees.splice(employeeIndex, 1);
+      res.json({ message: "Çalışan başarıyla silindi" });
+    } catch (error) {
+      console.error("Error deleting employee:", error);
+      res.status(500).json({ message: "Çalışan silinirken hata oluştu" });
     }
   });
 
@@ -979,6 +1318,61 @@ export async function registerRoutes(app: Express): Promise<Server> {
     }
   });
 
+  app.post('/api/jobs', requireAuth, async (req: any, res) => {
+    try {
+      const jobData = req.body;
+      const newId = Math.max(...sampleJobs.map(j => j.id)) + 1;
+      const newJob = {
+        id: newId,
+        status: 'active',
+        postedDate: new Date().toISOString().split('T')[0],
+        closingDate: new Date(Date.now() + 30 * 24 * 60 * 60 * 1000).toISOString().split('T')[0],
+        ...jobData
+      };
+      
+      sampleJobs.push(newJob);
+      res.status(201).json(newJob);
+    } catch (error) {
+      console.error("Error creating job:", error);
+      res.status(500).json({ message: "İş ilanı oluşturulurken hata oluştu" });
+    }
+  });
+
+  app.put('/api/jobs/:id', requireAuth, async (req: any, res) => {
+    try {
+      const { id } = req.params;
+      const updateData = req.body;
+      const jobIndex = sampleJobs.findIndex(j => j.id === parseInt(id));
+      
+      if (jobIndex === -1) {
+        return res.status(404).json({ message: "İş ilanı bulunamadı" });
+      }
+      
+      sampleJobs[jobIndex] = { ...sampleJobs[jobIndex], ...updateData };
+      res.json(sampleJobs[jobIndex]);
+    } catch (error) {
+      console.error("Error updating job:", error);
+      res.status(500).json({ message: "İş ilanı güncellenirken hata oluştu" });
+    }
+  });
+
+  app.delete('/api/jobs/:id', requireAuth, async (req: any, res) => {
+    try {
+      const { id } = req.params;
+      const jobIndex = sampleJobs.findIndex(j => j.id === parseInt(id));
+      
+      if (jobIndex === -1) {
+        return res.status(404).json({ message: "İş ilanı bulunamadı" });
+      }
+      
+      sampleJobs.splice(jobIndex, 1);
+      res.json({ message: "İş ilanı başarıyla silindi" });
+    } catch (error) {
+      console.error("Error deleting job:", error);
+      res.status(500).json({ message: "İş ilanı silinirken hata oluştu" });
+    }
+  });
+
   // Job applications routes
   app.get('/api/job-applications', requireAuth, async (req: any, res) => {
     try {
@@ -986,6 +1380,43 @@ export async function registerRoutes(app: Express): Promise<Server> {
     } catch (error) {
       console.error("Error fetching job applications:", error);
       res.status(500).json({ message: "İş başvuruları alınırken hata oluştu" });
+    }
+  });
+
+  app.post('/api/job-applications', requireAuth, async (req: any, res) => {
+    try {
+      const applicationData = req.body;
+      const newId = Math.max(...sampleJobApplications.map(a => a.id)) + 1;
+      const newApplication = {
+        id: newId,
+        status: 'under_review',
+        appliedDate: new Date().toISOString().split('T')[0],
+        ...applicationData
+      };
+      
+      sampleJobApplications.push(newApplication);
+      res.status(201).json(newApplication);
+    } catch (error) {
+      console.error("Error creating job application:", error);
+      res.status(500).json({ message: "İş başvurusu oluşturulurken hata oluştu" });
+    }
+  });
+
+  app.put('/api/job-applications/:id', requireAuth, async (req: any, res) => {
+    try {
+      const { id } = req.params;
+      const updateData = req.body;
+      const applicationIndex = sampleJobApplications.findIndex(a => a.id === parseInt(id));
+      
+      if (applicationIndex === -1) {
+        return res.status(404).json({ message: "İş başvurusu bulunamadı" });
+      }
+      
+      sampleJobApplications[applicationIndex] = { ...sampleJobApplications[applicationIndex], ...updateData };
+      res.json(sampleJobApplications[applicationIndex]);
+    } catch (error) {
+      console.error("Error updating job application:", error);
+      res.status(500).json({ message: "İş başvurusu güncellenirken hata oluştu" });
     }
   });
 
