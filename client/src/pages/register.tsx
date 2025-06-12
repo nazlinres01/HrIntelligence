@@ -141,94 +141,170 @@ export default function Register() {
 
   return (
     <div className="min-h-screen bg-gray-50 dark:bg-gray-900 flex">
-      {/* Left Panel - Visual */}
-      <div className="hidden lg:flex flex-1 bg-gradient-to-br from-indigo-600 via-purple-600 to-blue-700 relative overflow-hidden">
-        {/* Background Elements */}
+      {/* Left Panel - HR Innovation Visual */}
+      <div className="hidden lg:flex flex-1 gradient-hr relative overflow-hidden">
+        {/* Ambient Background */}
         <div className="absolute inset-0">
-          <div className="absolute top-40 left-40 w-60 h-60 bg-white/10 rounded-full blur-3xl animate-pulse"></div>
-          <div className="absolute bottom-20 right-20 w-80 h-80 bg-white/5 rounded-full blur-3xl animate-pulse" style={{animationDelay: '3s'}}></div>
-          <div className="absolute top-20 right-60 w-40 h-40 bg-white/10 rounded-full blur-3xl animate-pulse" style={{animationDelay: '1.5s'}}></div>
+          <div className="absolute top-40 left-40 w-60 h-60 bg-white/10 rounded-full blur-3xl animate-float"></div>
+          <div className="absolute bottom-20 right-20 w-80 h-80 bg-white/5 rounded-full blur-3xl animate-float" style={{animationDelay: '3s'}}></div>
+          <div className="absolute top-20 right-60 w-40 h-40 bg-white/10 rounded-full blur-3xl animate-float" style={{animationDelay: '1.5s'}}></div>
         </div>
 
+        {/* HR Innovation Illustration */}
+        <div className="absolute inset-0 opacity-10">
+          <svg className="w-full h-full" viewBox="0 0 800 600" fill="none">
+            {/* Innovation Lab Scene */}
+            <g transform="translate(50, 50)">
+              {/* Modern Office Space */}
+              <rect x="0" y="0" width="700" height="500" fill="rgba(255,255,255,0.05)" rx="20"/>
+              
+              {/* Collaboration Area */}
+              <circle cx="200" cy="200" r="80" fill="rgba(255,255,255,0.1)" stroke="rgba(255,255,255,0.2)" strokeWidth="3"/>
+              
+              {/* Team Members */}
+              <g opacity="0.6">
+                <circle cx="150" cy="180" r="20" fill="rgba(255,255,255,0.4)"/>
+                <circle cx="200" cy="160" r="20" fill="rgba(255,255,255,0.4)"/>
+                <circle cx="250" cy="180" r="20" fill="rgba(255,255,255,0.4)"/>
+                <circle cx="200" cy="220" r="20" fill="rgba(255,255,255,0.4)"/>
+              </g>
+              
+              {/* Digital Displays */}
+              <rect x="400" y="100" width="120" height="80" rx="10" fill="rgba(255,255,255,0.2)" stroke="rgba(255,255,255,0.3)" strokeWidth="2"/>
+              <rect x="400" y="200" width="120" height="80" rx="10" fill="rgba(255,255,255,0.2)" stroke="rgba(255,255,255,0.3)" strokeWidth="2"/>
+              <rect x="400" y="300" width="120" height="80" rx="10" fill="rgba(255,255,255,0.2)" stroke="rgba(255,255,255,0.3)" strokeWidth="2"/>
+              
+              {/* Data Visualization */}
+              <g transform="translate(420, 120)">
+                <circle cx="20" cy="20" r="5" fill="rgba(255,255,255,0.6)"/>
+                <circle cx="40" cy="15" r="6" fill="rgba(255,255,255,0.6)"/>
+                <circle cx="60" cy="25" r="4" fill="rgba(255,255,255,0.6)"/>
+                <circle cx="80" cy="10" r="7" fill="rgba(255,255,255,0.6)"/>
+                <polyline points="20,20 40,15 60,25 80,10" stroke="rgba(255,255,255,0.4)" strokeWidth="2" fill="none"/>
+              </g>
+              
+              {/* Innovation Icons */}
+              <g transform="translate(100, 350)">
+                <circle cx="50" cy="50" r="30" fill="rgba(255,255,255,0.1)" stroke="rgba(255,255,255,0.2)" strokeWidth="2"/>
+                <circle cx="150" cy="50" r="30" fill="rgba(255,255,255,0.1)" stroke="rgba(255,255,255,0.2)" strokeWidth="2"/>
+                <circle cx="250" cy="50" r="30" fill="rgba(255,255,255,0.1)" stroke="rgba(255,255,255,0.2)" strokeWidth="2"/>
+                <circle cx="350" cy="50" r="30" fill="rgba(255,255,255,0.1)" stroke="rgba(255,255,255,0.2)" strokeWidth="2"/>
+              </g>
+              
+              {/* Connection Lines */}
+              <line x1="100" y1="200" x2="400" y2="150" stroke="rgba(255,255,255,0.2)" strokeWidth="1" strokeDasharray="5,5"/>
+              <line x1="200" y1="250" x2="400" y2="250" stroke="rgba(255,255,255,0.2)" strokeWidth="1" strokeDasharray="5,5"/>
+              <line x1="250" y1="220" x2="400" y2="330" stroke="rgba(255,255,255,0.2)" strokeWidth="1" strokeDasharray="5,5"/>
+            </g>
+          </svg>
+        </div>
+
+        {/* Content */}
         <div className="relative z-10 flex items-center justify-center p-12 text-white">
-          <div className="max-w-lg">
-            <div className="inline-flex items-center px-4 py-2 bg-white/20 rounded-full text-white text-sm font-medium mb-6">
+          <div className="max-w-lg animate-fade-in-up">
+            <div className="inline-flex items-center px-4 py-2 bg-white/20 rounded-full text-white text-sm font-medium mb-6 glass-effect">
               <Sparkles className="h-4 w-4 mr-2" />
-              Yeni nesil HR platformu
+              Next-Gen HR Platform
             </div>
             
-            <h3 className="text-4xl font-light mb-6">
+            <h3 className="text-4xl font-light mb-6 animate-slide-in-left">
               İnsan kaynakları yönetiminde
-              <span className="block font-semibold">yeni bir dönem</span>
+              <span className="block font-semibold bg-gradient-to-r from-white to-purple-200 bg-clip-text text-transparent">yeni bir dönem</span>
             </h3>
-            <p className="text-xl font-light text-indigo-100 mb-8 leading-relaxed">
-              Şirketinizi geleceğe hazırlayın. Modern teknoloji ile desteklenen 
-              kapsamlı HR çözümleri ile fark yaratın.
+            
+            <p className="text-xl font-light text-purple-100 mb-8 leading-relaxed animate-slide-in-left" style={{animationDelay: '0.2s'}}>
+              Şirketinizi geleceğe hazırlayın. AI destekli çözümler ve modern 
+              teknoloji ile HR süreçlerinizi dönüştürün.
             </p>
 
-            {/* HR Benefits */}
-            <div className="space-y-6">
-              <div className="flex items-center space-x-4 p-4 bg-white/10 rounded-xl backdrop-blur-sm">
-                <div className="w-12 h-12 bg-white/20 rounded-xl flex items-center justify-center">
-                  <Users className="h-6 w-6" />
+            {/* Innovation Features */}
+            <div className="space-y-4 animate-slide-in-left" style={{animationDelay: '0.4s'}}>
+              <div className="flex items-center space-x-4 p-4 bg-white/25 backdrop-blur-md rounded-xl border border-white/40 shadow-lg">
+                <div className="w-12 h-12 bg-gradient-to-br from-blue-400 to-indigo-600 rounded-xl flex items-center justify-center shadow-lg">
+                  <Users className="h-6 w-6 text-white" />
                 </div>
                 <div>
-                  <div className="font-semibold">Merkezi İK Yönetimi</div>
-                  <div className="text-sm text-indigo-200">Tüm çalışan verileri tek yerde</div>
+                  <div className="font-semibold text-white">Smart Recruitment</div>
+                  <div className="text-sm text-purple-100">AI destekli aday eşleştirme</div>
                 </div>
               </div>
               
-              <div className="flex items-center space-x-4 p-4 bg-white/10 rounded-xl backdrop-blur-sm">
-                <div className="w-12 h-12 bg-white/20 rounded-xl flex items-center justify-center">
-                  <BarChart3 className="h-6 w-6" />
+              <div className="flex items-center space-x-4 p-4 bg-white/25 backdrop-blur-md rounded-xl border border-white/40 shadow-lg">
+                <div className="w-12 h-12 bg-gradient-to-br from-green-400 to-emerald-600 rounded-xl flex items-center justify-center shadow-lg">
+                  <BarChart3 className="h-6 w-6 text-white" />
                 </div>
                 <div>
-                  <div className="font-semibold">Performans İzleme</div>
-                  <div className="text-sm text-indigo-200">Hedef bazlı değerlendirme</div>
+                  <div className="font-semibold text-white">Predictive Analytics</div>
+                  <div className="text-sm text-purple-100">Gelecek odaklı iş gücü planlaması</div>
                 </div>
               </div>
               
-              <div className="flex items-center space-x-4 p-4 bg-white/10 rounded-xl backdrop-blur-sm">
-                <div className="w-12 h-12 bg-white/20 rounded-xl flex items-center justify-center">
-                  <Calendar className="h-6 w-6" />
+              <div className="flex items-center space-x-4 p-4 bg-white/25 backdrop-blur-md rounded-xl border border-white/40 shadow-lg">
+                <div className="w-12 h-12 bg-gradient-to-br from-purple-400 to-pink-600 rounded-xl flex items-center justify-center shadow-lg">
+                  <Calendar className="h-6 w-6 text-white" />
                 </div>
                 <div>
-                  <div className="font-semibold">Bordro Otomasyonu</div>
-                  <div className="text-sm text-indigo-200">Hatasız hesaplama ve raporlama</div>
+                  <div className="font-semibold text-white">Automated Workflows</div>
+                  <div className="text-sm text-purple-100">Zero-touch HR süreçleri</div>
                 </div>
               </div>
               
-              <div className="flex items-center space-x-4 p-4 bg-white/10 rounded-xl backdrop-blur-sm">
-                <div className="w-12 h-12 bg-white/20 rounded-xl flex items-center justify-center">
-                  <Shield className="h-6 w-6" />
+              <div className="flex items-center space-x-4 p-4 bg-white/25 backdrop-blur-md rounded-xl border border-white/40 shadow-lg">
+                <div className="w-12 h-12 bg-gradient-to-br from-orange-400 to-red-600 rounded-xl flex items-center justify-center shadow-lg">
+                  <Shield className="h-6 w-6 text-white" />
                 </div>
                 <div>
-                  <div className="font-semibold">KVKK Uyumluluk</div>
-                  <div className="text-sm text-indigo-200">Veri güvenliği ve gizlilik</div>
+                  <div className="font-semibold text-white">Advanced Security</div>
+                  <div className="text-sm text-purple-100">Zero-trust veri güvenliği</div>
                 </div>
               </div>
             </div>
 
-            {/* Trust Indicators */}
-            <div className="grid grid-cols-2 gap-6 mt-12 pt-8 border-t border-white/20">
-              <div>
+            {/* Compliance Badges */}
+            <div className="grid grid-cols-3 gap-4 mt-12 pt-8 border-t border-white/20 animate-fade-in-up" style={{animationDelay: '0.6s'}}>
+              <div className="text-center">
                 <div className="text-2xl font-bold">KVKK</div>
-                <div className="text-sm text-indigo-200">Uyumlu</div>
+                <div className="text-sm text-purple-200">Uyumlu</div>
               </div>
-              <div>
+              <div className="text-center">
                 <div className="text-2xl font-bold">ISO 27001</div>
-                <div className="text-sm text-indigo-200">Sertifikalı</div>
+                <div className="text-sm text-purple-200">Sertifikalı</div>
+              </div>
+              <div className="text-center">
+                <div className="text-2xl font-bold">GDPR</div>
+                <div className="text-sm text-purple-200">Ready</div>
               </div>
             </div>
           </div>
         </div>
 
-        {/* Floating Elements */}
-        <div className="absolute top-10 left-10 w-16 h-16 bg-white/10 rounded-2xl flex items-center justify-center animate-bounce">
-          <Award className="h-8 w-8 text-white" />
+        {/* Floating Innovation Icons */}
+        <div className="absolute top-10 left-10 w-16 h-16 bg-white/30 backdrop-blur-md rounded-2xl flex items-center justify-center animate-bounce border border-white/40 shadow-xl">
+          <Award className="h-8 w-8 text-white drop-shadow-lg" />
         </div>
-        <div className="absolute bottom-10 right-10 w-12 h-12 bg-white/10 rounded-xl flex items-center justify-center animate-pulse">
-          <Globe className="h-6 w-6 text-white" />
+        
+        <div className="absolute bottom-10 right-10 w-12 h-12 bg-white/30 backdrop-blur-md rounded-xl flex items-center justify-center animate-float border border-white/40 shadow-xl">
+          <Globe className="h-6 w-6 text-white drop-shadow-lg" />
+        </div>
+        
+        <div className="absolute top-1/2 left-4 w-10 h-10 bg-white/30 backdrop-blur-md rounded-lg flex items-center justify-center animate-pulse border border-white/40 shadow-lg">
+          <Sparkles className="h-5 w-5 text-white drop-shadow-lg" />
+        </div>
+
+        {/* Innovation Metrics */}
+        <div className="absolute bottom-1/4 left-8 space-y-2">
+          <div className="bg-white/30 backdrop-blur-md text-white text-xs px-3 py-2 rounded-full shadow-xl animate-slide-in-left border border-white/40">
+            <div className="flex items-center space-x-2">
+              <div className="w-2 h-2 bg-green-400 rounded-full animate-pulse shadow-sm"></div>
+              <span className="font-medium drop-shadow-sm">AI modeli aktif</span>
+            </div>
+          </div>
+          <div className="bg-white/30 backdrop-blur-md text-white text-xs px-3 py-2 rounded-full shadow-xl animate-slide-in-left border border-white/40" style={{animationDelay: '0.3s'}}>
+            <div className="flex items-center space-x-2">
+              <div className="w-2 h-2 bg-purple-400 rounded-full animate-pulse shadow-sm"></div>
+              <span className="font-medium drop-shadow-sm">Otomatik süreçler</span>
+            </div>
+          </div>
         </div>
       </div>
 
