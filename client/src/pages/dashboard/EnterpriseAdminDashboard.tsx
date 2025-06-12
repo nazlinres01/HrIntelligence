@@ -146,32 +146,32 @@ export default function EnterpriseAdminDashboard() {
       <div className="max-w-7xl mx-auto space-y-8">
         
         {/* Executive Header */}
-        <div className="bg-gradient-to-r from-blue-600 via-indigo-600 to-blue-700 rounded-2xl p-8 text-white shadow-2xl">
+        <div className="bg-gradient-to-r from-white via-gray-50 to-white rounded-2xl p-8 text-gray-800 shadow-2xl border border-gray-200">
           <div className="flex items-center justify-between">
             <div>
               <h1 className="text-4xl font-bold mb-2">Executive Dashboard</h1>
-              <p className="text-blue-100 text-lg">Kurumsal İnsan Kaynakları Yönetim Sistemi • Gerçek Zamanlı İş Analitiği</p>
-              <div className="flex items-center space-x-6 mt-4">
+              <p className="text-gray-600 text-lg">Kurumsal İnsan Kaynakları Yönetim Sistemi • Gerçek Zamanlı İş Analitiği</p>
+              <div className="flex items-center space-x-6 mt-4 text-gray-700">
                 <div className="flex items-center space-x-2">
-                  <Shield className="h-4 w-4" />
+                  <Shield className="h-4 w-4 text-blue-600" />
                   <span className="text-sm">ISO 27001 Uyumlu</span>
                 </div>
                 <div className="flex items-center space-x-2">
-                  <Globe className="h-4 w-4" />
+                  <Globe className="h-4 w-4 text-blue-600" />
                   <span className="text-sm">Küresel Standartlar</span>
                 </div>
                 <div className="flex items-center space-x-2">
-                  <Database className="h-4 w-4" />
+                  <Database className="h-4 w-4 text-blue-600" />
                   <span className="text-sm">Canlı Veri Analizi</span>
                 </div>
               </div>
             </div>
             <div className="text-right">
-              <div className="text-3xl font-bold">{new Date().toLocaleDateString('tr-TR')}</div>
-              <div className="text-blue-100">Bugün • {new Date().toLocaleTimeString('tr-TR', { hour: '2-digit', minute: '2-digit' })}</div>
+              <div className="text-3xl font-bold text-gray-800">{new Date().toLocaleDateString('tr-TR')}</div>
+              <div className="text-gray-600">Bugün • {new Date().toLocaleTimeString('tr-TR', { hour: '2-digit', minute: '2-digit' })}</div>
               <div className="flex items-center justify-end space-x-1 mt-2">
-                <div className="w-2 h-2 bg-emerald-400 rounded-full animate-pulse"></div>
-                <span className="text-sm">Sistem Operasyonel</span>
+                <div className="w-2 h-2 bg-emerald-500 rounded-full animate-pulse"></div>
+                <span className="text-sm text-gray-700">Sistem Operasyonel</span>
               </div>
             </div>
           </div>

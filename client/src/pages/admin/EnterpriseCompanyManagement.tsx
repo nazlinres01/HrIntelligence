@@ -199,39 +199,39 @@ export default function EnterpriseCompanyManagement() {
       <div className="max-w-7xl mx-auto space-y-8">
         
         {/* Enterprise Header */}
-        <div className="bg-gradient-to-r from-emerald-600 via-teal-600 to-emerald-700 rounded-2xl p-8 text-white shadow-2xl">
+        <div className="bg-gradient-to-r from-white via-gray-50 to-white rounded-2xl p-8 text-gray-800 shadow-2xl border border-gray-200">
           <div className="flex items-center justify-between">
             <div>
               <div className="flex items-center space-x-4 mb-4">
-                <div className="p-3 bg-white/20 backdrop-blur rounded-xl">
-                  <Building2 className="h-8 w-8 text-white" />
+                <div className="p-3 bg-blue-50 border border-blue-200 rounded-xl">
+                  <Building2 className="h-8 w-8 text-blue-600" />
                 </div>
                 <div>
-                  <h1 className="text-4xl font-bold">Kurumsal Organizasyon Yönetimi</h1>
-                  <p className="text-emerald-100 text-lg">Şirket Hiyerarşisi ve Organizasyonel Yapı Kontrolü</p>
+                  <h1 className="text-4xl font-bold text-gray-800">Kurumsal Organizasyon Yönetimi</h1>
+                  <p className="text-gray-600 text-lg">Şirket Hiyerarşisi ve Organizasyonel Yapı Kontrolü</p>
                 </div>
               </div>
-              <div className="flex items-center space-x-6 text-emerald-100">
+              <div className="flex items-center space-x-6 text-gray-700">
                 <div className="flex items-center space-x-2">
-                  <Shield className="h-4 w-4" />
+                  <Shield className="h-4 w-4 text-blue-600" />
                   <span className="text-sm">Kurumsal Yönetişim</span>
                 </div>
                 <div className="flex items-center space-x-2">
-                  <Database className="h-4 w-4" />
+                  <Database className="h-4 w-4 text-blue-600" />
                   <span className="text-sm">Merkezi Kayıt Sistemi</span>
                 </div>
                 <div className="flex items-center space-x-2">
-                  <Activity className="h-4 w-4" />
+                  <Activity className="h-4 w-4 text-blue-600" />
                   <span className="text-sm">Gerçek Zamanlı Senkronizasyon</span>
                 </div>
               </div>
             </div>
             <div className="text-right">
-              <div className="text-3xl font-bold">{companyStats.total}</div>
-              <div className="text-emerald-100">Toplam Şirket Sayısı</div>
+              <div className="text-3xl font-bold text-gray-800">{companyStats.total}</div>
+              <div className="text-gray-600">Toplam Şirket Sayısı</div>
               <div className="flex items-center justify-end space-x-1 mt-2">
-                <div className="w-2 h-2 bg-emerald-400 rounded-full animate-pulse"></div>
-                <span className="text-sm">Sistem Operasyonel</span>
+                <div className="w-2 h-2 bg-emerald-500 rounded-full animate-pulse"></div>
+                <span className="text-sm text-gray-700">Sistem Operasyonel</span>
               </div>
             </div>
           </div>
