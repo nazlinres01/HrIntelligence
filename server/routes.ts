@@ -1,6 +1,6 @@
 import type { Express } from "express";
 import { createServer, type Server } from "http";
-import { mongoStorage } from "./storage-mongo";
+import { storage } from "./storage";
 import { setupAuth, isAuthenticated } from "./replitAuth";
 import session from "express-session";
 import connectPg from "connect-pg-simple";
