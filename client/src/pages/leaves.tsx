@@ -93,9 +93,9 @@ export default function Leaves() {
   // Filter leaves
   const filteredLeaves = React.useMemo(() => {
     return leaves.filter((leave: any) => {
-      const matchesSearch = leave.employee?.firstName?.toLowerCase().includes(searchTerm.toLowerCase()) ||
-                           leave.employee?.lastName?.toLowerCase().includes(searchTerm.toLowerCase()) ||
-                           leave.type.toLowerCase().includes(searchTerm.toLowerCase());
+      const matchesSearch = leave.employee?.firstName?.toLowerCase()?.includes(searchTerm.toLowerCase()) ||
+                           leave.employee?.lastName?.toLowerCase()?.includes(searchTerm.toLowerCase()) ||
+                           leave.type?.toLowerCase()?.includes(searchTerm.toLowerCase());
       const matchesStatus = statusFilter === "all" || leave.status === statusFilter;
       return matchesSearch && matchesStatus;
     });

@@ -117,9 +117,9 @@ export default function Performance() {
   // Filter performances
   const filteredPerformances = React.useMemo(() => {
     return performances.filter((performance: any) => {
-      const matchesSearch = performance.employee?.firstName?.toLowerCase().includes(searchTerm.toLowerCase()) ||
-                           performance.employee?.lastName?.toLowerCase().includes(searchTerm.toLowerCase()) ||
-                           performance.period.toLowerCase().includes(searchTerm.toLowerCase());
+      const matchesSearch = performance.employee?.firstName?.toLowerCase()?.includes(searchTerm.toLowerCase()) ||
+                           performance.employee?.lastName?.toLowerCase()?.includes(searchTerm.toLowerCase()) ||
+                           performance.period?.toLowerCase()?.includes(searchTerm.toLowerCase());
       const matchesPeriod = periodFilter === "all" || performance.period === periodFilter;
       return matchesSearch && matchesPeriod;
     });

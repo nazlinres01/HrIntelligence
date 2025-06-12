@@ -144,9 +144,9 @@ export default function Training() {
   // Filter trainings
   const filteredTrainings = React.useMemo(() => {
     return trainings.filter((training: any) => {
-      const matchesSearch = training.title?.toLowerCase().includes(searchTerm.toLowerCase()) ||
-                           training.instructor?.toLowerCase().includes(searchTerm.toLowerCase()) ||
-                           training.description?.toLowerCase().includes(searchTerm.toLowerCase());
+      const matchesSearch = training.title?.toLowerCase()?.includes(searchTerm.toLowerCase()) ||
+                           training.instructor?.toLowerCase()?.includes(searchTerm.toLowerCase()) ||
+                           training.description?.toLowerCase()?.includes(searchTerm.toLowerCase());
       const matchesCategory = categoryFilter === "all" || training.category === categoryFilter;
       return matchesSearch && matchesCategory;
     });
