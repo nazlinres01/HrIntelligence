@@ -63,31 +63,31 @@ const getRoleBasedNavigation = (userRole: UserRole): NavigationSection[] => {
     case 'owner':
       return [
         {
-          title: "Executive Dashboard",
+          title: "Yönetici Panosu",
           color: "from-blue-600 to-indigo-600",
           items: [
-            { name: "Strategic Overview", href: "/", icon: LayoutDashboard, show: true, description: "High-level KPIs" },
-            { name: "Analytics Hub", href: "/admin/analytics", icon: BarChart3, show: true, description: "Business intelligence" },
+            { name: "Stratejik Genel Bakış", href: "/", icon: LayoutDashboard, show: true, description: "Üst düzey KPI'lar" },
+            { name: "Analitik Merkezi", href: "/admin/analytics", icon: BarChart3, show: true, description: "İş zekası raporları" },
           ]
         },
         {
-          title: "Enterprise Management",
+          title: "Kurumsal Yönetim",
           color: "from-emerald-600 to-teal-600",
           items: [
-            { name: "Corporate Structure", href: "/admin/companies", icon: Building2, show: true, description: "Organization hierarchy" },
-            { name: "User Administration", href: "/admin/users", icon: Users, show: true, description: "Access & permissions" },
-            { name: "Department Control", href: "/admin/departments", icon: Target, show: true, description: "Organizational units" },
+            { name: "Şirket Yapısı", href: "/admin/companies", icon: Building2, show: true, description: "Organizasyon hiyerarşisi" },
+            { name: "Kullanıcı Yönetimi", href: "/admin/users", icon: Users, show: true, description: "Erişim ve yetkiler" },
+            { name: "Departman Kontrolü", href: "/admin/departments", icon: Target, show: true, description: "Organizasyon birimleri" },
           ]
         },
         {
-          title: "Talent Operations",
+          title: "Yetenek Operasyonları",
           color: "from-purple-600 to-pink-600",
           items: [
-            { name: "Executive Recruitment", href: "/admin/job-postings", icon: Briefcase, show: true, description: "C-level hiring" },
-            { name: "Compensation Center", href: "/admin/payroll", icon: DollarSign, show: true, description: "Financial management" },
-            { name: "Leave Management", href: "/admin/leaves", icon: Calendar, show: true, description: "Time-off policies" },
-            { name: "Performance Analytics", href: "/admin/performance", icon: TrendingUp, show: true, description: "Achievement tracking" },
-            { name: "Learning Center", href: "/admin/trainings", icon: BookOpen, show: true, description: "Development programs" },
+            { name: "Üst Düzey İşe Alım", href: "/admin/job-postings", icon: Briefcase, show: true, description: "C-seviye pozisyonlar" },
+            { name: "Bordro Merkezi", href: "/admin/payroll", icon: DollarSign, show: true, description: "Mali yönetim" },
+            { name: "İzin Yönetimi", href: "/admin/leaves", icon: Calendar, show: true, description: "İzin politikaları" },
+            { name: "Performans Analizi", href: "/admin/performance", icon: TrendingUp, show: true, description: "Başarı takibi" },
+            { name: "Öğrenme Merkezi", href: "/admin/trainings", icon: BookOpen, show: true, description: "Gelişim programları" },
           ]
         }
       ];
@@ -96,12 +96,12 @@ const getRoleBasedNavigation = (userRole: UserRole): NavigationSection[] => {
     case 'ik_müdürü':
       return [
         {
-          title: "HR Command Center",
+          title: "İK Komuta Merkezi",
           color: "from-orange-600 to-red-600",
           items: [
-            { name: "HR Dashboard", href: "/", icon: LayoutDashboard, show: true, description: "HR operations overview" },
-            { name: "Workforce Analytics", href: "/admin/analytics", icon: BarChart3, show: true, description: "People metrics" },
-            { name: "User Management", href: "/admin/users", icon: Users, show: true, description: "Employee administration" },
+            { name: "İK Panosu", href: "/", icon: LayoutDashboard, show: true, description: "İK operasyonları genel bakış" },
+            { name: "İşgücü Analitiği", href: "/admin/analytics", icon: BarChart3, show: true, description: "Personel metrikleri" },
+            { name: "Kullanıcı Yönetimi", href: "/admin/users", icon: Users, show: true, description: "Çalışan yönetimi" },
           ]
         }
       ];
@@ -109,10 +109,10 @@ const getRoleBasedNavigation = (userRole: UserRole): NavigationSection[] => {
     default:
       return [
         {
-          title: "Employee Portal",
+          title: "Çalışan Portalı",
           color: "from-gray-600 to-gray-700",
           items: [
-            { name: "My Dashboard", href: "/", icon: LayoutDashboard, show: true, description: "Personal overview" },
+            { name: "Panom", href: "/", icon: LayoutDashboard, show: true, description: "Kişisel genel bakış" },
           ]
         }
       ];
@@ -170,8 +170,8 @@ export default function EnterpriseSidebar() {
               </div>
               {!isCollapsed && (
                 <div>
-                  <h1 className="text-2xl font-bold text-white">Enterprise Hub</h1>
-                  <p className="text-blue-100 text-sm">Strategic HR Command Center</p>
+                  <h1 className="text-2xl font-bold text-white">Kurumsal Hub</h1>
+                  <p className="text-blue-100 text-sm">Stratejik İK Komuta Merkezi</p>
                 </div>
               )}
             </div>

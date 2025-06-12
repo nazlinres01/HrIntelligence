@@ -6,7 +6,7 @@ import { TooltipProvider } from "@/components/ui/tooltip";
 import { LanguageProvider } from "@/hooks/use-language";
 import { useAuth } from "./hooks/useAuth";
 import EnterpriseSidebar from "@/components/layout/EnterpriseSidebar";
-import AdminDashboard from "@/pages/dashboard/AdminDashboard";
+import EnterpriseAdminDashboard from "@/pages/dashboard/EnterpriseAdminDashboard";
 import HRManagerDashboard from "@/pages/dashboard/HRManagerDashboard";
 import HRSpecialistDashboard from "@/pages/dashboard/HRSpecialistDashboard";
 import DepartmentManagerDashboard from "@/pages/dashboard/DepartmentManagerDashboard";
@@ -61,7 +61,7 @@ function Router() {
     switch (userRole?.toLowerCase()) {
       case 'admin':
       case 'owner':
-        return AdminDashboard;
+        return EnterpriseAdminDashboard;
       case 'hr_manager':
       case 'ik_müdürü':
         return HRManagerDashboard;
