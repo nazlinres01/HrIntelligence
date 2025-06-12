@@ -16,16 +16,83 @@ export async function seedDatabase() {
 
     console.log("Seeding database with comprehensive Turkish company data...");
 
-    // Create sample company first
-    const [sampleCompany] = await db.insert(companies).values({
-      name: "TechCorp Yazılım A.Ş.",
-      industry: "Yazılım ve Teknoloji",
-      address: "Maslak Mahallesi, Büyükdere Cad. No:245 Sarıyer/İstanbul",
-      phone: "+90 212 456 78 90",
-      email: "info@techcorp.com.tr",
-      website: "https://www.techcorp.com.tr",
-      taxNumber: "1234567890"
-    }).returning();
+    // Create sample companies
+    const sampleCompanies = [
+      {
+        name: "TechCorp Yazılım A.Ş.",
+        industry: "Yazılım ve Teknoloji",
+        size: "large",
+        description: "Türkiye'nin önde gelen yazılım ve teknoloji şirketlerinden biri. Kurumsal çözümler ve dijital dönüşüm hizmetleri sunmaktadır.",
+        address: {
+          street: "Maslak Mahallesi, Büyükdere Cad. No:245",
+          city: "İstanbul",
+          country: "Türkiye"
+        },
+        contactInfo: {
+          phone: "+90 212 456 78 90",
+          email: "info@techcorp.com.tr"
+        },
+        website: "https://www.techcorp.com.tr",
+        taxNumber: "1234567890",
+        employeeCount: 125
+      },
+      {
+        name: "İnovasyon Teknoloji Ltd.",
+        industry: "Bilgi Teknolojileri",
+        size: "medium",
+        description: "Mobil uygulama geliştirme ve web çözümleri konusunda uzman teknoloji firması.",
+        address: {
+          street: "Kızılay Mahallesi, Atatürk Bulvarı No:108",
+          city: "Ankara",
+          country: "Türkiye"
+        },
+        contactInfo: {
+          phone: "+90 312 555 66 77",
+          email: "info@inovasyon.com.tr"
+        },
+        website: "https://www.inovasyon.com.tr",
+        taxNumber: "9876543210",
+        employeeCount: 45
+      },
+      {
+        name: "Digital Solutions Corp",
+        industry: "Dijital Pazarlama",
+        size: "startup",
+        description: "Yeni nesil dijital pazarlama çözümleri ve e-ticaret platformları geliştiren girişim şirketi.",
+        address: {
+          street: "Alsancak Mahallesi, Cumhuriyet Bulvarı No:67",
+          city: "İzmir", 
+          country: "Türkiye"
+        },
+        contactInfo: {
+          phone: "+90 232 333 44 55",
+          email: "hello@digitalsolutions.com"
+        },
+        website: "https://www.digitalsolutions.com",
+        taxNumber: "5432167890",
+        employeeCount: 12
+      },
+      {
+        name: "Microsoft Türkiye A.Ş.",
+        industry: "Yazılım ve Teknoloji",
+        size: "enterprise",
+        description: "Dünyanın en büyük yazılım şirketlerinden Microsoft'un Türkiye ofisi. Bulut bilişim, yapay zeka ve kurumsal çözümler sunmaktadır.",
+        address: {
+          street: "Eski Büyükdere Cad. No:13 Maslak",
+          city: "İstanbul",
+          country: "Türkiye"
+        },
+        contactInfo: {
+          phone: "+90 212 335 10 00",
+          email: "info@microsoft.com.tr"
+        },
+        website: "https://www.microsoft.com/tr-tr",
+        taxNumber: "1122334455",
+        employeeCount: 850
+      }
+    ];
+
+    const [sampleCompany, ...otherCompanies] = await db.insert(companies).values(sampleCompanies).returning();
 
     // Create departments for the company
     const sampleDepartments = [
