@@ -26,6 +26,7 @@ import EnterprisePayrollCenter from "@/pages/admin/EnterprisePayrollCenter";
 import Employees from "@/pages/employees";
 import Performance from "@/pages/performance";
 import Leaves from "@/pages/leaves";
+import Training from "@/pages/training";
 import Payroll from "@/pages/payroll";
 import Reports from "@/pages/reports";
 import Help from "@/pages/help";
