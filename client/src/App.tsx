@@ -6,12 +6,11 @@ import { TooltipProvider } from "@/components/ui/tooltip";
 import { LanguageProvider } from "@/hooks/use-language";
 import { useAuth } from "./hooks/useAuth";
 import Sidebar from "@/components/layout/sidebar";
-import Dashboard from "@/pages/dashboard";
-import OwnerDashboard from "@/pages/owner-dashboard";
-import HRManagerDashboard from "@/pages/hr-manager-dashboard";
-import HRSpecialistDashboard from "@/pages/hr-specialist-dashboard";
-import DepartmentManagerDashboard from "@/pages/department-manager-dashboard";
-import EmployeeDashboard from "@/pages/employee-dashboard";
+import AdminDashboard from "@/pages/dashboard/AdminDashboard";
+import HRManagerDashboard from "@/pages/dashboard/HRManagerDashboard";
+import HRSpecialistDashboard from "@/pages/dashboard/HRSpecialistDashboard";
+import DepartmentManagerDashboard from "@/pages/dashboard/DepartmentManagerDashboard";
+import EmployeeDashboard from "@/pages/dashboard/EmployeeDashboard";
 import Employees from "@/pages/employees";
 import Performance from "@/pages/performance";
 import Leaves from "@/pages/leaves";
@@ -47,9 +46,9 @@ function Router() {
   // Role-specific dashboard component selector
   const getDashboardComponent = () => {
     switch (userRole?.toLowerCase()) {
-      case 'owner':
       case 'admin':
-        return OwnerDashboard;
+      case 'owner':
+        return AdminDashboard;
       case 'hr_manager':
       case 'ik_müdürü':
         return HRManagerDashboard;
@@ -63,7 +62,7 @@ function Router() {
       case 'çalışan':
         return EmployeeDashboard;
       default:
-        return Dashboard;
+        return AdminDashboard;
     }
   };
 
@@ -75,10 +74,10 @@ function Router() {
       <Route path="/dashboard" component={DashboardComponent} />
 
       {/* Conditional routes based on permissions */}
-      {permissions.canManageEmployees && <Route path="/employees" component={Employees} />}
-      {permissions.canManagePerformance && <Route path="/performance" component={Performance} />}
-      {(permissions.canManageLeaves || permissions.canRequestLeave) && <Route path="/leaves" component={Leaves} />}
-      {permissions.canManagePayroll && <Route path="/payroll" component={Payroll} />}
+      {permissions.canViewEmployees && <Route path="/employees" component={Employees} />}
+      {permissions.canViewPerformance && <Route path="/performance" component={Performance} />}
+      <Route path="/leaves" component={Leaves} />
+      {permissions.canViewPayroll && <Route path="/payroll" component={Payroll} />}
       {permissions.canViewReports && <Route path="/reports" component={Reports} />}
       {permissions.canManageTeam && <Route path="/team" component={Team} />}
       
