@@ -299,7 +299,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
   });
 
   // Employee routes
-  app.get('/api/employees', isAuthenticated, async (req: any, res) => {
+  app.get('/api/employees', requireAuth, async (req: any, res) => {
     try {
       const employees = await storage.getEmployees();
       res.json(employees);
@@ -412,7 +412,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
   });
 
   // Department routes
-  app.get('/api/departments', isAuthenticated, async (req: any, res) => {
+  app.get('/api/departments', requireAuth, async (req: any, res) => {
     try {
       const departments = await storage.getDepartments();
       res.json(departments);
@@ -442,7 +442,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
   });
 
   // Leave routes
-  app.get('/api/leaves', isAuthenticated, async (req: any, res) => {
+  app.get('/api/leaves', requireAuth, async (req: any, res) => {
     try {
       const leaves = await storage.getLeaves();
       res.json(leaves);
@@ -523,7 +523,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
   });
 
   // Performance routes
-  app.get('/api/performance', isAuthenticated, async (req: any, res) => {
+  app.get('/api/performance', requireAuth, async (req: any, res) => {
     try {
       const performance = await storage.getPerformanceRecords();
       res.json(performance);
@@ -571,7 +571,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
   });
 
   // Payroll routes
-  app.get('/api/payroll', isAuthenticated, async (req: any, res) => {
+  app.get('/api/payroll', requireAuth, async (req: any, res) => {
     try {
       const payroll = await storage.getPayrollRecords();
       res.json(payroll);
