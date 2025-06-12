@@ -52,11 +52,11 @@ export default function EnterprisePayrollCenter() {
   const { toast } = useToast();
   const queryClient = useQueryClient();
 
-  const { data: payrolls = [], isLoading: payrollsLoading } = useQuery({
+  const { data: payrolls = [], isLoading: payrollsLoading } = useQuery<any[]>({
     queryKey: ["/api/payroll"]
   });
 
-  const { data: employees = [] } = useQuery({
+  const { data: employees = [] } = useQuery<any[]>({
     queryKey: ["/api/employees"]
   });
 
@@ -144,14 +144,14 @@ export default function EnterprisePayrollCenter() {
   };
 
   const getTotalPayroll = () => {
-    return payrolls.reduce((total: number, payroll: any) => total + calculateNetSalary(payroll), 0);
+    return (payrolls as any[]).reduce((total: number, payroll: any) => total + calculateNetSalary(payroll), 0);
   };
 
   const getPayrollStats = () => {
     const totalPayroll = getTotalPayroll();
-    const processedCount = payrolls.filter((p: any) => p.status === 'processed').length;
-    const pendingCount = payrolls.filter((p: any) => p.status === 'pending').length;
-    const avgSalary = payrolls.length > 0 ? totalPayroll / payrolls.length : 0;
+    const processedCount = (payrolls as any[]).filter((p: any) => p.status === 'processed').length;
+    const pendingCount = (payrolls as any[]).filter((p: any) => p.status === 'pending').length;
+    const avgSalary = (payrolls as any[]).length > 0 ? totalPayroll / (payrolls as any[]).length : 0;
     
     return { totalPayroll, processedCount, pendingCount, avgSalary };
   };
@@ -214,7 +214,7 @@ export default function EnterprisePayrollCenter() {
                                 </SelectTrigger>
                               </FormControl>
                               <SelectContent className="bg-white">
-                                {employees.map((employee: any) => (
+                                {(employees as any[]).map((employee: any) => (
                                   <SelectItem key={employee.id} value={employee.id}>
                                     {employee.firstName} {employee.lastName}
                                   </SelectItem>

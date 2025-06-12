@@ -89,10 +89,7 @@ export default function TalentAcquisition() {
 
   const createJobMutation = useMutation({
     mutationFn: async (data: JobFormData) => {
-      return apiRequest("/api/jobs", {
-        method: "POST",
-        body: JSON.stringify(data)
-      });
+      return apiRequest("POST", "/api/jobs", data);
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ["/api/jobs"] });
@@ -114,9 +111,7 @@ export default function TalentAcquisition() {
 
   const deleteJobMutation = useMutation({
     mutationFn: async (id: string) => {
-      return apiRequest(`/api/jobs/${id}`, {
-        method: "DELETE"
-      });
+      return apiRequest("DELETE", `/api/jobs/${id}`);
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ["/api/jobs"] });
