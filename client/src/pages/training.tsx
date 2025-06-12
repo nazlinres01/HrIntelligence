@@ -235,7 +235,7 @@ export default function Training() {
         {/* Header */}
         <div className="flex flex-col lg:flex-row lg:items-center lg:justify-between mb-8">
           <div>
-            <h1 className="text-3xl font-light text-gray-900 mb-2">Eğitim ve Gelişim</h1>
+            <h1 className="text-3xl font-bold text-gray-900 mb-2">Eğitim ve Gelişim</h1>
             <p className="text-gray-600">Çalışan eğitim programlarını yönetin ve takip edin</p>
           </div>
           <div className="flex space-x-3">

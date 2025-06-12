@@ -170,7 +170,7 @@ export default function Payroll() {
         {/* Header */}
         <div className="flex flex-col lg:flex-row lg:items-center lg:justify-between mb-8">
           <div>
-            <h1 className="text-3xl font-light text-gray-900 mb-2">Bordro Yönetimi</h1>
+            <h1 className="text-3xl font-bold text-gray-900 mb-2">Bordro Yönetimi</h1>
             <p className="text-gray-600">Çalışan maaş ve bordro işlemlerini yönetin</p>
           </div>
           <div className="flex space-x-3">

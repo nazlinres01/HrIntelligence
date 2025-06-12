@@ -176,7 +176,7 @@ export default function Leaves() {
         {/* Header */}
         <div className="flex flex-col lg:flex-row lg:items-center lg:justify-between mb-8">
           <div>
-            <h1 className="text-3xl font-light text-gray-900 mb-2">İzin ve Devamsızlık Yönetimi</h1>
+            <h1 className="text-3xl font-bold text-gray-900 mb-2">İzin ve Devamsızlık Yönetimi</h1>
             <p className="text-gray-600">Çalışan izin taleplerini yönetin ve takip edin</p>
           </div>
           <Dialog open={isDialogOpen} onOpenChange={setIsDialogOpen}>
