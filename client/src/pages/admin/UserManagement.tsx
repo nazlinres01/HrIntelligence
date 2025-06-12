@@ -47,7 +47,7 @@ export default function UserManagement() {
   });
 
   // Filter users based on search and filters
-  const filteredUsers = (users as any[]).filter((user: any) => {
+  const filteredUsers = Array.isArray(users) ? users.filter((user: any) => {
     const matchesSearch = 
       user.firstName?.toLowerCase().includes(searchTerm.toLowerCase()) ||
       user.lastName?.toLowerCase().includes(searchTerm.toLowerCase()) ||
@@ -56,10 +56,10 @@ export default function UserManagement() {
     const matchesCompany = selectedCompany === "all" || user.companyId?.toString() === selectedCompany;
     
     return matchesSearch && matchesRole && matchesCompany;
-  });
+  }) : [];
 
   // Get unique roles for filters
-  const roles = [...new Set((users as any[]).map((u: any) => u.role).filter(Boolean))];
+  const roles = Array.isArray(users) ? Array.from(new Set(users.map((u: any) => u.role).filter(Boolean))) : [];
 
   const createUserMutation = useMutation({
     mutationFn: (data: any) => apiRequest("/api/users", "POST", data),
@@ -250,7 +250,7 @@ export default function UserManagement() {
             </div>
             <div>
               <p className="text-sm font-medium text-gray-600 dark:text-gray-400">Toplam Kullanıcı</p>
-              <p className="text-2xl font-bold text-gray-900 dark:text-white">{(users as any[]).length}</p>
+              <p className="text-2xl font-bold text-gray-900 dark:text-white">{Array.isArray(users) ? users.length : 0}</p>
             </div>
           </CardContent>
         </Card>
@@ -263,7 +263,7 @@ export default function UserManagement() {
             <div>
               <p className="text-sm font-medium text-gray-600 dark:text-gray-400">Aktif Kullanıcı</p>
               <p className="text-2xl font-bold text-gray-900 dark:text-white">
-                {(users as any[]).filter((u: any) => u.isActive).length}
+                {Array.isArray(users) ? users.filter((u: any) => u.isActive).length : 0}
               </p>
             </div>
           </CardContent>
@@ -277,7 +277,7 @@ export default function UserManagement() {
             <div>
               <p className="text-sm font-medium text-gray-600 dark:text-gray-400">Yönetici</p>
               <p className="text-2xl font-bold text-gray-900 dark:text-white">
-                {(users as any[]).filter((u: any) => ['admin', 'hr_manager'].includes(u.role)).length}
+                {Array.isArray(users) ? users.filter((u: any) => ['admin', 'hr_manager'].includes(u.role)).length : 0}
               </p>
             </div>
           </CardContent>
