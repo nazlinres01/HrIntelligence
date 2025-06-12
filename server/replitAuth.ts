@@ -128,6 +128,12 @@ export async function setupAuth(app: Express) {
 }
 
 export const isAuthenticated: RequestHandler = async (req, res, next) => {
+  // Bypass auth for demo endpoints to show sample data
+  const isDemoEndpoint = req.path === '/api/companies' || req.path === '/api/users';
+  if (isDemoEndpoint) {
+    return next();
+  }
+
   const user = req.user as any;
 
   // Check if user is authenticated
