@@ -142,7 +142,7 @@ export default function EnterpriseAdminDashboard() {
   ];
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-slate-900 via-gray-900 to-black p-6">
+    <div className="min-h-screen bg-gradient-to-br from-gray-50 via-white to-gray-100 p-6">
       <div className="max-w-7xl mx-auto space-y-8">
         
         {/* Executive Header */}
@@ -180,7 +180,7 @@ export default function EnterpriseAdminDashboard() {
         {/* Executive KPI Cards */}
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
           {executiveMetrics.map((metric, index) => (
-            <Card key={index} className="bg-gray-800/50 border-gray-700 hover:bg-gray-800/70 transition-all duration-300 group">
+            <Card key={index} className="bg-white border-gray-200 hover:shadow-xl transition-all duration-300 group hover:border-gray-300">
               <CardHeader className="pb-3">
                 <div className="flex items-center justify-between">
                   <div className={`p-3 rounded-xl bg-gradient-to-r ${metric.color} shadow-lg group-hover:scale-110 transition-transform`}>
@@ -188,11 +188,11 @@ export default function EnterpriseAdminDashboard() {
                   </div>
                   <div className="flex items-center space-x-1">
                     {metric.trend === "up" ? (
-                      <TrendingUp className="h-4 w-4 text-green-400" />
+                      <TrendingUp className="h-4 w-4 text-green-600" />
                     ) : (
-                      <TrendingDown className="h-4 w-4 text-red-400" />
+                      <TrendingDown className="h-4 w-4 text-red-600" />
                     )}
-                    <span className={`text-sm font-medium ${metric.trend === "up" ? "text-green-400" : "text-red-400"}`}>
+                    <span className={`text-sm font-medium ${metric.trend === "up" ? "text-green-600" : "text-red-600"}`}>
                       {metric.change}
                     </span>
                   </div>
@@ -200,8 +200,8 @@ export default function EnterpriseAdminDashboard() {
               </CardHeader>
               <CardContent>
                 <div className="space-y-2">
-                  <div className="text-2xl font-bold text-white">{metric.value}</div>
-                  <div className="text-sm text-gray-400">{metric.title}</div>
+                  <div className="text-2xl font-bold text-gray-900">{metric.value}</div>
+                  <div className="text-sm text-gray-600">{metric.title}</div>
                   <div className="text-xs text-gray-500">{metric.description}</div>
                 </div>
               </CardContent>
@@ -212,7 +212,7 @@ export default function EnterpriseAdminDashboard() {
         <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
           
           {/* Critical Business Alerts */}
-          <Card className="lg:col-span-2 bg-gray-800/50 border-gray-700">
+          <Card className="lg:col-span-2 bg-white border-gray-200 shadow-lg">
             <CardHeader>
               <div className="flex items-center justify-between">
                 <div className="flex items-center space-x-3">
@@ -220,31 +220,31 @@ export default function EnterpriseAdminDashboard() {
                     <AlertTriangle className="h-5 w-5 text-white" />
                   </div>
                   <div>
-                    <CardTitle className="text-white">Kritik İş Uyarıları</CardTitle>
-                    <CardDescription>Acil müdahale gerektiren konular</CardDescription>
+                    <CardTitle className="text-gray-900">Kritik İş Uyarıları</CardTitle>
+                    <CardDescription className="text-gray-600">Acil müdahale gerektiren konular</CardDescription>
                   </div>
                 </div>
-                <Badge variant="destructive" className="bg-red-500/20 text-red-400 border-red-500/30">
+                <Badge variant="destructive" className="bg-red-100 text-red-700 border-red-200">
                   {criticalAlerts.length} Aktif
                 </Badge>
               </div>
             </CardHeader>
             <CardContent className="space-y-4">
               {criticalAlerts.map((alert, index) => (
-                <div key={index} className="flex items-center justify-between p-4 bg-gray-700/30 rounded-xl border border-gray-600/30 hover:bg-gray-700/50 transition-colors">
+                <div key={index} className="flex items-center justify-between p-4 bg-gray-50 rounded-xl border border-gray-200 hover:bg-gray-100 transition-colors">
                   <div className="flex items-center space-x-4">
                     <div className={`p-2 rounded-lg ${
-                      alert.type === 'warning' ? 'bg-yellow-500/20 text-yellow-400' :
-                      alert.type === 'info' ? 'bg-blue-500/20 text-blue-400' :
-                      'bg-green-500/20 text-green-400'
+                      alert.type === 'warning' ? 'bg-yellow-100 text-yellow-600' :
+                      alert.type === 'info' ? 'bg-blue-100 text-blue-600' :
+                      'bg-green-100 text-green-600'
                     }`}>
                       {alert.type === 'warning' ? <AlertTriangle className="h-4 w-4" /> :
                        alert.type === 'info' ? <Clock className="h-4 w-4" /> :
                        <CheckCircle className="h-4 w-4" />}
                     </div>
                     <div>
-                      <div className="font-medium text-white">{alert.title}</div>
-                      <div className="text-sm text-gray-400">{alert.count} öğe • Son {alert.time}</div>
+                      <div className="font-medium text-gray-900">{alert.title}</div>
+                      <div className="text-sm text-gray-600">{alert.count} öğe • Son {alert.time}</div>
                     </div>
                   </div>
                   <div className="flex items-center space-x-3">
@@ -252,7 +252,7 @@ export default function EnterpriseAdminDashboard() {
                            className="text-xs">
                       {alert.priority}
                     </Badge>
-                    <Button size="sm" variant="ghost" className="text-gray-400 hover:text-white">
+                    <Button size="sm" variant="ghost" className="text-gray-600 hover:text-gray-900 hover:bg-gray-200">
                       <ArrowRight className="h-4 w-4" />
                     </Button>
                   </div>

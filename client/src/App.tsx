@@ -82,7 +82,7 @@ function Router() {
   const DashboardComponent = getDashboardComponent();
 
   return (
-    <div className="flex h-screen bg-gradient-to-br from-slate-900 via-gray-900 to-black">
+    <div className="flex h-screen bg-gradient-to-br from-gray-50 via-white to-gray-100">
       <EnterpriseSidebar />
       <main className="flex-1 flex flex-col h-screen overflow-hidden">
         <div className="flex-1 overflow-y-auto">

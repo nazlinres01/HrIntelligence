@@ -155,11 +155,11 @@ export default function EnterpriseSidebar() {
   const userInitials = `${userData.firstName?.[0] || ''}${userData.lastName?.[0] || ''}`.toUpperCase();
 
   return (
-    <div className="flex h-screen bg-gradient-to-b from-slate-900 via-gray-900 to-black border-r border-gray-800">
+    <div className="flex h-screen bg-gradient-to-b from-gray-50 via-white to-gray-100 border-r border-gray-200 shadow-xl">
       <div className={cn("flex flex-col transition-all duration-300", isCollapsed ? "w-20" : "w-80")}>
         
         {/* Enterprise Brand Header */}
-        <div className="bg-gradient-to-r from-blue-600 via-indigo-600 to-purple-600 p-6">
+        <div className="bg-gradient-to-r from-blue-600 via-indigo-600 to-purple-600 p-6 shadow-lg">
           <div className="flex items-center justify-between">
             <div className={cn("flex items-center space-x-3", isCollapsed && "justify-center")}>
               <div className="relative">
@@ -190,17 +190,17 @@ export default function EnterpriseSidebar() {
               <div className="flex items-center space-x-3 text-white/90 text-xs">
                 <div className="flex items-center space-x-1">
                   <Shield className="h-3 w-3" />
-                  <span>SOX Compliant</span>
+                  <span>SOX Uyumlu</span>
                 </div>
                 <div className="w-1 h-1 bg-white/60 rounded-full"></div>
                 <div className="flex items-center space-x-1">
                   <Globe className="h-3 w-3" />
-                  <span>Global Scale</span>
+                  <span>Küresel Standart</span>
                 </div>
               </div>
               <div className="flex items-center space-x-1">
                 <div className="w-2 h-2 bg-green-400 rounded-full animate-pulse"></div>
-                <span className="text-green-200 text-xs font-medium">Live</span>
+                <span className="text-green-200 text-xs font-medium">Canlı</span>
               </div>
             </div>
           )}
@@ -208,28 +208,28 @@ export default function EnterpriseSidebar() {
 
         {/* Navigation Sections */}
         <div className="flex-1 overflow-y-auto scrollbar-hide">
-          <div className="p-4 space-y-6">
+          <div className="p-6 space-y-6">
             {navigation.map((section, sectionIndex) => (
               <div key={sectionIndex} className="space-y-3">
                 {!isCollapsed && (
                   <div className="flex items-center space-x-2">
-                    <div className={cn("w-3 h-3 rounded bg-gradient-to-r", section.color || "from-gray-500 to-gray-600")}></div>
-                    <h3 className="text-sm font-semibold text-gray-300 uppercase tracking-wider">
+                    <div className={cn("w-3 h-3 rounded bg-gradient-to-r", section.color || "from-gray-400 to-gray-500")}></div>
+                    <h3 className="text-sm font-semibold text-gray-600 uppercase tracking-wider">
                       {section.title}
                     </h3>
                   </div>
                 )}
                 
-                <div className="space-y-1">
+                <div className="space-y-2">
                   {section.items.filter(item => item.show).map((item, itemIndex) => {
                     const isActive = location === item.href;
                     return (
                       <Link key={itemIndex} href={item.href}>
                         <div className={cn(
-                          "group relative flex items-center rounded-xl transition-all duration-200 p-3",
+                          "group relative flex items-center rounded-xl transition-all duration-200 p-3 border",
                           isActive 
-                            ? "bg-gradient-to-r from-blue-500/20 to-indigo-500/20 border border-blue-500/30 shadow-lg shadow-blue-500/10" 
-                            : "hover:bg-gray-800/50 hover:border hover:border-gray-700/50",
+                            ? "bg-gradient-to-r from-blue-50 to-indigo-50 border-blue-200 shadow-lg shadow-blue-100/50" 
+                            : "hover:bg-gray-50 border-transparent hover:border-gray-200 hover:shadow-md",
                           isCollapsed && "justify-center"
                         )}>
                           <div className={cn(
@@ -240,7 +240,7 @@ export default function EnterpriseSidebar() {
                               "p-2 rounded-lg transition-colors",
                               isActive 
                                 ? "bg-blue-500 text-white shadow-lg" 
-                                : "bg-gray-700/50 text-gray-300 group-hover:bg-gray-600/50 group-hover:text-white"
+                                : "bg-gray-100 text-gray-600 group-hover:bg-blue-100 group-hover:text-blue-600"
                             )}>
                               <item.icon className="h-4 w-4" />
                             </div>
@@ -250,7 +250,7 @@ export default function EnterpriseSidebar() {
                                 <div className="flex items-center justify-between">
                                   <span className={cn(
                                     "font-medium text-sm",
-                                    isActive ? "text-white" : "text-gray-300 group-hover:text-white"
+                                    isActive ? "text-gray-900" : "text-gray-700 group-hover:text-gray-900"
                                   )}>
                                     {item.name}
                                   </span>
@@ -261,7 +261,7 @@ export default function EnterpriseSidebar() {
                                   )}
                                 </div>
                                 {item.description && (
-                                  <p className="text-xs text-gray-500 group-hover:text-gray-400 mt-0.5 truncate">
+                                  <p className="text-xs text-gray-500 group-hover:text-gray-600 mt-0.5 truncate">
                                     {item.description}
                                   </p>
                                 )}
@@ -270,7 +270,7 @@ export default function EnterpriseSidebar() {
                           </div>
                           
                           {isActive && (
-                            <div className="absolute left-0 top-0 bottom-0 w-1 bg-gradient-to-b from-blue-400 to-indigo-500 rounded-r"></div>
+                            <div className="absolute left-0 top-0 bottom-0 w-1 bg-gradient-to-b from-blue-500 to-indigo-600 rounded-r"></div>
                           )}
                         </div>
                       </Link>
@@ -283,7 +283,7 @@ export default function EnterpriseSidebar() {
         </div>
 
         {/* Enterprise User Profile */}
-        <div className="p-4 border-t border-gray-800 bg-gray-900/50">
+        <div className="p-4 border-t border-gray-200 bg-gray-50">
           <div className={cn("flex items-center space-x-3", isCollapsed && "justify-center")}>
             <Avatar className="ring-2 ring-blue-500/30">
               <AvatarImage src={userData.profileImageUrl} />
