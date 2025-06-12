@@ -54,7 +54,7 @@ export default function CompanyManagement() {
   const sizes = Array.from(new Set((companies as any[]).map((c: any) => c.size).filter(Boolean)));
 
   const createCompanyMutation = useMutation({
-    mutationFn: (data: any) => apiRequest("/api/companies", { method: "POST", body: data }),
+    mutationFn: (data: any) => apiRequest("/api/companies", "POST", data),
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ["/api/companies"] });
       setIsDialogOpen(false);
@@ -67,7 +67,7 @@ export default function CompanyManagement() {
   });
 
   const updateCompanyMutation = useMutation({
-    mutationFn: (data: any) => apiRequest(`/api/companies/${editingCompany.id}`, { method: "PUT", body: data }),
+    mutationFn: (data: any) => apiRequest(`/api/companies/${editingCompany?.id}`, "PUT", data),
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ["/api/companies"] });
       setIsDialogOpen(false);
@@ -81,7 +81,7 @@ export default function CompanyManagement() {
   });
 
   const deleteCompanyMutation = useMutation({
-    mutationFn: (id: number) => apiRequest(`/api/companies/${id}`, { method: "DELETE" }),
+    mutationFn: (id: number) => apiRequest(`/api/companies/${id}`, "DELETE"),
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ["/api/companies"] });
       toast({ title: "Başarılı", description: "Şirket başarıyla silindi" });

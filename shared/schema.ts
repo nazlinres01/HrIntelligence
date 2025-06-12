@@ -18,11 +18,13 @@ export const companies = pgTable("companies", {
   id: serial("id").primaryKey(),
   name: varchar("name").notNull(),
   industry: varchar("industry"),
-  address: text("address"),
-  phone: varchar("phone"),
-  email: varchar("email"),
+  size: varchar("size"), // startup, small, medium, large, enterprise
+  description: text("description"),
+  address: jsonb("address"), // {street, city, country}
+  contactInfo: jsonb("contact_info"), // {phone, email}
   website: varchar("website"),
   taxNumber: varchar("tax_number"),
+  employeeCount: integer("employee_count").default(0),
   createdAt: timestamp("created_at").defaultNow(),
   updatedAt: timestamp("updated_at").defaultNow(),
 });
