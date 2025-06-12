@@ -66,25 +66,25 @@ const getRoleBasedNavigation = (userRole: UserRole): NavigationSection[] => {
           title: "Yönetici Panosu",
           color: "from-blue-600 to-indigo-600",
           items: [
-            { name: "Stratejik Genel Bakış", href: "/", icon: LayoutDashboard, show: true, description: "Üst düzey KPI'lar" },
-            { name: "Analitik Merkezi", href: "/admin/analytics", icon: BarChart3, show: true, description: "İş zekası raporları" },
+            { name: "Stratejik Genel Bakış", href: "/admin/strategic-overview", icon: LayoutDashboard, show: true, description: "Üst düzey KPI'lar" },
+            { name: "Analitik Merkezi", href: "/admin/analytics-center", icon: BarChart3, show: true, description: "İş zekası raporları" },
           ]
         },
         {
           title: "Kurumsal Yönetim",
           color: "from-emerald-600 to-teal-600",
           items: [
-            { name: "Şirket Yapısı", href: "/admin/companies", icon: Building2, show: true, description: "Organizasyon hiyerarşisi" },
+            { name: "Şirket Yapısı", href: "/admin/company-structure", icon: Building2, show: true, description: "Organizasyon hiyerarşisi" },
             { name: "Kullanıcı Yönetimi", href: "/admin/users", icon: Users, show: true, description: "Erişim ve yetkiler" },
-            { name: "Departman Kontrolü", href: "/admin/departments", icon: Target, show: true, description: "Organizasyon birimleri" },
+            { name: "Departman Kontrolü", href: "/admin/department-control", icon: Target, show: true, description: "Organizasyon birimleri" },
           ]
         },
         {
           title: "İnsan Kaynakları Operasyonları",
           color: "from-gray-600 to-gray-700",
           items: [
-            { name: "Yetenek Kazanımı", href: "/admin/job-postings", icon: Briefcase, show: true, description: "Stratejik işe alım süreçleri" },
-            { name: "Ücret & Haklar Yönetimi", href: "/admin/payroll", icon: DollarSign, show: true, description: "Bordro ve maaş yönetimi" },
+            { name: "Yetenek Kazanımı", href: "/admin/talent-acquisition", icon: Briefcase, show: true, description: "Stratejik işe alım süreçleri" },
+            { name: "Ücret & Haklar", href: "/admin/payroll-new", icon: DollarSign, show: true, description: "Bordro ve maaş yönetimi" },
             { name: "İzin & Devamsızlık", href: "/leaves", icon: Calendar, show: true, description: "İzin talep ve onay süreçleri" },
             { name: "Performans Değerlendirme", href: "/performance", icon: TrendingUp, show: true, description: "KPI takip ve analiz" },
             { name: "Eğitim & Gelişim", href: "/training", icon: BookOpen, show: true, description: "Personel gelişim programları" },

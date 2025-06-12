@@ -22,6 +22,14 @@ import AnalyticsDashboard from "@/pages/admin/AnalyticsDashboard";
 import EnterpriseJobManagement from "@/pages/admin/EnterpriseJobManagement";
 import EnterprisePayrollCenter from "@/pages/admin/EnterprisePayrollCenter";
 
+// New Admin Pages
+import EnterprisePayrollCenterNew from "@/pages/admin/EnterprisePayrollCenterNew";
+import TalentAcquisition from "@/pages/admin/TalentAcquisition";
+import DepartmentControl from "@/pages/admin/DepartmentControl";
+import CompanyStructure from "@/pages/admin/CompanyStructure";
+import AnalyticsCenter from "@/pages/admin/AnalyticsCenter";
+import StrategicOverview from "@/pages/admin/StrategicOverview";
+
 // Other Pages
 import Employees from "@/pages/employees";
 import Performance from "@/pages/performance";
@@ -100,6 +108,14 @@ function Router() {
             {/* Enterprise HR Management Routes */}
             <Route path="/admin/job-postings" component={EnterpriseJobManagement} />
             <Route path="/admin/payroll" component={EnterprisePayrollCenter} />
+            
+            {/* New Admin Routes */}
+            <Route path="/admin/payroll-new" component={EnterprisePayrollCenterNew} />
+            <Route path="/admin/talent-acquisition" component={TalentAcquisition} />
+            <Route path="/admin/department-control" component={DepartmentControl} />
+            <Route path="/admin/company-structure" component={CompanyStructure} />
+            <Route path="/admin/analytics-center" component={AnalyticsCenter} />
+            <Route path="/admin/strategic-overview" component={StrategicOverview} />
             
             {/* HR Management Routes */}
             <Route path="/employees" component={Employees} />
