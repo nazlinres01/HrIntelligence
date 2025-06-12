@@ -18,8 +18,8 @@ export default function UserManagement() {
   const [isDialogOpen, setIsDialogOpen] = useState(false);
   const [editingUser, setEditingUser] = useState<any>(null);
   const [searchTerm, setSearchTerm] = useState("");
-  const [selectedRole, setSelectedRole] = useState("");
-  const [selectedCompany, setSelectedCompany] = useState("");
+  const [selectedRole, setSelectedRole] = useState("all");
+  const [selectedCompany, setSelectedCompany] = useState("all");
   const [formData, setFormData] = useState({
     email: "",
     firstName: "",
@@ -52,8 +52,8 @@ export default function UserManagement() {
       user.firstName?.toLowerCase().includes(searchTerm.toLowerCase()) ||
       user.lastName?.toLowerCase().includes(searchTerm.toLowerCase()) ||
       user.email?.toLowerCase().includes(searchTerm.toLowerCase());
-    const matchesRole = !selectedRole || user.role === selectedRole;
-    const matchesCompany = !selectedCompany || user.companyId?.toString() === selectedCompany;
+    const matchesRole = selectedRole === "all" || user.role === selectedRole;
+    const matchesCompany = selectedCompany === "all" || user.companyId?.toString() === selectedCompany;
     
     return matchesSearch && matchesRole && matchesCompany;
   });
@@ -324,7 +324,7 @@ export default function UserManagement() {
                   <SelectValue placeholder="Rol filtrele" />
                 </SelectTrigger>
                 <SelectContent>
-                  <SelectItem value="">Tüm Roller</SelectItem>
+                  <SelectItem value="all">Tüm Roller</SelectItem>
                   {roles.map((role) => (
                     <SelectItem key={role} value={role}>{getRoleLabel(role)}</SelectItem>
                   ))}
@@ -337,7 +337,7 @@ export default function UserManagement() {
                   <SelectValue placeholder="Şirket filtrele" />
                 </SelectTrigger>
                 <SelectContent>
-                  <SelectItem value="">Tüm Şirketler</SelectItem>
+                  <SelectItem value="all">Tüm Şirketler</SelectItem>
                   {(companies as any[]).map((company) => (
                     <SelectItem key={company.id} value={company.id.toString()}>{company.name}</SelectItem>
                   ))}

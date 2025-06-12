@@ -17,8 +17,8 @@ export default function CompanyManagement() {
   const [isDialogOpen, setIsDialogOpen] = useState(false);
   const [editingCompany, setEditingCompany] = useState<any>(null);
   const [searchTerm, setSearchTerm] = useState("");
-  const [selectedIndustry, setSelectedIndustry] = useState("");
-  const [selectedSize, setSelectedSize] = useState("");
+  const [selectedIndustry, setSelectedIndustry] = useState("all");
+  const [selectedSize, setSelectedSize] = useState("all");
   const [formData, setFormData] = useState({
     name: "",
     description: "",
