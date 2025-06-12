@@ -278,6 +278,28 @@ export async function registerRoutes(app: Express): Promise<Server> {
     }
   });
 
+  // Get all companies
+  app.get('/api/companies', requireAuth, async (req: any, res) => {
+    try {
+      const companies = await storage.getAllCompanies();
+      res.json(companies);
+    } catch (error) {
+      console.error("Error fetching companies:", error);
+      res.status(500).json({ message: "Şirket listesi alınırken hata oluştu" });
+    }
+  });
+
+  // Get all users
+  app.get('/api/users', requireAuth, async (req: any, res) => {
+    try {
+      const users = await storage.getAllUsers();
+      res.json(users);
+    } catch (error) {
+      console.error("Error fetching users:", error);
+      res.status(500).json({ message: "Kullanıcı listesi alınırken hata oluştu" });
+    }
+  });
+
   app.put('/api/company/:id', isAuthenticated, validateInput(z.object({
     name: z.string().min(1),
     industry: z.string().optional(),

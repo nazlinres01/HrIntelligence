@@ -55,6 +55,7 @@ export interface IStorage {
   // Company operations
   getCompany(id: number): Promise<Company | undefined>;
   getCompanyByUser(userId: string): Promise<Company | undefined>;
+  getAllCompanies(): Promise<Company[]>;
   createCompany(company: InsertCompany): Promise<Company>;
   updateCompany(id: number, company: Partial<InsertCompany>): Promise<Company>;
 
