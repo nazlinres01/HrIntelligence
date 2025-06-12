@@ -80,14 +80,14 @@ const getRoleBasedNavigation = (userRole: UserRole): NavigationSection[] => {
           ]
         },
         {
-          title: "Yetenek Operasyonları",
-          color: "from-purple-600 to-pink-600",
+          title: "İnsan Kaynakları Operasyonları",
+          color: "from-gray-600 to-gray-700",
           items: [
-            { name: "Üst Düzey İşe Alım", href: "/admin/job-postings", icon: Briefcase, show: true, description: "C-seviye pozisyonlar" },
-            { name: "Bordro Merkezi", href: "/admin/payroll", icon: DollarSign, show: true, description: "Mali yönetim" },
-            { name: "İzin Yönetimi", href: "/admin/leaves", icon: Calendar, show: true, description: "İzin politikaları" },
-            { name: "Performans Analizi", href: "/admin/performance", icon: TrendingUp, show: true, description: "Başarı takibi" },
-            { name: "Öğrenme Merkezi", href: "/admin/trainings", icon: BookOpen, show: true, description: "Gelişim programları" },
+            { name: "Yetenek Kazanımı", href: "/admin/job-postings", icon: Briefcase, show: true, description: "Stratejik işe alım süreçleri" },
+            { name: "Ücret & Haklar Yönetimi", href: "/admin/payroll", icon: DollarSign, show: true, description: "Bordro ve maaş yönetimi" },
+            { name: "İzin & Devamsızlık", href: "/admin/leaves", icon: Calendar, show: true, description: "İzin talep ve onay süreçleri" },
+            { name: "Performans Değerlendirme", href: "/admin/performance", icon: TrendingUp, show: true, description: "KPI takip ve analiz" },
+            { name: "Eğitim & Gelişim", href: "/admin/trainings", icon: BookOpen, show: true, description: "Personel gelişim programları" },
           ]
         }
       ];
@@ -159,7 +159,7 @@ export default function EnterpriseSidebar() {
       <div className={cn("flex flex-col transition-all duration-300", isCollapsed ? "w-20" : "w-80")}>
         
         {/* Enterprise Brand Header */}
-        <div className="bg-gradient-to-r from-blue-600 via-indigo-600 to-purple-600 p-6 shadow-lg">
+        <div className="bg-gradient-to-r from-blue-600 via-blue-700 to-indigo-700 p-6 shadow-lg">
           <div className="flex items-center justify-between">
             <div className={cn("flex items-center space-x-3", isCollapsed && "justify-center")}>
               <div className="relative">
@@ -170,8 +170,8 @@ export default function EnterpriseSidebar() {
               </div>
               {!isCollapsed && (
                 <div>
-                  <h1 className="text-2xl font-bold text-white">Kurumsal Hub</h1>
-                  <p className="text-blue-100 text-sm">Stratejik İK Komuta Merkezi</p>
+                  <h1 className="text-2xl font-bold text-white">Enterprise İK Hub</h1>
+                  <p className="text-blue-100 text-sm">Kurumsal İnsan Kaynakları Yönetim Sistemi</p>
                 </div>
               )}
             </div>

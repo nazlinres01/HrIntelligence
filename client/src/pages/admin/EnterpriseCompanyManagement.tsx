@@ -195,11 +195,11 @@ export default function EnterpriseCompanyManagement() {
   }
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-slate-900 via-gray-900 to-black p-6">
+    <div className="min-h-screen bg-gradient-to-br from-gray-50 via-white to-gray-100 p-6">
       <div className="max-w-7xl mx-auto space-y-8">
         
         {/* Enterprise Header */}
-        <div className="bg-gradient-to-r from-emerald-600 via-teal-600 to-cyan-600 rounded-2xl p-8 text-white">
+        <div className="bg-gradient-to-r from-slate-800 via-gray-800 to-slate-900 rounded-2xl p-8 text-white shadow-2xl">
           <div className="flex items-center justify-between">
             <div>
               <div className="flex items-center space-x-4 mb-4">
@@ -207,31 +207,31 @@ export default function EnterpriseCompanyManagement() {
                   <Building2 className="h-8 w-8 text-white" />
                 </div>
                 <div>
-                  <h1 className="text-4xl font-bold">Kurumsal Yapı Yönetimi</h1>
-                  <p className="text-emerald-100 text-lg">Enterprise Organization Hierarchy Control</p>
+                  <h1 className="text-4xl font-bold">Kurumsal Organizasyon Yönetimi</h1>
+                  <p className="text-slate-300 text-lg">Şirket Hiyerarşisi ve Organizasyonel Yapı Kontrolü</p>
                 </div>
               </div>
-              <div className="flex items-center space-x-6 text-emerald-100">
+              <div className="flex items-center space-x-6 text-slate-300">
                 <div className="flex items-center space-x-2">
                   <Shield className="h-4 w-4" />
-                  <span className="text-sm">Corporate Governance</span>
+                  <span className="text-sm">Kurumsal Yönetişim</span>
                 </div>
                 <div className="flex items-center space-x-2">
                   <Database className="h-4 w-4" />
-                  <span className="text-sm">Central Registry</span>
+                  <span className="text-sm">Merkezi Kayıt Sistemi</span>
                 </div>
                 <div className="flex items-center space-x-2">
                   <Activity className="h-4 w-4" />
-                  <span className="text-sm">Real-time Sync</span>
+                  <span className="text-sm">Gerçek Zamanlı Senkronizasyon</span>
                 </div>
               </div>
             </div>
             <div className="text-right">
               <div className="text-3xl font-bold">{companyStats.total}</div>
-              <div className="text-emerald-200">Toplam Şirket</div>
+              <div className="text-slate-300">Toplam Şirket Sayısı</div>
               <div className="flex items-center justify-end space-x-1 mt-2">
-                <div className="w-2 h-2 bg-green-400 rounded-full animate-pulse"></div>
-                <span className="text-sm">Aktif Sistem</span>
+                <div className="w-2 h-2 bg-emerald-400 rounded-full animate-pulse"></div>
+                <span className="text-sm">Sistem Operasyonel</span>
               </div>
             </div>
           </div>
@@ -239,22 +239,22 @@ export default function EnterpriseCompanyManagement() {
 
         {/* Executive KPI Dashboard */}
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
-          <Card className="bg-gray-800/50 border-gray-700 hover:bg-gray-800/70 transition-all duration-300 group">
+          <Card className="bg-white border-gray-200 hover:shadow-xl transition-all duration-300 group hover:border-gray-300">
             <CardHeader className="pb-3">
               <div className="flex items-center justify-between">
-                <div className="p-3 rounded-xl bg-gradient-to-r from-blue-500 to-cyan-500 shadow-lg group-hover:scale-110 transition-transform">
+                <div className="p-3 rounded-xl bg-gradient-to-r from-blue-600 to-blue-700 shadow-lg group-hover:scale-110 transition-transform">
                   <Building2 className="h-6 w-6 text-white" />
                 </div>
                 <div className="flex items-center space-x-1">
-                  <TrendingUp className="h-4 w-4 text-green-400" />
-                  <span className="text-sm font-medium text-green-400">+5%</span>
+                  <TrendingUp className="h-4 w-4 text-green-600" />
+                  <span className="text-sm font-medium text-green-600">+5%</span>
                 </div>
               </div>
             </CardHeader>
             <CardContent>
               <div className="space-y-2">
-                <div className="text-2xl font-bold text-white">{companyStats.total}</div>
-                <div className="text-sm text-gray-400">Toplam Şirket Sayısı</div>
+                <div className="text-2xl font-bold text-gray-900">{companyStats.total}</div>
+                <div className="text-sm text-gray-600">Toplam Şirket Sayısı</div>
                 <div className="text-xs text-gray-500">Kurumsal ağdaki tüm şirketler</div>
               </div>
             </CardContent>

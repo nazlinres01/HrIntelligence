@@ -80,61 +80,61 @@ export default function EnterpriseAdminDashboard() {
 
   const executiveMetrics = [
     {
-      title: "Toplam Çalışan",
+      title: "Toplam İnsan Kaynağı",
       value: stats?.totalEmployees || 0,
       change: "+12%",
       trend: "up",
       icon: Users,
-      color: "from-blue-500 to-cyan-500",
-      description: "Son 30 günde artış"
+      color: "from-blue-600 to-blue-700",
+      description: "Aktif personel sayısı (son çeyrek)"
     },
     {
-      title: "Aktif Departman",
+      title: "Organizasyonel Birimler",
       value: stats?.totalDepartments || 0,
       change: "+2",
       trend: "up", 
       icon: Building2,
-      color: "from-emerald-500 to-teal-500",
-      description: "Yeni birimler eklendi"
+      color: "from-emerald-600 to-emerald-700",
+      description: "Operasyonel departman sayısı"
     },
     {
-      title: "Aylık Bordro",
+      title: "Aylık İnsan Kaynağı Bütçesi",
       value: "₺2.8M",
       change: "+8.3%",
       trend: "up",
       icon: DollarSign,
-      color: "from-purple-500 to-pink-500",
-      description: "Performans bonusları dahil"
+      color: "from-slate-600 to-slate-700",
+      description: "Ek ödemeler ve haklar dahil"
     },
     {
-      title: "Sistem Performansı",
+      title: "Platform Performansı",
       value: "99.8%",
       change: "Optimal",
       trend: "up",
       icon: Activity,
-      color: "from-orange-500 to-red-500",
-      description: "Uptime guarantee"
+      color: "from-gray-600 to-gray-700",
+      description: "Sistem çalışma süresi güvencesi"
     }
   ];
 
   const criticalAlerts = [
     {
       type: "warning",
-      title: "Bordro Onayı Bekliyor",
+      title: "Ücret Bordrosu Onay Bekliyor",
       count: 3,
       priority: "Yüksek",
       time: "2 saat"
     },
     {
       type: "info", 
-      title: "Yeni İşe Alım Başvuruları",
+      title: "Yetenek Kazanımı Başvuruları",
       count: 12,
       priority: "Orta",
       time: "1 gün"
     },
     {
       type: "success",
-      title: "Performans Değerlendirmeleri",
+      title: "Performans Değerlendirme Tamamlandı",
       count: 8,
       priority: "Düşük", 
       time: "3 gün"
@@ -146,32 +146,32 @@ export default function EnterpriseAdminDashboard() {
       <div className="max-w-7xl mx-auto space-y-8">
         
         {/* Executive Header */}
-        <div className="bg-gradient-to-r from-indigo-600 via-purple-600 to-pink-600 rounded-2xl p-8 text-white">
+        <div className="bg-gradient-to-r from-slate-800 via-gray-800 to-slate-900 rounded-2xl p-8 text-white shadow-2xl">
           <div className="flex items-center justify-between">
             <div>
-              <h1 className="text-4xl font-bold mb-2">Stratejik Yönetim Merkezi</h1>
-              <p className="text-indigo-100 text-lg">Enterprise İK Command Center • Real-time Business Intelligence</p>
-              <div className="flex items-center space-x-4 mt-4">
+              <h1 className="text-4xl font-bold mb-2">Executive Dashboard</h1>
+              <p className="text-slate-300 text-lg">Kurumsal İnsan Kaynakları Yönetim Sistemi • Gerçek Zamanlı İş Analitiği</p>
+              <div className="flex items-center space-x-6 mt-4">
                 <div className="flex items-center space-x-2">
                   <Shield className="h-4 w-4" />
-                  <span className="text-sm">SOX Uyumlu</span>
+                  <span className="text-sm">ISO 27001 Uyumlu</span>
                 </div>
                 <div className="flex items-center space-x-2">
                   <Globe className="h-4 w-4" />
-                  <span className="text-sm">Global Standart</span>
+                  <span className="text-sm">Küresel Standartlar</span>
                 </div>
                 <div className="flex items-center space-x-2">
                   <Database className="h-4 w-4" />
-                  <span className="text-sm">Real-time Analytics</span>
+                  <span className="text-sm">Canlı Veri Analizi</span>
                 </div>
               </div>
             </div>
             <div className="text-right">
               <div className="text-3xl font-bold">{new Date().toLocaleDateString('tr-TR')}</div>
-              <div className="text-indigo-200">Bugün • {new Date().toLocaleTimeString('tr-TR', { hour: '2-digit', minute: '2-digit' })}</div>
+              <div className="text-slate-300">Bugün • {new Date().toLocaleTimeString('tr-TR', { hour: '2-digit', minute: '2-digit' })}</div>
               <div className="flex items-center justify-end space-x-1 mt-2">
-                <div className="w-2 h-2 bg-green-400 rounded-full animate-pulse"></div>
-                <span className="text-sm">Sistem Aktif</span>
+                <div className="w-2 h-2 bg-emerald-400 rounded-full animate-pulse"></div>
+                <span className="text-sm">Sistem Operasyonel</span>
               </div>
             </div>
           </div>
