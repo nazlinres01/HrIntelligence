@@ -331,15 +331,15 @@ export default function EnterpriseCompanyManagement() {
                 placeholder="Şirket ara..."
                 value={searchTerm}
                 onChange={(e) => setSearchTerm(e.target.value)}
-                className="pl-10 bg-gray-800/50 border-gray-700 text-white placeholder-gray-400 w-80"
+                className="pl-10 bg-white border-gray-200 text-gray-800 placeholder-gray-400 w-80"
               />
             </div>
             <Select value={statusFilter} onValueChange={setStatusFilter}>
-              <SelectTrigger className="w-48 bg-gray-800/50 border-gray-700 text-white">
+              <SelectTrigger className="w-48 bg-white border-gray-200 text-gray-800">
                 <Filter className="h-4 w-4 mr-2" />
                 <SelectValue />
               </SelectTrigger>
-              <SelectContent className="bg-gray-800 border-gray-700">
+              <SelectContent className="bg-white border-gray-200">
                 <SelectItem value="all">Tüm Şirketler</SelectItem>
                 <SelectItem value="active">Aktif Şirketler</SelectItem>
                 <SelectItem value="inactive">Pasif Şirketler</SelectItem>
