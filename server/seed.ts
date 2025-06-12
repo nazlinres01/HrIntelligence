@@ -174,12 +174,12 @@ export async function seedDatabase() {
       }
     ];
 
-    await db.insert(employees).values(sampleEmployees);
+    const insertedEmployees = await db.insert(employees).values(sampleEmployees).returning();
 
     // Create comprehensive leave records with calculated days
     const sampleLeaves = [
       {
-        employeeId: 2,
+        employeeId: insertedEmployees[1].id,
         leaveType: "annual",
         startDate: "2024-03-15",
         endDate: "2024-03-22",
@@ -188,7 +188,7 @@ export async function seedDatabase() {
         status: "approved"
       },
       {
-        employeeId: 3,
+        employeeId: insertedEmployees[2].id,
         leaveType: "sick",
         startDate: "2024-02-10",
         endDate: "2024-02-12",
@@ -197,7 +197,7 @@ export async function seedDatabase() {
         status: "approved"
       },
       {
-        employeeId: 1,
+        employeeId: insertedEmployees[0].id,
         leaveType: "personal",
         startDate: "2024-04-20",
         endDate: "2024-04-21",
@@ -206,7 +206,7 @@ export async function seedDatabase() {
         status: "pending"
       },
       {
-        employeeId: 4,
+        employeeId: insertedEmployees[3].id,
         leaveType: "annual",
         startDate: "2024-05-10",
         endDate: "2024-05-17",
@@ -221,7 +221,7 @@ export async function seedDatabase() {
     // Create detailed performance records with realistic ratings
     const samplePerformance = [
       {
-        employeeId: 1,
+        employeeId: insertedEmployees[0].id,
         reviewPeriod: "2024-Q1",
         score: "4.8",
         goals: "Yeni mikroservis mimarisini tamamlama ve takım mentorluğu",
@@ -229,7 +229,7 @@ export async function seedDatabase() {
         feedback: "Olağanüstü teknik yetkinlik ve liderlik becerileri gösterdi"
       },
       {
-        employeeId: 2,
+        employeeId: insertedEmployees[1].id,
         reviewPeriod: "2024-Q1", 
         score: "4.5",
         goals: "Dijital pazarlama kampanyalarında %20 artış sağlama",
@@ -237,7 +237,7 @@ export async function seedDatabase() {
         feedback: "Hedefleri aştı, yaratıcı kampanyalar geliştirdi"
       },
       {
-        employeeId: 3,
+        employeeId: insertedEmployees[2].id,
         reviewPeriod: "2024-Q1",
         score: "4.2",
         goals: "Personel eğitim programlarını modernize etme",
@@ -245,7 +245,7 @@ export async function seedDatabase() {
         feedback: "İnovatif yaklaşımlar sergiliyor, gelişim potansiyeli yüksek"
       },
       {
-        employeeId: 4,
+        employeeId: insertedEmployees[3].id,
         reviewPeriod: "2024-Q1",
         score: "4.6",
         goals: "Mali raporlama süreçlerini otomatikleştirme",
@@ -253,7 +253,7 @@ export async function seedDatabase() {
         feedback: "Analitik düşünce ve problem çözme becerileri mükemmel"
       },
       {
-        employeeId: 5,
+        employeeId: insertedEmployees[4].id,
         reviewPeriod: "2024-Q1",
         score: "4.0",
         goals: "Operasyonel verimliliği %10 artırma",
@@ -267,7 +267,7 @@ export async function seedDatabase() {
     // Create realistic payroll records
     const samplePayroll = [
       {
-        employeeId: 1,
+        employeeId: insertedEmployees[0].id,
         month: "2024-03",
         baseSalary: "120000.00",
         bonuses: "8000.00",
@@ -277,7 +277,7 @@ export async function seedDatabase() {
         paymentDate: "2024-03-31"
       },
       {
-        employeeId: 2,
+        employeeId: insertedEmployees[1].id,
         month: "2024-03",
         baseSalary: "95000.00",
         bonuses: "6000.00",
@@ -287,7 +287,7 @@ export async function seedDatabase() {
         paymentDate: "2024-03-31"
       },
       {
-        employeeId: 3,
+        employeeId: insertedEmployees[2].id,
         month: "2024-03",
         baseSalary: "75000.00",
         bonuses: "4000.00",
@@ -297,7 +297,7 @@ export async function seedDatabase() {
         paymentDate: "2024-03-30"
       },
       {
-        employeeId: 4,
+        employeeId: insertedEmployees[3].id,
         month: "2024-03",
         baseSalary: "85000.00",
         bonuses: "5000.00",
@@ -307,7 +307,7 @@ export async function seedDatabase() {
         paymentDate: "2024-03-31"
       },
       {
-        employeeId: 5,
+        employeeId: insertedEmployees[4].id,
         month: "2024-03",
         baseSalary: "70000.00",
         bonuses: "3500.00",
