@@ -11,6 +11,16 @@ import HRManagerDashboard from "@/pages/dashboard/HRManagerDashboard";
 import HRSpecialistDashboard from "@/pages/dashboard/HRSpecialistDashboard";
 import DepartmentManagerDashboard from "@/pages/dashboard/DepartmentManagerDashboard";
 import EmployeeDashboard from "@/pages/dashboard/EmployeeDashboard";
+
+// Admin Management Pages
+import CompanyManagement from "@/pages/admin/CompanyManagement";
+import UserManagement from "@/pages/admin/UserManagement";
+import DepartmentManagement from "@/pages/admin/DepartmentManagement";
+import RecruitmentManagement from "@/pages/admin/RecruitmentManagement";
+import AnalyticsDashboard from "@/pages/admin/AnalyticsDashboard";
+import AuditLogs from "@/pages/admin/AuditLogs";
+
+// Other Pages
 import Employees from "@/pages/employees";
 import Performance from "@/pages/performance";
 import Leaves from "@/pages/leaves";
@@ -73,6 +83,14 @@ function Router() {
       <Route path="/" component={DashboardComponent} />
       <Route path="/dashboard" component={DashboardComponent} />
 
+      {/* Admin Management Routes */}
+      {userRole === 'admin' && <Route path="/company" component={CompanyManagement} />}
+      {userRole === 'admin' && <Route path="/users" component={UserManagement} />}
+      {userRole === 'admin' && <Route path="/departments" component={DepartmentManagement} />}
+      {userRole === 'admin' && <Route path="/recruitment" component={RecruitmentManagement} />}
+      {userRole === 'admin' && <Route path="/analytics" component={AnalyticsDashboard} />}
+      {userRole === 'admin' && <Route path="/audit" component={AuditLogs} />}
+      
       {/* Conditional routes based on permissions */}
       {permissions.canViewEmployees && <Route path="/employees" component={Employees} />}
       {permissions.canViewPerformance && <Route path="/performance" component={Performance} />}
