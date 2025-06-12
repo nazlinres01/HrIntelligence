@@ -46,17 +46,21 @@ function Router() {
 
   // Role-specific dashboard component selector
   const getDashboardComponent = () => {
-    switch (userRole) {
+    switch (userRole?.toLowerCase()) {
       case 'owner':
       case 'admin':
         return OwnerDashboard;
       case 'hr_manager':
+      case 'ik_müdürü':
         return HRManagerDashboard;
       case 'hr_specialist':
+      case 'ik':
         return HRSpecialistDashboard;
       case 'department_manager':
+      case 'departman_müdürü':
         return DepartmentManagerDashboard;
       case 'employee':
+      case 'çalışan':
         return EmployeeDashboard;
       default:
         return Dashboard;
