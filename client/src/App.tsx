@@ -5,7 +5,7 @@ import { Toaster } from "@/components/ui/toaster";
 import { TooltipProvider } from "@/components/ui/tooltip";
 import { LanguageProvider } from "@/hooks/use-language";
 import { useAuth } from "./hooks/useAuth";
-import Sidebar from "@/components/layout/sidebar";
+import EnterpriseSidebar from "@/components/layout/EnterpriseSidebar";
 import AdminDashboard from "@/pages/dashboard/AdminDashboard";
 import HRManagerDashboard from "@/pages/dashboard/HRManagerDashboard";
 import HRSpecialistDashboard from "@/pages/dashboard/HRSpecialistDashboard";
@@ -21,9 +21,6 @@ import AnalyticsDashboard from "@/pages/admin/AnalyticsDashboard";
 // Enterprise HR Management Pages
 import EnterpriseJobManagement from "@/pages/admin/EnterpriseJobManagement";
 import EnterprisePayrollCenter from "@/pages/admin/EnterprisePayrollCenter";
-import LeaveManagement from "@/pages/admin/LeaveManagement";
-import PerformanceManagement from "@/pages/admin/PerformanceManagement";
-import TrainingManagement from "@/pages/admin/TrainingManagement";
 
 // Other Pages
 import Employees from "@/pages/employees";
@@ -85,15 +82,15 @@ function Router() {
   const DashboardComponent = getDashboardComponent();
 
   return (
-    <div className="flex h-screen bg-gray-50 dark:bg-gray-900">
-      <Sidebar />
+    <div className="flex h-screen bg-gradient-to-br from-slate-900 via-gray-900 to-black">
+      <EnterpriseSidebar />
       <main className="flex-1 flex flex-col h-screen overflow-hidden">
         <div className="flex-1 overflow-y-auto">
           <Switch>
             <Route path="/" component={DashboardComponent} />
             <Route path="/dashboard" component={DashboardComponent} />
 
-            {/* Streamlined Admin Routes */}
+            {/* Enterprise Admin Routes */}
             <Route path="/admin/companies" component={CompanyManagement} />
             <Route path="/admin/users" component={UserManagement} />
             <Route path="/admin/departments" component={DepartmentManagement} />
@@ -102,9 +99,6 @@ function Router() {
             {/* Enterprise HR Management Routes */}
             <Route path="/admin/job-postings" component={EnterpriseJobManagement} />
             <Route path="/admin/payroll" component={EnterprisePayrollCenter} />
-            <Route path="/admin/leaves" component={LeaveManagement} />
-            <Route path="/admin/performance" component={PerformanceManagement} />
-            <Route path="/admin/trainings" component={TrainingManagement} />
             
             <Route component={NotFound} />
           </Switch>
