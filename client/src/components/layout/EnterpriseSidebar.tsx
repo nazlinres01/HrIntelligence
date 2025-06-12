@@ -335,19 +335,19 @@ export default function EnterpriseSidebar() {
 
         {/* System Status */}
         {!isCollapsed && (
-          <div className="p-4 bg-gray-900/30 border-t border-gray-800">
+          <div className="p-4 bg-gray-50 border-t border-gray-200">
             <div className="flex items-center justify-between text-xs">
-              <div className="flex items-center space-x-2 text-gray-400">
+              <div className="flex items-center space-x-2 text-gray-600">
                 <Activity className="h-3 w-3" />
-                <span>System Status</span>
+                <span>Sistem Durumu</span>
               </div>
               <div className="flex items-center space-x-1">
-                <div className="w-2 h-2 bg-green-400 rounded-full animate-pulse"></div>
-                <span className="text-green-400 font-medium">Operational</span>
+                <div className="w-2 h-2 bg-emerald-500 rounded-full animate-pulse"></div>
+                <span className="text-emerald-600 font-medium">Operasyonel</span>
               </div>
             </div>
             <div className="mt-2 flex items-center justify-between text-xs text-gray-500">
-              <span>Uptime: 99.9%</span>
+              <span>Çalışma Süresi: %99.9</span>
               <span>v2.4.1</span>
             </div>
           </div>
