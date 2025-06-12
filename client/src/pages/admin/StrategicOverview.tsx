@@ -31,27 +31,27 @@ import {
 export default function StrategicOverview() {
   const [timeRange, setTimeRange] = useState("quarterly");
 
-  const { data: employees = [] } = useQuery({
+  const { data: employees = [] } = useQuery<any[]>({
     queryKey: ["/api/employees"]
   });
 
-  const { data: departments = [] } = useQuery({
+  const { data: departments = [] } = useQuery<any[]>({
     queryKey: ["/api/departments"]
   });
 
-  const { data: companies = [] } = useQuery({
+  const { data: companies = [] } = useQuery<any[]>({
     queryKey: ["/api/companies"]
   });
 
-  const { data: payrolls = [] } = useQuery({
+  const { data: payrolls = [] } = useQuery<any[]>({
     queryKey: ["/api/payroll"]
   });
 
-  const { data: performance = [] } = useQuery({
+  const { data: performance = [] } = useQuery<any[]>({
     queryKey: ["/api/performance"]
   });
 
-  const { data: trainings = [] } = useQuery({
+  const { data: trainings = [] } = useQuery<any[]>({
     queryKey: ["/api/trainings"]
   });
 

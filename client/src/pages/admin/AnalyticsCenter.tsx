@@ -29,38 +29,38 @@ export default function AnalyticsCenter() {
   const [timeRange, setTimeRange] = useState("last30days");
   const [departmentFilter, setDepartmentFilter] = useState("all");
 
-  const { data: employees = [] } = useQuery({
+  const { data: employees = [] } = useQuery<any[]>({
     queryKey: ["/api/employees"]
   });
 
-  const { data: departments = [] } = useQuery({
+  const { data: departments = [] } = useQuery<any[]>({
     queryKey: ["/api/departments"]
   });
 
-  const { data: payrolls = [] } = useQuery({
+  const { data: payrolls = [] } = useQuery<any[]>({
     queryKey: ["/api/payroll"]
   });
 
-  const { data: leaves = [] } = useQuery({
+  const { data: leaves = [] } = useQuery<any[]>({
     queryKey: ["/api/leaves"]
   });
 
-  const { data: performance = [] } = useQuery({
+  const { data: performance = [] } = useQuery<any[]>({
     queryKey: ["/api/performance"]
   });
 
-  const { data: trainings = [] } = useQuery({
+  const { data: trainings = [] } = useQuery<any[]>({
     queryKey: ["/api/trainings"]
   });
 
   // Analytics calculations
   const getAnalytics = () => {
-    const totalEmployees = employees.length;
-    const activeDepartments = departments.length;
+    const totalEmployees = (employees as any[]).length;
+    const activeDepartments = (departments as any[]).length;
     
     // Employee distribution by department
-    const departmentDistribution = departments.map((dept: any) => {
-      const deptEmployees = employees.filter((emp: any) => emp.departmentId === dept.id);
+    const departmentDistribution = (departments as any[]).map((dept: any) => {
+      const deptEmployees = (employees as any[]).filter((emp: any) => emp.departmentId === dept.id);
       return {
         name: dept.name,
         count: deptEmployees.length,
@@ -69,27 +69,27 @@ export default function AnalyticsCenter() {
     });
 
     // Payroll analytics
-    const totalPayroll = payrolls.reduce((sum: number, payroll: any) => {
+    const totalPayroll = (payrolls as any[]).reduce((sum: number, payroll: any) => {
       return sum + (parseFloat(payroll.baseSalary || 0) + parseFloat(payroll.bonus || 0));
     }, 0);
 
-    const avgSalary = payrolls.length > 0 ? totalPayroll / payrolls.length : 0;
+    const avgSalary = (payrolls as any[]).length > 0 ? totalPayroll / (payrolls as any[]).length : 0;
 
     // Leave analytics
-    const pendingLeaves = leaves.filter((leave: any) => leave.status === 'pending').length;
-    const approvedLeaves = leaves.filter((leave: any) => leave.status === 'approved').length;
-    const totalLeaves = leaves.length;
+    const pendingLeaves = (leaves as any[]).filter((leave: any) => leave.status === 'pending').length;
+    const approvedLeaves = (leaves as any[]).filter((leave: any) => leave.status === 'approved').length;
+    const totalLeaves = (leaves as any[]).length;
 
     // Performance analytics
-    const avgPerformanceScore = performance.length > 0 
-      ? performance.reduce((sum: number, perf: any) => sum + (perf.overallScore || 0), 0) / performance.length 
+    const avgPerformanceScore = (performance as any[]).length > 0 
+      ? (performance as any[]).reduce((sum: number, perf: any) => sum + (perf.overallScore || 0), 0) / (performance as any[]).length 
       : 0;
 
-    const highPerformers = performance.filter((perf: any) => (perf.overallScore || 0) >= 4.0).length;
+    const highPerformers = (performance as any[]).filter((perf: any) => (perf.overallScore || 0) >= 4.0).length;
 
     // Training analytics
-    const activeTrainings = trainings.filter((training: any) => training.status === 'active').length;
-    const completedTrainings = trainings.filter((training: any) => training.status === 'completed').length;
+    const activeTrainings = (trainings as any[]).filter((training: any) => training.status === 'active').length;
+    const completedTrainings = (trainings as any[]).filter((training: any) => training.status === 'completed').length;
 
     // Growth metrics
     const employeeGrowthRate = 12.5; // Mock data - would calculate from historical data

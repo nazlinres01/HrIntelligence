@@ -114,7 +114,7 @@ export default function EnterprisePayrollCenter() {
     return (payrolls as any[]).filter((payroll: any) => {
       const matchesSearch = payroll.employee?.firstName?.toLowerCase()?.includes(searchTerm.toLowerCase()) ||
                            payroll.employee?.lastName?.toLowerCase()?.includes(searchTerm.toLowerCase()) ||
-                           payroll.employeeId?.toLowerCase()?.includes(searchTerm.toLowerCase());
+                           payroll.employeeId?.toString()?.toLowerCase()?.includes(searchTerm.toLowerCase());
       const matchesPeriod = periodFilter === "all" || payroll.period === periodFilter;
       const matchesStatus = statusFilter === "all" || payroll.status === statusFilter;
       return matchesSearch && matchesPeriod && matchesStatus;

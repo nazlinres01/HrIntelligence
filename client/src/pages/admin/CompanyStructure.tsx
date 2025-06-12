@@ -58,15 +58,15 @@ export default function CompanyStructure() {
   const { toast } = useToast();
   const queryClient = useQueryClient();
 
-  const { data: companies = [], isLoading: companiesLoading } = useQuery({
+  const { data: companies = [], isLoading: companiesLoading } = useQuery<any[]>({
     queryKey: ["/api/companies"]
   });
 
-  const { data: employees = [] } = useQuery({
+  const { data: employees = [] } = useQuery<any[]>({
     queryKey: ["/api/employees"]
   });
 
-  const { data: departments = [] } = useQuery({
+  const { data: departments = [] } = useQuery<any[]>({
     queryKey: ["/api/departments"]
   });
 
@@ -89,10 +89,7 @@ export default function CompanyStructure() {
 
   const createCompanyMutation = useMutation({
     mutationFn: async (data: CompanyFormData) => {
-      return apiRequest("/api/companies", {
-        method: "POST",
-        body: JSON.stringify(data)
-      });
+      return apiRequest("POST", "/api/companies", data);
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ["/api/companies"] });
@@ -114,9 +111,7 @@ export default function CompanyStructure() {
 
   const deleteCompanyMutation = useMutation({
     mutationFn: async (id: string) => {
-      return apiRequest(`/api/companies/${id}`, {
-        method: "DELETE"
-      });
+      return apiRequest("DELETE", `/api/companies/${id}`);
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ["/api/companies"] });
@@ -129,7 +124,7 @@ export default function CompanyStructure() {
 
   // Filter companies
   const filteredCompanies = React.useMemo(() => {
-    return companies.filter((company: any) => {
+    return (companies as any[]).filter((company: any) => {
       const matchesSearch = company.name?.toLowerCase()?.includes(searchTerm.toLowerCase()) ||
                            company.industry?.toLowerCase()?.includes(searchTerm.toLowerCase());
       const matchesType = typeFilter === "all" || company.type === typeFilter;
@@ -142,20 +137,20 @@ export default function CompanyStructure() {
   };
 
   const getCompanyStats = () => {
-    const totalCompanies = companies.length;
-    const totalEmployees = employees.length;
-    const totalDepartments = departments.length;
-    const avgEmployeesPerCompany = companies.length > 0 ? Math.round(employees.length / companies.length) : 0;
+    const totalCompanies = (companies as any[]).length;
+    const totalEmployees = (employees as any[]).length;
+    const totalDepartments = (departments as any[]).length;
+    const avgEmployeesPerCompany = (companies as any[]).length > 0 ? Math.round((employees as any[]).length / (companies as any[]).length) : 0;
     
     return { totalCompanies, totalEmployees, totalDepartments, avgEmployeesPerCompany };
   };
 
   const getEmployeesByCompany = (companyId: string) => {
-    return employees.filter((emp: any) => emp.companyId === companyId);
+    return (employees as any[]).filter((emp: any) => emp.companyId === companyId);
   };
 
   const getDepartmentsByCompany = (companyId: string) => {
-    return departments.filter((dept: any) => dept.companyId === companyId);
+    return (departments as any[]).filter((dept: any) => dept.companyId === companyId);
   };
 
   const getCompanyTypeDisplayName = (type: string) => {
