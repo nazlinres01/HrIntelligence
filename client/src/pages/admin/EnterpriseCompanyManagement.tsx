@@ -260,62 +260,62 @@ export default function EnterpriseCompanyManagement() {
             </CardContent>
           </Card>
 
-          <Card className="bg-gray-800/50 border-gray-700 hover:bg-gray-800/70 transition-all duration-300 group">
+          <Card className="bg-white border-gray-200 hover:shadow-xl transition-all duration-300 group hover:border-gray-300">
             <CardHeader className="pb-3">
               <div className="flex items-center justify-between">
                 <div className="p-3 rounded-xl bg-gradient-to-r from-emerald-500 to-teal-500 shadow-lg group-hover:scale-110 transition-transform">
                   <CheckCircle className="h-6 w-6 text-white" />
                 </div>
-                <Badge className="bg-green-500/20 text-green-400 border-green-500/30">
+                <Badge className="bg-emerald-100 text-emerald-700 border-emerald-200">
                   {Math.round((companyStats.active / companyStats.total) * 100)}%
                 </Badge>
               </div>
             </CardHeader>
             <CardContent>
               <div className="space-y-2">
-                <div className="text-2xl font-bold text-white">{companyStats.active}</div>
-                <div className="text-sm text-gray-400">Aktif Şirketler</div>
+                <div className="text-2xl font-bold text-gray-900">{companyStats.active}</div>
+                <div className="text-sm text-gray-600">Aktif Şirketler</div>
                 <div className="text-xs text-gray-500">Operasyonel durumdaki şirketler</div>
               </div>
             </CardContent>
           </Card>
 
-          <Card className="bg-gray-800/50 border-gray-700 hover:bg-gray-800/70 transition-all duration-300 group">
+          <Card className="bg-white border-gray-200 hover:shadow-xl transition-all duration-300 group hover:border-gray-300">
             <CardHeader className="pb-3">
               <div className="flex items-center justify-between">
-                <div className="p-3 rounded-xl bg-gradient-to-r from-purple-500 to-pink-500 shadow-lg group-hover:scale-110 transition-transform">
+                <div className="p-3 rounded-xl bg-gradient-to-r from-indigo-500 to-purple-500 shadow-lg group-hover:scale-110 transition-transform">
                   <Users className="h-6 w-6 text-white" />
                 </div>
                 <div className="flex items-center space-x-1">
-                  <TrendingUp className="h-4 w-4 text-green-400" />
-                  <span className="text-sm font-medium text-green-400">+12%</span>
+                  <TrendingUp className="h-4 w-4 text-green-600" />
+                  <span className="text-sm font-medium text-green-600">+12%</span>
                 </div>
               </div>
             </CardHeader>
             <CardContent>
               <div className="space-y-2">
-                <div className="text-2xl font-bold text-white">{companyStats.totalEmployees}</div>
-                <div className="text-sm text-gray-400">Toplam Çalışan</div>
+                <div className="text-2xl font-bold text-gray-900">{companyStats.totalEmployees}</div>
+                <div className="text-sm text-gray-600">Toplam Çalışan</div>
                 <div className="text-xs text-gray-500">Tüm şirketlerdeki personel</div>
               </div>
             </CardContent>
           </Card>
 
-          <Card className="bg-gray-800/50 border-gray-700 hover:bg-gray-800/70 transition-all duration-300 group">
+          <Card className="bg-white border-gray-200 hover:shadow-xl transition-all duration-300 group hover:border-gray-300">
             <CardHeader className="pb-3">
               <div className="flex items-center justify-between">
                 <div className="p-3 rounded-xl bg-gradient-to-r from-orange-500 to-red-500 shadow-lg group-hover:scale-110 transition-transform">
                   <Target className="h-6 w-6 text-white" />
                 </div>
-                <Badge className="bg-blue-500/20 text-blue-400 border-blue-500/30">
+                <Badge className="bg-blue-100 text-blue-700 border-blue-200">
                   Organized
                 </Badge>
               </div>
             </CardHeader>
             <CardContent>
               <div className="space-y-2">
-                <div className="text-2xl font-bold text-white">{companyStats.totalDepartments}</div>
-                <div className="text-sm text-gray-400">Toplam Departman</div>
+                <div className="text-2xl font-bold text-gray-900">{companyStats.totalDepartments}</div>
+                <div className="text-sm text-gray-600">Toplam Departman</div>
                 <div className="text-xs text-gray-500">Organizasyonel birimler</div>
               </div>
             </CardContent>
