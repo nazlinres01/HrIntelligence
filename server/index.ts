@@ -41,10 +41,8 @@ app.use((req, res, next) => {
 });
 
 (async () => {
-  // Seed database with sample data
-  console.log('Seeding database with company and team data...');
-  await seedDatabase();
-  console.log('Database seeded successfully with company and team data');
+  // Skip seeding to reduce database load
+  console.log('Starting server without seeding...');
   
   const server = await registerRoutes(app);
 
