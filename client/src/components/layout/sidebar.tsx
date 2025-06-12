@@ -3,10 +3,10 @@ import { useAuth } from "@/hooks/useAuth";
 import { cn } from "@/lib/utils";
 import { Button } from "@/components/ui/button";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
-import { Separator } from "@/components/ui/separator";
 import { getUserPermissions, roleLabels, type UserRole } from "@/lib/permissions";
 import { useToast } from "@/hooks/use-toast";
-import type { Permission } from "@shared/schema";
+import { apiRequest } from "@/lib/queryClient";
+import { useMutation } from "@tanstack/react-query";
 
 import { 
   Building2, 
@@ -24,286 +24,334 @@ import {
   Shield,
   Target,
   Clock,
-  TrendingUp
+  TrendingUp,
+  Briefcase,
+  Award,
+  BookOpen,
+  MessageSquare,
+  PieChart,
+  Zap
 } from "lucide-react";
 
-const getRoleBasedNavigation = (userRole: UserRole) => {
-  const permissions = getUserPermissions(userRole);
-  
-  return {
-    main: [
-      {
-        name: "Dashboard",
-        href: "/",
-        icon: LayoutDashboard,
-        show: true
-      },
-      {
-        name: "Çalışanlar",
-        href: "/employees",
-        icon: Users,
-        show: permissions.canViewEmployees || true
-      },
-      {
-        name: "Performans",
-        href: "/performance",
-        icon: BarChart3,
-        show: permissions.canViewPerformance || true
-      },
-      {
-        name: "İzinler",
-        href: "/leaves",
-        icon: Calendar,
-        show: true
-      },
-      {
-        name: "Bordro",
-        href: "/payroll",
-        icon: CreditCard,
-        show: permissions.canViewPayroll || true
-      },
-      {
-        name: "Raporlar",
-        href: "/reports",
-        icon: FileText,
-        show: permissions.canViewReports || true
-      }
-    ],
-    hr: [
-      {
-        name: "İK Yönetimi",
-        href: "/hr-manager",
-        icon: Shield,
-        show: userRole === 'hr_manager'
-      },
-      {
-        name: "İK Uzmanı",
-        href: "/hr-specialist", 
-        icon: Target,
-        show: userRole === 'hr_specialist'
-      },
-      {
-        name: "Departman Yönetimi",
-        href: "/department-manager",
-        icon: Building2,
-        show: userRole === 'department_manager'
-      }
-    ],
-    admin: [
-      {
-        name: "Çalışanlar",
-        href: "/employees",
-        icon: Users,
-        show: permissions.canViewEmployees || true
-      },
-      {
-        name: "Performans",
-        href: "/performance",
-        icon: BarChart3,
-        show: permissions.canViewPerformance || true
-      },
-      {
-        name: "Ayarlar",
-        href: "/settings",
-        icon: Settings,
-        show: userRole === 'hr_manager' || userRole === 'owner'
-      },
-      {
-        name: "Denetim Kayıtları",
-        href: "/audit",
-        icon: Clock,
-        show: permissions.canViewAuditLogs || false
-      }
-    ]
-  };
+interface NavigationItem {
+  name: string;
+  href: string;
+  icon: any;
+  show: boolean;
+}
+
+interface NavigationSection {
+  title: string;
+  items: NavigationItem[];
+}
+
+const getRoleBasedNavigation = (userRole: UserRole): NavigationSection[] => {
+  switch (userRole?.toLowerCase()) {
+    case 'admin':
+    case 'owner':
+      return [
+        {
+          title: "Ana Panel",
+          items: [
+            { name: "Dashboard", href: "/", icon: LayoutDashboard, show: true },
+            { name: "Şirket Yönetimi", href: "/company", icon: Building2, show: true },
+            { name: "Kullanıcılar", href: "/users", icon: Users, show: true },
+            { name: "Departmanlar", href: "/departments", icon: Target, show: true },
+          ]
+        },
+        {
+          title: "İnsan Kaynakları",
+          items: [
+            { name: "Çalışanlar", href: "/employees", icon: UserCircle, show: true },
+            { name: "İşe Alım", href: "/recruitment", icon: Briefcase, show: true },
+            { name: "Performans", href: "/performance", icon: TrendingUp, show: true },
+            { name: "Bordro", href: "/payroll", icon: CreditCard, show: true },
+            { name: "İzin Yönetimi", href: "/leaves", icon: Calendar, show: true },
+          ]
+        },
+        {
+          title: "Analiz & Raporlar",
+          items: [
+            { name: "Dashboard Analytics", href: "/analytics", icon: PieChart, show: true },
+            { name: "İK Raporları", href: "/reports", icon: FileText, show: true },
+            { name: "Finansal Raporlar", href: "/financial-reports", icon: BarChart3, show: true },
+            { name: "Denetim Kayıtları", href: "/audit", icon: Clock, show: true },
+          ]
+        }
+      ];
+
+    case 'hr_manager':
+    case 'ik_müdürü':
+      return [
+        {
+          title: "Ana Panel",
+          items: [
+            { name: "Dashboard", href: "/", icon: LayoutDashboard, show: true },
+            { name: "Çalışanlar", href: "/employees", icon: Users, show: true },
+            { name: "Departmanlar", href: "/departments", icon: Target, show: true },
+          ]
+        },
+        {
+          title: "İK Yönetimi",
+          items: [
+            { name: "İşe Alım Süreci", href: "/recruitment", icon: Briefcase, show: true },
+            { name: "Performans Yönetimi", href: "/performance", icon: TrendingUp, show: true },
+            { name: "Bordro İşlemleri", href: "/payroll", icon: CreditCard, show: true },
+            { name: "İzin Onayları", href: "/leaves", icon: Calendar, show: true },
+            { name: "Disiplin İşlemleri", href: "/discipline", icon: Shield, show: true },
+          ]
+        },
+        {
+          title: "Raporlar & Analiz",
+          items: [
+            { name: "İK Raporları", href: "/hr-reports", icon: FileText, show: true },
+            { name: "Performans Analizi", href: "/performance-analytics", icon: BarChart3, show: true },
+            { name: "Bordro Raporları", href: "/payroll-reports", icon: PieChart, show: true },
+          ]
+        }
+      ];
+
+    case 'hr_specialist':
+    case 'ik':
+      return [
+        {
+          title: "Ana Panel",
+          items: [
+            { name: "Dashboard", href: "/", icon: LayoutDashboard, show: true },
+            { name: "Çalışan Kayıtları", href: "/employee-records", icon: Users, show: true },
+            { name: "Özlük İşlemleri", href: "/personnel-operations", icon: FileText, show: true },
+          ]
+        },
+        {
+          title: "İK İşlemleri",
+          items: [
+            { name: "İzin İşlemleri", href: "/leave-operations", icon: Calendar, show: true },
+            { name: "Performans Takibi", href: "/performance-tracking", icon: TrendingUp, show: true },
+            { name: "Bordro Hazırlığı", href: "/payroll-preparation", icon: CreditCard, show: true },
+            { name: "Belge Yönetimi", href: "/document-management", icon: FileText, show: true },
+          ]
+        },
+        {
+          title: "Destek & Formlar",
+          items: [
+            { name: "Çalışan Talepleri", href: "/employee-requests", icon: Bell, show: true },
+            { name: "İK Formları", href: "/hr-forms", icon: FileText, show: true },
+            { name: "Eğitim Kayıtları", href: "/training-records", icon: BookOpen, show: true },
+          ]
+        }
+      ];
+
+    case 'department_manager':
+    case 'departman_müdürü':
+      return [
+        {
+          title: "Ana Panel",
+          items: [
+            { name: "Dashboard", href: "/", icon: LayoutDashboard, show: true },
+            { name: "Ekibim", href: "/my-team", icon: Users, show: true },
+            { name: "Proje Yönetimi", href: "/projects", icon: Target, show: true },
+          ]
+        },
+        {
+          title: "Ekip Yönetimi",
+          items: [
+            { name: "Performans Değerlendirme", href: "/team-performance", icon: TrendingUp, show: true },
+            { name: "İzin Onayları", href: "/leave-approvals", icon: Calendar, show: true },
+            { name: "Mesai Takibi", href: "/time-tracking", icon: Clock, show: true },
+            { name: "Harcama Onayları", href: "/expense-approvals", icon: CreditCard, show: true },
+          ]
+        },
+        {
+          title: "Raporlar",
+          items: [
+            { name: "Departman Raporları", href: "/department-reports", icon: FileText, show: true },
+            { name: "Verimlilik Analizi", href: "/productivity-analysis", icon: BarChart3, show: true },
+            { name: "Takım Performansı", href: "/team-analytics", icon: Award, show: true },
+          ]
+        }
+      ];
+
+    case 'employee':
+    case 'çalışan':
+      return [
+        {
+          title: "Ana Panel",
+          items: [
+            { name: "Dashboard", href: "/", icon: LayoutDashboard, show: true },
+            { name: "Profilim", href: "/my-profile", icon: UserCircle, show: true },
+            { name: "Mesai Takibi", href: "/time-tracking", icon: Clock, show: true },
+          ]
+        },
+        {
+          title: "Taleplerim",
+          items: [
+            { name: "İzin Talebi", href: "/leave-request", icon: Calendar, show: true },
+            { name: "Harcama Talebi", href: "/expense-request", icon: CreditCard, show: true },
+            { name: "Destek Talebi", href: "/support-request", icon: HelpCircle, show: true },
+            { name: "Mesajlarım", href: "/messages", icon: MessageSquare, show: true },
+          ]
+        },
+        {
+          title: "Kişisel",
+          items: [
+            { name: "Performansım", href: "/my-performance", icon: TrendingUp, show: true },
+            { name: "Bordro Bilgileri", href: "/my-payroll", icon: FileText, show: true },
+            { name: "Eğitimlerim", href: "/my-trainings", icon: BookOpen, show: true },
+            { name: "Başarılarım", href: "/my-achievements", icon: Award, show: true },
+          ]
+        }
+      ];
+
+    default:
+      return [
+        {
+          title: "Ana Panel",
+          items: [
+            { name: "Dashboard", href: "/", icon: LayoutDashboard, show: true },
+            { name: "Çalışanlar", href: "/employees", icon: Users, show: true },
+            { name: "Performans", href: "/performance", icon: BarChart3, show: true },
+          ]
+        }
+      ];
+  }
 };
 
 export default function Sidebar() {
-  const { user, isLoading } = useAuth();
+  const { user } = useAuth();
   const [location] = useLocation();
   const { toast } = useToast();
 
-  if (isLoading) {
-    return (
-      <div className="w-64 bg-white dark:bg-slate-800 border-r border-slate-200 dark:border-slate-700 h-screen">
-        <div className="p-4">
-          <div className="animate-pulse">
-            <div className="h-8 bg-slate-200 dark:bg-slate-700 rounded mb-4"></div>
-            <div className="space-y-2">
-              {[...Array(6)].map((_, i) => (
-                <div key={i} className="h-6 bg-slate-200 dark:bg-slate-700 rounded"></div>
-              ))}
-            </div>
-          </div>
-        </div>
-      </div>
-    );
+  const logout = useMutation({
+    mutationFn: async () => {
+      await apiRequest("POST", "/api/auth/logout");
+    },
+    onSuccess: () => {
+      toast({
+        title: "Başarıyla çıkış yapıldı",
+        description: "Güvenli bir şekilde oturumunuz sonlandırıldı.",
+      });
+      window.location.href = "/login";
+    },
+    onError: () => {
+      toast({
+        title: "Çıkış yapılırken hata oluştu",
+        description: "Lütfen tekrar deneyin.",
+        variant: "destructive",
+      });
+    },
+  });
+
+  if (!user) {
+    return null;
   }
 
-  const userData = user as any || {};
-  const userRole = (userData?.role as UserRole) || 'employee';
-  const permissions = getUserPermissions(userRole);
+  const userData = user as any;
+  const userRole = userData.role as UserRole;
   const navigation = getRoleBasedNavigation(userRole);
-
-  const handleLogout = () => {
-    toast({
-      title: "Çıkış yapılıyor...",
-      description: "Güvenle çıkış yapılıyor",
-    });
-    
-    setTimeout(() => {
-      window.location.href = "/api/logout";
-    }, 500);
-  };
+  const userInitials = `${userData.firstName?.[0] || ''}${userData.lastName?.[0] || ''}`.toUpperCase();
 
   return (
-    <div className="w-64 bg-white dark:bg-slate-800 border-r border-slate-200 dark:border-slate-700 h-screen flex flex-col">
-      {/* Company Header */}
-      <div className="p-6 border-b border-slate-200 dark:border-slate-700">
+    <div className="flex h-screen w-64 flex-col bg-white dark:bg-gray-900 border-r border-gray-200 dark:border-gray-800">
+      {/* Header */}
+      <div className="flex h-16 items-center justify-between px-6 border-b border-gray-200 dark:border-gray-800">
         <div className="flex items-center space-x-3">
-          <div className="w-8 h-8 bg-slate-900 dark:bg-slate-100 rounded-lg flex items-center justify-center">
-            <Building2 className="h-5 w-5 text-white dark:text-slate-900" />
+          <div className="w-8 h-8 bg-gradient-to-br from-blue-500 to-indigo-600 rounded-lg flex items-center justify-center shadow-sm">
+            <Building2 className="h-5 w-5 text-white" />
           </div>
-          <div>
-            <h2 className="text-lg font-semibold text-slate-900 dark:text-slate-100">
-              İK Sistemi
-            </h2>
-            <p className="text-xs text-slate-600 dark:text-slate-400">
-              {roleLabels[userRole] || 'Çalışan'}
+          <h1 className="text-xl font-semibold text-gray-900 dark:text-white">HR360</h1>
+        </div>
+      </div>
+
+      {/* User Profile */}
+      <div className="p-4">
+        <div className="flex items-center space-x-3 p-3 rounded-xl bg-gray-50 dark:bg-gray-800/50 border border-gray-200 dark:border-gray-700">
+          <Avatar className="h-10 w-10">
+            <AvatarImage src={(user as any).profileImageUrl} />
+            <AvatarFallback className="bg-gradient-to-br from-blue-500 to-indigo-600 text-white font-medium">
+              {userInitials}
+            </AvatarFallback>
+          </Avatar>
+          <div className="flex-1 min-w-0">
+            <p className="text-sm font-medium text-gray-900 dark:text-white truncate">
+              {(user as any).firstName} {(user as any).lastName}
+            </p>
+            <p className="text-xs text-blue-600 dark:text-blue-400 font-medium">
+              {roleLabels[userRole] || userRole}
             </p>
           </div>
         </div>
       </div>
 
       {/* Navigation */}
-      <div className="flex-1 overflow-y-auto p-4">
-        <nav className="space-y-6">
-          {/* Main Navigation */}
-          <div>
-            <h3 className="text-xs font-semibold text-slate-500 dark:text-slate-400 uppercase tracking-wider mb-3">
-              Ana Menü
+      <nav className="flex-1 px-4 pb-4 space-y-6 overflow-y-auto">
+        {navigation.map((section) => (
+          <div key={section.title}>
+            <h3 className="px-3 text-xs font-semibold text-gray-500 dark:text-gray-400 uppercase tracking-wider mb-3">
+              {section.title}
             </h3>
             <div className="space-y-1">
-              {navigation.main.filter(item => item.show).map((item) => {
-                const isActive = location === item.href;
-                return (
-                  <Link key={item.name} href={item.href}>
-                    <Button
-                      variant={isActive ? "secondary" : "ghost"}
-                      className={cn(
-                        "w-full justify-start text-slate-700 dark:text-slate-300",
-                        isActive && "bg-slate-100 dark:bg-slate-700 text-slate-900 dark:text-slate-100"
-                      )}
-                    >
-                      <item.icon className="h-4 w-4 mr-3" />
-                      {item.name}
-                    </Button>
-                  </Link>
-                );
-              })}
+              {section.items
+                .filter(item => item.show)
+                .map((item) => {
+                  const isActive = location === item.href;
+                  const Icon = item.icon;
+                  
+                  return (
+                    <Link key={item.href} href={item.href}>
+                      <Button
+                        variant="ghost"
+                        className={cn(
+                          "w-full justify-start h-10 px-3 text-sm font-medium rounded-lg transition-colors",
+                          isActive
+                            ? "bg-blue-50 dark:bg-blue-900/20 text-blue-700 dark:text-blue-300 border border-blue-200 dark:border-blue-800"
+                            : "text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-800 hover:text-gray-900 dark:hover:text-white"
+                        )}
+                      >
+                        <Icon className={cn(
+                          "mr-3 h-4 w-4",
+                          isActive ? "text-blue-600 dark:text-blue-400" : "text-gray-500 dark:text-gray-400"
+                        )} />
+                        {item.name}
+                      </Button>
+                    </Link>
+                  );
+                })}
             </div>
           </div>
+        ))}
+      </nav>
 
-          {/* HR Management */}
-          {navigation.hr.some(item => item.show) && (
-            <>
-              <Separator className="bg-slate-200 dark:bg-slate-700" />
-              <div>
-                <h3 className="text-xs font-semibold text-slate-500 dark:text-slate-400 uppercase tracking-wider mb-3">
-                  İK Yönetimi
-                </h3>
-                <div className="space-y-1">
-                  {navigation.hr.filter(item => item.show).map((item) => {
-                    const isActive = location === item.href;
-                    return (
-                      <Link key={item.name} href={item.href}>
-                        <Button
-                          variant={isActive ? "secondary" : "ghost"}
-                          className={cn(
-                            "w-full justify-start text-slate-700 dark:text-slate-300",
-                            isActive && "bg-slate-100 dark:bg-slate-700 text-slate-900 dark:text-slate-100"
-                          )}
-                        >
-                          <item.icon className="h-4 w-4 mr-3" />
-                          {item.name}
-                        </Button>
-                      </Link>
-                    );
-                  })}
-                </div>
-              </div>
-            </>
-          )}
-
-          {/* Admin Section */}
-          {navigation.admin.some(item => item.show) && (
-            <>
-              <Separator className="bg-slate-200 dark:bg-slate-700" />
-              <div>
-                <h3 className="text-xs font-semibold text-slate-500 dark:text-slate-400 uppercase tracking-wider mb-3">
-                  Yönetim
-                </h3>
-                <div className="space-y-1">
-                  {navigation.admin.filter(item => item.show).map((item) => {
-                    const isActive = location === item.href;
-                    return (
-                      <Link key={item.name} href={item.href}>
-                        <Button
-                          variant={isActive ? "secondary" : "ghost"}
-                          className={cn(
-                            "w-full justify-start text-slate-700 dark:text-slate-300",
-                            isActive && "bg-slate-100 dark:bg-slate-700 text-slate-900 dark:text-slate-100"
-                          )}
-                        >
-                          <item.icon className="h-4 w-4 mr-3" />
-                          {item.name}
-                        </Button>
-                      </Link>
-                    );
-                  })}
-                </div>
-              </div>
-            </>
-          )}
-        </nav>
-      </div>
-
-      {/* User Profile & Logout */}
-      <div className="p-4 border-t border-slate-200 dark:border-slate-700">
-        <div className="flex items-center space-x-3 mb-3">
-          <Avatar className="h-8 w-8">
-            <AvatarImage src={userData?.avatar || userData?.profileImageUrl} />
-            <AvatarFallback className="bg-slate-200 dark:bg-slate-600 text-slate-700 dark:text-slate-300">
-              {userData?.firstName?.[0] || 'U'}{userData?.lastName?.[0] || 'S'}
-            </AvatarFallback>
-          </Avatar>
-          <div className="flex-1 min-w-0">
-            <p className="text-sm font-medium text-slate-900 dark:text-slate-100 truncate">
-              {userData?.firstName || 'Kullanıcı'} {userData?.lastName || 'Sistem'}
-            </p>
-            <p className="text-xs text-slate-600 dark:text-slate-400">
-              {roleLabels[userData?.role as UserRole] || roleLabels[userRole]}
-            </p>
-          </div>
-        </div>
-        
-        <div className="space-y-2">
-          <Link href="/profile">
-            <Button variant="ghost" className="w-full justify-start text-slate-700 dark:text-slate-300">
-              <UserCircle className="h-4 w-4 mr-3" />
-              Profil
-            </Button>
-          </Link>
-          
-          <Button 
-            variant="ghost" 
-            className="w-full justify-start text-slate-700 dark:text-slate-300 hover:text-red-600 dark:hover:text-red-400"
-            onClick={handleLogout}
+      {/* Footer */}
+      <div className="p-4 space-y-2 border-t border-gray-200 dark:border-gray-800">
+        <Link href="/notifications">
+          <Button
+            variant="ghost"
+            className="w-full justify-start h-10 px-3 text-sm font-medium rounded-lg text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-800"
           >
-            <LogOut className="h-4 w-4 mr-3" />
-            Çıkış Yap
+            <Bell className="mr-3 h-4 w-4 text-gray-500 dark:text-gray-400" />
+            Bildirimler
           </Button>
-        </div>
+        </Link>
+        
+        <Link href="/settings">
+          <Button
+            variant="ghost"
+            className="w-full justify-start h-10 px-3 text-sm font-medium rounded-lg text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-800"
+          >
+            <Settings className="mr-3 h-4 w-4 text-gray-500 dark:text-gray-400" />
+            Ayarlar
+          </Button>
+        </Link>
+
+        <Button
+          variant="ghost"
+          onClick={() => logout.mutate()}
+          disabled={logout.isPending}
+          className="w-full justify-start h-10 px-3 text-sm font-medium rounded-lg text-red-600 dark:text-red-400 hover:bg-red-50 dark:hover:bg-red-900/20"
+        >
+          <LogOut className="mr-3 h-4 w-4" />
+          {logout.isPending ? "Çıkış yapılıyor..." : "Çıkış Yap"}
+        </Button>
       </div>
     </div>
   );
