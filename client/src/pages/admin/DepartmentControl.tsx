@@ -12,6 +12,7 @@ import { useToast } from "@/hooks/use-toast";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { z } from "zod";
+import { apiRequest } from "@/lib/queryClient";
 import { 
   Building2, 
   Plus, 
@@ -32,7 +33,6 @@ import {
   DollarSign,
   Calendar
 } from "lucide-react";
-import { apiRequest } from "@/lib/queryClient";
 
 const departmentSchema = z.object({
   name: z.string().min(1, "Departman adı belirtilmelidir"),
