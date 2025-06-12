@@ -81,37 +81,39 @@ function Router() {
   const DashboardComponent = getDashboardComponent();
 
   return (
-    <Switch>
-      <Route path="/" component={DashboardComponent} />
-      <Route path="/dashboard" component={DashboardComponent} />
+    <div className="flex h-screen bg-gray-50 dark:bg-gray-900">
+      <Sidebar />
+      <main className="flex-1 overflow-hidden">
+        <Switch>
+          <Route path="/" component={DashboardComponent} />
+          <Route path="/dashboard" component={DashboardComponent} />
 
-      {/* Admin Management Routes */}
-      {(userRole === 'admin' || userRole === 'owner') && <Route path="/admin/companies" component={CompanyManagement} />}
-      {(userRole === 'admin' || userRole === 'owner') && <Route path="/admin/users" component={UserManagement} />}
-      {(userRole === 'admin' || userRole === 'owner') && <Route path="/company" component={CompanyManagement} />}
-      {(userRole === 'admin' || userRole === 'owner') && <Route path="/users" component={UserManagement} />}
-      {(userRole === 'admin' || userRole === 'owner' || userRole === 'hr_manager') && <Route path="/departments" component={DepartmentManagement} />}
-      {(userRole === 'admin' || userRole === 'owner' || userRole === 'hr_manager') && <Route path="/recruitment" component={RecruitmentManagement} />}
-      {(userRole === 'admin' || userRole === 'owner') && <Route path="/analytics" component={AnalyticsDashboard} />}
-      {(userRole === 'admin' || userRole === 'owner' || userRole === 'hr_manager') && <Route path="/reports" component={HRReports} />}
-      {(userRole === 'admin' || userRole === 'owner') && <Route path="/financial-reports" component={FinancialReports} />}
-      {(userRole === 'admin' || userRole === 'owner') && <Route path="/audit" component={AuditLogs} />}
-      
-      {/* Conditional routes based on permissions */}
-      {permissions.canViewEmployees && <Route path="/employees" component={Employees} />}
-      {permissions.canViewPerformance && <Route path="/performance" component={Performance} />}
-      <Route path="/leaves" component={Leaves} />
-      {permissions.canViewPayroll && <Route path="/payroll" component={Payroll} />}
-      {permissions.canViewReports && <Route path="/reports" component={Reports} />}
-      {permissions.canManageTeam && <Route path="/team" component={Team} />}
-      
-      {/* Always available routes */}
-      <Route path="/notifications" component={Notifications} />
-      <Route path="/settings" component={Settings} />
-      <Route path="/help" component={Help} />
-      
-      <Route component={NotFound} />
-    </Switch>
+          {/* Admin Management Routes */}
+          <Route path="/admin/companies" component={CompanyManagement} />
+          <Route path="/admin/users" component={UserManagement} />
+          <Route path="/company" component={CompanyManagement} />
+          <Route path="/users" component={UserManagement} />
+          <Route path="/departments" component={DepartmentManagement} />
+          <Route path="/recruitment" component={RecruitmentManagement} />
+          <Route path="/analytics" component={AnalyticsDashboard} />
+          <Route path="/reports" component={HRReports} />
+          <Route path="/financial-reports" component={FinancialReports} />
+          <Route path="/audit" component={AuditLogs} />
+          
+          {/* Other routes */}
+          <Route path="/employees" component={Employees} />
+          <Route path="/performance" component={Performance} />
+          <Route path="/leaves" component={Leaves} />
+          <Route path="/payroll" component={Payroll} />
+          <Route path="/team" component={Team} />
+          <Route path="/notifications" component={Notifications} />
+          <Route path="/settings" component={Settings} />
+          <Route path="/help" component={Help} />
+          
+          <Route component={NotFound} />
+        </Switch>
+      </main>
+    </div>
   );
 }
 
@@ -120,39 +122,11 @@ function App() {
     <QueryClientProvider client={queryClient}>
       <LanguageProvider>
         <TooltipProvider>
-          <AuthenticatedLayout />
+          <Router />
           <Toaster />
         </TooltipProvider>
       </LanguageProvider>
     </QueryClientProvider>
-  );
-}
-
-function AuthenticatedLayout() {
-  const { isAuthenticated, isLoading } = useAuth();
-
-  if (isLoading) {
-    return (
-      <div className="min-h-screen bg-gray-50 flex items-center justify-center">
-        <div className="text-center">
-          <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-blue-600 mx-auto mb-4"></div>
-          <p className="text-gray-600">Loading...</p>
-        </div>
-      </div>
-    );
-  }
-
-  if (!isAuthenticated) {
-    return <Router />;
-  }
-
-  return (
-    <div className="flex min-h-screen bg-gray-50">
-      <Sidebar />
-      <div className="flex-1 overflow-y-auto">
-        <Router />
-      </div>
-    </div>
   );
 }
 
