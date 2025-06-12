@@ -88,6 +88,7 @@ const getRoleBasedNavigation = (userRole: UserRole): NavigationSection[] => {
             { name: "İzin & Devamsızlık", href: "/leaves", icon: Calendar, show: true, description: "İzin talep ve onay süreçleri" },
             { name: "Performans Değerlendirme", href: "/performance", icon: TrendingUp, show: true, description: "KPI takip ve analiz" },
             { name: "Eğitim & Gelişim", href: "/training", icon: BookOpen, show: true, description: "Personel gelişim programları" },
+            { name: "Bildirimler", href: "/notifications", icon: Bell, show: true, description: "Sistem bildirimleri ve duyurular" },
           ]
         }
       ];
