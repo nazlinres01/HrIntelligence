@@ -484,7 +484,8 @@ export async function registerRoutes(app: Express): Promise<Server> {
   // Leave routes
   app.get('/api/leaves', requireAuth, async (req: any, res) => {
     try {
-      res.json(sampleLeaves);
+      const leaves = await storage.getLeaves();
+      res.json(leaves);
     } catch (error) {
       console.error("Error fetching leaves:", error);
       res.status(500).json({ message: "İzin listesi alınırken hata oluştu" });
@@ -494,17 +495,21 @@ export async function registerRoutes(app: Express): Promise<Server> {
   app.post('/api/leaves', requireAuth, async (req: any, res) => {
     try {
       const leaveData = req.body;
-      const newId = Math.max(...sampleLeaves.map(l => l.id)) + 1;
-      const newLeave = {
-        id: newId,
-        appliedDate: new Date().toISOString().split('T')[0],
-        status: 'pending',
-        approvedBy: null,
-        approvedDate: null,
-        ...leaveData
-      };
+      const userId = req.user.id;
+      const user = await storage.getUser(userId);
       
-      sampleLeaves.push(newLeave);
+      const newLeave = await storage.createLeave(leaveData);
+      
+      await storage.createAuditLog({
+        action: "leave_created",
+        resource: "leave",
+        resourceId: newLeave.id.toString(),
+        userId: userId,
+        companyId: user?.companyId || 0,
+        details: `Yeni izin talebi oluşturuldu: ${leaveData.leaveType}`,
+        ipAddress: req.ip
+      });
+
       res.status(201).json(newLeave);
     } catch (error) {
       console.error("Error creating leave:", error);
@@ -516,18 +521,26 @@ export async function registerRoutes(app: Express): Promise<Server> {
     try {
       const { id } = req.params;
       const updateData = req.body;
-      const leaveIndex = sampleLeaves.findIndex(l => l.id === parseInt(id));
+      const userId = req.user.id;
+      const user = await storage.getUser(userId);
       
-      if (leaveIndex === -1) {
+      const updatedLeave = await storage.updateLeave(parseInt(id), updateData);
+      
+      if (!updatedLeave) {
         return res.status(404).json({ message: "İzin talebi bulunamadı" });
       }
       
-      if (updateData.status === 'approved') {
-        updateData.approvedDate = new Date().toISOString().split('T')[0];
-      }
-      
-      sampleLeaves[leaveIndex] = { ...sampleLeaves[leaveIndex], ...updateData };
-      res.json(sampleLeaves[leaveIndex]);
+      await storage.createAuditLog({
+        action: "leave_updated",
+        resource: "leave",
+        resourceId: id,
+        userId: userId,
+        companyId: user?.companyId || 0,
+        details: `İzin durumu güncellendi: ${updateData.status || 'güncelleme'}`,
+        ipAddress: req.ip
+      });
+
+      res.json(updatedLeave);
     } catch (error) {
       console.error("Error updating leave:", error);
       res.status(500).json({ message: "İzin talebi güncellenirken hata oluştu" });
@@ -537,13 +550,25 @@ export async function registerRoutes(app: Express): Promise<Server> {
   app.delete('/api/leaves/:id', requireAuth, async (req: any, res) => {
     try {
       const { id } = req.params;
-      const leaveIndex = sampleLeaves.findIndex(l => l.id === parseInt(id));
+      const userId = req.user.id;
+      const user = await storage.getUser(userId);
       
-      if (leaveIndex === -1) {
+      const deleted = await storage.deleteLeave(parseInt(id));
+      
+      if (!deleted) {
         return res.status(404).json({ message: "İzin talebi bulunamadı" });
       }
       
-      sampleLeaves.splice(leaveIndex, 1);
+      await storage.createAuditLog({
+        action: "leave_deleted",
+        resource: "leave",
+        resourceId: id,
+        userId: userId,
+        companyId: user?.companyId || 0,
+        details: `İzin talebi silindi`,
+        ipAddress: req.ip
+      });
+
       res.json({ message: "İzin talebi başarıyla silindi" });
     } catch (error) {
       console.error("Error deleting leave:", error);
@@ -1097,7 +1122,8 @@ export async function registerRoutes(app: Express): Promise<Server> {
   // Training routes
   app.get('/api/training', requireAuth, async (req: any, res) => {
     try {
-      res.json(sampleTrainings);
+      const trainings = await storage.getTrainingPrograms();
+      res.json(trainings);
     } catch (error) {
       console.error("Error fetching training records:", error);
       res.status(500).json({ message: "Eğitim kayıtları alınırken hata oluştu" });
@@ -1106,7 +1132,8 @@ export async function registerRoutes(app: Express): Promise<Server> {
 
   app.get('/api/trainings', requireAuth, async (req: any, res) => {
     try {
-      res.json(sampleTrainings);
+      const trainings = await storage.getTrainingPrograms();
+      res.json(trainings);
     } catch (error) {
       console.error("Error fetching training records:", error);
       res.status(500).json({ message: "Eğitim kayıtları alınırken hata oluştu" });
@@ -1116,14 +1143,21 @@ export async function registerRoutes(app: Express): Promise<Server> {
   app.post('/api/training', requireAuth, async (req: any, res) => {
     try {
       const trainingData = req.body;
-      const newId = Math.max(...sampleTrainings.map(t => t.id)) + 1;
-      const newTraining = {
-        id: newId,
-        status: 'scheduled',
-        ...trainingData
-      };
+      const userId = req.user.id;
+      const user = await storage.getUser(userId);
       
-      sampleTrainings.push(newTraining);
+      const newTraining = await storage.createTrainingProgram(trainingData);
+      
+      await storage.createAuditLog({
+        action: "training_created",
+        resource: "training",
+        resourceId: newTraining.id.toString(),
+        userId: userId,
+        companyId: user?.companyId || 0,
+        details: `Yeni eğitim programı oluşturuldu: ${trainingData.title}`,
+        ipAddress: req.ip
+      });
+
       res.status(201).json(newTraining);
     } catch (error) {
       console.error("Error creating training:", error);
@@ -1135,14 +1169,26 @@ export async function registerRoutes(app: Express): Promise<Server> {
     try {
       const { id } = req.params;
       const updateData = req.body;
-      const trainingIndex = sampleTrainings.findIndex(t => t.id === parseInt(id));
+      const userId = req.user.id;
+      const user = await storage.getUser(userId);
       
-      if (trainingIndex === -1) {
+      const updatedTraining = await storage.updateTrainingProgram(parseInt(id), updateData);
+      
+      if (!updatedTraining) {
         return res.status(404).json({ message: "Eğitim programı bulunamadı" });
       }
       
-      sampleTrainings[trainingIndex] = { ...sampleTrainings[trainingIndex], ...updateData };
-      res.json(sampleTrainings[trainingIndex]);
+      await storage.createAuditLog({
+        action: "training_updated",
+        resource: "training",
+        resourceId: id,
+        userId: userId,
+        companyId: user?.companyId || 0,
+        details: `Eğitim programı güncellendi: ${updatedTraining.title}`,
+        ipAddress: req.ip
+      });
+
+      res.json(updatedTraining);
     } catch (error) {
       console.error("Error updating training:", error);
       res.status(500).json({ message: "Eğitim programı güncellenirken hata oluştu" });
@@ -1152,13 +1198,25 @@ export async function registerRoutes(app: Express): Promise<Server> {
   app.delete('/api/training/:id', requireAuth, async (req: any, res) => {
     try {
       const { id } = req.params;
-      const trainingIndex = sampleTrainings.findIndex(t => t.id === parseInt(id));
+      const userId = req.user.id;
+      const user = await storage.getUser(userId);
       
-      if (trainingIndex === -1) {
+      const deleted = await storage.deleteTrainingProgram(parseInt(id));
+      
+      if (!deleted) {
         return res.status(404).json({ message: "Eğitim programı bulunamadı" });
       }
       
-      sampleTrainings.splice(trainingIndex, 1);
+      await storage.createAuditLog({
+        action: "training_deleted",
+        resource: "training",
+        resourceId: id,
+        userId: userId,
+        companyId: user?.companyId || 0,
+        details: `Eğitim programı silindi`,
+        ipAddress: req.ip
+      });
+
       res.json({ message: "Eğitim programı başarıyla silindi" });
     } catch (error) {
       console.error("Error deleting training:", error);
