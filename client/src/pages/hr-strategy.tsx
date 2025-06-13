@@ -350,7 +350,7 @@ export default function HRStrategyPage() {
                         <BarChart3 className="h-4 w-4 mr-1" />
                         Analiz
                       </Button>
-                      <Button size="sm">
+                      <Button variant="outline" size="sm" className="bg-white text-gray-700 border-gray-300 hover:bg-gray-50">
                         Yönet
                       </Button>
                     </div>
