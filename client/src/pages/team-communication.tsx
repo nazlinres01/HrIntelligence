@@ -172,11 +172,11 @@ export default function TeamCommunicationPage() {
 
         <Tabs defaultValue="channels" className="space-y-6">
           <TabsList className="grid w-full grid-cols-4">
-          <TabsTrigger value="channels">Kanallar</TabsTrigger>
-          <TabsTrigger value="messages">Mesajlar</TabsTrigger>
-          <TabsTrigger value="team">Ekip Üyeleri</TabsTrigger>
-          <TabsTrigger value="announcements">Duyurular</TabsTrigger>
-        </TabsList>
+            <TabsTrigger value="channels">Kanallar</TabsTrigger>
+            <TabsTrigger value="messages">Mesajlar</TabsTrigger>
+            <TabsTrigger value="team">Ekip Üyeleri</TabsTrigger>
+            <TabsTrigger value="announcements">Duyurular</TabsTrigger>
+          </TabsList>
 
         <TabsContent value="channels" className="space-y-6">
           <div className="flex justify-between items-center">

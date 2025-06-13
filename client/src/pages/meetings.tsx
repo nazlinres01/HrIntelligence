@@ -283,20 +283,29 @@ export default function Meetings() {
   };
 
   return (
-    <div className="p-6 space-y-6">
-      {/* Header */}
-      <div className="flex justify-between items-center">
-        <div>
-          <h1 className="text-2xl font-bold text-gray-900">Toplantı Planları</h1>
-          <p className="text-gray-600">Toplantıları planlayın ve takip edin</p>
+    <div className="min-h-screen bg-white">
+      <div className="p-8">
+        {/* Header */}
+        <div className="flex flex-col lg:flex-row lg:items-center lg:justify-between mb-8">
+          <div>
+            <h1 className="text-3xl font-bold text-gray-900 mb-2">Toplantı Yönetimi</h1>
+            <p className="text-gray-600">Toplantıları planlayın ve takip edin</p>
+          </div>
         </div>
-        <Dialog open={isDialogOpen} onOpenChange={setIsDialogOpen}>
-          <DialogTrigger asChild>
-            <Button className="bg-red-600 hover:bg-red-700">
-              <Plus className="w-4 h-4 mr-2" />
-              Yeni Toplantı
-            </Button>
-          </DialogTrigger>
+
+        <div className="space-y-6">
+          <div className="flex justify-between items-center">
+            <div>
+              <h2 className="text-xl font-semibold text-gray-900">Toplantı Listesi</h2>
+              <p className="text-gray-600">Departman toplantılarını yönetin</p>
+            </div>
+            <Dialog open={isDialogOpen} onOpenChange={setIsDialogOpen}>
+              <DialogTrigger asChild>
+                <Button className="bg-red-600 hover:bg-red-700">
+                  <Plus className="w-4 h-4 mr-2" />
+                  Yeni Toplantı
+                </Button>
+              </DialogTrigger>
           <DialogContent className="max-w-2xl max-h-[90vh] overflow-y-auto">
             <DialogHeader>
               <DialogTitle>Yeni Toplantı Planla</DialogTitle>
@@ -765,6 +774,8 @@ export default function Meetings() {
           </CardContent>
         </Card>
       )}
+        </div>
+      </div>
     </div>
   );
 }
