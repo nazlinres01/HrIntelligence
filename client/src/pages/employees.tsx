@@ -63,9 +63,17 @@ export default function Employees() {
   const [isDialogOpen, setIsDialogOpen] = useState(false);
   const { toast } = useToast();
   const queryClient = useQueryClient();
+  const { user } = useAuth();
+  const { departmentId, isDepartmentManager } = useDepartmentManager();
+
+  // Use department-specific endpoint for department managers
+  const employeesEndpoint = isDepartmentManager && departmentId 
+    ? `/api/employees/department/${departmentId}`
+    : "/api/employees";
 
   const { data: employees = [], isLoading: employeesLoading } = useQuery({
-    queryKey: ["/api/employees"]
+    queryKey: [employeesEndpoint],
+    enabled: !isDepartmentManager || !!departmentId
   });
 
   const { data: departments = [] } = useQuery({
@@ -91,10 +99,7 @@ export default function Employees() {
 
   const createEmployeeMutation = useMutation({
     mutationFn: async (data: EmployeeFormData) => {
-      return apiRequest("/api/employees", {
-        method: "POST",
-        body: JSON.stringify(data)
-      });
+      return apiRequest("POST", "/api/employees", data);
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ["/api/employees"] });
@@ -116,9 +121,7 @@ export default function Employees() {
 
   const deleteEmployeeMutation = useMutation({
     mutationFn: async (id: string) => {
-      return apiRequest(`/api/employees/${id}`, {
-        method: "DELETE"
-      });
+      return apiRequest("DELETE", `/api/employees/${id}`);
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ["/api/employees"] });

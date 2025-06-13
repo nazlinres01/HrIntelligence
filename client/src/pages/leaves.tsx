@@ -45,9 +45,7 @@ export default function Leaves() {
 
   const approveLeave = useMutation({
     mutationFn: async (leaveId: number) => {
-      return apiRequest(`/api/leaves/${leaveId}/approve`, {
-        method: "PATCH",
-      });
+      return apiRequest("PATCH", `/api/leaves/${leaveId}/approve`);
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ["/api/leaves"] });
@@ -67,9 +65,7 @@ export default function Leaves() {
 
   const rejectLeave = useMutation({
     mutationFn: async (leaveId: number) => {
-      return apiRequest(`/api/leaves/${leaveId}/reject`, {
-        method: "PATCH",
-      });
+      return apiRequest("PATCH", `/api/leaves/${leaveId}/reject`);
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ["/api/leaves"] });
