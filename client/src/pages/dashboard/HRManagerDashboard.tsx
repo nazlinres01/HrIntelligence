@@ -168,7 +168,8 @@ export default function HRManagerDashboard() {
               approveLeave.mutate(leave.id);
             }}
             disabled={approveLeave.isPending}
-            className="flex-1"
+            variant="outline"
+            className="flex-1 bg-white text-gray-700 border-gray-300 hover:bg-gray-50"
           >
             <Check className="w-4 h-4 mr-2" />
             İzni Onayla
@@ -200,7 +201,7 @@ export default function HRManagerDashboard() {
           </div>
           <div className="flex items-center gap-4">
             <Link href="/hr/strategy">
-              <Button>
+              <Button variant="outline" className="bg-white text-gray-700 border-gray-300 hover:bg-gray-50">
                 <BarChart3 className="w-4 h-4 mr-2" />
                 İK Stratejisi
               </Button>
@@ -289,7 +290,8 @@ export default function HRManagerDashboard() {
                         </Dialog>
                         <Button 
                           size="sm" 
-                          className="text-xs px-2 py-1"
+                          variant="outline"
+                          className="text-xs px-2 py-1 bg-white text-gray-700 border-gray-300 hover:bg-gray-50"
                           onClick={() => approveLeave.mutate(leave.id)}
                           disabled={approveLeave.isPending}
                         >
@@ -369,25 +371,25 @@ export default function HRManagerDashboard() {
           <CardContent>
             <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
               <Link href="/employees">
-                <Button className="w-full h-20 flex flex-col gap-2">
+                <Button variant="outline" className="w-full h-20 flex flex-col gap-2 bg-white text-gray-700 border-gray-300 hover:bg-gray-50">
                   <Users className="w-6 h-6" />
                   <span className="text-sm">Çalışan Yönetimi</span>
                 </Button>
               </Link>
               <Link href="/leaves">
-                <Button className="w-full h-20 flex flex-col gap-2">
+                <Button variant="outline" className="w-full h-20 flex flex-col gap-2 bg-white text-gray-700 border-gray-300 hover:bg-gray-50">
                   <Calendar className="w-6 h-6" />
                   <span className="text-sm">İzin Yönetimi</span>
                 </Button>
               </Link>
               <Link href="/performance">
-                <Button className="w-full h-20 flex flex-col gap-2">
+                <Button variant="outline" className="w-full h-20 flex flex-col gap-2 bg-white text-gray-700 border-gray-300 hover:bg-gray-50">
                   <TrendingUp className="w-6 h-6" />
                   <span className="text-sm">Performans</span>
                 </Button>
               </Link>
               <Link href="/reports">
-                <Button className="w-full h-20 flex flex-col gap-2">
+                <Button variant="outline" className="w-full h-20 flex flex-col gap-2 bg-white text-gray-700 border-gray-300 hover:bg-gray-50">
                   <BarChart3 className="w-6 h-6" />
                   <span className="text-sm">Raporlar</span>
                 </Button>

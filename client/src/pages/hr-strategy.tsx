@@ -185,7 +185,7 @@ export default function HRStrategyPage() {
               <h1 className="text-3xl font-bold text-gray-900 mb-2">İK Stratejisi</h1>
               <p className="text-gray-600">Stratejik İnsan Kaynakları planlaması ve hedef yönetimi</p>
             </div>
-            <Button className="mt-4 lg:mt-0">
+            <Button variant="outline" className="mt-4 lg:mt-0 bg-white text-gray-700 border-gray-300 hover:bg-gray-50">
               <Plus className="h-4 w-4 mr-2" />
               Yeni Strateji Ekle
             </Button>
@@ -220,7 +220,7 @@ export default function HRStrategyPage() {
           <TabsContent value="goals" className="space-y-6">
             <div className="flex justify-between items-center">
               <h2 className="text-2xl font-bold text-gray-800">2024 Stratejik Hedefleri</h2>
-              <Button>
+              <Button variant="outline" className="bg-white text-gray-700 border-gray-300 hover:bg-gray-50">
                 <Target className="h-4 w-4 mr-2" />
                 Yeni Hedef Belirle
               </Button>
@@ -284,7 +284,7 @@ export default function HRStrategyPage() {
                       <Button variant="outline" size="sm">
                         Detaylar
                       </Button>
-                      <Button size="sm">
+                      <Button variant="outline" size="sm" className="bg-white text-gray-700 border-gray-300 hover:bg-gray-50">
                         Güncelle
                       </Button>
                     </div>
@@ -297,7 +297,7 @@ export default function HRStrategyPage() {
           <TabsContent value="initiatives" className="space-y-6">
             <div className="flex justify-between items-center">
               <h2 className="text-2xl font-bold text-gray-800">Stratejik İnisiyatifler</h2>
-              <Button>
+              <Button variant="outline" className="bg-white text-gray-700 border-gray-300 hover:bg-gray-50">
                 <Plus className="h-4 w-4 mr-2" />
                 Yeni İnisiyatif
               </Button>
