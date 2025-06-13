@@ -1716,9 +1716,9 @@ export async function registerRoutes(app: Express): Promise<Server> {
   });
 
   // HR Specialist specific endpoints
-  app.get('/api/stats/hr-specialist', requireAuth, async (req: any, res) => {
+  app.get('/api/stats/hr-specialist', isAuthenticated, async (req: any, res) => {
     try {
-      const userId = req.user.claims.sub;
+      const userId = req.user?.claims?.sub;
       
       // Get HR specialist stats
       const stats = {
@@ -1741,7 +1741,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
 
   app.get('/api/tasks/hr-specialist', isAuthenticated, async (req: any, res) => {
     try {
-      const userId = req.user.claims.sub;
+      const userId = req.user?.claims?.sub;
       
       // Get HR specialist tasks
       const tasks = [
@@ -1790,9 +1790,9 @@ export async function registerRoutes(app: Express): Promise<Server> {
     }
   });
 
-  app.get('/api/hr-processes', requireAuth, async (req: any, res) => {
+  app.get('/api/hr-processes', isAuthenticated, async (req: any, res) => {
     try {
-      const userId = req.user.claims.sub;
+      const userId = req.user?.claims?.sub;
       
       // Get HR processes
       const processes = [
@@ -1848,9 +1848,9 @@ export async function registerRoutes(app: Express): Promise<Server> {
     }
   });
 
-  app.get('/api/personnel-affairs', requireAuth, async (req: any, res) => {
+  app.get('/api/personnel-affairs', isAuthenticated, async (req: any, res) => {
     try {
-      const userId = req.user.claims.sub;
+      const userId = req.user?.claims?.sub;
       
       // Get personnel affairs data
       const affairs = [
@@ -1899,9 +1899,9 @@ export async function registerRoutes(app: Express): Promise<Server> {
     }
   });
 
-  app.post('/api/complete-task', requireAuth, async (req: any, res) => {
+  app.post('/api/complete-task', isAuthenticated, async (req: any, res) => {
     try {
-      const userId = req.user.claims.sub;
+      const userId = req.user?.claims?.sub;
       const { taskId, notes } = req.body;
       
       // Complete task
@@ -1929,9 +1929,9 @@ export async function registerRoutes(app: Express): Promise<Server> {
     }
   });
 
-  app.get('/api/training-coordination', requireAuth, async (req: any, res) => {
+  app.get('/api/training-coordination', isAuthenticated, async (req: any, res) => {
     try {
-      const userId = req.user.claims.sub;
+      const userId = req.user?.claims?.sub;
       
       // Get training coordination data
       const coordination = {
