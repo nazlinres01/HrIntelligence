@@ -77,6 +77,7 @@ export interface IStorage {
 
   // Employee operations
   getEmployees(): Promise<Employee[]>;
+  getEmployeesByDepartment(departmentId: number): Promise<Employee[]>;
   getEmployee(id: number): Promise<Employee | undefined>;
   getEmployeeByEmail(email: string): Promise<Employee | undefined>;
   createEmployee(employee: InsertEmployee): Promise<Employee>;
@@ -92,6 +93,7 @@ export interface IStorage {
   // Leave operations
   getLeaves(): Promise<Leave[]>;
   getLeavesByEmployee(employeeId: number): Promise<Leave[]>;
+  getLeavesByDepartment(departmentId: number): Promise<Leave[]>;
   getLeave(id: number): Promise<Leave | undefined>;
   createLeave(leave: InsertLeave): Promise<Leave>;
   updateLeave(id: number, leave: Partial<InsertLeave>): Promise<Leave>;
@@ -308,6 +310,14 @@ export class DatabaseStorage implements IStorage {
     return await db.select().from(employees);
   }
 
+  async getEmployeesByDepartment(departmentId: number): Promise<Employee[]> {
+    // Get department name first, then filter employees by department name
+    const [department] = await db.select().from(departments).where(eq(departments.id, departmentId));
+    if (!department) return [];
+    
+    return await db.select().from(employees).where(eq(employees.department, department.name));
+  }
+
   async getEmployee(id: number): Promise<Employee | undefined> {
     const [employee] = await db.select().from(employees).where(eq(employees.id, id));
     return employee || undefined;
@@ -381,6 +391,31 @@ export class DatabaseStorage implements IStorage {
 
   async getLeavesByEmployee(employeeId: number): Promise<Leave[]> {
     return await db.select().from(leaves).where(eq(leaves.employeeId, employeeId));
+  }
+
+  async getLeavesByDepartment(departmentId: number): Promise<Leave[]> {
+    // Get department name first, then join leaves with employees to filter by department
+    const [department] = await db.select().from(departments).where(eq(departments.id, departmentId));
+    if (!department) return [];
+    
+    const departmentLeaves = await db
+      .select({
+        id: leaves.id,
+        employeeId: leaves.employeeId,
+        leaveType: leaves.leaveType,
+        startDate: leaves.startDate,
+        endDate: leaves.endDate,
+        days: leaves.days,
+        reason: leaves.reason,
+        status: leaves.status,
+        approvedBy: leaves.approvedBy,
+        appliedAt: leaves.appliedAt
+      })
+      .from(leaves)
+      .innerJoin(employees, eq(leaves.employeeId, employees.id))
+      .where(eq(employees.department, department.name));
+    
+    return departmentLeaves;
   }
 
   async getLeave(id: number): Promise<Leave | undefined> {
