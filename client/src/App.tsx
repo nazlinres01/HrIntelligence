@@ -58,6 +58,7 @@ import MyPayroll from "@/pages/my-payroll";
 import CareerDevelopment from "@/pages/career-development";
 import DocumentManagement from "@/pages/document-management";
 import EmployeeBenefits from "@/pages/employee-benefits";
+import CompanyDirectory from "@/pages/company-directory";
 
 import Login from "@/pages/login";
 import Register from "@/pages/register";
@@ -161,6 +162,11 @@ function Router() {
         <Route path="/my-training" component={MyTraining} />
         <Route path="/messages" component={Messages} />
         <Route path="/announcements" component={Announcements} />
+        <Route path="/my-payroll" component={MyPayroll} />
+        <Route path="/career-development" component={CareerDevelopment} />
+        <Route path="/document-management" component={DocumentManagement} />
+        <Route path="/employee-benefits" component={EmployeeBenefits} />
+        <Route path="/company-directory" component={CompanyDirectory} />
         
         <Route component={NotFound} />
           </Switch>
