@@ -8,6 +8,9 @@ import memoize from "memoizee";
 import connectPg from "connect-pg-simple";
 import { storage } from "./storage";
 
+// Global logout flag to prevent re-authentication
+let isLoggedOut = false;
+
 if (!process.env.REPLIT_DOMAINS) {
   throw new Error("Environment variable REPLIT_DOMAINS not provided");
 }
@@ -105,6 +108,8 @@ export async function setupAuth(app: Express) {
   passport.deserializeUser((user: Express.User, cb) => cb(null, user));
 
   app.get("/api/login", (req, res, next) => {
+    // Reset logout flag when logging in
+    isLoggedOut = false;
     passport.authenticate(`replitauth:${req.hostname}`, {
       prompt: "login consent",
       scope: ["openid", "email", "profile", "offline_access"],
@@ -119,6 +124,8 @@ export async function setupAuth(app: Express) {
   });
 
   app.get("/api/logout", (req, res) => {
+    // Set global logout flag
+    isLoggedOut = true;
     // Mark session as logged out before destroying
     if (req.session) {
       (req.session as any).loggedOut = true;
@@ -126,17 +133,14 @@ export async function setupAuth(app: Express) {
     req.logout(() => {
       req.session.destroy((err) => {
         res.clearCookie('connect.sid');
-        res.redirect(
-          client.buildEndSessionUrl(config, {
-            client_id: process.env.REPL_ID!,
-            post_logout_redirect_uri: `${req.protocol}://${req.hostname}`,
-          }).href
-        );
+        res.redirect("/");
       });
     });
   });
 
   app.post("/api/auth/logout", (req, res) => {
+    // Set global logout flag
+    isLoggedOut = true;
     // Mark session as logged out before destroying
     if (req.session) {
       (req.session as any).loggedOut = true;
@@ -154,8 +158,8 @@ export async function setupAuth(app: Express) {
 }
 
 export const isAuthenticated: RequestHandler = async (req, res, next) => {
-  // Check if user explicitly logged out
-  if (req.session && (req.session as any).loggedOut) {
+  // Check global logout flag or session logout flag
+  if (isLoggedOut || (req.session && (req.session as any).loggedOut)) {
     return res.status(401).json({ message: "Unauthorized" });
   }
 
