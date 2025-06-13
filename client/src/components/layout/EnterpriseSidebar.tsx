@@ -327,7 +327,7 @@ export default function EnterpriseSidebar() {
         <div className={cn(
           "p-6 shadow-lg",
           userRole === 'hr_manager' 
-            ? "bg-gradient-to-r from-teal-600 via-teal-700 to-emerald-700" 
+            ? "bg-gradient-to-r from-gray-600 via-gray-700 to-gray-800" 
             : userRole === 'hr_specialist'
             ? "bg-gradient-to-r from-orange-500 via-orange-600 to-orange-700"
             : userRole === 'department_manager'
@@ -342,7 +342,7 @@ export default function EnterpriseSidebar() {
                 <div className="p-2 bg-white/20 backdrop-blur rounded-xl">
                   <Building2 className="h-8 w-8 text-white" />
                 </div>
-                <div className="absolute -top-1 -right-1 w-3 h-3 bg-green-400 rounded-full border-2 border-white"></div>
+                <div className="absolute -top-1 -right-1 w-3 h-3 bg-gray-400 rounded-full border-2 border-white"></div>
               </div>
               {!isCollapsed && (
                 <div>
@@ -529,8 +529,8 @@ export default function EnterpriseSidebar() {
                 <span>Sistem Durumu</span>
               </div>
               <div className="flex items-center space-x-1">
-                <div className="w-2 h-2 bg-emerald-500 rounded-full animate-pulse"></div>
-                <span className="text-emerald-600 font-medium">Operasyonel</span>
+                <div className="w-2 h-2 bg-gray-500 rounded-full animate-pulse"></div>
+                <span className="text-gray-600 font-medium">Operasyonel</span>
               </div>
             </div>
             <div className="mt-2 flex items-center justify-between text-xs text-gray-500">

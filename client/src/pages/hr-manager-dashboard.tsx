@@ -261,19 +261,19 @@ export default function HRManagerDashboard() {
                 <CardDescription>Sık kullanılan işlemler</CardDescription>
               </CardHeader>
               <CardContent className="space-y-3">
-                <Button className="w-full justify-start bg-green-600 hover:bg-green-700 text-white">
+                <Button className="w-full justify-start bg-gray-600 hover:bg-gray-700 text-white">
                   <Users className="h-4 w-4 mr-2" />
                   Yeni Çalışan Ekle
                 </Button>
-                <Button className="w-full justify-start bg-green-600 hover:bg-green-700 text-white">
+                <Button className="w-full justify-start bg-gray-600 hover:bg-gray-700 text-white">
                   <Calendar className="h-4 w-4 mr-2" />
                   İzin Talepleri
                 </Button>
-                <Button className="w-full justify-start bg-green-600 hover:bg-green-700 text-white">
+                <Button className="w-full justify-start bg-gray-600 hover:bg-gray-700 text-white">
                   <BookOpen className="h-4 w-4 mr-2" />
                   Eğitim Programı Oluştur
                 </Button>
-                <Button className="w-full justify-start bg-green-600 hover:bg-green-700 text-white">
+                <Button className="w-full justify-start bg-gray-600 hover:bg-gray-700 text-white">
                   <BarChart3 className="h-4 w-4 mr-2" />
                   Performans Raporu
                 </Button>
@@ -283,14 +283,14 @@ export default function HRManagerDashboard() {
             <Card>
               <CardHeader>
                 <CardTitle className="flex items-center">
-                  <Clock className="h-5 w-5 mr-2 text-green-600" />
+                  <Clock className="h-5 w-5 mr-2 text-gray-600" />
                   Son Aktiviteler
                 </CardTitle>
                 <CardDescription>Sistem üzerindeki son hareketler</CardDescription>
               </CardHeader>
               <CardContent className="space-y-4">
                 <div className="flex items-center space-x-3">
-                  <div className="w-2 h-2 bg-green-500 rounded-full"></div>
+                  <div className="w-2 h-2 bg-gray-500 rounded-full"></div>
                   <div className="flex-1">
                     <p className="text-sm font-medium">Ahmet Yılmaz izin talebini gönderdi</p>
                     <p className="text-xs text-gray-500">2 saat önce</p>
