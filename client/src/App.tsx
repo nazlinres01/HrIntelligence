@@ -91,49 +91,44 @@ function Router() {
   const DashboardComponent = getDashboardComponent();
 
   return (
-    <div className="flex h-screen bg-gradient-to-br from-gray-50 via-white to-gray-100">
-      <EnterpriseSidebar />
-      <main className="flex-1 flex flex-col h-screen overflow-hidden">
-        <div className="flex-1 overflow-y-auto">
-          <Switch>
-            <Route path="/" component={DashboardComponent} />
-            <Route path="/dashboard" component={DashboardComponent} />
+    <div className="h-screen bg-gradient-to-br from-gray-50 via-white to-gray-100">
+      <Switch>
+        <Route path="/" component={DashboardComponent} />
+        <Route path="/dashboard" component={DashboardComponent} />
 
-            {/* Enterprise Admin Routes */}
-            <Route path="/admin/companies" component={EnterpriseCompanyManagement} />
-            <Route path="/admin/users" component={UserManagement} />
-            <Route path="/admin/departments" component={DepartmentManagement} />
-            <Route path="/admin/analytics" component={AnalyticsDashboard} />
-            
-            {/* Enterprise HR Management Routes */}
-            <Route path="/admin/job-postings" component={EnterpriseJobManagement} />
-            <Route path="/admin/payroll" component={EnterprisePayrollCenter} />
-            
-            {/* New Admin Routes */}
-            <Route path="/admin/payroll-new" component={EnterprisePayrollCenterNew} />
-            <Route path="/admin/talent-acquisition" component={TalentAcquisition} />
-            <Route path="/admin/department-control" component={DepartmentControl} />
-            <Route path="/admin/company-structure" component={CompanyStructure} />
-            <Route path="/admin/analytics-center" component={AnalyticsCenter} />
-            <Route path="/admin/strategic-overview" component={StrategicOverview} />
-            
-            {/* HR Management Routes */}
-            <Route path="/employees" component={Employees} />
-            <Route path="/performance" component={Performance} />
-            <Route path="/leaves" component={Leaves} />
-            <Route path="/training" component={Training} />
-            <Route path="/payroll" component={Payroll} />
-            <Route path="/reports" component={Reports} />
-            <Route path="/settings" component={Settings} />
-            <Route path="/notifications" component={Notifications} />
-            <Route path="/team" component={Team} />
-            <Route path="/help" component={Help} />
-            <Route path="/test" component={TestPage} />
-            
-            <Route component={NotFound} />
-          </Switch>
-        </div>
-      </main>
+        {/* Enterprise Admin Routes */}
+        <Route path="/admin/companies" component={EnterpriseCompanyManagement} />
+        <Route path="/admin/users" component={UserManagement} />
+        <Route path="/admin/departments" component={DepartmentManagement} />
+        <Route path="/admin/analytics" component={AnalyticsDashboard} />
+        
+        {/* Enterprise HR Management Routes */}
+        <Route path="/admin/job-postings" component={EnterpriseJobManagement} />
+        <Route path="/admin/payroll" component={EnterprisePayrollCenter} />
+        
+        {/* New Admin Routes */}
+        <Route path="/admin/payroll-new" component={EnterprisePayrollCenterNew} />
+        <Route path="/admin/talent-acquisition" component={TalentAcquisition} />
+        <Route path="/admin/department-control" component={DepartmentControl} />
+        <Route path="/admin/company-structure" component={CompanyStructure} />
+        <Route path="/admin/analytics-center" component={AnalyticsCenter} />
+        <Route path="/admin/strategic-overview" component={StrategicOverview} />
+        
+        {/* HR Management Routes */}
+        <Route path="/employees" component={Employees} />
+        <Route path="/performance" component={Performance} />
+        <Route path="/leaves" component={Leaves} />
+        <Route path="/training" component={Training} />
+        <Route path="/payroll" component={Payroll} />
+        <Route path="/reports" component={Reports} />
+        <Route path="/settings" component={Settings} />
+        <Route path="/notifications" component={Notifications} />
+        <Route path="/team" component={Team} />
+        <Route path="/help" component={Help} />
+        <Route path="/test" component={TestPage} />
+        
+        <Route component={NotFound} />
+      </Switch>
     </div>
   );
 }
