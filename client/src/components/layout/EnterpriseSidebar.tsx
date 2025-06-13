@@ -159,7 +159,7 @@ const getRoleBasedNavigation = (userRole: UserRole): NavigationSection[] => {
       return [
         {
           title: "İK Operasyon Merkezi",
-          color: "from-orange-600 to-red-600",
+          color: "from-orange-500 to-orange-600",
           items: [
             { name: "İK Dashboard", href: "/", icon: LayoutDashboard, show: true, description: "İK uzmanı kontrol paneli" },
             { name: "Personel Analitiği", href: "/admin/analytics", icon: BarChart3, show: true, description: "Detaylı personel analizleri" },

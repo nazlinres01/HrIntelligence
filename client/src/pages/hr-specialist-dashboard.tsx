@@ -44,9 +44,9 @@ function Sidebar({ isCollapsed, onToggle }: SidebarProps) {
   ];
 
   return (
-    <div className={`${isCollapsed ? 'w-16' : 'w-64'} bg-gradient-to-b from-green-600 to-green-800 text-white h-screen fixed left-0 top-0 transition-all duration-300 z-50 shadow-2xl`}>
+    <div className={`${isCollapsed ? 'w-16' : 'w-64'} bg-gradient-to-b from-orange-500 to-orange-700 text-white h-screen fixed left-0 top-0 transition-all duration-300 z-50 shadow-2xl`}>
       {/* Header */}
-      <div className="p-4 border-b border-green-500/30">
+      <div className="p-4 border-b border-orange-400/30">
         <div className="flex items-center justify-between">
           {!isCollapsed && (
             <div>
@@ -75,8 +75,8 @@ function Sidebar({ isCollapsed, onToggle }: SidebarProps) {
             <Link key={item.path} href={item.path}>
               <div className={`flex items-center px-3 py-3 mb-1 rounded-lg transition-all cursor-pointer group ${
                 isActive 
-                  ? 'bg-green-500 text-white shadow-lg' 
-                  : 'text-green-100 hover:bg-green-700/50 hover:text-white'
+                  ? 'bg-orange-500 text-white shadow-lg' 
+                  : 'text-orange-100 hover:bg-orange-600/50 hover:text-white'
               }`}>
                 <Icon className="h-5 w-5 flex-shrink-0" />
                 {!isCollapsed && (
@@ -94,11 +94,11 @@ function Sidebar({ isCollapsed, onToggle }: SidebarProps) {
       </nav>
 
       {/* User Section */}
-      <div className="absolute bottom-0 left-0 right-0 p-4 border-t border-green-500/30">
+      <div className="absolute bottom-0 left-0 right-0 p-4 border-t border-orange-400/30">
         <div className="flex items-center space-x-3">
           <Avatar className="h-8 w-8">
             <AvatarImage src="/placeholder-avatar.jpg" />
-            <AvatarFallback className="bg-green-500 text-white">İU</AvatarFallback>
+            <AvatarFallback className="bg-orange-500 text-white">İU</AvatarFallback>
           </Avatar>
           {!isCollapsed && (
             <div className="flex-1 min-w-0">
