@@ -14,11 +14,11 @@ export const rateLimiter = (maxRequests: number = 100, windowMs: number = 15 * 6
     const windowStart = now - windowMs;
     
     // Clean old entries
-    for (const [ip, data] of rateLimitStore.entries()) {
+    Array.from(rateLimitStore.entries()).forEach(([ip, data]) => {
       if (data.resetTime < windowStart) {
         rateLimitStore.delete(ip);
       }
-    }
+    });
     
     const clientData = rateLimitStore.get(clientIP);
     

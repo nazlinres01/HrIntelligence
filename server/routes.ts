@@ -61,8 +61,8 @@ export async function registerRoutes(app: Express): Promise<Server> {
       return next(); // Skip security for demo data
     }
     sanitizeInput(req, res, () => {
-      preventXSS(req, res, () => {
-        requestLogger(req, res, next);
+      xssProtection(req, res, () => {
+        rateLimiter()(req, res, next);
       });
     });
   });
