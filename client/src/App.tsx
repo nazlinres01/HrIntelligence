@@ -6,11 +6,11 @@ import { TooltipProvider } from "@/components/ui/tooltip";
 import { LanguageProvider } from "@/hooks/use-language";
 import { useAuth } from "./hooks/useAuth";
 import EnterpriseSidebar from "@/components/layout/EnterpriseSidebar";
-import EnterpriseAdminDashboard from "@/pages/dashboard/EnterpriseAdminDashboard";
-import HRManagerDashboard from "@/pages/dashboard/HRManagerDashboard";
-import HRSpecialistDashboard from "@/pages/dashboard/HRSpecialistDashboard";
-import DepartmentManagerDashboard from "@/pages/dashboard/DepartmentManagerDashboard";
-import EmployeeDashboard from "@/pages/dashboard/EmployeeDashboard";
+import EnterpriseAdminDashboard from "@/pages/admin-dashboard";
+import HRManagerDashboard from "@/pages/hr-strategy-complete";
+import HRSpecialistDashboard from "@/pages/hr-specialist-dashboard";
+import DepartmentManagerDashboard from "@/pages/department-manager-dashboard";
+import EmployeeDashboard from "@/pages/employee-dashboard";
 
 // Admin Management Pages
 import EnterpriseCompanyManagement from "@/pages/admin/EnterpriseCompanyManagement";
