@@ -62,6 +62,14 @@ import CompanyDirectory from "@/pages/company-directory";
 import MyDocuments from "@/pages/my-documents";
 import TeamCollaboration from "@/pages/team-collaboration";
 
+// Department Manager Pages
+import StrategicPlanning from "@/pages/strategic-planning";
+import ResourcePlanning from "@/pages/resource-planning";
+import ProcessOptimization from "@/pages/process-optimization";
+import QualityControl from "@/pages/quality-control";
+import ManagementReporting from "@/pages/management-reporting";
+import TeamCommunication from "@/pages/team-communication";
+
 import Login from "@/pages/login";
 import Register from "@/pages/register";
 import NotFound from "@/pages/not-found";
@@ -171,6 +179,14 @@ function Router() {
         <Route path="/company-directory" component={CompanyDirectory} />
         <Route path="/my-documents" component={MyDocuments} />
         <Route path="/team-collaboration" component={TeamCollaboration} />
+        
+        {/* Department Manager Routes */}
+        <Route path="/strategic-planning" component={StrategicPlanning} />
+        <Route path="/resource-planning" component={ResourcePlanning} />
+        <Route path="/process-optimization" component={ProcessOptimization} />
+        <Route path="/quality-control" component={QualityControl} />
+        <Route path="/management-reporting" component={ManagementReporting} />
+        <Route path="/team-communication" component={TeamCommunication} />
         
         <Route component={NotFound} />
           </Switch>

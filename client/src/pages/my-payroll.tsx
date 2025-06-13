@@ -116,6 +116,88 @@ export default function MyPayroll() {
         overtimeHours: 0,
         overtimePay: 0
       }
+    ],
+    payrollEvents: [
+      {
+        id: "evt_001",
+        date: "2024-06-15",
+        type: "bonus",
+        title: "Performans Primi",
+        description: "Q2 hedeflerin %120'sini tamamladığın için performans primi",
+        amount: 2500,
+        status: "ödendi",
+        category: "ek_ödeme"
+      },
+      {
+        id: "evt_002", 
+        date: "2024-06-10",
+        type: "overtime",
+        title: "Fazla Mesai Ödemesi",
+        description: "Mayıs ayı 8 saat fazla mesai ödemesi",
+        amount: 800,
+        status: "ödendi",
+        category: "fazla_mesai"
+      },
+      {
+        id: "evt_003",
+        date: "2024-05-28",
+        type: "allowance",
+        title: "Yemek Yardımı Artışı",
+        description: "Aylık yemek yardımı 1000 TL'den 1200 TL'ye yükseltildi",
+        amount: 200,
+        status: "aktif",
+        category: "sosyal_hak"
+      },
+      {
+        id: "evt_004",
+        date: "2024-05-15",
+        type: "deduction",
+        title: "Bireysel Emeklilik Primi",
+        description: "BES katkı payı kesintisi başlatıldı",
+        amount: -350,
+        status: "aktif",
+        category: "kesinti"
+      },
+      {
+        id: "evt_005",
+        date: "2024-04-01",
+        type: "raise",
+        title: "Maaş Artışı",
+        description: "Yıllık performans değerlendirmesi sonucu %8 maaş artışı",
+        amount: 1300,
+        status: "uygulandı",
+        category: "maaş_artışı"
+      },
+      {
+        id: "evt_006",
+        date: "2024-03-20",
+        type: "bonus",
+        title: "Proje Tamamlama Bonusu",
+        description: "CRM projesi başarıyla tamamlandığı için takım bonusu",
+        amount: 1500,
+        status: "ödendi",
+        category: "ek_ödeme"
+      },
+      {
+        id: "evt_007",
+        date: "2024-03-01",
+        type: "allowance",
+        title: "Ulaşım Yardımı Güncelleme",
+        description: "İş yeri değişikliği nedeniyle ulaşım yardımı artırıldı",
+        amount: 200,
+        status: "aktif",
+        category: "sosyal_hak"
+      },
+      {
+        id: "evt_008",
+        date: "2024-02-14",
+        type: "overtime",
+        title: "Şubat Fazla Mesai",
+        description: "Şubat ayı 6 saat fazla mesai ödemesi",
+        amount: 600,
+        status: "ödendi",
+        category: "fazla_mesai"
+      }
     ]
   };
 
@@ -311,6 +393,58 @@ export default function MyPayroll() {
           </Card>
         </div>
       </div>
+
+      {/* Payroll Events */}
+      <Card>
+        <CardHeader>
+          <CardTitle className="flex items-center gap-2">
+            <FileText className="h-5 w-5 text-yellow-600" />
+            Bordro Olayları
+          </CardTitle>
+        </CardHeader>
+        <CardContent>
+          <div className="space-y-3">
+            {payrollData.payrollEvents.map((event) => (
+              <div key={event.id} className="flex items-center justify-between p-4 border border-gray-200 rounded-lg hover:bg-gray-50">
+                <div className="flex items-center gap-3">
+                  <div className={`p-2 rounded-lg ${
+                    event.type === 'bonus' ? 'bg-green-100' :
+                    event.type === 'raise' ? 'bg-blue-100' :
+                    event.type === 'allowance' ? 'bg-purple-100' :
+                    event.type === 'overtime' ? 'bg-orange-100' :
+                    'bg-red-100'
+                  }`}>
+                    {event.type === 'bonus' && <TrendingUp className="h-4 w-4 text-green-600" />}
+                    {event.type === 'raise' && <TrendingUp className="h-4 w-4 text-blue-600" />}
+                    {event.type === 'allowance' && <CreditCard className="h-4 w-4 text-purple-600" />}
+                    {event.type === 'overtime' && <Calculator className="h-4 w-4 text-orange-600" />}
+                    {event.type === 'deduction' && <TrendingDown className="h-4 w-4 text-red-600" />}
+                  </div>
+                  <div>
+                    <h4 className="font-medium">{event.title}</h4>
+                    <p className="text-sm text-gray-600">{event.description}</p>
+                    <p className="text-xs text-gray-500">{format(new Date(event.date), 'dd MMM yyyy')}</p>
+                  </div>
+                </div>
+                <div className="flex items-center gap-3">
+                  <div className="text-right">
+                    <p className={`font-semibold ${event.amount > 0 ? 'text-green-600' : 'text-red-600'}`}>
+                      {event.amount > 0 ? '+' : ''}₺{Math.abs(event.amount).toLocaleString()}
+                    </p>
+                  </div>
+                  <Badge className={
+                    event.status === 'ödendi' ? 'bg-green-100 text-green-800' :
+                    event.status === 'aktif' ? 'bg-blue-100 text-blue-800' :
+                    'bg-gray-100 text-gray-800'
+                  }>
+                    {event.status}
+                  </Badge>
+                </div>
+              </div>
+            ))}
+          </div>
+        </CardContent>
+      </Card>
 
       {/* Payroll History */}
       <Card>

@@ -59,16 +59,142 @@ export default function TrainingPage() {
   const { toast } = useToast();
   const queryClient = useQueryClient();
 
-  const { data: trainings = [], isLoading: trainingsLoading } = useQuery<any[]>({
-    queryKey: ["/api/trainings"]
+  // Demo training programs data
+  const demoTrainings = [
+    {
+      id: 1,
+      title: "Dijital Liderlik ve Değişim Yönetimi",
+      description: "Modern çağda liderlik becerileri ve dijital dönüşüm süreçlerinde ekip yönetimi",
+      instructor: "Dr. Ayşe Demir",
+      category: "leadership",
+      duration: "3 gün",
+      startDate: "2024-07-15",
+      endDate: "2024-07-17",
+      maxParticipants: 20,
+      location: "Ana Ofis - Eğitim Salonu A",
+      status: "scheduled",
+      requirements: "En az 2 yıl yöneticilik deneyimi",
+      objectives: "Dijital çağda etkili liderlik, ekip motivasyonu, değişim süreçlerini yönetme",
+      enrolledCount: 12
+    },
+    {
+      id: 2,
+      title: "Python ile Veri Analizi ve Machine Learning",
+      description: "İş süreçlerinde veri analizi ve makine öğrenmesi uygulamaları",
+      instructor: "Mhd. Berkay Özkan",
+      category: "technical",
+      duration: "5 gün",
+      startDate: "2024-06-20",
+      endDate: "2024-06-24",
+      maxParticipants: 15,
+      location: "Teknik Eğitim Merkezi",
+      status: "active",
+      requirements: "Temel programlama bilgisi, Python syntax bilgisi tercih edilir",
+      objectives: "Pandas, NumPy, Scikit-learn kütüphaneleri, veri görselleştirme, temel ML modelleri",
+      enrolledCount: 15
+    },
+    {
+      id: 3,
+      title: "Etkili İletişim ve Sunum Teknikleri",
+      description: "İş hayatında profesyonel iletişim, ikna edici sunum hazırlama ve hitabet becerileri",
+      instructor: "Prof. Dr. Zeynep Kara",
+      category: "communication",
+      duration: "2 gün",
+      startDate: "2024-06-10",
+      endDate: "2024-06-11",
+      maxParticipants: 25,
+      location: "Merkez Ofis - Konferans Salonu",
+      status: "completed",
+      requirements: "Tüm çalışanlar katılabilir",
+      objectives: "Beden dili, ses tonlama, sunum hazırlama, soru-cevap yönetimi, empati kurma",
+      enrolledCount: 23
+    },
+    {
+      id: 4,
+      title: "Siber Güvenlik Farkındalığı ve Veri Koruma",
+      description: "KVKK uyumu, siber tehdidler, güvenli çalışma pratikleri ve veri koruma",
+      instructor: "Uzm. Ahmet Yılmaz",
+      category: "compliance",
+      duration: "1 gün",
+      startDate: "2024-06-25",
+      endDate: "2024-06-25",
+      maxParticipants: 50,
+      location: "Online - Zoom Platformu",
+      status: "scheduled",
+      requirements: "Zorunlu eğitim - tüm personel",
+      objectives: "KVKK mevzuatı, güvenli şifre oluşturma, phishing saldırıları, güvenli dosya paylaşımı",
+      enrolledCount: 45
+    },
+    {
+      id: 5,
+      title: "Agile ve Scrum Metodolojileri",
+      description: "Çevik proje yönetimi, Scrum framework'ü ve iterative development süreçleri",
+      instructor: "Sertifikalı Scrum Master - Can Arslan",
+      category: "technical",
+      duration: "3 gün",
+      startDate: "2024-07-08",
+      endDate: "2024-07-10",
+      maxParticipants: 18,
+      location: "Proje Yönetimi Merkezi",
+      status: "scheduled",
+      requirements: "Proje yönetimi deneyimi, temel Agile bilgisi",
+      objectives: "Scrum rolleri, sprint planlama, retrospektif toplantıları, backlog yönetimi",
+      enrolledCount: 8
+    },
+    {
+      id: 6,
+      title: "İş Güvenliği ve Risk Yönetimi",
+      description: "İş sağlığı güvenliği mevzuatı, risk analizi ve acil durum müdahale prosedürleri",
+      instructor: "İSG Uzmanı - Fatma Demir",
+      category: "safety",
+      duration: "1 gün",
+      startDate: "2024-06-05",
+      endDate: "2024-06-05",
+      maxParticipants: 30,
+      location: "Güvenlik Eğitim Merkezi",
+      status: "completed",
+      requirements: "Zorunlu eğitim - saha çalışanları",
+      objectives: "İSG mevzuatı, kişisel koruyucu donanım, acil durum prosedürleri, risk değerlendirmesi",
+      enrolledCount: 28
+    },
+    {
+      id: 7,
+      title: "Duygusal Zeka ve Stres Yönetimi",
+      description: "İş hayatında duygusal zeka, stresle başa çıkma teknikleri ve mental sağlık",
+      instructor: "Psikolog - Dr. Elif Yıldız",
+      category: "soft-skills",
+      duration: "2 gün",
+      startDate: "2024-07-22",
+      endDate: "2024-07-23",
+      maxParticipants: 20,
+      location: "Wellness Merkezi",
+      status: "scheduled",
+      requirements: "Gönüllü katılım",
+      objectives: "Duygusal öz-farkındalık, stres faktörleri, mindfulness teknikleri, iş-yaşam dengesi",
+      enrolledCount: 16
+    }
+  ];
+
+  const demoEnrollments = [
+    { id: 1, trainingId: 1, userId: "emp_001", status: "enrolled" },
+    { id: 2, trainingId: 1, userId: "emp_002", status: "enrolled" },
+    { id: 3, trainingId: 2, userId: "emp_003", status: "enrolled" },
+    { id: 4, trainingId: 3, userId: "emp_004", status: "completed" },
+    { id: 5, trainingId: 4, userId: "emp_005", status: "enrolled" }
+  ];
+
+  const { data: trainings = demoTrainings, isLoading: trainingsLoading } = useQuery<any[]>({
+    queryKey: ["/api/trainings"],
+    initialData: demoTrainings
   });
 
   const { data: employees = [] } = useQuery<any[]>({
     queryKey: ["/api/employees"]
   });
 
-  const { data: enrollments = [] } = useQuery<any[]>({
-    queryKey: ["/api/training-enrollments"]
+  const { data: enrollments = demoEnrollments } = useQuery<any[]>({
+    queryKey: ["/api/training-enrollments"],
+    initialData: demoEnrollments
   });
 
   const form = useForm<TrainingFormData>({
