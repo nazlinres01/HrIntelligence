@@ -92,28 +92,23 @@ export default function AnalyticsDashboard() {
   }
 
   return (
-    <div className="flex-1 space-y-8 p-8 pt-6 bg-gray-50 dark:bg-gray-900">
-      {/* Header */}
-      <div className="flex items-center justify-between">
-        <div className="space-y-2">
-          <h1 className="text-4xl font-semibold tracking-tight text-gray-900 dark:text-white">
-            Analytics Dashboard
-          </h1>
-          <p className="text-lg text-gray-600 dark:text-gray-400">
-            Şirket verilerinizi analiz edin ve performans trendlerini takip edin
-          </p>
-        </div>
-        <div className="flex space-x-3">
+    <div className="min-h-screen bg-white">
+      <div className="p-8">
+        {/* Header */}
+        <div className="flex flex-col lg:flex-row lg:items-center lg:justify-between mb-8">
+          <div>
+            <h1 className="text-3xl font-bold text-gray-900 mb-2">Departman Analitiği</h1>
+            <p className="text-gray-600">Şirket verilerinizi analiz edin ve performans trendlerini takip edin</p>
+          </div>
           <Badge variant="outline" className="text-sm">
             <Activity className="h-4 w-4 mr-2" />
             Canlı Veriler
           </Badge>
         </div>
-      </div>
 
-      {/* Overview Cards */}
-      <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-4">
-        <Card className="bg-white dark:bg-gray-800 border-gray-200 dark:border-gray-700">
+        {/* Overview Cards */}
+        <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-4">
+          <Card className="bg-white dark:bg-gray-800 border-gray-200 dark:border-gray-700">
           <CardContent className="flex items-center p-6">
             <div className="p-3 bg-blue-100 dark:bg-blue-900/30 rounded-full mr-4">
               <Building2 className="h-6 w-6 text-blue-600" />
@@ -413,6 +408,7 @@ export default function AnalyticsDashboard() {
           </div>
         </TabsContent>
       </Tabs>
+      </div>
     </div>
   );
 }
