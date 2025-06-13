@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import { useState, useMemo } from "react";
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
@@ -108,7 +108,7 @@ export default function DepartmentControl() {
   });
 
   // Filter departments
-  const filteredDepartments = React.useMemo(() => {
+  const filteredDepartments = useMemo(() => {
     return (departments as any[]).filter((dept: any) => {
       const matchesSearch = dept.name?.toLowerCase()?.includes(searchTerm.toLowerCase()) ||
                            dept.description?.toLowerCase()?.includes(searchTerm.toLowerCase());
