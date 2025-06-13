@@ -131,13 +131,15 @@ export default function SystemMonitoring() {
             </Select>
             <Button 
               variant="outline"
+              className="border-gray-300 text-gray-700 hover:bg-gray-50"
               onClick={() => refetchMetrics()}
             >
               <RefreshCw className="w-4 h-4 mr-2" />
               Yenile
             </Button>
             <Button 
-              variant={autoRefresh ? "default" : "outline"}
+              variant="outline"
+              className="border-gray-300 text-gray-700 hover:bg-gray-50"
               onClick={() => setAutoRefresh(!autoRefresh)}
             >
               <Activity className="w-4 h-4 mr-2" />

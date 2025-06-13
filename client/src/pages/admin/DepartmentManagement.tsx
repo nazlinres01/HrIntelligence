@@ -210,7 +210,8 @@ export default function DepartmentManagement() {
                     setEditingDepartment(null);
                     resetForm();
                   }}
-                  className="bg-blue-600 hover:bg-blue-700 text-white shadow-lg"
+                  variant="outline"
+                  className="border-gray-300 text-gray-700 hover:bg-gray-50"
                 >
                   <Plus className="mr-2 h-4 w-4" />
                   Yeni Departman Ekle

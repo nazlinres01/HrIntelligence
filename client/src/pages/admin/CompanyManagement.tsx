@@ -441,7 +441,7 @@ export default function CompanyManagement() {
                 <div>
                   <p className="text-sm font-medium text-gray-600">Aktif Şirket</p>
                   <p className="text-3xl font-bold text-gray-900">
-                    {companies?.filter((c: any) => c.status === 'active').length || 0}
+                    {Array.isArray(companies) ? companies.filter((c: any) => c.status === 'active').length : 0}
                   </p>
                 </div>
                 <CheckCircle className="h-8 w-8 text-emerald-600" />
@@ -568,6 +568,7 @@ export default function CompanyManagement() {
                         <Button
                           size="sm"
                           variant="outline"
+                          className="border-gray-300 text-gray-700 hover:bg-gray-50"
                           onClick={() => setSelectedCompany(company)}
                         >
                           <Eye className="w-4 h-4" />
@@ -575,13 +576,15 @@ export default function CompanyManagement() {
                         <Button
                           size="sm"
                           variant="outline"
+                          className="border-gray-300 text-gray-700 hover:bg-gray-50"
                           onClick={() => handleEdit(company)}
                         >
                           <Edit className="w-4 h-4" />
                         </Button>
                         <Button
                           size="sm"
-                          variant="destructive"
+                          variant="outline"
+                          className="border-gray-300 text-gray-700 hover:bg-gray-50"
                           onClick={() => deleteCompanyMutation.mutate(company.id)}
                           disabled={deleteCompanyMutation.isPending}
                         >
