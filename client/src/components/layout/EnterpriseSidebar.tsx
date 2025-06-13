@@ -97,11 +97,29 @@ const getRoleBasedNavigation = (userRole: UserRole): NavigationSection[] => {
       return [
         {
           title: "İK Komuta Merkezi",
-          color: "from-orange-600 to-red-600",
+          color: "from-teal-600 to-emerald-600",
           items: [
             { name: "İK Panosu", href: "/", icon: LayoutDashboard, show: true, description: "İK operasyonları genel bakış" },
             { name: "İşgücü Analitiği", href: "/admin/analytics", icon: BarChart3, show: true, description: "Personel metrikleri" },
-            { name: "Kullanıcı Yönetimi", href: "/admin/users", icon: Users, show: true, description: "Çalışan yönetimi" },
+          ]
+        },
+        {
+          title: "Çalışan İşlemleri",
+          color: "from-blue-600 to-indigo-600",
+          items: [
+            { name: "Çalışan Yönetimi", href: "/employees", icon: Users, show: true, description: "Personel bilgileri ve işlemleri" },
+            { name: "İzin Yönetimi", href: "/leaves", icon: Calendar, show: true, description: "İzin talep ve onay süreçleri" },
+            { name: "Performans Değerlendirme", href: "/performance", icon: TrendingUp, show: true, description: "Performans takip ve raporları" },
+            { name: "Bordro Yönetimi", href: "/payroll", icon: CreditCard, show: true, description: "Maaş ve bordro işlemleri" },
+          ]
+        },
+        {
+          title: "Raporlar & Analiz",
+          color: "from-emerald-600 to-teal-600",
+          items: [
+            { name: "İK Raporları", href: "/reports", icon: FileText, show: true, description: "Detaylı İK analizleri" },
+            { name: "Eğitim Programları", href: "/training", icon: BookOpen, show: true, description: "Personel gelişim programları" },
+            { name: "Bildirimler", href: "/notifications", icon: Bell, show: true, description: "Sistem bildirimleri" },
           ]
         }
       ];
