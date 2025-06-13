@@ -78,11 +78,39 @@ export interface IStorage {
   // Employee operations
   getEmployees(): Promise<Employee[]>;
   getEmployeesByDepartment(departmentId: number): Promise<Employee[]>;
+  getEmployeesByCompany(companyId: number): Promise<Employee[]>;
   getEmployee(id: number): Promise<Employee | undefined>;
   getEmployeeByEmail(email: string): Promise<Employee | undefined>;
   createEmployee(employee: InsertEmployee): Promise<Employee>;
   updateEmployee(id: number, employee: Partial<InsertEmployee>): Promise<Employee>;
   deleteEmployee(id: number): Promise<boolean>;
+
+  // Dashboard statistics
+  getEmployeeStats(): Promise<{
+    totalEmployees: number;
+    activeEmployees: number;
+    onLeaveEmployees: number;
+    newHires: number;
+    avgPerformance: string;
+    monthlyPayroll: string;
+  }>;
+  
+  getHRManagerStats(): Promise<{
+    totalEmployees: number;
+    pendingLeaves: number;
+    performanceReviews: number;
+    recruitment: number;
+    payrollAmount: string;
+    departmentCount: number;
+  }>;
+  
+  getDepartmentManagerStats(userId: string): Promise<{
+    teamSize: number;
+    pendingApprovals: number;
+    avgTeamPerformance: string;
+    completedProjects: number;
+    teamBudget: string;
+  }>;
 
   // Department operations
   getDepartments(): Promise<Department[]>;
@@ -579,23 +607,7 @@ export class DatabaseStorage implements IStorage {
     return activity;
   }
 
-  // Dashboard stats
-  async getEmployeeStats(): Promise<{
-    totalEmployees: number;
-    activeLeaves: number;
-    monthlyPayroll: string;
-    avgPerformance: string;
-  }> {
-    const totalEmployees = await db.select().from(employees);
-    const activeLeaves = await db.select().from(leaves).where(eq(leaves.status, "approved"));
-    
-    return {
-      totalEmployees: totalEmployees.length,
-      activeLeaves: activeLeaves.length,
-      monthlyPayroll: "125000",
-      avgPerformance: "4.2",
-    };
-  }
+
 
   // Settings operations
   async getUserSettings(userId: string): Promise<Setting[]> {
@@ -765,6 +777,167 @@ export class DatabaseStorage implements IStorage {
   async deleteMessage(id: number, userId: string): Promise<boolean> {
     const result = await db.delete(messages).where(eq(messages.id, id));
     return (result.rowCount || 0) > 0;
+  }
+
+  // Dashboard Statistics Methods
+  async getEmployeeStats(): Promise<{
+    totalEmployees: number;
+    activeEmployees: number;
+    onLeaveEmployees: number;
+    newHires: number;
+    avgPerformance: string;
+    monthlyPayroll: string;
+  }> {
+    const allEmployees = await db.select().from(employees);
+    const totalEmployees = allEmployees.length;
+    const activeEmployees = allEmployees.filter(emp => emp.status === 'active').length;
+    
+    // Get employees currently on leave
+    const currentDate = new Date().toISOString().split('T')[0];
+    const onLeaveResult = await db.select().from(leaves)
+      .where(and(
+        eq(leaves.status, 'approved'),
+        eq(leaves.startDate, currentDate)
+      ));
+    const onLeaveEmployees = onLeaveResult.length;
+
+    // Get new hires this month
+    const currentMonth = new Date().toISOString().slice(0, 7);
+    const newHires = allEmployees.filter(emp => 
+      emp.startDate && emp.startDate.toString().slice(0, 7) === currentMonth
+    ).length;
+
+    // Calculate average performance
+    const performanceResults = await db.select().from(performance);
+    const avgPerformance = performanceResults.length > 0 
+      ? (performanceResults.reduce((sum, p) => sum + parseFloat(p.score || '0'), 0) / performanceResults.length).toFixed(1)
+      : '0.0';
+
+    // Calculate monthly payroll
+    const payrollResults = await db.select().from(payroll)
+      .where(eq(payroll.month, currentMonth));
+    const monthlyPayroll = payrollResults.reduce((sum, p) => sum + parseFloat(p.netSalary || '0'), 0).toLocaleString('tr-TR');
+
+    return {
+      totalEmployees,
+      activeEmployees,
+      onLeaveEmployees,
+      newHires,
+      avgPerformance,
+      monthlyPayroll
+    };
+  }
+
+  async getHRManagerStats(): Promise<{
+    totalEmployees: number;
+    pendingLeaves: number;
+    performanceReviews: number;
+    recruitment: number;
+    payrollAmount: string;
+    departmentCount: number;
+  }> {
+    const allEmployees = await db.select().from(employees);
+    const totalEmployees = allEmployees.length;
+
+    // Get pending leaves
+    const pendingLeavesResult = await db.select().from(leaves)
+      .where(eq(leaves.status, 'pending'));
+    const pendingLeaves = pendingLeavesResult.length;
+
+    // Get performance reviews this quarter
+    const currentYear = new Date().getFullYear();
+    const currentQuarter = Math.ceil((new Date().getMonth() + 1) / 3);
+    const quarterString = `Q${currentQuarter} ${currentYear}`;
+    
+    const performanceReviews = await db.select().from(performance)
+      .where(eq(performance.reviewPeriod, quarterString));
+
+    // Get active job postings (recruitment)
+    const activeJobs = await db.select().from(jobs)
+      .where(eq(jobs.status, 'active'));
+    const recruitment = activeJobs.length;
+
+    // Calculate current month payroll
+    const currentMonth = new Date().toISOString().slice(0, 7);
+    const payrollResults = await db.select().from(payroll)
+      .where(eq(payroll.month, currentMonth));
+    const payrollAmount = payrollResults.reduce((sum, p) => sum + parseFloat(p.netSalary || '0'), 0).toLocaleString('tr-TR');
+
+    // Get department count
+    const allDepartments = await db.select().from(departments);
+    const departmentCount = allDepartments.length;
+
+    return {
+      totalEmployees,
+      pendingLeaves,
+      performanceReviews: performanceReviews.length,
+      recruitment,
+      payrollAmount,
+      departmentCount
+    };
+  }
+
+  async getDepartmentManagerStats(userId: string): Promise<{
+    teamSize: number;
+    pendingApprovals: number;
+    avgTeamPerformance: string;
+    completedProjects: number;
+    teamBudget: string;
+  }> {
+    // Get user's department
+    const [user] = await db.select().from(users).where(eq(users.id, userId));
+    if (!user) throw new Error('User not found');
+
+    // Find department where user is manager
+    const [department] = await db.select().from(departments);
+    if (!department) {
+      return {
+        teamSize: 0,
+        pendingApprovals: 0,
+        avgTeamPerformance: '0.0',
+        completedProjects: 0,
+        teamBudget: '0'
+      };
+    }
+
+    // Get team members in user's department
+    const teamMembers = await db.select().from(employees)
+      .where(eq(employees.department, department.name));
+    const teamSize = teamMembers.length;
+
+    // Get pending leave approvals for team
+    const teamEmployeeIds = teamMembers.map(emp => emp.id);
+    const pendingApprovals = await db.select().from(leaves)
+      .where(and(
+        eq(leaves.status, 'pending'),
+        or(...teamEmployeeIds.map(id => eq(leaves.employeeId, id)))
+      ));
+
+    // Calculate average team performance
+    const teamPerformanceResults = await db.select().from(performance)
+      .where(or(...teamEmployeeIds.map(id => eq(performance.employeeId, id))));
+    
+    const avgTeamPerformance = teamPerformanceResults.length > 0
+      ? (teamPerformanceResults.reduce((sum, p) => sum + parseFloat(p.score || '0'), 0) / teamPerformanceResults.length).toFixed(1)
+      : '0.0';
+
+    // Mock completed projects (would be from a projects table in real implementation)
+    const completedProjects = 8;
+
+    // Get team budget
+    const teamBudget = department.budget ? parseFloat(department.budget).toLocaleString('tr-TR') : '0';
+
+    return {
+      teamSize,
+      pendingApprovals: pendingApprovals.length,
+      avgTeamPerformance,
+      completedProjects,
+      teamBudget
+    };
+  }
+
+  async getEmployeesByCompany(companyId: number): Promise<Employee[]> {
+    return await db.select().from(employees).where(eq(employees.companyId, companyId));
   }
 }
 
