@@ -63,11 +63,11 @@ export default function EnterpriseAdminDashboard() {
 
   if (employeeStatsLoading || teamLoading) {
     return (
-      <div className="min-h-screen bg-gradient-to-br from-slate-900 via-gray-900 to-black p-6">
+      <div className="min-h-screen bg-gradient-to-br from-gray-50 via-white to-gray-100 p-6">
         <div className="max-w-7xl mx-auto">
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
             {[...Array(8)].map((_, i) => (
-              <div key={i} className="h-32 bg-gray-800/50 rounded-xl animate-pulse"></div>
+              <div key={i} className="h-32 bg-white/80 rounded-xl shadow-sm animate-pulse border border-gray-200"></div>
             ))}
           </div>
         </div>
@@ -149,8 +149,8 @@ export default function EnterpriseAdminDashboard() {
         <div className="mb-8">
           <div className="flex items-center justify-between">
             <div>
-              <h1 className="text-4xl font-bold mb-2 text-gray-900">Executive Dashboard</h1>
-              <p className="text-gray-600 text-lg">Kurumsal İnsan Kaynakları Yönetim Sistemi • Gerçek Zamanlı İş Analitiği</p>
+              <h1 className="text-4xl font-bold mb-2 text-gray-900">Yönetici Kontrol Paneli</h1>
+              <p className="text-gray-600 text-lg">Kurumsal İnsan Kaynakları Yönetim Sistemi • Gerçek Zamanlı İş Zekası</p>
               <div className="flex items-center space-x-6 mt-4 text-gray-700">
                 <div className="flex items-center space-x-2">
                   <Shield className="h-4 w-4 text-blue-600" />

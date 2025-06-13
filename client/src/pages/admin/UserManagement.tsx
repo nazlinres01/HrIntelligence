@@ -169,13 +169,15 @@ export default function UserManagement() {
 
   if (usersLoading) {
     return (
-      <div className="p-8">
-        <div className="animate-pulse space-y-6">
-          <div className="h-8 bg-gray-200 rounded w-1/3"></div>
-          <div className="grid grid-cols-1 md:grid-cols-4 gap-6">
-            {[...Array(4)].map((_, i) => (
-              <div key={i} className="h-32 bg-gray-200 rounded"></div>
-            ))}
+      <div className="min-h-screen bg-gradient-to-br from-gray-50 via-white to-gray-100 p-6">
+        <div className="max-w-7xl mx-auto">
+          <div className="space-y-6">
+            <div className="h-16 bg-white/80 rounded-xl shadow-sm animate-pulse border border-gray-200"></div>
+            <div className="grid grid-cols-1 md:grid-cols-4 gap-6">
+              {[...Array(4)].map((_, i) => (
+                <div key={i} className="h-32 bg-white/80 rounded-xl shadow-sm animate-pulse border border-gray-200"></div>
+              ))}
+            </div>
           </div>
         </div>
       </div>
@@ -183,13 +185,13 @@ export default function UserManagement() {
   }
 
   return (
-    <div className="min-h-screen bg-white">
-      <div className="p-8">
+    <div className="min-h-screen bg-gradient-to-br from-gray-50 via-white to-gray-100 p-6">
+      <div className="max-w-7xl mx-auto space-y-8">
         {/* Header */}
         <div className="flex flex-col lg:flex-row lg:items-center lg:justify-between mb-8">
           <div>
-            <h1 className="text-3xl font-bold text-gray-900 mb-2">Kullanıcı Yönetimi</h1>
-            <p className="text-gray-600">Sistem kullanıcıları, roller ve yetkilendirme</p>
+            <h1 className="text-4xl font-bold text-gray-900 mb-2">Kullanıcı Yönetimi</h1>
+            <p className="text-gray-600 text-lg">Sistem Kullanıcıları, Roller ve Yetkilendirme Kontrolü</p>
           </div>
           <div className="flex space-x-3">
             <Button variant="outline" className="border-gray-300 text-gray-700">
