@@ -7,10 +7,12 @@ import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle, Di
 import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from "@/components/ui/form";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Textarea } from "@/components/ui/textarea";
-import { FileText, Users, Clock, CheckCircle, Plus, Search, Eye, Star, Calendar, MessageSquare } from "lucide-react";
+import { Progress } from "@/components/ui/progress";
+import { FileText, Users, Clock, CheckCircle, Plus, Search, Eye, Star, Calendar, MessageSquare, Download, Phone, Mail, GraduationCap, Briefcase, Filter } from "lucide-react";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import * as z from "zod";
+import React, { useState } from "react";
 
 const evaluationSchema = z.object({
   candidateId: z.string().min(1, "Aday seçimi gereklidir"),
@@ -21,6 +23,10 @@ const evaluationSchema = z.object({
 });
 
 export default function ApplicationEvaluationPage() {
+  const [searchTerm, setSearchTerm] = useState("");
+  const [statusFilter, setStatusFilter] = useState("all");
+  const [positionFilter, setPositionFilter] = useState("all");
+
   const form = useForm<z.infer<typeof evaluationSchema>>({
     resolver: zodResolver(evaluationSchema),
     defaultValues: {
@@ -36,17 +42,22 @@ export default function ApplicationEvaluationPage() {
     {
       id: 1,
       candidateName: "Mehmet Aydın",
+      email: "mehmet.aydin@email.com",
+      phone: "+90 532 123 4567",
       position: "Senior Frontend Developer",
       applicationDate: "2024-06-10",
       experience: "5 yıl",
-      education: "Bilgisayar Mühendisliği",
+      education: "Bilgisayar Mühendisliği - İTÜ",
       status: "değerlendirme_aşamasında",
       cvScore: 85,
       skills: ["React", "TypeScript", "Next.js", "GraphQL"],
       expectedSalary: "₺25.000",
       availability: "1 ay",
       rating: null,
-      phase: "cv_inceleme"
+      phase: "cv_inceleme",
+      notes: "Güçlü teknik beceriler, açık kaynak projelere katkı",
+      interviewCount: 0,
+      lastActivity: "2024-06-12"
     },
     {
       id: 2,
@@ -190,6 +201,21 @@ export default function ApplicationEvaluationPage() {
     return `${stars.join('')} (${rating}/5)`;
   };
 
+  const getScoreColor = (score: number) => {
+    if (score >= 85) return "text-green-600";
+    if (score >= 70) return "text-yellow-600";
+    return "text-red-600";
+  };
+
+  const filteredApplications = applications.filter(app => {
+    const matchesSearch = app.candidateName.toLowerCase().includes(searchTerm.toLowerCase()) ||
+                         app.position.toLowerCase().includes(searchTerm.toLowerCase()) ||
+                         (app.email && app.email.toLowerCase().includes(searchTerm.toLowerCase()));
+    const matchesStatus = statusFilter === "all" || app.status === statusFilter;
+    const matchesPosition = positionFilter === "all" || app.position === positionFilter;
+    return matchesSearch && matchesStatus && matchesPosition;
+  });
+
   return (
     <div className="min-h-screen bg-white">
       <div className="p-8">
@@ -199,14 +225,19 @@ export default function ApplicationEvaluationPage() {
             <h1 className="text-3xl font-bold text-gray-900 mb-2">Başvuru Değerlendirme</h1>
             <p className="text-gray-600">Aday başvurularını değerlendirin ve süreç yönetimi yapın</p>
           </div>
-          <Dialog>
-            <DialogTrigger asChild>
-              <Button className="bg-teal-600 hover:bg-teal-700 mt-4 lg:mt-0">
-                <Plus className="h-4 w-4 mr-2" />
-                Yeni Değerlendirme
-              </Button>
-            </DialogTrigger>
-            <DialogContent className="max-w-2xl">
+          <div className="flex space-x-3 mt-4 lg:mt-0">
+            <Button variant="outline" className="border-teal-300 text-teal-700 hover:bg-teal-50">
+              <Download className="h-4 w-4 mr-2" />
+              Rapor İndir
+            </Button>
+            <Dialog>
+              <DialogTrigger asChild>
+                <Button className="bg-teal-600 hover:bg-teal-700">
+                  <Plus className="h-4 w-4 mr-2" />
+                  Yeni Değerlendirme
+                </Button>
+              </DialogTrigger>
+              <DialogContent className="max-w-2xl">
               <DialogHeader>
                 <DialogTitle>Aday Değerlendirmesi</DialogTitle>
                 <DialogDescription>
