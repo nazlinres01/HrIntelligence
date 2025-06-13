@@ -214,6 +214,8 @@ export default function EnterpriseSidebar() {
           "p-6 shadow-lg",
           userRole === 'hr_manager' 
             ? "bg-gradient-to-r from-teal-600 via-teal-700 to-emerald-700" 
+            : userRole === 'hr_specialist' || userRole === 'ik_uzmanı'
+            ? "bg-gradient-to-r from-orange-600 via-orange-700 to-red-700"
             : "bg-gradient-to-r from-blue-600 via-blue-700 to-indigo-700"
         )}>
           <div className="flex items-center justify-between">
