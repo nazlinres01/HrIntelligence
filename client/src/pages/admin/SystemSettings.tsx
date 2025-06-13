@@ -811,7 +811,7 @@ export default function SystemSettings() {
                           ) : (
                             <AlertTriangle className="w-4 h-4 text-red-600" />
                           )}
-                          <Button size="sm" variant="outline" className="border-gray-300 text-gray-700 hover:bg-gray-50">
+                          <Button size="sm" variant="lightgray">
                             <Download className="w-4 h-4" />
                           </Button>
                         </div>
@@ -848,11 +848,11 @@ export default function SystemSettings() {
                         <SelectItem value="info">Bilgi</SelectItem>
                       </SelectContent>
                     </Select>
-                    <Button variant="outline" className="border-gray-300 text-gray-700 hover:bg-gray-50">
+                    <Button variant="lightgray">
                       <Download className="w-4 h-4 mr-2" />
                       Logları İndir
                     </Button>
-                    <Button variant="outline" className="border-gray-300 text-gray-700 hover:bg-gray-50">
+                    <Button variant="lightgray">
                       <Trash2 className="w-4 h-4 mr-2" />
                       Logları Temizle
                     </Button>
