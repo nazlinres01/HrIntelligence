@@ -359,7 +359,7 @@ export default function UserManagement() {
                     <div className="flex justify-end space-x-3 pt-4">
                       <Button 
                         type="button" 
-                        variant="outline" 
+                        variant="lightgray" 
                         onClick={() => setIsUserDialogOpen(false)}
                         className="border-gray-300 text-gray-700"
                       >

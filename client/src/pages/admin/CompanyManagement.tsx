@@ -393,13 +393,14 @@ export default function CompanyManagement() {
                   <div className="flex gap-3 pt-4">
                     <Button 
                       type="submit"
+                      variant="lightgray"
                       disabled={createCompanyMutation.isPending || updateCompanyMutation.isPending}
                     >
                       {isEditMode ? "Güncelle" : "Şirket Ekle"}
                     </Button>
                     <Button 
                       type="button" 
-                      variant="outline"
+                      variant="lightgray"
                       onClick={() => {
                         form.reset();
                         setIsEditMode(false);
@@ -566,24 +567,21 @@ export default function CompanyManagement() {
                       <div className="flex gap-2">
                         <Button
                           size="sm"
-                          variant="outline"
-                          className="border-gray-300 text-gray-700 hover:bg-gray-50"
+                          variant="lightgray"
                           onClick={() => setSelectedCompany(company)}
                         >
                           <Eye className="w-4 h-4" />
                         </Button>
                         <Button
                           size="sm"
-                          variant="outline"
-                          className="border-gray-300 text-gray-700 hover:bg-gray-50"
+                          variant="lightgray"
                           onClick={() => handleEdit(company)}
                         >
                           <Edit className="w-4 h-4" />
                         </Button>
                         <Button
                           size="sm"
-                          variant="outline"
-                          className="border-gray-300 text-gray-700 hover:bg-gray-50"
+                          variant="lightgray"
                           onClick={() => deleteCompanyMutation.mutate(company.id)}
                           disabled={deleteCompanyMutation.isPending}
                         >
