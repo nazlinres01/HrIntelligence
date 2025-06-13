@@ -143,7 +143,13 @@ export default function TrainingPage() {
       status: "scheduled",
       requirements: "Zorunlu eğitim - tüm personel",
       objectives: "KVKK mevzuatı, güvenli şifre oluşturma, phishing saldırıları, güvenli dosya paylaşımı",
-      enrolledCount: 45
+      enrolledCount: 45,
+      budget: "8.000 TL",
+      materials: ["KVKK Rehberi", "Siber Güvenlik El Kitabı", "Online Test Platformu"],
+      schedule: [
+        { day: "Salı", time: "09:00-12:00", topic: "KVKK Mevzuatı ve Uygulamaları" },
+        { day: "Salı", time: "14:00-17:00", topic: "Siber Güvenlik Tehditleri ve Korunma Yöntemleri" }
+      ]
     },
     {
       id: 5,
@@ -159,7 +165,14 @@ export default function TrainingPage() {
       status: "scheduled",
       requirements: "Proje yönetimi deneyimi, temel Agile bilgisi",
       objectives: "Scrum rolleri, sprint planlama, retrospektif toplantıları, backlog yönetimi",
-      enrolledCount: 8
+      enrolledCount: 8,
+      budget: "22.000 TL",
+      materials: ["Scrum Guide Kitabı", "Agile Methodologies Kılavuzu", "Sprint Planning Şablonları"],
+      schedule: [
+        { day: "Pazartesi", time: "09:00-17:00", topic: "Agile Temeleri ve Scrum Framework" },
+        { day: "Salı", time: "09:00-17:00", topic: "Sprint Planlama ve Backlog Yönetimi" },
+        { day: "Çarşamba", time: "09:00-17:00", topic: "Retrospektif ve Sürekli İyileştirme" }
+      ]
     },
     {
       id: 6,
@@ -175,7 +188,13 @@ export default function TrainingPage() {
       status: "completed",
       requirements: "Zorunlu eğitim - saha çalışanları",
       objectives: "İSG mevzuatı, kişisel koruyucu donanım, acil durum prosedürleri, risk değerlendirmesi",
-      enrolledCount: 28
+      enrolledCount: 28,
+      budget: "12.000 TL",
+      materials: ["İSG Mevzuat Kitabı", "Risk Değerlendirme Formları", "Acil Durum Rehberi"],
+      schedule: [
+        { day: "Çarşamba", time: "09:00-12:00", topic: "İSG Mevzuatı ve Temel Kurallar" },
+        { day: "Çarşamba", time: "14:00-17:00", topic: "Risk Analizi ve Acil Durum Prosedürleri" }
+      ]
     },
     {
       id: 7,
@@ -191,7 +210,62 @@ export default function TrainingPage() {
       status: "scheduled",
       requirements: "Gönüllü katılım",
       objectives: "Duygusal öz-farkındalık, stres faktörleri, mindfulness teknikleri, iş-yaşam dengesi",
-      enrolledCount: 16
+      enrolledCount: 16,
+      budget: "18.000 TL",
+      materials: ["Duygusal Zeka Kitabı", "Mindfulness Egzersiz Rehberi", "Stres Yönetimi Araçları"],
+      schedule: [
+        { day: "Pazartesi", time: "09:00-12:00", topic: "Duygusal Zeka ve Öz-Farkındalık" },
+        { day: "Pazartesi", time: "14:00-17:00", topic: "Stres Yönetimi Teknikleri" },
+        { day: "Salı", time: "09:00-12:00", topic: "Mindfulness ve Meditasyon" },
+        { day: "Salı", time: "14:00-17:00", topic: "İş-Yaşam Dengesi ve Uygulama" }
+      ]
+    },
+    {
+      id: 8,
+      title: "Proje Yönetimi ve Planlama",
+      description: "Etkili proje yönetimi, zaman planlama ve kaynak optimizasyonu",
+      instructor: "PMP Sertifikalı - Murat Özdemir",
+      category: "technical",
+      duration: "4 gün",
+      startDate: "2025-01-20",
+      endDate: "2025-01-23",
+      maxParticipants: 22,
+      location: "Eğitim Merkezi B",
+      status: "enrollment_open",
+      requirements: "Temel iş deneyimi, Microsoft Project bilgisi tercih edilir",
+      objectives: "Proje planlama, risk yönetimi, kaynak dağılımı, zaman yönetimi",
+      enrolledCount: 9,
+      budget: "35.000 TL",
+      materials: ["PMP Guide Kitabı", "Microsoft Project Lisansı", "Proje Şablonları"],
+      schedule: [
+        { day: "Pazartesi", time: "09:00-17:00", topic: "Proje Yönetimi Temelleri" },
+        { day: "Salı", time: "09:00-17:00", topic: "Proje Planlama ve Zaman Yönetimi" },
+        { day: "Çarşamba", time: "09:00-17:00", topic: "Risk Yönetimi ve Kalite Kontrol" },
+        { day: "Perşembe", time: "09:00-17:00", topic: "Proje Uygulama ve Kapanış" }
+      ]
+    },
+    {
+      id: 9,
+      title: "Satış Teknikleri ve Müşteri İlişkileri",
+      description: "Etkili satış stratejileri, müşteri analizi ve ilişki yönetimi",
+      instructor: "Satış Uzmanı - Deniz Acar",
+      category: "sales",
+      duration: "3 gün",
+      startDate: "2025-02-15",
+      endDate: "2025-02-17",
+      maxParticipants: 18,
+      location: "Satış Eğitim Merkezi",
+      status: "planning",
+      requirements: "Satış deneyimi veya müşteri hizmetleri geçmişi",
+      objectives: "Satış teknikleri, müşteri profilleme, CRM kullanımı, pazarlama stratejileri",
+      enrolledCount: 0,
+      budget: "28.000 TL",
+      materials: ["Satış Teknikleri El Kitabı", "CRM Platformu Erişimi", "Rol Yapma Senaryoları"],
+      schedule: [
+        { day: "Cumartesi", time: "09:00-17:00", topic: "Satış Temelleri ve Müşteri Analizi" },
+        { day: "Pazar", time: "09:00-17:00", topic: "İletişim ve İkna Teknikleri" },
+        { day: "Pazartesi", time: "09:00-17:00", topic: "CRM ve Satış Süreci Yönetimi" }
+      ]
     }
   ];
 
@@ -290,8 +364,11 @@ export default function TrainingPage() {
   const getStatusBadge = (status: string) => {
     const statusMap = {
       'scheduled': { color: 'bg-blue-100 text-blue-800', text: 'Planlandı' },
+      'enrollment_open': { color: 'bg-cyan-100 text-cyan-800', text: 'Kayıt Açık' },
+      'ongoing': { color: 'bg-green-100 text-green-800', text: 'Devam Ediyor' },
       'active': { color: 'bg-green-100 text-green-800', text: 'Aktif' },
       'completed': { color: 'bg-purple-100 text-purple-800', text: 'Tamamlandı' },
+      'planning': { color: 'bg-yellow-100 text-yellow-800', text: 'Planlama Aşamasında' },
       'cancelled': { color: 'bg-red-100 text-red-800', text: 'İptal Edildi' }
     };
     const statusInfo = statusMap[status as keyof typeof statusMap] || { color: 'bg-gray-100 text-gray-800', text: status };
@@ -305,7 +382,8 @@ export default function TrainingPage() {
       'communication': 'İletişim',
       'compliance': 'Uyum',
       'safety': 'Güvenlik',
-      'soft-skills': 'Kişisel Gelişim'
+      'soft-skills': 'Kişisel Gelişim',
+      'sales': 'Satış'
     };
     return categoryMap[category as keyof typeof categoryMap] || category;
   };
@@ -694,9 +772,12 @@ export default function TrainingPage() {
             </SelectTrigger>
             <SelectContent className="bg-white">
               <SelectItem value="all">Tüm Durumlar</SelectItem>
+              <SelectItem value="enrollment_open">Kayıt Açık</SelectItem>
+              <SelectItem value="ongoing">Devam Ediyor</SelectItem>
               <SelectItem value="scheduled">Planlandı</SelectItem>
               <SelectItem value="active">Aktif</SelectItem>
               <SelectItem value="completed">Tamamlandı</SelectItem>
+              <SelectItem value="planning">Planlama Aşamasında</SelectItem>
               <SelectItem value="cancelled">İptal Edildi</SelectItem>
             </SelectContent>
           </Select>
@@ -712,6 +793,7 @@ export default function TrainingPage() {
               <SelectItem value="compliance">Uyum</SelectItem>
               <SelectItem value="safety">Güvenlik</SelectItem>
               <SelectItem value="soft-skills">Kişisel Gelişim</SelectItem>
+              <SelectItem value="sales">Satış</SelectItem>
             </SelectContent>
           </Select>
         </div>
