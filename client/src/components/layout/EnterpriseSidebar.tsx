@@ -23,9 +23,9 @@ import {
   UserCircle,
   Shield,
   Target,
+  Briefcase,
   Clock,
   TrendingUp,
-  Briefcase,
   Award,
   BookOpen,
   DollarSign,
@@ -111,6 +111,7 @@ const getRoleBasedNavigation = (userRole: UserRole): NavigationSection[] => {
             { name: "İzin Yönetimi", href: "/leaves", icon: Calendar, show: true, description: "İzin talep ve onay süreçleri" },
             { name: "Performans Değerlendirme", href: "/performance", icon: TrendingUp, show: true, description: "Performans takip ve raporları" },
             { name: "Bordro Yönetimi", href: "/payroll", icon: CreditCard, show: true, description: "Maaş ve bordro işlemleri" },
+            { name: "İş İlanları", href: "/jobs", icon: Briefcase, show: true, description: "İş ilanı yönetimi ve başvuru takibi" },
           ]
         },
         {

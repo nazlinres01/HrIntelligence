@@ -34,6 +34,7 @@ import StrategicOverview from "@/pages/admin/StrategicOverview";
 import Employees from "@/pages/employees";
 import Performance from "@/pages/performance";
 import Leaves from "@/pages/leaves";
+import Jobs from "@/pages/jobs";
 import Training from "@/pages/training";
 import Payroll from "@/pages/payroll";
 import Reports from "@/pages/reports";
@@ -121,6 +122,7 @@ function Router() {
         <Route path="/employees" component={Employees} />
         <Route path="/performance" component={Performance} />
         <Route path="/leaves" component={Leaves} />
+        <Route path="/jobs" component={Jobs} />
         <Route path="/training" component={Training} />
         <Route path="/payroll" component={Payroll} />
         <Route path="/reports" component={Reports} />
