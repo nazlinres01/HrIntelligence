@@ -207,7 +207,7 @@ export default function StrategicOverview() {
                   <p className="text-3xl font-bold text-blue-900">{metrics.totalCompanies}</p>
                   <div className="flex items-center mt-2">
                     <TrendingUp className="h-4 w-4 text-green-500 mr-1" />
-                    <span className="text-sm text-green-600">+5 bu ay</span>
+                    <span className="text-sm text-green-600">+12%</span>
                   </div>
                 </div>
                 <Building2 className="h-8 w-8 text-blue-600" />
@@ -222,8 +222,8 @@ export default function StrategicOverview() {
                   <p className="text-green-600 text-sm font-medium">Aktif Kullanıcılar</p>
                   <p className="text-3xl font-bold text-green-900">{users.length}</p>
                   <div className="flex items-center mt-2">
-                    <UserCheck className="h-4 w-4 text-green-500 mr-1" />
-                    <span className="text-sm text-green-600">Çevrimiçi</span>
+                    <TrendingUp className="h-4 w-4 text-green-500 mr-1" />
+                    <span className="text-sm text-green-600">+8%</span>
                   </div>
                 </div>
                 <Users className="h-8 w-8 text-green-600" />
@@ -239,10 +239,10 @@ export default function StrategicOverview() {
                   <p className="text-3xl font-bold text-purple-900">{metrics.totalEmployees}</p>
                   <div className="flex items-center mt-2">
                     <TrendingUp className="h-4 w-4 text-green-500 mr-1" />
-                    <span className="text-sm text-green-600">+12% büyüme</span>
+                    <span className="text-sm text-green-600">+15%</span>
                   </div>
                 </div>
-                <Briefcase className="h-8 w-8 text-purple-600" />
+                <Users className="h-8 w-8 text-purple-600" />
               </div>
             </CardContent>
           </Card>
@@ -254,11 +254,11 @@ export default function StrategicOverview() {
                   <p className="text-orange-600 text-sm font-medium">Aktif Departman</p>
                   <p className="text-3xl font-bold text-orange-900">{metrics.totalDepartments}</p>
                   <div className="flex items-center mt-2">
-                    <Building className="h-4 w-4 text-orange-500 mr-1" />
-                    <span className="text-sm text-orange-600">Yapılanma</span>
+                    <TrendingUp className="h-4 w-4 text-green-500 mr-1" />
+                    <span className="text-sm text-green-600">+5%</span>
                   </div>
                 </div>
-                <Target className="h-8 w-8 text-orange-600" />
+                <Building2 className="h-8 w-8 text-orange-600" />
               </div>
             </CardContent>
           </Card>
@@ -273,8 +273,8 @@ export default function StrategicOverview() {
                   <p className="text-indigo-600 text-sm font-medium">Toplam Bordro</p>
                   <p className="text-3xl font-bold text-indigo-900">{formatCurrency(metrics.totalPayrollCost)}</p>
                   <div className="flex items-center mt-2">
-                    <DollarSign className="h-4 w-4 text-indigo-500 mr-1" />
-                    <span className="text-sm text-indigo-600">Aylık</span>
+                    <TrendingUp className="h-4 w-4 text-green-500 mr-1" />
+                    <span className="text-sm text-green-600">+7%</span>
                   </div>
                 </div>
                 <DollarSign className="h-8 w-8 text-indigo-600" />
@@ -289,8 +289,8 @@ export default function StrategicOverview() {
                   <p className="text-teal-600 text-sm font-medium">Çalışan Memnuniyeti</p>
                   <p className="text-3xl font-bold text-teal-900">{metrics.employeeSatisfactionScore}/5</p>
                   <div className="flex items-center mt-2">
-                    <Star className="h-4 w-4 text-yellow-500 mr-1" />
-                    <span className="text-sm text-teal-600">Yüksek</span>
+                    <TrendingUp className="h-4 w-4 text-green-500 mr-1" />
+                    <span className="text-sm text-green-600">+0.3</span>
                   </div>
                 </div>
                 <Award className="h-8 w-8 text-teal-600" />
@@ -305,8 +305,8 @@ export default function StrategicOverview() {
                   <p className="text-rose-600 text-sm font-medium">Elde Tutma Oranı</p>
                   <p className="text-3xl font-bold text-rose-900">{metrics.employeeRetentionRate}%</p>
                   <div className="flex items-center mt-2">
-                    <Shield className="h-4 w-4 text-rose-500 mr-1" />
-                    <span className="text-sm text-rose-600">Güçlü</span>
+                    <TrendingUp className="h-4 w-4 text-green-500 mr-1" />
+                    <span className="text-sm text-green-600">+2.1%</span>
                   </div>
                 </div>
                 <Shield className="h-8 w-8 text-rose-600" />
