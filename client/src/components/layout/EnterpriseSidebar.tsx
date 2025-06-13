@@ -135,9 +135,9 @@ const getRoleBasedNavigation = (userRole: UserRole): NavigationSection[] => {
           title: "İşe Alım & Gelişim",
           color: "from-emerald-600 to-teal-600",
           items: [
-            { name: "İş İlanları", href: "/jobs", icon: Briefcase, show: true, description: "İş ilanı yönetimi ve yayınlama" },
-            { name: "Başvuru Değerlendirme", href: "/applications", icon: FileText, show: true, description: "Başvuru süreçleri ve değerlendirme" },
-            { name: "Mülakat Planları", href: "/interviews", icon: Clock, show: true, description: "Mülakat programı ve takip" },
+            { name: "İş İlanları", href: "/job-postings", icon: Briefcase, show: true, description: "İş ilanı oluşturma ve yönetimi" },
+            { name: "Başvuru Değerlendirme", href: "/application-evaluation", icon: FileText, show: true, description: "Aday başvuru değerlendirme süreci" },
+            { name: "Mülakat Planları", href: "/interview-scheduling", icon: Clock, show: true, description: "Mülakat programı ve zamanlama" },
             { name: "Eğitim Programları", href: "/training", icon: BookOpen, show: true, description: "Personel gelişim ve eğitim" },
             { name: "Yetenek Havuzu", href: "/talent-pool", icon: Star, show: true, description: "Yetenek havuzu yönetimi" },
           ]
