@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import { useState } from "react";
 import { useQuery } from "@tanstack/react-query";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
@@ -25,7 +25,9 @@ import {
   Zap,
   Shield,
   Clock,
-  Star
+  Star,
+  UserCheck,
+  Building
 } from "lucide-react";
 
 export default function StrategicOverview() {
@@ -41,6 +43,10 @@ export default function StrategicOverview() {
 
   const { data: companies = [] } = useQuery<any[]>({
     queryKey: ["/api/companies"]
+  });
+
+  const { data: users = [] } = useQuery<any[]>({
+    queryKey: ["/api/users"]
   });
 
   const { data: payrolls = [] } = useQuery<any[]>({
@@ -193,50 +199,34 @@ export default function StrategicOverview() {
 
         {/* Key Strategic Metrics */}
         <div className="grid grid-cols-1 md:grid-cols-4 gap-6 mb-8">
-          <Card className="bg-gradient-to-r from-green-50 to-green-100 border-green-200">
-            <CardContent className="p-6">
-              <div className="flex items-center justify-between">
-                <div>
-                  <p className="text-green-600 text-sm font-medium">Çalışan Elde Tutma</p>
-                  <p className="text-3xl font-bold text-green-900">{metrics.employeeRetentionRate}%</p>
-                  <div className="flex items-center mt-2">
-                    <TrendingUp className="h-4 w-4 text-green-500 mr-1" />
-                    <span className="text-sm text-green-600">+2.3%</span>
-                  </div>
-                </div>
-                <Shield className="h-8 w-8 text-green-600" />
-              </div>
-            </CardContent>
-          </Card>
-
           <Card className="bg-gradient-to-r from-blue-50 to-blue-100 border-blue-200">
             <CardContent className="p-6">
               <div className="flex items-center justify-between">
                 <div>
-                  <p className="text-blue-600 text-sm font-medium">Memnuniyet Skoru</p>
-                  <p className="text-3xl font-bold text-blue-900">{metrics.employeeSatisfactionScore}/5</p>
+                  <p className="text-blue-600 text-sm font-medium">Toplam Şirket</p>
+                  <p className="text-3xl font-bold text-blue-900">{metrics.totalCompanies}</p>
                   <div className="flex items-center mt-2">
-                    <Star className="h-4 w-4 text-yellow-500 mr-1" />
-                    <span className="text-sm text-blue-600">Yüksek</span>
+                    <TrendingUp className="h-4 w-4 text-green-500 mr-1" />
+                    <span className="text-sm text-green-600">+5 bu ay</span>
                   </div>
                 </div>
-                <Award className="h-8 w-8 text-blue-600" />
+                <Building2 className="h-8 w-8 text-blue-600" />
               </div>
             </CardContent>
           </Card>
 
-          <Card className="bg-gradient-to-r from-orange-50 to-orange-100 border-orange-200">
+          <Card className="bg-gradient-to-r from-green-50 to-green-100 border-green-200">
             <CardContent className="p-6">
               <div className="flex items-center justify-between">
                 <div>
-                  <p className="text-orange-600 text-sm font-medium">İşe Alım Süresi</p>
-                  <p className="text-3xl font-bold text-orange-900">{metrics.timeToHire}</p>
+                  <p className="text-green-600 text-sm font-medium">Aktif Kullanıcılar</p>
+                  <p className="text-3xl font-bold text-green-900">{users.length}</p>
                   <div className="flex items-center mt-2">
-                    <Clock className="h-4 w-4 text-orange-500 mr-1" />
-                    <span className="text-sm text-orange-600">gün</span>
+                    <UserCheck className="h-4 w-4 text-green-500 mr-1" />
+                    <span className="text-sm text-green-600">Çevrimiçi</span>
                   </div>
                 </div>
-                <Users className="h-8 w-8 text-orange-600" />
+                <Users className="h-8 w-8 text-green-600" />
               </div>
             </CardContent>
           </Card>
@@ -245,14 +235,81 @@ export default function StrategicOverview() {
             <CardContent className="p-6">
               <div className="flex items-center justify-between">
                 <div>
-                  <p className="text-purple-600 text-sm font-medium">Üretkenlik İndeksi</p>
-                  <p className="text-3xl font-bold text-purple-900">{metrics.productivityIndex}%</p>
+                  <p className="text-purple-600 text-sm font-medium">Toplam Çalışan</p>
+                  <p className="text-3xl font-bold text-purple-900">{metrics.totalEmployees}</p>
                   <div className="flex items-center mt-2">
-                    <Zap className="h-4 w-4 text-purple-500 mr-1" />
-                    <span className="text-sm text-purple-600">Optimal</span>
+                    <TrendingUp className="h-4 w-4 text-green-500 mr-1" />
+                    <span className="text-sm text-green-600">+12% büyüme</span>
                   </div>
                 </div>
-                <Activity className="h-8 w-8 text-purple-600" />
+                <Briefcase className="h-8 w-8 text-purple-600" />
+              </div>
+            </CardContent>
+          </Card>
+
+          <Card className="bg-gradient-to-r from-orange-50 to-orange-100 border-orange-200">
+            <CardContent className="p-6">
+              <div className="flex items-center justify-between">
+                <div>
+                  <p className="text-orange-600 text-sm font-medium">Aktif Departman</p>
+                  <p className="text-3xl font-bold text-orange-900">{metrics.totalDepartments}</p>
+                  <div className="flex items-center mt-2">
+                    <Building className="h-4 w-4 text-orange-500 mr-1" />
+                    <span className="text-sm text-orange-600">Yapılanma</span>
+                  </div>
+                </div>
+                <Target className="h-8 w-8 text-orange-600" />
+              </div>
+            </CardContent>
+          </Card>
+        </div>
+
+        {/* Additional Strategic Metrics */}
+        <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8">
+          <Card className="bg-gradient-to-r from-indigo-50 to-indigo-100 border-indigo-200">
+            <CardContent className="p-6">
+              <div className="flex items-center justify-between">
+                <div>
+                  <p className="text-indigo-600 text-sm font-medium">Toplam Bordro</p>
+                  <p className="text-3xl font-bold text-indigo-900">{formatCurrency(metrics.totalPayrollCost)}</p>
+                  <div className="flex items-center mt-2">
+                    <DollarSign className="h-4 w-4 text-indigo-500 mr-1" />
+                    <span className="text-sm text-indigo-600">Aylık</span>
+                  </div>
+                </div>
+                <DollarSign className="h-8 w-8 text-indigo-600" />
+              </div>
+            </CardContent>
+          </Card>
+
+          <Card className="bg-gradient-to-r from-teal-50 to-teal-100 border-teal-200">
+            <CardContent className="p-6">
+              <div className="flex items-center justify-between">
+                <div>
+                  <p className="text-teal-600 text-sm font-medium">Çalışan Memnuniyeti</p>
+                  <p className="text-3xl font-bold text-teal-900">{metrics.employeeSatisfactionScore}/5</p>
+                  <div className="flex items-center mt-2">
+                    <Star className="h-4 w-4 text-yellow-500 mr-1" />
+                    <span className="text-sm text-teal-600">Yüksek</span>
+                  </div>
+                </div>
+                <Award className="h-8 w-8 text-teal-600" />
+              </div>
+            </CardContent>
+          </Card>
+
+          <Card className="bg-gradient-to-r from-rose-50 to-rose-100 border-rose-200">
+            <CardContent className="p-6">
+              <div className="flex items-center justify-between">
+                <div>
+                  <p className="text-rose-600 text-sm font-medium">Elde Tutma Oranı</p>
+                  <p className="text-3xl font-bold text-rose-900">{metrics.employeeRetentionRate}%</p>
+                  <div className="flex items-center mt-2">
+                    <Shield className="h-4 w-4 text-rose-500 mr-1" />
+                    <span className="text-sm text-rose-600">Güçlü</span>
+                  </div>
+                </div>
+                <Shield className="h-8 w-8 text-rose-600" />
               </div>
             </CardContent>
           </Card>
