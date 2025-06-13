@@ -83,21 +83,23 @@ export default function AnalyticsDashboard() {
 
   if (!companies || !employees || !departments || !users) {
     return (
-      <div className="p-6">
-        <div className="flex items-center justify-center h-64">
-          <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-blue-600"></div>
+      <div className="min-h-screen bg-gradient-to-br from-gray-50 via-white to-gray-100 p-6">
+        <div className="max-w-7xl mx-auto">
+          <div className="flex items-center justify-center h-64">
+            <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-blue-600"></div>
+          </div>
         </div>
       </div>
     );
   }
 
   return (
-    <div className="min-h-screen bg-white">
-      <div className="p-8">
+    <div className="min-h-screen bg-gradient-to-br from-gray-50 via-white to-gray-100 p-6">
+      <div className="max-w-7xl mx-auto space-y-8">
         {/* Header */}
         <div className="flex flex-col lg:flex-row lg:items-center lg:justify-between mb-8">
           <div>
-            <h1 className="text-3xl font-bold text-gray-900 mb-2">Departman Analitiği</h1>
+            <h1 className="text-4xl font-bold text-gray-900 mb-2">Analitik ve İş Zekası Merkezi</h1>
             <p className="text-gray-600">Şirket verilerinizi analiz edin ve performans trendlerini takip edin</p>
           </div>
           <Badge variant="outline" className="text-sm">

@@ -174,31 +174,35 @@ export default function DepartmentManagement() {
 
   if (isLoading) {
     return (
-      <div className="p-6">
-        <div className="flex items-center justify-center h-64">
-          <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-blue-600"></div>
+      <div className="min-h-screen bg-gradient-to-br from-gray-50 via-white to-gray-100 p-6">
+        <div className="max-w-7xl mx-auto">
+          <div className="space-y-6">
+            <div className="h-16 bg-white/80 rounded-xl shadow-sm animate-pulse border border-gray-200"></div>
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
+              {[...Array(8)].map((_, i) => (
+                <div key={i} className="h-32 bg-white/80 rounded-xl shadow-sm animate-pulse border border-gray-200"></div>
+              ))}
+            </div>
+          </div>
         </div>
       </div>
     );
   }
 
   return (
-    <div className="flex-1 space-y-8 p-8 pt-6 bg-gray-50 dark:bg-gray-900">
-      {/* Microsoft Fluent Header */}
-      <div className="flex items-center justify-between">
-        <div className="space-y-2">
-          <h1 className="text-4xl font-semibold tracking-tight text-gray-900 dark:text-white">
-            Departman Yönetimi
-          </h1>
-          <p className="text-lg text-gray-600 dark:text-gray-400">
-            Departmanları yönetin, organize edin ve yapısal hiyerarşiyi düzenleyin
-          </p>
-        </div>
-        <div className="flex space-x-3">
-          <Button variant="outline" className="border-gray-200 text-gray-700 hover:bg-gray-50 dark:border-gray-700 dark:text-gray-300">
-            <Download className="mr-2 h-4 w-4" />
-            Dışa Aktar
-          </Button>
+    <div className="min-h-screen bg-gradient-to-br from-gray-50 via-white to-gray-100 p-6">
+      <div className="max-w-7xl mx-auto space-y-8">
+        {/* Header */}
+        <div className="flex items-center justify-between mb-8">
+          <div>
+            <h1 className="text-4xl font-bold text-gray-900 mb-2">Departman Yönetimi</h1>
+            <p className="text-gray-600 text-lg">Departmanları Yönetin, Organize Edin ve Yapısal Hiyerarşiyi Düzenleyin</p>
+          </div>
+          <div className="flex space-x-3">
+            <Button variant="outline" className="border-gray-300 text-gray-700">
+              <Download className="mr-2 h-4 w-4" />
+              Dışa Aktar
+            </Button>
           <Dialog open={isDialogOpen} onOpenChange={setIsDialogOpen}>
             <DialogTrigger asChild>
               <Button 
