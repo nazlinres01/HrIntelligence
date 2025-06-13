@@ -113,7 +113,7 @@ const getRoleBasedNavigation = (userRole: UserRole): NavigationSection[] => {
       return [
         {
           title: "İK Komuta Merkezi",
-          color: "from-gray-600 to-gray-700",
+          color: "from-teal-600 to-emerald-600",
           items: [
             { name: "İK Dashboard", href: "/", icon: LayoutDashboard, show: true, description: "İK operasyonları ana kontrol paneli" },
             { name: "İşgücü Analitiği", href: "/admin/analytics", icon: BarChart3, show: true, description: "Personel metrikleri ve analizler" },
@@ -133,7 +133,7 @@ const getRoleBasedNavigation = (userRole: UserRole): NavigationSection[] => {
         },
         {
           title: "İşe Alım & Gelişim",
-          color: "from-gray-500 to-gray-600",
+          color: "from-emerald-600 to-teal-600",
           items: [
             { name: "İş İlanları", href: "/job-postings", icon: Briefcase, show: true, description: "İş ilanı oluşturma ve yönetimi" },
             { name: "Başvuru Değerlendirme", href: "/application-evaluation", icon: FileText, show: true, description: "Aday başvuru değerlendirme süreci" },
@@ -327,7 +327,7 @@ export default function EnterpriseSidebar() {
         <div className={cn(
           "p-6 shadow-lg",
           userRole === 'hr_manager' 
-            ? "bg-gradient-to-r from-gray-600 via-gray-700 to-gray-800" 
+            ? "bg-gradient-to-r from-teal-600 via-teal-700 to-emerald-700" 
             : userRole === 'hr_specialist'
             ? "bg-gradient-to-r from-orange-500 via-orange-600 to-orange-700"
             : userRole === 'department_manager'
@@ -342,7 +342,7 @@ export default function EnterpriseSidebar() {
                 <div className="p-2 bg-white/20 backdrop-blur rounded-xl">
                   <Building2 className="h-8 w-8 text-white" />
                 </div>
-                <div className="absolute -top-1 -right-1 w-3 h-3 bg-gray-400 rounded-full border-2 border-white"></div>
+                <div className="absolute -top-1 -right-1 w-3 h-3 bg-green-400 rounded-full border-2 border-white"></div>
               </div>
               {!isCollapsed && (
                 <div>
@@ -375,8 +375,8 @@ export default function EnterpriseSidebar() {
                 </div>
               </div>
               <div className="flex items-center space-x-1">
-                <div className="w-2 h-2 bg-gray-400 rounded-full animate-pulse"></div>
-                <span className="text-gray-200 text-xs font-medium">Canlı</span>
+                <div className="w-2 h-2 bg-green-400 rounded-full animate-pulse"></div>
+                <span className="text-green-200 text-xs font-medium">Canlı</span>
               </div>
             </div>
           )}
@@ -529,8 +529,8 @@ export default function EnterpriseSidebar() {
                 <span>Sistem Durumu</span>
               </div>
               <div className="flex items-center space-x-1">
-                <div className="w-2 h-2 bg-gray-500 rounded-full animate-pulse"></div>
-                <span className="text-gray-600 font-medium">Operasyonel</span>
+                <div className="w-2 h-2 bg-emerald-500 rounded-full animate-pulse"></div>
+                <span className="text-emerald-600 font-medium">Operasyonel</span>
               </div>
             </div>
             <div className="mt-2 flex items-center justify-between text-xs text-gray-500">
