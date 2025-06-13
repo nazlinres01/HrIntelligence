@@ -1184,6 +1184,284 @@ export async function registerRoutes(app: Express): Promise<Server> {
     }
   });
 
+  // Employee-specific routes
+  app.get('/api/stats/employee', isAuthenticated, async (req: any, res) => {
+    try {
+      const userId = req.user.claims.sub;
+      const user = await storage.getUser(userId);
+      
+      if (!user) {
+        return res.status(404).json({ message: "Kullanıcı bulunamadı" });
+      }
+
+      // Employee-specific stats
+      const stats = {
+        totalTasks: 8,
+        completedTasks: 6,
+        pendingTasks: 2,
+        completionRate: 75,
+        totalLeaves: 15,
+        usedLeaves: 3,
+        remainingLeaves: 12,
+        currentMonth: "Aralık 2024",
+        workingDays: 22,
+        attendanceRate: 95
+      };
+
+      res.json(stats);
+    } catch (error) {
+      console.error("Error fetching employee stats:", error);
+      res.status(500).json({ message: "Çalışan istatistikleri alınırken hata oluştu" });
+    }
+  });
+
+  app.get('/api/my-tasks', isAuthenticated, async (req: any, res) => {
+    try {
+      const userId = req.user.claims.sub;
+      
+      // Sample employee tasks
+      const tasks = [
+        {
+          id: 1,
+          title: "Proje raporunu tamamla",
+          description: "Q4 proje raporunu hazırla ve gönder",
+          status: "pending",
+          priority: "high",
+          dueDate: "2024-12-15",
+          assignedBy: "Ahmet Yılmaz",
+          createdAt: "2024-12-10"
+        },
+        {
+          id: 2,
+          title: "Müşteri toplantısına katıl",
+          description: "ABC Şirketi ile haftalık görüşme",
+          status: "completed",
+          priority: "medium",
+          dueDate: "2024-12-12",
+          assignedBy: "Fatma Demir",
+          createdAt: "2024-12-08"
+        },
+        {
+          id: 3,
+          title: "E-postaları yanıtla",
+          description: "Bekleyen müşteri e-postalarını yanıtla",
+          status: "pending",
+          priority: "low",
+          dueDate: "2024-12-13",
+          assignedBy: "Ali Kaya",
+          createdAt: "2024-12-09"
+        }
+      ];
+
+      res.json(tasks);
+    } catch (error) {
+      console.error("Error fetching my tasks:", error);
+      res.status(500).json({ message: "Görevler alınırken hata oluştu" });
+    }
+  });
+
+  app.get('/api/my-leaves', isAuthenticated, async (req: any, res) => {
+    try {
+      const userId = req.user.claims.sub;
+      
+      // Sample employee leaves
+      const leaves = [
+        {
+          id: 1,
+          type: "annual",
+          startDate: "2024-07-15",
+          endDate: "2024-07-20",
+          days: 5,
+          status: "approved",
+          reason: "Yaz tatili",
+          appliedDate: "2024-06-10",
+          approvedBy: "İK Müdürü",
+          approvedDate: "2024-06-12"
+        },
+        {
+          id: 2,
+          type: "sick",
+          startDate: "2024-06-03",
+          endDate: "2024-06-03",
+          days: 1,
+          status: "approved",
+          reason: "Sağlık sorunu",
+          appliedDate: "2024-06-02",
+          approvedBy: "İK Uzmanı",
+          approvedDate: "2024-06-02"
+        },
+        {
+          id: 3,
+          type: "personal",
+          startDate: "2024-05-25",
+          endDate: "2024-05-25",
+          days: 0.5,
+          status: "pending",
+          reason: "Kişisel işler",
+          appliedDate: "2024-05-20",
+          approvedBy: null,
+          approvedDate: null
+        }
+      ];
+
+      res.json(leaves);
+    } catch (error) {
+      console.error("Error fetching my leaves:", error);
+      res.status(500).json({ message: "İzinler alınırken hata oluştu" });
+    }
+  });
+
+  app.post('/api/my-tasks/:id/complete', isAuthenticated, async (req: any, res) => {
+    try {
+      const { id } = req.params;
+      const userId = req.user.claims.sub;
+      
+      // Create audit log
+      await storage.createAuditLog({
+        action: "task_completed",
+        resource: "task",
+        resourceId: id,
+        userId: userId,
+        companyId: 1,
+        details: `Görev tamamlandı: ${id}`,
+        ipAddress: req.ip
+      });
+
+      res.json({ message: "Görev başarıyla tamamlandı" });
+    } catch (error) {
+      console.error("Error completing task:", error);
+      res.status(500).json({ message: "Görev tamamlanırken hata oluştu" });
+    }
+  });
+
+  app.get('/api/my-profile', isAuthenticated, async (req: any, res) => {
+    try {
+      const userId = req.user.claims.sub;
+      const user = await storage.getUser(userId);
+      
+      if (!user) {
+        return res.status(404).json({ message: "Kullanıcı bulunamadı" });
+      }
+
+      // Employee profile data
+      const profile = {
+        id: user.id,
+        firstName: user.firstName || "Ceren",
+        lastName: user.lastName || "Bağ",
+        email: user.email,
+        position: "Yazılım Geliştirici",
+        department: "Bilgi İşlem",
+        startDate: "2023-01-15",
+        phone: "+90 555 123 4567",
+        address: "İstanbul, Türkiye",
+        emergencyContact: "+90 555 987 6543",
+        profileImage: user.profileImageUrl
+      };
+
+      res.json(profile);
+    } catch (error) {
+      console.error("Error fetching profile:", error);
+      res.status(500).json({ message: "Profil alınırken hata oluştu" });
+    }
+  });
+
+  app.put('/api/my-profile', isAuthenticated, async (req: any, res) => {
+    try {
+      const userId = req.user.claims.sub;
+      const updateData = req.body;
+      
+      const updatedUser = await storage.updateUser(userId, {
+        firstName: updateData.firstName,
+        lastName: updateData.lastName,
+        email: updateData.email
+      });
+
+      // Create audit log
+      await storage.createAuditLog({
+        action: "profile_updated",
+        resource: "profile",
+        resourceId: userId,
+        userId: userId,
+        companyId: 1,
+        details: "Profil bilgileri güncellendi",
+        ipAddress: req.ip
+      });
+
+      res.json(updatedUser);
+    } catch (error) {
+      console.error("Error updating profile:", error);
+      res.status(500).json({ message: "Profil güncellenirken hata oluştu" });
+    }
+  });
+
+  app.get('/api/my-attendance', isAuthenticated, async (req: any, res) => {
+    try {
+      const userId = req.user.claims.sub;
+      
+      // Sample attendance data
+      const attendance = [
+        {
+          date: "2024-12-12",
+          checkIn: "09:00",
+          checkOut: "18:00",
+          workingHours: "9:00",
+          status: "present"
+        },
+        {
+          date: "2024-12-11",
+          checkIn: "09:15",
+          checkOut: "18:30",
+          workingHours: "9:15",
+          status: "present"
+        },
+        {
+          date: "2024-12-10",
+          checkIn: "08:45",
+          checkOut: "17:45",
+          workingHours: "9:00",
+          status: "present"
+        }
+      ];
+
+      res.json(attendance);
+    } catch (error) {
+      console.error("Error fetching attendance:", error);
+      res.status(500).json({ message: "Devam kayıtları alınırken hata oluştu" });
+    }
+  });
+
+  app.post('/api/time-entry', isAuthenticated, async (req: any, res) => {
+    try {
+      const userId = req.user.claims.sub;
+      const { type, description, hours } = req.body;
+      
+      const timeEntry = await storage.createTimeEntry({
+        userId: userId,
+        date: new Date().toISOString().split('T')[0],
+        type: type,
+        description: description,
+        hours: parseFloat(hours),
+        status: 'pending'
+      });
+
+      // Create audit log
+      await storage.createAuditLog({
+        action: "time_entry_created",
+        resource: "time_entry",
+        resourceId: timeEntry.id.toString(),
+        userId: userId,
+        companyId: 1,
+        details: `Mesai kaydı oluşturuldu: ${hours} saat`,
+        ipAddress: req.ip
+      });
+
+      res.status(201).json(timeEntry);
+    } catch (error) {
+      console.error("Error creating time entry:", error);
+      res.status(500).json({ message: "Mesai kaydı oluşturulurken hata oluştu" });
+    }
+  });
+
   // Training routes
   app.get('/api/training', requireAuth, async (req: any, res) => {
     try {
