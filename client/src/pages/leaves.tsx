@@ -269,7 +269,8 @@ export default function Leaves() {
           <Button
             type="submit"
             disabled={createLeave.isPending}
-            className="flex-1 bg-teal-600 hover:bg-teal-700"
+            variant="outline"
+            className="flex-1 border-gray-300 text-gray-700 hover:bg-gray-50"
           >
             {createLeave.isPending ? "Gönderiliyor..." : "İzin Talebini Gönder"}
           </Button>

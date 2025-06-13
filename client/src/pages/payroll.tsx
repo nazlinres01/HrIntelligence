@@ -597,7 +597,7 @@ export default function Payroll() {
             </Button>
             <Dialog open={isDialogOpen} onOpenChange={setIsDialogOpen}>
               <DialogTrigger asChild>
-                <Button className="bg-blue-600 hover:bg-blue-700 text-white">
+                <Button variant="outline" className="border-gray-300 text-gray-700 hover:bg-gray-50">
                   <Plus className="h-4 w-4 mr-2" />
                   Yeni Bordro
                 </Button>
@@ -747,7 +747,8 @@ export default function Payroll() {
                       <Button 
                         type="submit" 
                         disabled={createPayrollMutation.isPending}
-                        className="bg-blue-600 hover:bg-blue-700 text-white"
+                        variant="outline"
+                        className="border-gray-300 text-gray-700 hover:bg-gray-50"
                       >
                         {createPayrollMutation.isPending ? "Kaydediliyor..." : "Bordro Oluştur"}
                       </Button>

@@ -104,7 +104,7 @@ export default function Reports() {
                 <SelectItem value="performance">Performans Raporu</SelectItem>
               </SelectContent>
             </Select>
-            <Button className="bg-blue-600 hover:bg-blue-700 text-white">
+            <Button variant="outline" className="border-gray-300 text-gray-700 hover:bg-gray-50">
               <Download className="h-4 w-4 mr-2" />
               PDF İndir
             </Button>

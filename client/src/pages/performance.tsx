@@ -212,7 +212,7 @@ export default function PerformancePage() {
             </Button>
             <Dialog open={isDialogOpen} onOpenChange={setIsDialogOpen}>
               <DialogTrigger asChild>
-                <Button className="bg-blue-600 hover:bg-blue-700 text-white">
+                <Button variant="outline" className="border-gray-300 text-gray-700 hover:bg-gray-50">
                   <Plus className="h-4 w-4 mr-2" />
                   Yeni Değerlendirme
                 </Button>
@@ -490,7 +490,8 @@ export default function PerformancePage() {
                       <Button 
                         type="submit" 
                         disabled={createPerformanceMutation.isPending}
-                        className="bg-blue-600 hover:bg-blue-700 text-white"
+                        variant="outline"
+                        className="border-gray-300 text-gray-700 hover:bg-gray-50"
                       >
                         {createPerformanceMutation.isPending ? "Oluşturuluyor..." : "Değerlendirme Oluştur"}
                       </Button>
