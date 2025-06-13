@@ -79,6 +79,13 @@ import HRDocumentation from "@/pages/hr-documentation";
 import InternalCommunication from "@/pages/internal-communication";
 import DailyActivities from "@/pages/daily-activities";
 
+// HR Manager Pages
+import HRStrategy from "@/pages/hr-strategy";
+import DepartmentManagementPage from "@/pages/department-management";
+import ApplicationEvaluation from "@/pages/application-evaluation";
+import InterviewScheduling from "@/pages/interview-scheduling";
+import TalentPool from "@/pages/talent-pool";
+
 import Login from "@/pages/login";
 import Register from "@/pages/register";
 import NotFound from "@/pages/not-found";
@@ -206,6 +213,13 @@ function Router() {
         <Route path="/hr-documentation" component={HRDocumentation} />
         <Route path="/internal-communication" component={InternalCommunication} />
         <Route path="/activities" component={DailyActivities} />
+        
+        {/* HR Manager Routes */}
+        <Route path="/hr/strategy" component={HRStrategy} />
+        <Route path="/departments" component={DepartmentManagementPage} />
+        <Route path="/application-evaluation" component={ApplicationEvaluation} />
+        <Route path="/interview-scheduling" component={InterviewScheduling} />
+        <Route path="/talent-pool" component={TalentPool} />
         
         <Route component={NotFound} />
           </Switch>

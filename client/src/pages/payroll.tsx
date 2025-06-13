@@ -53,6 +53,141 @@ export default function Payroll() {
     queryKey: ["/api/payroll"]
   });
 
+  // Örnek bordro verileri (API'den veri gelmezse)
+  const samplePayrolls = [
+    {
+      id: 1,
+      employeeId: 465,
+      employee: { firstName: "Ahmet", lastName: "Yılmaz", position: "Senior Frontend Developer", department: "Yazılım Geliştirme" },
+      period: "2024-06",
+      basicSalary: 28000,
+      overtime: 3200,
+      bonus: 5000,
+      deductions: 800,
+      tax: 6240,
+      socialSecurity: 4480,
+      notes: "Proje bonus eklendi",
+      status: "ödendi",
+      paymentDate: "2024-06-30",
+      netSalary: 24680
+    },
+    {
+      id: 2,
+      employeeId: 466,
+      employee: { firstName: "Ayşe", lastName: "Kaya", position: "UX Designer", department: "Tasarım" },
+      period: "2024-06",
+      basicSalary: 22000,
+      overtime: 0,
+      bonus: 2000,
+      deductions: 500,
+      tax: 4200,
+      socialSecurity: 3520,
+      notes: "Tasarım yarışması ödülü",
+      status: "ödendi",
+      paymentDate: "2024-06-30",
+      netSalary: 15780
+    },
+    {
+      id: 3,
+      employeeId: 467,
+      employee: { firstName: "Mehmet", lastName: "Demir", position: "DevOps Engineer", department: "Altyapı" },
+      period: "2024-06",
+      basicSalary: 25000,
+      overtime: 2400,
+      bonus: 0,
+      deductions: 600,
+      tax: 4860,
+      socialSecurity: 4080,
+      notes: "Normal bordro",
+      status: "hazırlandı",
+      paymentDate: null,
+      netSalary: 17860
+    },
+    {
+      id: 4,
+      employeeId: 468,
+      employee: { firstName: "Selin", lastName: "Özkan", position: "Product Manager", department: "Ürün Yönetimi" },
+      period: "2024-06",
+      basicSalary: 32000,
+      overtime: 0,
+      bonus: 8000,
+      deductions: 1000,
+      tax: 7200,
+      socialSecurity: 5120,
+      notes: "Çeyrek performans bonusu",
+      status: "onay_bekliyor",
+      paymentDate: null,
+      netSalary: 26680
+    },
+    {
+      id: 5,
+      employeeId: 469,
+      employee: { firstName: "Can", lastName: "Erdoğan", position: "Backend Developer", department: "Yazılım Geliştirme" },
+      period: "2024-06",
+      basicSalary: 24000,
+      overtime: 1800,
+      bonus: 3000,
+      deductions: 400,
+      tax: 5040,
+      socialSecurity: 4128,
+      notes: "API geliştirme bonusu",
+      status: "ödendi",
+      paymentDate: "2024-06-30",
+      netSalary: 19232
+    },
+    {
+      id: 6,
+      employeeId: 470,
+      employee: { firstName: "Zeynep", lastName: "Yıldız", position: "HR Specialist", department: "İnsan Kaynakları" },
+      period: "2024-06",
+      basicSalary: 20000,
+      overtime: 800,
+      bonus: 1500,
+      deductions: 300,
+      tax: 3960,
+      socialSecurity: 3328,
+      notes: "İşe alım başarı bonusu",
+      status: "ödendi",
+      paymentDate: "2024-06-30",
+      netSalary: 14712
+    },
+    {
+      id: 7,
+      employeeId: 471,
+      employee: { firstName: "Emre", lastName: "Kara", position: "Sales Manager", department: "Satış" },
+      period: "2024-06",
+      basicSalary: 26000,
+      overtime: 0,
+      bonus: 12000,
+      deductions: 800,
+      tax: 6840,
+      socialSecurity: 4368,
+      notes: "Satış hedefi aşım bonusu",
+      status: "ödendi",
+      paymentDate: "2024-06-30",
+      netSalary: 25992
+    },
+    {
+      id: 8,
+      employeeId: 472,
+      employee: { firstName: "Fatma", lastName: "Çelik", position: "Accountant", department: "Finans" },
+      period: "2024-06",
+      basicSalary: 18000,
+      overtime: 600,
+      bonus: 800,
+      deductions: 200,
+      tax: 3480,
+      socialSecurity: 2976,
+      notes: "Mali dönem kapanış bonusu",
+      status: "hazırlandı",
+      paymentDate: null,
+      netSalary: 12744
+    }
+  ];
+
+  // API'den veri gelmezse örnek verileri kullan
+  const displayPayrolls = payrolls.length > 0 ? payrolls : samplePayrolls;
+
   const { data: employees = [] } = useQuery({
     queryKey: ["/api/employees"]
   });
