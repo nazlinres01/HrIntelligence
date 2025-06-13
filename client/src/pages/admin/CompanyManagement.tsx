@@ -35,7 +35,8 @@ import {
   BarChart3,
   Shield,
   FileText,
-  Database
+  Database,
+  Search
 } from "lucide-react";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
@@ -60,6 +61,9 @@ type CompanyFormData = z.infer<typeof companySchema>;
 export default function CompanyManagement() {
   const [selectedCompany, setSelectedCompany] = useState<any>(null);
   const [isEditMode, setIsEditMode] = useState(false);
+  const [searchTerm, setSearchTerm] = useState("");
+  const [statusFilter, setStatusFilter] = useState("all");
+  const [industryFilter, setIndustryFilter] = useState("all");
   const { toast } = useToast();
   const queryClient = useQueryClient();
 
@@ -187,9 +191,19 @@ export default function CompanyManagement() {
     }
   };
 
+  // Filter companies based on search and filters
+  const filteredCompanies = (companies as any[])?.filter(company => {
+    const matchesSearch = company.name?.toLowerCase().includes(searchTerm.toLowerCase()) ||
+                         company.industry?.toLowerCase().includes(searchTerm.toLowerCase()) ||
+                         company.email?.toLowerCase().includes(searchTerm.toLowerCase());
+    const matchesStatus = statusFilter === "all" || company.status === statusFilter;
+    const matchesIndustry = industryFilter === "all" || company.industry === industryFilter;
+    return matchesSearch && matchesStatus && matchesIndustry;
+  }) || [];
+
   const industries = [
     "Teknoloji",
-    "Finans",
+    "Finans", 
     "Sağlık",
     "Eğitim",
     "İmalat",
@@ -213,11 +227,15 @@ export default function CompanyManagement() {
           </div>
           <Dialog>
             <DialogTrigger asChild>
-              <Button onClick={() => {
-                setIsEditMode(false);
-                setSelectedCompany(null);
-                form.reset();
-              }}>
+              <Button 
+                variant="outline"
+                className="border-gray-300 text-gray-700 hover:bg-gray-50"
+                onClick={() => {
+                  setIsEditMode(false);
+                  setSelectedCompany(null);
+                  form.reset();
+                }}
+              >
                 <Plus className="w-4 h-4 mr-2" />
                 Yeni Şirket Ekle
               </Button>
@@ -409,7 +427,7 @@ export default function CompanyManagement() {
                 <div>
                   <p className="text-sm font-medium text-gray-600">Toplam Şirket</p>
                   <p className="text-3xl font-bold text-gray-900">
-                    {companies?.length || 0}
+                    {Array.isArray(companies) ? companies.length : 0}
                   </p>
                 </div>
                 <Building2 className="h-8 w-8 text-purple-600" />
@@ -458,12 +476,55 @@ export default function CompanyManagement() {
           </Card>
         </div>
 
+        {/* Search and Filter Section */}
+        <Card className="mb-6">
+          <CardContent className="p-6">
+            <div className="flex flex-col sm:flex-row gap-4">
+              <div className="flex-1">
+                <div className="relative">
+                  <Search className="absolute left-3 top-3 h-4 w-4 text-gray-400" />
+                  <Input
+                    placeholder="Şirket adı, sektör veya e-posta ile ara..."
+                    value={searchTerm}
+                    onChange={(e) => setSearchTerm(e.target.value)}
+                    className="pl-10"
+                  />
+                </div>
+              </div>
+              <Select value={statusFilter} onValueChange={setStatusFilter}>
+                <SelectTrigger className="w-full sm:w-48">
+                  <SelectValue placeholder="Durum filtrele" />
+                </SelectTrigger>
+                <SelectContent>
+                  <SelectItem value="all">Tüm Durumlar</SelectItem>
+                  <SelectItem value="active">Aktif</SelectItem>
+                  <SelectItem value="inactive">Pasif</SelectItem>
+                  <SelectItem value="suspended">Askıya Alınmış</SelectItem>
+                </SelectContent>
+              </Select>
+              <Select value={industryFilter} onValueChange={setIndustryFilter}>
+                <SelectTrigger className="w-full sm:w-48">
+                  <SelectValue placeholder="Sektör filtrele" />
+                </SelectTrigger>
+                <SelectContent>
+                  <SelectItem value="all">Tüm Sektörler</SelectItem>
+                  {industries.map((industry) => (
+                    <SelectItem key={industry} value={industry}>
+                      {industry}
+                    </SelectItem>
+                  ))}
+                </SelectContent>
+              </Select>
+            </div>
+          </CardContent>
+        </Card>
+
         {/* Companies Table */}
         <Card>
           <CardHeader>
             <CardTitle className="flex items-center gap-2">
               <Building2 className="w-5 h-5" />
-              Şirket Listesi
+              Şirket Listesi ({filteredCompanies.length})
             </CardTitle>
             <CardDescription>
               Sistemdeki tüm şirketleri görüntüleyin ve yönetin
@@ -476,7 +537,7 @@ export default function CompanyManagement() {
               </div>
             ) : (
               <div className="space-y-4">
-                {companies?.map((company: any) => (
+                {filteredCompanies.map((company: any) => (
                   <div key={company.id} className="border rounded-lg p-4 hover:bg-gray-50 transition-colors">
                     <div className="flex items-center justify-between">
                       <div className="flex-1">
