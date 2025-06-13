@@ -207,14 +207,6 @@ const getRoleBasedNavigation = (userRole: UserRole): NavigationSection[] => {
             { name: "Eğitimlerim", href: "/my-training", icon: BookOpen, show: true, description: "Eğitim programlarım" },
             { name: "Mesajlar", href: "/messages", icon: MessageSquare, show: true, description: "İç iletişim mesajları" },
             { name: "Duyurular", href: "/announcements", icon: Bell, show: true, description: "Şirket duyuruları" },
-          ]
-        },
-
-
-        {
-          title: "Diğer",
-          color: "from-gray-600 to-gray-700",
-          items: [
             { name: "Yardım", href: "/help", icon: HelpCircle, show: true, description: "Destek ve SSS" },
             { name: "Ayarlar", href: "/settings", icon: Settings, show: true, description: "Hesap ayarları" },
           ]
