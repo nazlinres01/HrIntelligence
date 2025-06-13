@@ -30,14 +30,10 @@ export default function AdminDashboard() {
           <h1 className="text-2xl font-bold text-gray-900">Sistem Yöneticisi</h1>
           <p className="text-gray-600">Tüm sistemi izleyin ve yönetin</p>
         </div>
-        <div className="flex items-center space-x-2">
-          <Badge className="bg-green-100 text-green-800 text-xs">
-            Sistem Sağlıklı
-          </Badge>
-          <Badge className="bg-purple-100 text-purple-800 text-xs">
-            45 Şirket
-          </Badge>
-        </div>
+        <Button className="bg-purple-600 hover:bg-purple-700">
+          <Settings className="w-4 h-4 mr-2" />
+          Sistem Ayarları
+        </Button>
       </div>
 
       {/* Stats */}
