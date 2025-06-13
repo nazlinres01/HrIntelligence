@@ -83,6 +83,7 @@ import DailyActivities from "@/pages/daily-activities";
 import HRStrategy from "@/pages/hr-strategy";
 import DepartmentManagementPage from "@/pages/department-management";
 import ApplicationEvaluation from "@/pages/application-evaluation";
+import ApplicationEvaluationSimple from "@/pages/application-evaluation-simple";
 import InterviewScheduling from "@/pages/interview-scheduling";
 import TalentPool from "@/pages/talent-pool";
 
@@ -217,7 +218,7 @@ function Router() {
         {/* HR Manager Routes */}
         <Route path="/hr/strategy" component={HRStrategy} />
         <Route path="/departments" component={DepartmentManagementPage} />
-        <Route path="/application-evaluation" component={ApplicationEvaluation} />
+        <Route path="/application-evaluation" component={ApplicationEvaluationSimple} />
         <Route path="/interview-scheduling" component={InterviewScheduling} />
         <Route path="/talent-pool" component={TalentPool} />
         

@@ -3,40 +3,15 @@ import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { Input } from "@/components/ui/input";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog";
-import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from "@/components/ui/form";
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
-import { Textarea } from "@/components/ui/textarea";
 import { Progress } from "@/components/ui/progress";
-import { FileText, Users, Clock, CheckCircle, Plus, Search, Eye, Star, Calendar, MessageSquare, Download, Phone, Mail, GraduationCap, Briefcase, Filter } from "lucide-react";
-import { useForm } from "react-hook-form";
-import { zodResolver } from "@hookform/resolvers/zod";
-import * as z from "zod";
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
+import { FileText, Users, Clock, CheckCircle, Search, Eye, Star, Calendar, MessageSquare, Download, Phone, Mail, GraduationCap, Briefcase, Filter } from "lucide-react";
 import React, { useState } from "react";
-
-const evaluationSchema = z.object({
-  candidateId: z.string().min(1, "Aday seçimi gereklidir"),
-  position: z.string().min(1, "Pozisyon gereklidir"),
-  rating: z.string().min(1, "Değerlendirme puanı gereklidir"),
-  notes: z.string().min(1, "Notlar gereklidir"),
-  recommendation: z.string().min(1, "Öneri gereklidir")
-});
 
 export default function ApplicationEvaluationPage() {
   const [searchTerm, setSearchTerm] = useState("");
   const [statusFilter, setStatusFilter] = useState("all");
   const [positionFilter, setPositionFilter] = useState("all");
-
-  const form = useForm<z.infer<typeof evaluationSchema>>({
-    resolver: zodResolver(evaluationSchema),
-    defaultValues: {
-      candidateId: "",
-      position: "",
-      rating: "",
-      notes: "",
-      recommendation: ""
-    }
-  });
 
   const applications = [
     {
@@ -342,8 +317,9 @@ export default function ApplicationEvaluationPage() {
                   </div>
                 </form>
               </Form>
-            </DialogContent>
-          </Dialog>
+              </DialogContent>
+            </Dialog>
+          </div>
         </div>
 
         {/* Stats Cards */}
