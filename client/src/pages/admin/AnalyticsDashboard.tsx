@@ -102,7 +102,7 @@ export default function AnalyticsDashboard() {
             <h1 className="text-4xl font-bold text-gray-900 mb-2">Analitik ve İş Zekası Merkezi</h1>
             <p className="text-gray-600">Şirket verilerinizi analiz edin ve performans trendlerini takip edin</p>
           </div>
-          <Badge variant="outline" className="text-sm">
+          <Badge variant="lightgray" className="text-sm">
             <Activity className="h-4 w-4 mr-2" />
             Canlı Veriler
           </Badge>

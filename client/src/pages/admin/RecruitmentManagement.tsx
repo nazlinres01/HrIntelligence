@@ -338,7 +338,7 @@ export default function RecruitmentManagement() {
                 </div>
               </div>
               <DialogFooter>
-                <Button type="button" variant="outline" onClick={() => setIsDialogOpen(false)}>
+                <Button type="button" variant="lightgray" onClick={() => setIsDialogOpen(false)}>
                   İptal
                 </Button>
                 <Button type="submit" disabled={createJobMutation.isPending || updateJobMutation.isPending}>
@@ -409,12 +409,12 @@ export default function RecruitmentManagement() {
                     <div className="flex items-center justify-between pt-4 border-t border-gray-200 dark:border-gray-700">
                       {getEmploymentTypeBadge(job.employmentType)}
                       <div className="flex space-x-2">
-                        <Button size="sm" variant="outline" onClick={() => handleEdit(job)}>
+                        <Button size="sm" variant="lightgray" onClick={() => handleEdit(job)}>
                           <Edit className="h-4 w-4" />
                         </Button>
                         <Button 
                           size="sm" 
-                          variant="outline" 
+                          variant="lightgray" 
                           onClick={() => deleteJobMutation.mutate(job.id)}
                           disabled={deleteJobMutation.isPending}
                         >
@@ -483,7 +483,7 @@ export default function RecruitmentManagement() {
                         </TableCell>
                         <TableCell className="text-right">
                           <div className="flex justify-end space-x-2">
-                            <Button size="sm" variant="outline">
+                            <Button size="sm" variant="lightgray">
                               <Eye className="h-4 w-4" />
                             </Button>
                           </div>

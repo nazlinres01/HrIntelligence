@@ -148,7 +148,7 @@ export default function SecurityAudit() {
           </div>
           <div className="flex space-x-3">
             <Button 
-              variant="outline" 
+              variant="lightgray" 
               onClick={handleRefresh}
               disabled={refreshing}
               className="border-gray-300 text-gray-700"
@@ -156,7 +156,7 @@ export default function SecurityAudit() {
               <RefreshCw className={`mr-2 h-4 w-4 ${refreshing ? 'animate-spin' : ''}`} />
               Yenile
             </Button>
-            <Button variant="outline" className="border-gray-300 text-gray-700">
+            <Button variant="lightgray" className="border-gray-300 text-gray-700">
               <Download className="mr-2 h-4 w-4" />
               Rapor İndir
             </Button>
@@ -331,7 +331,7 @@ export default function SecurityAudit() {
                             </div>
                           </div>
                         </div>
-                        <Button variant="outline" size="sm">
+                        <Button variant="lightgray" size="sm">
                           <Eye className="h-4 w-4 mr-2" />
                           Detay
                         </Button>

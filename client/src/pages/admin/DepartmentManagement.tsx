@@ -199,7 +199,7 @@ export default function DepartmentManagement() {
             <p className="text-gray-600 text-lg">Departmanları Yönetin, Organize Edin ve Yapısal Hiyerarşiyi Düzenleyin</p>
           </div>
           <div className="flex space-x-3">
-            <Button variant="outline" className="border-gray-300 text-gray-700">
+            <Button variant="lightgray" className="border-gray-300 text-gray-700">
               <Download className="mr-2 h-4 w-4" />
               Dışa Aktar
             </Button>
@@ -210,7 +210,7 @@ export default function DepartmentManagement() {
                     setEditingDepartment(null);
                     resetForm();
                   }}
-                  variant="outline"
+                  variant="lightgray"
                   className="border-gray-300 text-gray-700 hover:bg-gray-50"
                 >
                   <Plus className="mr-2 h-4 w-4" />
@@ -307,7 +307,7 @@ export default function DepartmentManagement() {
                   </div>
 
                   <DialogFooter>
-                    <Button type="button" variant="outline" onClick={() => setIsDialogOpen(false)}>
+                    <Button type="button" variant="lightgray" onClick={() => setIsDialogOpen(false)}>
                       İptal
                     </Button>
                     <Button type="submit" disabled={createDepartmentMutation.isPending || updateDepartmentMutation.isPending}>
@@ -463,14 +463,14 @@ export default function DepartmentManagement() {
                   </div>
                   <div className="flex items-center gap-2 ml-4">
                     <Button
-                      variant="outline"
+                      variant="lightgray"
                       size="sm"
                       onClick={() => handleEdit(department)}
                     >
                       <Edit className="h-4 w-4" />
                     </Button>
                     <Button
-                      variant="outline"
+                      variant="lightgray"
                       size="sm"
                       onClick={() => handleDelete(department.id)}
                       className="text-red-600 hover:text-red-800"

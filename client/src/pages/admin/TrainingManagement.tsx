@@ -101,20 +101,20 @@ export default function TrainingManagement() {
       case "cancelled":
         return <Badge className="bg-red-100 text-red-800 dark:bg-red-900 dark:text-red-200">İptal Edildi</Badge>;
       default:
-        return <Badge variant="outline">{status}</Badge>;
+        return <Badge variant="lightgray">{status}</Badge>;
     }
   };
 
   const getLevelBadge = (level: string) => {
     switch (level) {
       case "Başlangıç":
-        return <Badge variant="outline" className="text-green-600">Başlangıç</Badge>;
+        return <Badge variant="lightgray" className="text-green-600">Başlangıç</Badge>;
       case "Orta":
-        return <Badge variant="outline" className="text-blue-600">Orta</Badge>;
+        return <Badge variant="lightgray" className="text-blue-600">Orta</Badge>;
       case "İleri":
-        return <Badge variant="outline" className="text-purple-600">İleri</Badge>;
+        return <Badge variant="lightgray" className="text-purple-600">İleri</Badge>;
       default:
-        return <Badge variant="outline">{level}</Badge>;
+        return <Badge variant="lightgray">{level}</Badge>;
     }
   };
 
@@ -299,7 +299,7 @@ export default function TrainingManagement() {
                       </div>
                     </TableCell>
                     <TableCell>
-                      <Badge variant="outline" className="text-blue-600">
+                      <Badge variant="lightgray" className="text-blue-600">
                         {training.category}
                       </Badge>
                     </TableCell>

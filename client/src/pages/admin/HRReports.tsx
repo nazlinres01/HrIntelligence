@@ -165,7 +165,7 @@ export default function HRReports() {
       case 'inactive':
         return <Badge variant="destructive">Pasif</Badge>;
       default:
-        return <Badge variant="outline">{status}</Badge>;
+        return <Badge variant="lightgray">{status}</Badge>;
     }
   };
 
@@ -198,7 +198,7 @@ export default function HRReports() {
               <SelectItem value="Q1-2024">Q1 2024</SelectItem>
             </SelectContent>
           </Select>
-          <Button variant="outline" className="bg-white dark:bg-gray-800">
+          <Button variant="lightgray" className="bg-white dark:bg-gray-800">
             <Download className="h-4 w-4 mr-2" />
             Excel İndir
           </Button>
@@ -345,7 +345,7 @@ export default function HRReports() {
                   {topPerformers.map((performer, index) => (
                     <div key={performer.name} className="flex items-center justify-between p-3 bg-gray-50 dark:bg-gray-800 rounded-lg">
                       <div className="flex items-center space-x-3">
-                        <Badge variant="outline" className="w-8 h-8 p-0 flex items-center justify-center">
+                        <Badge variant="lightgray" className="w-8 h-8 p-0 flex items-center justify-center">
                           {index + 1}
                         </Badge>
                         <Avatar className="h-10 w-10">
@@ -535,7 +535,7 @@ export default function HRReports() {
                   <div key={program.name} className="p-4 border border-gray-200 dark:border-gray-700 rounded-lg">
                     <div className="flex items-center justify-between mb-3">
                       <h4 className="font-medium">{program.name}</h4>
-                      <Badge variant="outline">{program.duration}</Badge>
+                      <Badge variant="lightgray">{program.duration}</Badge>
                     </div>
                     <div className="space-y-2">
                       <div className="flex justify-between text-sm">

@@ -81,22 +81,22 @@ export default function LeaveManagement() {
       case "rejected":
         return <Badge className="bg-red-100 text-red-800 dark:bg-red-900 dark:text-red-200">Reddedildi</Badge>;
       default:
-        return <Badge variant="outline">{status}</Badge>;
+        return <Badge variant="lightgray">{status}</Badge>;
     }
   };
 
   const getLeaveTypeBadge = (type: string) => {
     switch (type) {
       case "annual":
-        return <Badge variant="outline" className="text-blue-600">Yıllık İzin</Badge>;
+        return <Badge variant="lightgray" className="text-blue-600">Yıllık İzin</Badge>;
       case "sick":
-        return <Badge variant="outline" className="text-red-600">Hastalık İzni</Badge>;
+        return <Badge variant="lightgray" className="text-red-600">Hastalık İzni</Badge>;
       case "personal":
-        return <Badge variant="outline" className="text-purple-600">Kişisel İzin</Badge>;
+        return <Badge variant="lightgray" className="text-purple-600">Kişisel İzin</Badge>;
       case "maternity":
-        return <Badge variant="outline" className="text-pink-600">Doğum İzni</Badge>;
+        return <Badge variant="lightgray" className="text-pink-600">Doğum İzni</Badge>;
       default:
-        return <Badge variant="outline">{type}</Badge>;
+        return <Badge variant="lightgray">{type}</Badge>;
     }
   };
 
@@ -282,7 +282,7 @@ export default function LeaveManagement() {
                       </div>
                     </TableCell>
                     <TableCell>
-                      <Badge variant="outline" className="text-blue-600">
+                      <Badge variant="lightgray" className="text-blue-600">
                         {leave.days} gün
                       </Badge>
                     </TableCell>

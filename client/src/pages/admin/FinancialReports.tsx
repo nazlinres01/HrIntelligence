@@ -124,7 +124,7 @@ export default function FinancialReports() {
               <SelectItem value="2022">2022</SelectItem>
             </SelectContent>
           </Select>
-          <Button variant="outline" className="bg-white dark:bg-gray-800">
+          <Button variant="lightgray" className="bg-white dark:bg-gray-800">
             <Download className="h-4 w-4 mr-2" />
             Rapor İndir
           </Button>

@@ -157,7 +157,7 @@ export default function AnalyticsCenter() {
                 ))}
               </SelectContent>
             </Select>
-            <Button variant="outline" className="border-gray-300 text-gray-700">
+            <Button variant="lightgray" className="border-gray-300 text-gray-700">
               <Download className="h-4 w-4 mr-2" />
               Rapor İndir
             </Button>

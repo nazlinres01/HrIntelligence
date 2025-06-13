@@ -130,7 +130,7 @@ export default function SystemMonitoring() {
               </SelectContent>
             </Select>
             <Button 
-              variant="outline"
+              variant="lightgray"
               className="border-gray-300 text-gray-700 hover:bg-gray-50"
               onClick={() => refetchMetrics()}
             >
@@ -138,7 +138,7 @@ export default function SystemMonitoring() {
               Yenile
             </Button>
             <Button 
-              variant="outline"
+              variant="lightgray"
               className="border-gray-300 text-gray-700 hover:bg-gray-50"
               onClick={() => setAutoRefresh(!autoRefresh)}
             >

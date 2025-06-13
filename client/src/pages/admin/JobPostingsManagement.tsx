@@ -279,22 +279,22 @@ export default function JobPostingsManagement() {
       case "draft":
         return <Badge className="bg-gray-100 text-gray-800 dark:bg-gray-900 dark:text-gray-200">Taslak</Badge>;
       default:
-        return <Badge variant="outline">{status}</Badge>;
+        return <Badge variant="lightgray">{status}</Badge>;
     }
   };
 
   const getJobTypeBadge = (type: string) => {
     switch (type) {
       case "full-time":
-        return <Badge variant="outline" className="text-blue-600">Tam Zamanlı</Badge>;
+        return <Badge variant="lightgray" className="text-blue-600">Tam Zamanlı</Badge>;
       case "part-time":
-        return <Badge variant="outline" className="text-purple-600">Yarı Zamanlı</Badge>;
+        return <Badge variant="lightgray" className="text-purple-600">Yarı Zamanlı</Badge>;
       case "contract":
-        return <Badge variant="outline" className="text-orange-600">Sözleşmeli</Badge>;
+        return <Badge variant="lightgray" className="text-orange-600">Sözleşmeli</Badge>;
       case "internship":
-        return <Badge variant="outline" className="text-green-600">Staj</Badge>;
+        return <Badge variant="lightgray" className="text-green-600">Staj</Badge>;
       default:
-        return <Badge variant="outline">{type}</Badge>;
+        return <Badge variant="lightgray">{type}</Badge>;
     }
   };
 
@@ -471,7 +471,7 @@ export default function JobPostingsManagement() {
                 <Button type="submit" disabled={createJobMutation.isPending || updateJobMutation.isPending}>
                   {editingJob ? "Güncelle" : "Oluştur"}
                 </Button>
-                <Button type="button" variant="outline" onClick={() => setIsDialogOpen(false)}>
+                <Button type="button" variant="lightgray" onClick={() => setIsDialogOpen(false)}>
                   İptal
                 </Button>
               </div>
