@@ -47,6 +47,37 @@ export const users = pgTable("users", {
   updatedAt: timestamp("updated_at").defaultNow(),
 });
 
+// Strategic Goals table for HR management
+export const strategicGoals = pgTable("strategic_goals", {
+  id: serial("id").primaryKey(),
+  companyId: integer("company_id").references(() => companies.id).notNull(),
+  title: varchar("title").notNull(),
+  description: text("description"),
+  progress: integer("progress").default(0), // 0-100
+  status: varchar("status").default("planning"), // planning, active, on_track, at_risk, completed, cancelled
+  priority: varchar("priority").default("medium"), // low, medium, high, critical
+  deadline: date("deadline"),
+  responsible: varchar("responsible"),
+  budget: decimal("budget", { precision: 12, scale: 2 }),
+  metrics: jsonb("metrics"), // Array of success metrics
+  team: jsonb("team"), // Array of team member IDs
+  createdBy: varchar("created_by").references(() => users.id),
+  createdAt: timestamp("created_at").defaultNow(),
+  updatedAt: timestamp("updated_at").defaultNow(),
+});
+
+// HR Analytics table for tracking key metrics
+export const hrAnalytics = pgTable("hr_analytics", {
+  id: serial("id").primaryKey(),
+  companyId: integer("company_id").references(() => companies.id).notNull(),
+  metricType: varchar("metric_type").notNull(), // turnover_rate, satisfaction_score, time_to_hire, etc.
+  value: decimal("value", { precision: 10, scale: 2 }).notNull(),
+  period: varchar("period").notNull(), // YYYY-MM format
+  target: decimal("target", { precision: 10, scale: 2 }),
+  notes: text("notes"),
+  createdAt: timestamp("created_at").defaultNow(),
+});
+
 export const employees = pgTable("employees", {
   id: serial("id").primaryKey(),
   companyId: integer("company_id").references(() => companies.id).notNull(),

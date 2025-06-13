@@ -3,9 +3,39 @@ import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { Progress } from "@/components/ui/progress";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import { Target, TrendingUp, Users, Calendar, CheckCircle, AlertCircle, Plus, BarChart3, PieChart, Activity } from "lucide-react";
+import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog";
+import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from "@/components/ui/form";
+import { Input } from "@/components/ui/input";
+import { Textarea } from "@/components/ui/textarea";
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
+import { Target, TrendingUp, Users, Calendar, CheckCircle, AlertCircle, Plus, BarChart3, PieChart, Activity, Award, BookOpen, Zap } from "lucide-react";
+import { useForm } from "react-hook-form";
+import { zodResolver } from "@hookform/resolvers/zod";
+import * as z from "zod";
+
+const strategySchema = z.object({
+  title: z.string().min(1, "Hedef başlığı gereklidir"),
+  description: z.string().min(10, "En az 10 karakter açıklama gereklidir"),
+  deadline: z.string().min(1, "Bitiş tarihi gereklidir"),
+  responsible: z.string().min(1, "Sorumlu kişi seçimi gereklidir"),
+  priority: z.string().min(1, "Öncelik seviyesi gereklidir"),
+  metrics: z.string().min(5, "Başarı metrikleri gereklidir")
+});
+
+type StrategyFormData = z.infer<typeof strategySchema>;
 
 export default function HRStrategyPage() {
+  const form = useForm<StrategyFormData>({
+    resolver: zodResolver(strategySchema),
+    defaultValues: {
+      title: "",
+      description: "",
+      deadline: "",
+      responsible: "",
+      priority: "",
+      metrics: ""
+    }
+  });
   const strategicGoals = [
     {
       id: 1,

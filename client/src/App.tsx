@@ -80,7 +80,7 @@ import InternalCommunication from "@/pages/internal-communication";
 import DailyActivities from "@/pages/daily-activities";
 
 // HR Manager Pages
-import HRStrategy from "@/pages/hr-strategy";
+import HRStrategy from "@/pages/hr-strategy-complete";
 import DepartmentManagementPage from "@/pages/department-management";
 import ApplicationEvaluation from "@/pages/application-evaluation";
 import ApplicationEvaluationSimple from "@/pages/application-evaluation-simple";
