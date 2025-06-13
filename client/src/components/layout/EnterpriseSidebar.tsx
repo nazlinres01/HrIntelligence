@@ -125,6 +125,38 @@ const getRoleBasedNavigation = (userRole: UserRole): NavigationSection[] => {
         }
       ];
 
+    case 'hr_specialist':
+    case 'ik_uzmanı':
+      return [
+        {
+          title: "İK Operasyon Merkezi",
+          color: "from-orange-600 to-red-600",
+          items: [
+            { name: "İK Panosu", href: "/", icon: LayoutDashboard, show: true, description: "İK operasyonları genel bakış" },
+            { name: "Çalışan Analizi", href: "/admin/analytics", icon: BarChart3, show: true, description: "Personel analizleri" },
+          ]
+        },
+        {
+          title: "Personel İşlemleri",
+          color: "from-blue-600 to-indigo-600",
+          items: [
+            { name: "Çalışan Kayıtları", href: "/employees", icon: Users, show: true, description: "Çalışan bilgileri ve kayıt işlemleri" },
+            { name: "İzin Takibi", href: "/leaves", icon: Calendar, show: true, description: "İzin durumları ve takip" },
+            { name: "Performans Kayıtları", href: "/performance", icon: TrendingUp, show: true, description: "Performans değerlendirmeleri" },
+            { name: "Bordro Kayıtları", href: "/payroll", icon: CreditCard, show: true, description: "Maaş ve bordro takibi" },
+          ]
+        },
+        {
+          title: "Destek & Raporlama",
+          color: "from-emerald-600 to-teal-600",
+          items: [
+            { name: "İK Raporları", href: "/reports", icon: FileText, show: true, description: "Personel raporları" },
+            { name: "Eğitim Kayıtları", href: "/training", icon: BookOpen, show: true, description: "Eğitim programları takibi" },
+            { name: "Bildirimler", href: "/notifications", icon: Bell, show: true, description: "Sistem bildirimleri" },
+          ]
+        }
+      ];
+
     default:
       return [
         {
