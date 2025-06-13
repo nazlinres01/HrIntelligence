@@ -195,17 +195,11 @@ const getRoleBasedNavigation = (userRole: UserRole): NavigationSection[] => {
     case 'çalışan':
       return [
         {
-          title: "Kişisel Panom",
+          title: "Çalışan Portalı",
           color: "from-yellow-600 to-amber-600",
           items: [
             { name: "Ana Sayfa", href: "/", icon: LayoutDashboard, show: true, description: "Kişisel dashboard ve günlük aktiviteler" },
             { name: "Profilim", href: "/profile", icon: User, show: true, description: "Kişisel bilgilerim ve ayarlar" },
-          ]
-        },
-        {
-          title: "İzin ve Talepler",
-          color: "from-blue-600 to-indigo-600",
-          items: [
             { name: "İzin Talepleri", href: "/my-leaves", icon: Calendar, show: true, description: "İzin taleplerimi yönet" },
             { name: "Mesai Kayıtları", href: "/timesheet", icon: Clock, show: true, description: "Çalışma saatlerimi kaydet" },
             { name: "Harcama Talepleri", href: "/expenses", icon: CreditCard, show: true, description: "Harcama taleplerimi gönder" },
@@ -215,6 +209,7 @@ const getRoleBasedNavigation = (userRole: UserRole): NavigationSection[] => {
             { name: "Duyurular", href: "/announcements", icon: Bell, show: true, description: "Şirket duyuruları" },
           ]
         },
+
 
         {
           title: "Diğer",
