@@ -3,6 +3,8 @@ import { Link, useLocation } from "wouter";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
+import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog";
+import { Label } from "@/components/ui/label";
 import { 
   Users, 
   Calendar, 
@@ -17,12 +19,19 @@ import {
   BookOpen,
   BarChart3,
   Shield,
-  LogOut
+  LogOut,
+  Eye,
+  Check,
+  X
 } from "lucide-react";
-import { useQuery } from "@tanstack/react-query";
+import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
+import { apiRequest } from "@/lib/queryClient";
+import { useToast } from "@/hooks/use-toast";
 
 export default function HRManagerDashboard() {
   const [location] = useLocation();
+  const { toast } = useToast();
+  const queryClient = useQueryClient();
 
   // Dashboard verileri
   const { data: stats } = useQuery({
@@ -41,9 +50,149 @@ export default function HRManagerDashboard() {
     queryKey: ["/api/activities"],
   });
 
+  const { data: employees = [] } = useQuery({
+    queryKey: ["/api/employees"],
+  });
+
   const approvalPendingLeaves = pendingLeaves?.filter(leave => leave.status === "pending") || [];
   const recentNotifications = notifications?.slice(0, 5) || [];
   const recentActivities = activities?.slice(0, 5) || [];
+
+  // İzin onaylama mutations
+  const approveLeave = useMutation({
+    mutationFn: async (leaveId: number) => {
+      return apiRequest(`/api/leaves/${leaveId}/approve`, {
+        method: "PATCH",
+      });
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ["/api/leaves"] });
+      toast({
+        title: "İzin Onaylandı",
+        description: "İzin talebi başarıyla onaylandı.",
+      });
+    },
+    onError: () => {
+      toast({
+        title: "Hata",
+        description: "İzin onaylanırken bir hata oluştu.",
+        variant: "destructive",
+      });
+    },
+  });
+
+  const rejectLeave = useMutation({
+    mutationFn: async (leaveId: number) => {
+      return apiRequest(`/api/leaves/${leaveId}/reject`, {
+        method: "PATCH",
+      });
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ["/api/leaves"] });
+      toast({
+        title: "İzin Reddedildi",
+        description: "İzin talebi reddedildi.",
+      });
+    },
+    onError: () => {
+      toast({
+        title: "Hata",
+        description: "İzin reddedilirken bir hata oluştu.",
+        variant: "destructive",
+      });
+    },
+  });
+
+  // Çalışan bilgilerini bul
+  const getEmployeeInfo = (employeeId: number) => {
+    const employee = employees.find((emp: any) => emp.id === employeeId);
+    return employee ? `${employee.firstName} ${employee.lastName}` : `Çalışan #${employeeId}`;
+  };
+
+  const getLeaveTypeLabel = (type: string) => {
+    const types: { [key: string]: string } = {
+      "annual": "Yıllık İzin",
+      "sick": "Hastalık İzni",
+      "maternity": "Doğum İzni",
+      "paternity": "Babalık İzni",
+      "personal": "Kişisel İzin",
+      "emergency": "Acil Durum İzni"
+    };
+    return types[type] || type;
+  };
+
+  // Detaylı izin görüntüleme komponenti
+  const LeaveDetailModal = ({ leave }: { leave: any }) => (
+    <DialogContent className="max-w-2xl">
+      <DialogHeader>
+        <DialogTitle>İzin Talebi Detayları</DialogTitle>
+        <DialogDescription>
+          {getEmployeeInfo(leave.employeeId)} tarafından gönderilen izin talebi
+        </DialogDescription>
+      </DialogHeader>
+      <div className="space-y-6">
+        <div className="grid grid-cols-2 gap-4">
+          <div>
+            <Label className="text-sm font-medium text-gray-600">Çalışan</Label>
+            <p className="text-sm font-medium">{getEmployeeInfo(leave.employeeId)}</p>
+          </div>
+          <div>
+            <Label className="text-sm font-medium text-gray-600">İzin Türü</Label>
+            <p className="text-sm">{getLeaveTypeLabel(leave.leaveType)}</p>
+          </div>
+          <div>
+            <Label className="text-sm font-medium text-gray-600">Başlangıç Tarihi</Label>
+            <p className="text-sm">{new Date(leave.startDate).toLocaleDateString('tr-TR')}</p>
+          </div>
+          <div>
+            <Label className="text-sm font-medium text-gray-600">Bitiş Tarihi</Label>
+            <p className="text-sm">{new Date(leave.endDate).toLocaleDateString('tr-TR')}</p>
+          </div>
+          <div>
+            <Label className="text-sm font-medium text-gray-600">Toplam Gün</Label>
+            <p className="text-sm font-medium">{leave.days} gün</p>
+          </div>
+          <div>
+            <Label className="text-sm font-medium text-gray-600">Başvuru Tarihi</Label>
+            <p className="text-sm">{new Date(leave.appliedDate || new Date()).toLocaleDateString('tr-TR')}</p>
+          </div>
+        </div>
+        
+        {leave.reason && (
+          <div>
+            <Label className="text-sm font-medium text-gray-600">Açıklama</Label>
+            <div className="mt-2 p-3 bg-gray-50 rounded-lg">
+              <p className="text-sm">{leave.reason}</p>
+            </div>
+          </div>
+        )}
+
+        <div className="flex gap-3 pt-4">
+          <Button 
+            onClick={() => {
+              approveLeave.mutate(leave.id);
+            }}
+            disabled={approveLeave.isPending}
+            className="flex-1 bg-green-600 hover:bg-green-700"
+          >
+            <Check className="w-4 h-4 mr-2" />
+            İzni Onayla
+          </Button>
+          <Button 
+            onClick={() => {
+              rejectLeave.mutate(leave.id);
+            }}
+            disabled={rejectLeave.isPending}
+            variant="destructive"
+            className="flex-1"
+          >
+            <X className="w-4 h-4 mr-2" />
+            İzni Reddet
+          </Button>
+        </div>
+      </div>
+    </DialogContent>
+  );
 
   return (
     <div className="flex-1 flex flex-col overflow-hidden">
@@ -125,16 +274,38 @@ export default function HRManagerDashboard() {
                 {approvalPendingLeaves.length > 0 ? (
                   approvalPendingLeaves.slice(0, 3).map((leave: any) => (
                     <div key={leave.id} className="flex items-center justify-between p-3 bg-gray-50 rounded-lg">
-                      <div>
-                        <p className="font-medium text-sm">Çalışan #{leave.employeeId}</p>
-                        <p className="text-xs text-gray-500">{leave.leaveType} - {leave.days} gün</p>
-                        <p className="text-xs text-gray-400">{new Date(leave.startDate).toLocaleDateString('tr-TR')}</p>
+                      <div className="flex-1">
+                        <p className="font-medium text-sm">{getEmployeeInfo(leave.employeeId)}</p>
+                        <p className="text-xs text-gray-500">{getLeaveTypeLabel(leave.leaveType)} - {leave.days} gün</p>
+                        <p className="text-xs text-gray-400">{new Date(leave.startDate).toLocaleDateString('tr-TR')} - {new Date(leave.endDate).toLocaleDateString('tr-TR')}</p>
                       </div>
                       <div className="flex gap-2">
-                        <Button size="sm" className="bg-green-600 hover:bg-green-700 text-xs px-2 py-1">
+                        <Dialog>
+                          <DialogTrigger asChild>
+                            <Button size="sm" variant="outline" className="text-xs px-2 py-1">
+                              <Eye className="w-3 h-3 mr-1" />
+                              Detay
+                            </Button>
+                          </DialogTrigger>
+                          <LeaveDetailModal leave={leave} />
+                        </Dialog>
+                        <Button 
+                          size="sm" 
+                          className="bg-green-600 hover:bg-green-700 text-xs px-2 py-1"
+                          onClick={() => approveLeave.mutate(leave.id)}
+                          disabled={approveLeave.isPending}
+                        >
+                          <Check className="w-3 h-3 mr-1" />
                           Onayla
                         </Button>
-                        <Button size="sm" variant="outline" className="text-xs px-2 py-1">
+                        <Button 
+                          size="sm" 
+                          variant="destructive" 
+                          className="text-xs px-2 py-1"
+                          onClick={() => rejectLeave.mutate(leave.id)}
+                          disabled={rejectLeave.isPending}
+                        >
+                          <X className="w-3 h-3 mr-1" />
                           Reddet
                         </Button>
                       </div>
