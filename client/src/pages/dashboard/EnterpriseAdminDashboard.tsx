@@ -183,8 +183,8 @@ export default function EnterpriseAdminDashboard() {
             <Card key={index} className="bg-white border-gray-200 hover:shadow-xl transition-all duration-300 group hover:border-gray-300">
               <CardHeader className="pb-3">
                 <div className="flex items-center justify-between">
-                  <div className={`p-3 rounded-xl bg-gradient-to-r ${metric.color} shadow-lg group-hover:scale-110 transition-transform`}>
-                    <metric.icon className="h-6 w-6 text-white" />
+                  <div className="p-3 rounded-xl bg-blue-50 border border-blue-200 group-hover:scale-110 transition-transform">
+                    <metric.icon className="h-6 w-6 text-blue-600" />
                   </div>
                   <div className="flex items-center space-x-1">
                     {metric.trend === "up" ? (

@@ -166,43 +166,43 @@ export default function HRSpecialistDashboard() {
         <main className="p-6">
           {/* Stats Cards */}
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-8">
-            <Card className="bg-gradient-to-r from-green-500 to-green-600 text-white">
+            <Card className="bg-white border-gray-200 hover:shadow-md transition-shadow">
               <CardHeader className="pb-2">
-                <CardTitle className="text-sm font-medium opacity-90">Güncel İzin Talepleri</CardTitle>
+                <CardTitle className="text-sm font-medium text-gray-600">Güncel İzin Talepleri</CardTitle>
               </CardHeader>
               <CardContent>
-                <div className="text-3xl font-bold">15</div>
-                <div className="text-sm opacity-80">İşlenmeli</div>
+                <div className="text-3xl font-bold text-gray-900">15</div>
+                <div className="text-sm text-gray-500">İşlenmeli</div>
               </CardContent>
             </Card>
 
-            <Card className="bg-gradient-to-r from-blue-500 to-blue-600 text-white">
+            <Card className="bg-white border-gray-200 hover:shadow-md transition-shadow">
               <CardHeader className="pb-2">
-                <CardTitle className="text-sm font-medium opacity-90">Yeni Başvurular</CardTitle>
+                <CardTitle className="text-sm font-medium text-gray-600">Yeni Başvurular</CardTitle>
               </CardHeader>
               <CardContent>
-                <div className="text-3xl font-bold">7</div>
-                <div className="text-sm opacity-80">Bu hafta</div>
+                <div className="text-3xl font-bold text-gray-900">7</div>
+                <div className="text-sm text-gray-500">Bu hafta</div>
               </CardContent>
             </Card>
 
-            <Card className="bg-gradient-to-r from-orange-500 to-orange-600 text-white">
+            <Card className="bg-white border-gray-200 hover:shadow-md transition-shadow">
               <CardHeader className="pb-2">
-                <CardTitle className="text-sm font-medium opacity-90">Tamamlanan Eğitimler</CardTitle>
+                <CardTitle className="text-sm font-medium text-gray-600">Tamamlanan Eğitimler</CardTitle>
               </CardHeader>
               <CardContent>
-                <div className="text-3xl font-bold">24</div>
-                <div className="text-sm opacity-80">Bu ay</div>
+                <div className="text-3xl font-bold text-gray-900">24</div>
+                <div className="text-sm text-gray-500">Bu ay</div>
               </CardContent>
             </Card>
 
-            <Card className="bg-gradient-to-r from-purple-500 to-purple-600 text-white">
+            <Card className="bg-white border-gray-200 hover:shadow-md transition-shadow">
               <CardHeader className="pb-2">
-                <CardTitle className="text-sm font-medium opacity-90">Bekleyen Görevler</CardTitle>
+                <CardTitle className="text-sm font-medium text-gray-600">Bekleyen Görevler</CardTitle>
               </CardHeader>
               <CardContent>
-                <div className="text-3xl font-bold">11</div>
-                <div className="text-sm opacity-80">Yüksek öncelik</div>
+                <div className="text-3xl font-bold text-gray-900">11</div>
+                <div className="text-sm text-gray-500">Yüksek öncelik</div>
               </CardContent>
             </Card>
           </div>
