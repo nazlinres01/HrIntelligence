@@ -469,17 +469,17 @@ export default function EnterpriseSidebar() {
             {!isCollapsed && (
               <div className="flex-1 min-w-0">
                 <div className="flex items-center space-x-2">
-                  <p className="text-sm font-semibold text-white truncate">
+                  <p className="text-sm font-semibold text-gray-900 truncate">
                     {userData.firstName} {userData.lastName}
                   </p>
-                  <div className="w-2 h-2 bg-green-400 rounded-full"></div>
+                  <div className="w-2 h-2 bg-green-500 rounded-full animate-pulse"></div>
                 </div>
-                <p className="text-xs text-gray-400 truncate">
+                <p className="text-xs text-gray-600 truncate">
                   {roleLabels[userRole] || userRole} • {userData.email}
                 </p>
                 <div className="flex items-center space-x-1 mt-1">
-                  <Star className="h-3 w-3 text-yellow-400" />
-                  <span className="text-xs text-gray-400">Premium Access</span>
+                  <Star className="h-3 w-3 text-yellow-500" />
+                  <span className="text-xs text-gray-600 font-medium">Premium Access</span>
                 </div>
               </div>
             )}
