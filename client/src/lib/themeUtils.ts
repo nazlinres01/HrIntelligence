@@ -6,14 +6,14 @@ export const getRoleTheme = (role: UserRole) => {
   const themes = {
     hr_manager: {
       name: 'İK Müdürü',
-      primary: 'from-green-600 to-emerald-700',
-      secondary: 'from-green-50 to-emerald-50',
-      accent: 'green-600',
-      text: 'text-green-700',
-      button: 'bg-green-600 hover:bg-green-700',
-      border: 'border-green-200',
-      card: 'bg-gradient-to-br from-green-50 to-emerald-50',
-      sidebar: 'from-teal-600 via-teal-700 to-emerald-700'
+      primary: 'from-gray-600 to-gray-700',
+      secondary: 'from-gray-50 to-gray-100',
+      accent: 'gray-600',
+      text: 'text-gray-700',
+      button: 'bg-gray-600 hover:bg-gray-700',
+      border: 'border-gray-200',
+      card: 'bg-gradient-to-br from-gray-50 to-gray-100',
+      sidebar: 'from-gray-600 via-gray-700 to-gray-800'
     },
     hr_specialist: {
       name: 'İK Uzmanı',

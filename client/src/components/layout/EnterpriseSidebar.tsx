@@ -113,7 +113,7 @@ const getRoleBasedNavigation = (userRole: UserRole): NavigationSection[] => {
       return [
         {
           title: "İK Komuta Merkezi",
-          color: "from-teal-600 to-emerald-600",
+          color: "from-gray-600 to-gray-700",
           items: [
             { name: "İK Dashboard", href: "/", icon: LayoutDashboard, show: true, description: "İK operasyonları ana kontrol paneli" },
             { name: "İşgücü Analitiği", href: "/admin/analytics", icon: BarChart3, show: true, description: "Personel metrikleri ve analizler" },
@@ -133,7 +133,7 @@ const getRoleBasedNavigation = (userRole: UserRole): NavigationSection[] => {
         },
         {
           title: "İşe Alım & Gelişim",
-          color: "from-emerald-600 to-teal-600",
+          color: "from-gray-500 to-gray-600",
           items: [
             { name: "İş İlanları", href: "/job-postings", icon: Briefcase, show: true, description: "İş ilanı oluşturma ve yönetimi" },
             { name: "Başvuru Değerlendirme", href: "/application-evaluation", icon: FileText, show: true, description: "Aday başvuru değerlendirme süreci" },
@@ -375,8 +375,8 @@ export default function EnterpriseSidebar() {
                 </div>
               </div>
               <div className="flex items-center space-x-1">
-                <div className="w-2 h-2 bg-green-400 rounded-full animate-pulse"></div>
-                <span className="text-green-200 text-xs font-medium">Canlı</span>
+                <div className="w-2 h-2 bg-gray-400 rounded-full animate-pulse"></div>
+                <span className="text-gray-200 text-xs font-medium">Canlı</span>
               </div>
             </div>
           )}
