@@ -306,10 +306,10 @@ export default function Meetings() {
                   Yeni Toplantı
                 </Button>
               </DialogTrigger>
-          <DialogContent className="max-w-2xl max-h-[90vh] overflow-y-auto">
-            <DialogHeader>
-              <DialogTitle>Yeni Toplantı Planla</DialogTitle>
-            </DialogHeader>
+              <DialogContent className="max-w-2xl max-h-[90vh] overflow-y-auto">
+                <DialogHeader>
+                  <DialogTitle>Yeni Toplantı Planla</DialogTitle>
+                </DialogHeader>
             <Form {...form}>
               <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-4">
                 <FormField
