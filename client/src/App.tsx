@@ -217,6 +217,7 @@ function Router() {
         <Route path="/activities" component={DailyActivities} />
         
         {/* HR Manager Routes */}
+        <Route path="/hr-manager-dashboard" component={HRManagerDashboard} />
         <Route path="/hr/strategy" component={HRStrategy} />
         <Route path="/departments" component={DepartmentManagementPage} />
         <Route path="/application-evaluation" component={ApplicationEvaluationSimple} />

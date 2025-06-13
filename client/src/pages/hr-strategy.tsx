@@ -182,15 +182,17 @@ export default function HRStrategyPage() {
     <div className="min-h-screen bg-white">
       <div className="p-8">
         {/* Header */}
-        <div className="flex flex-col lg:flex-row lg:items-center lg:justify-between mb-8">
-          <div>
-            <h1 className="text-3xl font-bold text-gray-900 mb-2">İK Stratejisi</h1>
-            <p className="text-gray-600">Stratejik İnsan Kaynakları planlaması ve hedef yönetimi</p>
+        <div className="bg-white border-b border-gray-200 pb-6 mb-8">
+          <div className="flex flex-col lg:flex-row lg:items-center lg:justify-between">
+            <div>
+              <h1 className="text-3xl font-bold text-gray-900 mb-2">İK Stratejisi</h1>
+              <p className="text-gray-600">Stratejik İnsan Kaynakları planlaması ve hedef yönetimi</p>
+            </div>
+            <Button className="bg-green-600 hover:bg-green-700 mt-4 lg:mt-0">
+              <Plus className="h-4 w-4 mr-2" />
+              Yeni Strateji Ekle
+            </Button>
           </div>
-          <Button className="bg-teal-600 hover:bg-teal-700 mt-4 lg:mt-0">
-            <Plus className="h-4 w-4 mr-2" />
-            Yeni Strateji Ekle
-          </Button>
         </div>
 
         {/* Key Metrics */}
@@ -221,7 +223,7 @@ export default function HRStrategyPage() {
           <TabsContent value="goals" className="space-y-6">
             <div className="flex justify-between items-center">
               <h2 className="text-2xl font-bold text-gray-800">2024 Stratejik Hedefleri</h2>
-              <Button className="bg-teal-600 hover:bg-teal-700">
+              <Button className="bg-green-600 hover:bg-green-700">
                 <Target className="h-4 w-4 mr-2" />
                 Yeni Hedef Belirle
               </Button>
@@ -282,10 +284,10 @@ export default function HRStrategyPage() {
                     </div>
 
                     <div className="flex justify-end gap-2 pt-2">
-                      <Button variant="outline" size="sm" className="border-teal-600 text-teal-600 hover:bg-teal-50">
+                      <Button variant="outline" size="sm" className="border-green-600 text-green-600 hover:bg-green-50">
                         Detaylar
                       </Button>
-                      <Button size="sm" className="bg-teal-600 hover:bg-teal-700">
+                      <Button size="sm" className="bg-green-600 hover:bg-green-700">
                         Güncelle
                       </Button>
                     </div>
@@ -298,7 +300,7 @@ export default function HRStrategyPage() {
           <TabsContent value="initiatives" className="space-y-6">
             <div className="flex justify-between items-center">
               <h2 className="text-2xl font-bold text-gray-800">Stratejik İnisiyatifler</h2>
-              <Button className="bg-teal-600 hover:bg-teal-700">
+              <Button className="bg-green-600 hover:bg-green-700">
                 <Plus className="h-4 w-4 mr-2" />
                 Yeni İnisiyatif
               </Button>
@@ -347,11 +349,11 @@ export default function HRStrategyPage() {
                     </div>
 
                     <div className="flex justify-end gap-2">
-                      <Button variant="outline" size="sm" className="border-teal-600 text-teal-600 hover:bg-teal-50">
+                      <Button variant="outline" size="sm" className="border-green-600 text-green-600 hover:bg-green-50">
                         <BarChart3 className="h-4 w-4 mr-1" />
                         Analiz
                       </Button>
-                      <Button size="sm" className="bg-teal-600 hover:bg-teal-700">
+                      <Button size="sm" className="bg-green-600 hover:bg-green-700">
                         Yönet
                       </Button>
                     </div>
