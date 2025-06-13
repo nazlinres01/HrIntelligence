@@ -197,16 +197,19 @@ export default function HRManagerDashboard() {
   return (
     <div className="flex-1 flex flex-col overflow-hidden">
       {/* Top Header */}
-      <header className="bg-white shadow-sm border-b px-6 py-4">
+      <header className="bg-white border-b border-gray-200 px-6 py-6">
         <div className="flex items-center justify-between">
           <div>
-            <h2 className="text-2xl font-bold text-gray-900">İK Müdürü Dashboard</h2>
+            <h2 className="text-3xl font-bold text-gray-900">İK Müdürü Dashboard</h2>
             <p className="text-gray-600">İnsan Kaynakları yönetim paneli</p>
           </div>
           <div className="flex items-center gap-4">
-            <Badge variant="secondary" className="bg-teal-100 text-teal-800">
-              İK Müdürü
-            </Badge>
+            <Link href="/hr/strategy">
+              <Button className="bg-green-600 hover:bg-green-700">
+                <BarChart3 className="w-4 h-4 mr-2" />
+                İK Stratejisi
+              </Button>
+            </Link>
           </div>
         </div>
       </header>
@@ -215,7 +218,7 @@ export default function HRManagerDashboard() {
       <main className="flex-1 overflow-auto p-6">
         {/* Stats Cards */}
         <div className="grid grid-cols-1 md:grid-cols-4 gap-6 mb-6">
-          <Card className="border-l-4 border-l-teal-500">
+          <Card className="bg-white border-gray-200 hover:shadow-md transition-shadow">
             <CardHeader className="pb-2">
               <CardTitle className="text-sm font-medium text-gray-600">Toplam Çalışan</CardTitle>
             </CardHeader>
@@ -225,7 +228,7 @@ export default function HRManagerDashboard() {
             </CardContent>
           </Card>
           
-          <Card className="border-l-4 border-l-orange-500">
+          <Card className="bg-white border-gray-200 hover:shadow-md transition-shadow">
             <CardHeader className="pb-2">
               <CardTitle className="text-sm font-medium text-gray-600">Bekleyen İzinler</CardTitle>
             </CardHeader>
@@ -235,7 +238,7 @@ export default function HRManagerDashboard() {
             </CardContent>
           </Card>
           
-          <Card className="border-l-4 border-l-blue-500">
+          <Card className="bg-white border-gray-200 hover:shadow-md transition-shadow">
             <CardHeader className="pb-2">
               <CardTitle className="text-sm font-medium text-gray-600">Aylık Bordro</CardTitle>
             </CardHeader>
@@ -245,7 +248,7 @@ export default function HRManagerDashboard() {
             </CardContent>
           </Card>
           
-          <Card className="border-l-4 border-l-green-500">
+          <Card className="bg-white border-gray-200 hover:shadow-md transition-shadow">
             <CardHeader className="pb-2">
               <CardTitle className="text-sm font-medium text-gray-600">Ortalama Performans</CardTitle>
             </CardHeader>
@@ -262,7 +265,7 @@ export default function HRManagerDashboard() {
           <Card>
             <CardHeader>
               <CardTitle className="flex items-center gap-2">
-                <Calendar className="w-5 h-5 text-teal-600" />
+                <Calendar className="w-5 h-5 text-gray-600" />
                 Onay Bekleyen İzinler
               </CardTitle>
               <CardDescription>
@@ -317,7 +320,7 @@ export default function HRManagerDashboard() {
                 {approvalPendingLeaves.length > 0 && (
                   <div className="pt-3 border-t">
                     <Link href="/leaves">
-                      <Button variant="outline" className="w-full text-sm">
+                      <Button variant="outline" className="w-full text-sm border-green-600 text-green-600 hover:bg-green-50">
                         Tüm İzinleri Görüntüle ({approvalPendingLeaves.length})
                       </Button>
                     </Link>
@@ -331,7 +334,7 @@ export default function HRManagerDashboard() {
           <Card>
             <CardHeader>
               <CardTitle className="flex items-center gap-2">
-                <Bell className="w-5 h-5 text-teal-600" />
+                <Bell className="w-5 h-5 text-gray-600" />
                 Son Bildirimler
               </CardTitle>
               <CardDescription>
@@ -343,8 +346,8 @@ export default function HRManagerDashboard() {
                 {recentNotifications.length > 0 ? (
                   recentNotifications.map((notification: any) => (
                     <div key={notification.id} className="flex items-center gap-3 p-3 bg-gray-50 rounded-lg">
-                      <div className="w-8 h-8 bg-teal-100 rounded-full flex items-center justify-center">
-                        <Bell className="w-4 h-4 text-teal-600" />
+                      <div className="w-8 h-8 bg-gray-100 rounded-full flex items-center justify-center">
+                        <Bell className="w-4 h-4 text-gray-600" />
                       </div>
                       <div>
                         <p className="text-sm font-medium">{notification.title}</p>
@@ -363,7 +366,7 @@ export default function HRManagerDashboard() {
           <Card>
             <CardHeader>
               <CardTitle className="flex items-center gap-2">
-                <FileText className="w-5 h-5 text-teal-600" />
+                <FileText className="w-5 h-5 text-gray-600" />
                 Son Aktiviteler
               </CardTitle>
               <CardDescription>
@@ -375,8 +378,8 @@ export default function HRManagerDashboard() {
                 {recentActivities.length > 0 ? (
                   recentActivities.map((activity: any) => (
                     <div key={activity.id} className="flex items-center gap-3 p-3 bg-gray-50 rounded-lg">
-                      <div className="w-8 h-8 bg-teal-100 rounded-full flex items-center justify-center">
-                        <FileText className="w-4 h-4 text-teal-600" />
+                      <div className="w-8 h-8 bg-gray-100 rounded-full flex items-center justify-center">
+                        <FileText className="w-4 h-4 text-gray-600" />
                       </div>
                       <div>
                         <p className="text-sm font-medium">{activity.description}</p>
@@ -403,25 +406,25 @@ export default function HRManagerDashboard() {
           <CardContent>
             <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
               <Link href="/employees">
-                <Button className="w-full h-20 flex flex-col gap-2 bg-teal-600 hover:bg-teal-700">
+                <Button className="w-full h-20 flex flex-col gap-2 bg-green-600 hover:bg-green-700">
                   <Users className="w-6 h-6" />
                   <span className="text-sm">Çalışan Yönetimi</span>
                 </Button>
               </Link>
               <Link href="/leaves">
-                <Button className="w-full h-20 flex flex-col gap-2 bg-teal-600 hover:bg-teal-700">
+                <Button className="w-full h-20 flex flex-col gap-2 bg-green-600 hover:bg-green-700">
                   <Calendar className="w-6 h-6" />
                   <span className="text-sm">İzin Yönetimi</span>
                 </Button>
               </Link>
               <Link href="/performance">
-                <Button className="w-full h-20 flex flex-col gap-2 bg-teal-600 hover:bg-teal-700">
+                <Button className="w-full h-20 flex flex-col gap-2 bg-green-600 hover:bg-green-700">
                   <TrendingUp className="w-6 h-6" />
                   <span className="text-sm">Performans</span>
                 </Button>
               </Link>
               <Link href="/reports">
-                <Button className="w-full h-20 flex flex-col gap-2 bg-teal-600 hover:bg-teal-700">
+                <Button className="w-full h-20 flex flex-col gap-2 bg-green-600 hover:bg-green-700">
                   <BarChart3 className="w-6 h-6" />
                   <span className="text-sm">Raporlar</span>
                 </Button>
