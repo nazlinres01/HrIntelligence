@@ -121,7 +121,13 @@ export default function TrainingPage() {
       status: "completed",
       requirements: "Tüm çalışanlar katılabilir",
       objectives: "Beden dili, ses tonlama, sunum hazırlama, soru-cevap yönetimi, empati kurma",
-      enrolledCount: 23
+      enrolledCount: 23,
+      budget: "15.000 TL",
+      materials: ["İletişim Teknikleri Rehberi", "Sunum Şablonları", "Değerlendirme Formu"],
+      schedule: [
+        { day: "Pazartesi", time: "09:00-12:00", topic: "Etkili İletişim Temelleri" },
+        { day: "Salı", time: "13:00-17:00", topic: "Sunum Teknikleri ve Uygulaması" }
+      ]
     },
     {
       id: 4,
