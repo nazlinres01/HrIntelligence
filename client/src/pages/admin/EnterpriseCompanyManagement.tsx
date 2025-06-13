@@ -198,42 +198,16 @@ export default function EnterpriseCompanyManagement() {
     <div className="min-h-screen bg-gradient-to-br from-gray-50 via-white to-gray-100 p-6">
       <div className="max-w-7xl mx-auto space-y-8">
         
-        {/* Enterprise Header */}
-        <div className="bg-gradient-to-r from-white via-gray-50 to-white rounded-2xl p-8 text-gray-800 shadow-2xl border border-gray-200">
-          <div className="flex items-center justify-between">
-            <div>
-              <div className="flex items-center space-x-4 mb-4">
-                <div className="p-3 bg-blue-50 border border-blue-200 rounded-xl">
-                  <Building2 className="h-8 w-8 text-blue-600" />
-                </div>
-                <div>
-                  <h1 className="text-4xl font-bold text-gray-800">Kurumsal Organizasyon Yönetimi</h1>
-                  <p className="text-gray-600 text-lg">Şirket Hiyerarşisi ve Organizasyonel Yapı Kontrolü</p>
-                </div>
-              </div>
-              <div className="flex items-center space-x-6 text-gray-700">
-                <div className="flex items-center space-x-2">
-                  <Shield className="h-4 w-4 text-blue-600" />
-                  <span className="text-sm">Kurumsal Yönetişim</span>
-                </div>
-                <div className="flex items-center space-x-2">
-                  <Database className="h-4 w-4 text-blue-600" />
-                  <span className="text-sm">Merkezi Kayıt Sistemi</span>
-                </div>
-                <div className="flex items-center space-x-2">
-                  <Activity className="h-4 w-4 text-blue-600" />
-                  <span className="text-sm">Gerçek Zamanlı Senkronizasyon</span>
-                </div>
-              </div>
-            </div>
-            <div className="text-right">
-              <div className="text-3xl font-bold text-gray-800">{companyStats.total}</div>
-              <div className="text-gray-600">Toplam Şirket Sayısı</div>
-              <div className="flex items-center justify-end space-x-1 mt-2">
-                <div className="w-2 h-2 bg-emerald-500 rounded-full animate-pulse"></div>
-                <span className="text-sm text-gray-700">Sistem Operasyonel</span>
-              </div>
-            </div>
+        {/* Header */}
+        <div className="flex items-center justify-between mb-8">
+          <div>
+            <h1 className="text-4xl font-bold text-gray-900 mb-2">Kurumsal Organizasyon Yönetimi</h1>
+            <p className="text-gray-600 text-lg">Şirket Hiyerarşisi ve Organizasyonel Yapı Kontrolü</p>
+          </div>
+          <div className="text-center">
+            <Building2 className="h-16 w-16 mx-auto mb-2 text-blue-600" />
+            <div className="text-2xl font-bold text-gray-900">{companyStats.total}</div>
+            <div className="text-gray-500 text-sm">Toplam Şirket</div>
           </div>
         </div>
 

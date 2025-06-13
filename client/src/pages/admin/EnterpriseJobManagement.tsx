@@ -238,42 +238,16 @@ export default function EnterpriseJobManagement() {
     <div className="min-h-screen bg-gradient-to-br from-gray-50 via-white to-gray-100 p-6">
       <div className="max-w-7xl mx-auto space-y-8">
         
-        {/* Enterprise Header */}
-        <div className="bg-gradient-to-r from-white via-gray-50 to-white rounded-2xl p-8 text-gray-800 shadow-2xl border border-gray-200">
-          <div className="flex items-center justify-between">
-            <div>
-              <div className="flex items-center space-x-4 mb-4">
-                <div className="p-3 bg-blue-50 border border-blue-200 rounded-xl">
-                  <Briefcase className="h-8 w-8 text-blue-600" />
-                </div>
-                <div>
-                  <h1 className="text-4xl font-bold text-gray-800">İş İlanları Yönetimi</h1>
-                  <p className="text-gray-600 text-lg">Kurumsal İnsan Kaynakları ve İşe Alım Süreçleri</p>
-                </div>
-              </div>
-              <div className="flex items-center space-x-6 text-gray-700">
-                <div className="flex items-center space-x-2">
-                  <Target className="h-4 w-4 text-blue-600" />
-                  <span className="text-sm">Hedefli İşe Alım</span>
-                </div>
-                <div className="flex items-center space-x-2">
-                  <Award className="h-4 w-4 text-blue-600" />
-                  <span className="text-sm">Kaliteli Adaylar</span>
-                </div>
-                <div className="flex items-center space-x-2">
-                  <TrendingUp className="h-4 w-4 text-blue-600" />
-                  <span className="text-sm">Performans İzleme</span>
-                </div>
-              </div>
-            </div>
-            <div className="text-right">
-              <div className="text-3xl font-bold text-gray-800">{activeJobs}</div>
-              <div className="text-gray-600">Aktif İş İlanı</div>
-              <div className="flex items-center justify-end space-x-1 mt-2">
-                <div className="w-2 h-2 bg-emerald-500 rounded-full animate-pulse"></div>
-                <span className="text-sm text-gray-700">İşe Alım Aktif</span>
-              </div>
-            </div>
+        {/* Header */}
+        <div className="flex items-center justify-between mb-8">
+          <div>
+            <h1 className="text-4xl font-bold text-gray-900 mb-2">İş İlanları Yönetimi</h1>
+            <p className="text-gray-600 text-lg">Kurumsal İnsan Kaynakları ve İşe Alım Süreçleri</p>
+          </div>
+          <div className="text-center">
+            <Briefcase className="h-16 w-16 mx-auto mb-2 text-blue-600" />
+            <div className="text-2xl font-bold text-gray-900">{activeJobs}</div>
+            <div className="text-gray-500 text-sm">Aktif İş İlanı</div>
           </div>
         </div>
 
@@ -295,7 +269,7 @@ export default function EnterpriseJobManagement() {
                     setEditingJob(null);
                     resetForm();
                   }}
-                  className="bg-gradient-to-r from-blue-600 to-indigo-600 hover:from-blue-700 hover:to-indigo-700 text-white shadow-lg"
+                  className="bg-blue-600 hover:bg-blue-700 text-white"
                 >
                   <Plus className="mr-2 h-4 w-4" />
                   Yeni İş İlanı
