@@ -59,22 +59,19 @@ export default function DepartmentManagerDashboard() {
   };
 
   return (
-    <div className="flex-1 flex flex-col overflow-hidden">
-      {/* Top Header */}
-      <div className="bg-white shadow-sm border-b px-6 py-4">
-        <div className="flex items-center justify-between">
+    <div className="min-h-screen bg-white">
+      <div className="p-6">
+        {/* Header */}
+        <div className="flex flex-col lg:flex-row lg:items-center lg:justify-between mb-8">
           <div>
-            <h1 className="text-3xl font-bold text-gray-900">Departman Müdürü Dashboard</h1>
+            <h1 className="text-3xl font-bold text-gray-900 mb-2">Departman Müdürü Dashboard</h1>
             <p className="text-gray-600">Yazılım Geliştirme Departmanı yönetim paneli</p>
           </div>
           <Badge variant="secondary" className="bg-red-100 text-red-800">
             Departman Müdürü
           </Badge>
         </div>
-      </div>
 
-      {/* Dashboard Content */}
-      <main className="flex-1 overflow-auto p-6">
         {/* Stats Cards */}
         <div className="grid grid-cols-1 md:grid-cols-4 gap-6 mb-6">
           <Card className="border-l-4 border-l-red-500">
@@ -269,7 +266,7 @@ export default function DepartmentManagerDashboard() {
             </div>
           </CardContent>
         </Card>
-      </main>
+      </div>
     </div>
   );
 }
