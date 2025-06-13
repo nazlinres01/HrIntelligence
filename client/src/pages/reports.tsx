@@ -113,20 +113,20 @@ export default function Reports() {
 
         {/* Summary Cards */}
         <div className="grid grid-cols-1 md:grid-cols-4 gap-6 mb-8">
-          <Card className="bg-gradient-to-r from-blue-50 to-blue-100 border-blue-200">
+          <Card className="bg-white border-gray-200 hover:shadow-md transition-shadow">
             <CardContent className="p-6">
               <div className="flex items-center justify-between">
                 <div>
-                  <p className="text-blue-600 text-sm font-medium">Toplam Çalışan</p>
-                  <p className="text-3xl font-bold text-blue-900">{stats.totalEmployees}</p>
-                  <p className="text-xs text-blue-600 mt-1">Aktif: {stats.activeEmployees}</p>
+                  <p className="text-gray-600 text-sm font-medium">Toplam Çalışan</p>
+                  <p className="text-3xl font-bold text-gray-900">{stats.totalEmployees}</p>
+                  <p className="text-xs text-gray-500 mt-1">Aktif: {stats.activeEmployees}</p>
                 </div>
                 <Users className="h-8 w-8 text-blue-600" />
               </div>
             </CardContent>
           </Card>
 
-          <Card className="bg-gradient-to-r from-green-50 to-green-100 border-green-200">
+          <Card className="bg-white border-gray-200 hover:shadow-md transition-shadow">
             <CardContent className="p-6">
               <div className="flex items-center justify-between">
                 <div>
@@ -139,26 +139,26 @@ export default function Reports() {
             </CardContent>
           </Card>
 
-          <Card className="bg-gradient-to-r from-orange-50 to-orange-100 border-orange-200">
+          <Card className="bg-white border-gray-200 hover:shadow-md transition-shadow">
             <CardContent className="p-6">
               <div className="flex items-center justify-between">
                 <div>
-                  <p className="text-orange-600 text-sm font-medium">Ortalama Maaş</p>
-                  <p className="text-3xl font-bold text-orange-900">{formatCurrency(stats.avgSalary)}</p>
-                  <p className="text-xs text-orange-600 mt-1">Aylık brüt</p>
+                  <p className="text-gray-600 text-sm font-medium">Ortalama Maaş</p>
+                  <p className="text-3xl font-bold text-gray-900">{formatCurrency(stats.avgSalary)}</p>
+                  <p className="text-xs text-gray-500 mt-1">Aylık brüt</p>
                 </div>
                 <DollarSign className="h-8 w-8 text-orange-600" />
               </div>
             </CardContent>
           </Card>
 
-          <Card className="bg-gradient-to-r from-purple-50 to-purple-100 border-purple-200">
+          <Card className="bg-white border-gray-200 hover:shadow-md transition-shadow">
             <CardContent className="p-6">
               <div className="flex items-center justify-between">
                 <div>
-                  <p className="text-purple-600 text-sm font-medium">İzin Talepleri</p>
-                  <p className="text-3xl font-bold text-purple-900">{leaveStats.totalLeaves}</p>
-                  <p className="text-xs text-purple-600 mt-1">Bekleyen: {leaveStats.pendingLeaves}</p>
+                  <p className="text-gray-600 text-sm font-medium">İzin Talepleri</p>
+                  <p className="text-3xl font-bold text-gray-900">{leaveStats.totalLeaves}</p>
+                  <p className="text-xs text-gray-500 mt-1">Bekleyen: {leaveStats.pendingLeaves}</p>
                 </div>
                 <Calendar className="h-8 w-8 text-purple-600" />
               </div>
