@@ -312,7 +312,7 @@ export default function InternalCommunicationPage() {
                     )}
                   />
                   <div className="flex justify-end gap-4 pt-4">
-                    <Button type="button" variant="outline">
+                    <Button type="button" variant="outline" className="border-orange-600 text-orange-600 hover:bg-orange-50">
                       Taslak Kaydet
                     </Button>
                     <Button type="submit" className="bg-orange-600 hover:bg-orange-700">

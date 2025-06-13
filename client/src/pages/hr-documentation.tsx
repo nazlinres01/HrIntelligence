@@ -204,7 +204,7 @@ export default function HRDocumentationPage() {
                   <Input placeholder="Doküman adı" />
                   <Input placeholder="Kategori" />
                   <div className="flex gap-2">
-                    <Button variant="outline" className="flex-1">
+                    <Button variant="outline" className="flex-1 border-orange-600 text-orange-600 hover:bg-orange-50">
                       <Upload className="h-4 w-4 mr-2" />
                       Dosya Yükle
                     </Button>
@@ -215,7 +215,7 @@ export default function HRDocumentationPage() {
                 </div>
               </DialogContent>
             </Dialog>
-            <Button variant="outline">
+            <Button variant="outline" className="border-orange-600 text-orange-600 hover:bg-orange-50">
               <Upload className="h-4 w-4 mr-2" />
               Toplu Yükleme
             </Button>
@@ -352,15 +352,15 @@ export default function HRDocumentationPage() {
 
                     <div className="flex justify-between items-center pt-2">
                       <div className="flex gap-2">
-                        <Button variant="outline" size="sm">
+                        <Button variant="outline" size="sm" className="border-orange-600 text-orange-600 hover:bg-orange-50">
                           <Eye className="h-4 w-4 mr-1" />
                           Önizle
                         </Button>
-                        <Button variant="outline" size="sm">
+                        <Button variant="outline" size="sm" className="border-orange-600 text-orange-600 hover:bg-orange-50">
                           <Download className="h-4 w-4 mr-1" />
                           İndir
                         </Button>
-                        <Button variant="outline" size="sm">
+                        <Button variant="outline" size="sm" className="border-orange-600 text-orange-600 hover:bg-orange-50">
                           <Edit className="h-4 w-4 mr-1" />
                           Düzenle
                         </Button>
@@ -406,7 +406,7 @@ export default function HRDocumentationPage() {
                     </div>
 
                     <div className="flex gap-2">
-                      <Button variant="outline" size="sm" className="flex-1">
+                      <Button variant="outline" size="sm" className="flex-1 border-orange-600 text-orange-600 hover:bg-orange-50">
                         <Download className="h-4 w-4 mr-1" />
                         İndir
                       </Button>
