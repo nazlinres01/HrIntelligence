@@ -328,6 +328,8 @@ export default function EnterpriseSidebar() {
           "p-6 shadow-lg",
           userRole === 'hr_manager' 
             ? "bg-gradient-to-r from-teal-600 via-teal-700 to-emerald-700" 
+            : userRole === 'hr_specialist' || userRole === 'ik_uzmanı'
+            ? "bg-gradient-to-r from-orange-500 via-orange-600 to-orange-700"
             : userRole === 'department_manager'
             ? "bg-gradient-to-r from-red-600 via-red-700 to-rose-700"
             : userRole === 'employee' || userRole === 'çalışan'
@@ -345,7 +347,7 @@ export default function EnterpriseSidebar() {
               {!isCollapsed && (
                 <div>
                   <h1 className="text-2xl font-bold text-white">Enterprise İK Hub</h1>
-                  <p className="text-blue-100 text-sm">Kurumsal İnsan Kaynakları Yönetim Sistemi</p>
+                  <p className="text-orange-100 text-sm">Kurumsal İnsan Kaynakları Yönetim Sistemi</p>
                 </div>
               )}
             </div>
