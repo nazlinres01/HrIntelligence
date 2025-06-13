@@ -59,6 +59,8 @@ import CareerDevelopment from "@/pages/career-development";
 import DocumentManagement from "@/pages/document-management";
 import EmployeeBenefits from "@/pages/employee-benefits";
 import CompanyDirectory from "@/pages/company-directory";
+import MyDocuments from "@/pages/my-documents";
+import TeamCollaboration from "@/pages/team-collaboration";
 
 import Login from "@/pages/login";
 import Register from "@/pages/register";
@@ -167,6 +169,8 @@ function Router() {
         <Route path="/document-management" component={DocumentManagement} />
         <Route path="/employee-benefits" component={EmployeeBenefits} />
         <Route path="/company-directory" component={CompanyDirectory} />
+        <Route path="/my-documents" component={MyDocuments} />
+        <Route path="/team-collaboration" component={TeamCollaboration} />
         
         <Route component={NotFound} />
           </Switch>
