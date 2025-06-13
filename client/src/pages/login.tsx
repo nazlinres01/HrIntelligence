@@ -1,64 +1,19 @@
-import { useState } from "react";
-import { useLocation } from "wouter";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
-import { Input } from "@/components/ui/input";
-import { Label } from "@/components/ui/label";
-import { useToast } from "@/hooks/use-toast";
-import { Building, User, Lock } from "lucide-react";
+import { Building } from "lucide-react";
 
 export default function Login() {
-  const [, setLocation] = useLocation();
-  const [email, setEmail] = useState("");
-  const [password, setPassword] = useState("");
-  const [isLoading, setIsLoading] = useState(false);
-  const { toast } = useToast();
-
-  const handleLogin = async (e: React.FormEvent) => {
-    e.preventDefault();
-    setIsLoading(true);
-
-    try {
-      const response = await fetch("/api/auth/login", {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify({ email, password }),
-      });
-
-      if (response.ok) {
-        const data = await response.json();
-        toast({
-          title: "Giriş Başarılı",
-          description: `Hoş geldiniz, ${data.user.firstName}!`,
-        });
-        setLocation("/");
-      } else {
-        const error = await response.json();
-        toast({
-          title: "Giriş Hatası",
-          description: error.message || "Email veya şifre hatalı",
-          variant: "destructive",
-        });
-      }
-    } catch (error) {
-      toast({
-        title: "Bağlantı Hatası",
-        description: "Sunucuya bağlanılamadı",
-        variant: "destructive",
-      });
-    } finally {
-      setIsLoading(false);
-    }
+  // Basit giriş - Replit Auth'a yönlendirme
+  const handleLogin = () => {
+    window.location.href = '/api/login';
   };
 
   const testCredentials = [
-    { role: "Admin", email: "admin@techcorp.com.tr", password: "admin123" },
-    { role: "İK Müdürü", email: "ik.muduru@techcorp.com.tr", password: "ik123" },
-    { role: "İK Uzmanı", email: "ik.uzman@techcorp.com.tr", password: "uzman123" },
-    { role: "Departman Müdürü", email: "dept.muduru@techcorp.com.tr", password: "dept123" },
-    { role: "Çalışan", email: "calisan@techcorp.com.tr", password: "calisan123" },
+    { role: "Admin", email: "admin@techcorp.com.tr", password: "admin123", color: "bg-purple-100 text-purple-800" },
+    { role: "İK Müdürü", email: "ik.muduru@techcorp.com.tr", password: "ik123", color: "bg-teal-100 text-teal-800" },
+    { role: "İK Uzmanı", email: "ik.uzman@techcorp.com.tr", password: "uzman123", color: "bg-orange-100 text-orange-800" },
+    { role: "Departman Müdürü", email: "dept.muduru@techcorp.com.tr", password: "dept123", color: "bg-indigo-100 text-indigo-800" },
+    { role: "Çalışan", email: "calisan@techcorp.com.tr", password: "calisan123", color: "bg-emerald-100 text-emerald-800" },
   ];
 
   return (
@@ -73,87 +28,41 @@ export default function Login() {
           <p className="text-gray-600 mt-2">TechCorp Yazılım A.Ş.</p>
         </div>
 
-        {/* Login Form */}
+        {/* Login Button */}
         <Card>
           <CardHeader>
             <CardTitle>Giriş Yap</CardTitle>
             <CardDescription>
-              Hesabınıza giriş yapmak için email ve şifrenizi girin
+              Replit hesabınızla güvenli giriş yapın
             </CardDescription>
           </CardHeader>
           <CardContent>
-            <form onSubmit={handleLogin} className="space-y-4">
-              <div className="space-y-2">
-                <Label htmlFor="email">Email</Label>
-                <div className="relative">
-                  <User className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 w-4 h-4" />
-                  <Input
-                    id="email"
-                    type="email"
-                    placeholder="ornek@techcorp.com.tr"
-                    value={email}
-                    onChange={(e) => setEmail(e.target.value)}
-                    className="pl-10"
-                    required
-                  />
-                </div>
-              </div>
-              
-              <div className="space-y-2">
-                <Label htmlFor="password">Şifre</Label>
-                <div className="relative">
-                  <Lock className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 w-4 h-4" />
-                  <Input
-                    id="password"
-                    type="password"
-                    placeholder="Şifrenizi girin"
-                    value={password}
-                    onChange={(e) => setPassword(e.target.value)}
-                    className="pl-10"
-                    required
-                  />
-                </div>
-              </div>
-
-              <Button 
-                type="submit" 
-                className="w-full bg-blue-600 hover:bg-blue-700"
-                disabled={isLoading}
-              >
-                {isLoading ? "Giriş yapılıyor..." : "Giriş Yap"}
-              </Button>
-            </form>
+            <Button 
+              onClick={handleLogin}
+              className="w-full bg-blue-600 hover:bg-blue-700"
+            >
+              Replit ile Giriş Yap
+            </Button>
           </CardContent>
         </Card>
 
         {/* Test Credentials */}
         <Card>
           <CardHeader>
-            <CardTitle className="text-lg">Test Hesapları</CardTitle>
+            <CardTitle className="text-lg">Rol Bazlı Sistem Bilgileri</CardTitle>
             <CardDescription>
-              Farklı rolleri test etmek için aşağıdaki hesapları kullanabilirsiniz
+              Her rol için farklı dashboard ve yetki sistemi
             </CardDescription>
           </CardHeader>
           <CardContent>
             <div className="space-y-3">
               {testCredentials.map((cred, index) => (
-                <div key={index} className="bg-gray-50 p-3 rounded-lg">
-                  <div className="font-medium text-sm text-gray-900">{cred.role}</div>
-                  <div className="text-xs text-gray-600 mt-1">
+                <div key={index} className={`p-3 rounded-lg ${cred.color}`}>
+                  <div className="font-medium text-sm">{cred.role}</div>
+                  <div className="text-xs mt-1 opacity-75">
                     <div>Email: {cred.email}</div>
                     <div>Şifre: {cred.password}</div>
                   </div>
-                  <Button
-                    size="sm"
-                    variant="outline"
-                    className="mt-2 text-xs"
-                    onClick={() => {
-                      setEmail(cred.email);
-                      setPassword(cred.password);
-                    }}
-                  >
-                    Bu hesabı kullan
-                  </Button>
                 </div>
               ))}
             </div>
