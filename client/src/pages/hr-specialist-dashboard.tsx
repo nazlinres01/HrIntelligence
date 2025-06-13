@@ -41,39 +41,63 @@ export default function HRSpecialistDashboard() {
       </div>
 
       {/* Quick Stats */}
-      <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
-        <Card>
-          <CardContent className="p-4">
-            <div className="space-y-1">
-              <p className="text-sm text-gray-600">Başvurular</p>
-              <p className="text-sm font-medium text-gray-900">24</p>
+      <div className="grid grid-cols-1 md:grid-cols-4 gap-6">
+        <Card className="bg-white border border-gray-200">
+          <CardContent className="p-6">
+            <div className="flex items-center justify-between">
+              <div>
+                <p className="text-sm font-medium text-gray-600 mb-1">Başvurular</p>
+                <p className="text-2xl font-bold text-gray-900">156</p>
+                <p className="text-xs text-gray-500 mt-1">Bu ay işlenen</p>
+              </div>
+              <div className="p-3 bg-blue-50 rounded-lg">
+                <Users className="h-6 w-6 text-blue-600" />
+              </div>
             </div>
           </CardContent>
         </Card>
 
-        <Card>
-          <CardContent className="p-4">
-            <div className="space-y-1">
-              <p className="text-sm text-gray-600">Mülakatlar</p>
-              <p className="text-sm font-medium text-gray-900">8</p>
+        <Card className="bg-white border border-gray-200">
+          <CardContent className="p-6">
+            <div className="flex items-center justify-between">
+              <div>
+                <p className="text-sm font-medium text-gray-600 mb-1">Mülakatlar</p>
+                <p className="text-2xl font-bold text-gray-900">18</p>
+                <p className="text-xs text-gray-500 mt-1">Bekleyen</p>
+              </div>
+              <div className="p-3 bg-green-50 rounded-lg">
+                <MessageSquare className="h-6 w-6 text-green-600" />
+              </div>
             </div>
           </CardContent>
         </Card>
 
-        <Card>
-          <CardContent className="p-4">
-            <div className="space-y-1">
-              <p className="text-sm text-gray-600">Eğitimler</p>
-              <p className="text-sm font-medium text-gray-900">5</p>
+        <Card className="bg-white border border-gray-200">
+          <CardContent className="p-6">
+            <div className="flex items-center justify-between">
+              <div>
+                <p className="text-sm font-medium text-gray-600 mb-1">Eğitimler</p>
+                <p className="text-2xl font-bold text-gray-900">12</p>
+                <p className="text-xs text-gray-500 mt-1">Aktif program</p>
+              </div>
+              <div className="p-3 bg-purple-50 rounded-lg">
+                <BookOpen className="h-6 w-6 text-purple-600" />
+              </div>
             </div>
           </CardContent>
         </Card>
 
-        <Card>
-          <CardContent className="p-4">
-            <div className="space-y-1">
-              <p className="text-sm text-gray-600">Performans</p>
-              <p className="text-sm font-medium text-gray-900">92%</p>
+        <Card className="bg-white border border-gray-200">
+          <CardContent className="p-6">
+            <div className="flex items-center justify-between">
+              <div>
+                <p className="text-sm font-medium text-gray-600 mb-1">Performans</p>
+                <p className="text-2xl font-bold text-gray-900">87%</p>
+                <p className="text-xs text-gray-500 mt-1">Tamamlanma oranı</p>
+              </div>
+              <div className="p-3 bg-orange-50 rounded-lg">
+                <TrendingUp className="h-6 w-6 text-orange-600" />
+              </div>
             </div>
           </CardContent>
         </Card>
