@@ -185,7 +185,7 @@ export default function HRStrategyPage() {
               <h1 className="text-3xl font-bold text-gray-900 mb-2">İK Stratejisi</h1>
               <p className="text-gray-600">Stratejik İnsan Kaynakları planlaması ve hedef yönetimi</p>
             </div>
-            <Button variant="outline" className="mt-4 lg:mt-0 bg-white text-gray-700 border-gray-300 hover:bg-gray-50">
+            <Button variant="lightgray" className="mt-4 lg:mt-0 bg-white text-gray-700 border-gray-300 hover:bg-gray-50">
               <Plus className="h-4 w-4 mr-2" />
               Yeni Strateji Ekle
             </Button>
@@ -220,7 +220,7 @@ export default function HRStrategyPage() {
           <TabsContent value="goals" className="space-y-6">
             <div className="flex justify-between items-center">
               <h2 className="text-2xl font-bold text-gray-800">2024 Stratejik Hedefleri</h2>
-              <Button variant="outline" className="bg-white text-gray-700 border-gray-300 hover:bg-gray-50">
+              <Button variant="lightgray" className="bg-white text-gray-700 border-gray-300 hover:bg-gray-50">
                 <Target className="h-4 w-4 mr-2" />
                 Yeni Hedef Belirle
               </Button>
@@ -237,7 +237,7 @@ export default function HRStrategyPage() {
                       </div>
                       <div className="flex gap-2">
                         {getStatusBadge(goal.status)}
-                        <Badge variant="outline">{goal.priority}</Badge>
+                        <Badge variant="lightgray">{goal.priority}</Badge>
                       </div>
                     </div>
                   </CardHeader>
@@ -273,7 +273,7 @@ export default function HRStrategyPage() {
                       <span className="text-gray-500 text-sm">Ana Metrikler:</span>
                       <div className="flex gap-2 mt-1">
                         {goal.metrics.map((metric, index) => (
-                          <Badge key={index} variant="outline" className="text-xs">
+                          <Badge key={index} variant="lightgray" className="text-xs">
                             {metric}
                           </Badge>
                         ))}
@@ -281,10 +281,10 @@ export default function HRStrategyPage() {
                     </div>
 
                     <div className="flex justify-end gap-2 pt-2">
-                      <Button variant="outline" size="sm">
+                      <Button variant="lightgray" size="sm">
                         Detaylar
                       </Button>
-                      <Button variant="outline" size="sm" className="bg-white text-gray-700 border-gray-300 hover:bg-gray-50">
+                      <Button variant="lightgray" size="sm" className="bg-white text-gray-700 border-gray-300 hover:bg-gray-50">
                         Güncelle
                       </Button>
                     </div>
@@ -297,7 +297,7 @@ export default function HRStrategyPage() {
           <TabsContent value="initiatives" className="space-y-6">
             <div className="flex justify-between items-center">
               <h2 className="text-2xl font-bold text-gray-800">Stratejik İnisiyatifler</h2>
-              <Button variant="outline" className="bg-white text-gray-700 border-gray-300 hover:bg-gray-50">
+              <Button variant="lightgray" className="bg-white text-gray-700 border-gray-300 hover:bg-gray-50">
                 <Plus className="h-4 w-4 mr-2" />
                 Yeni İnisiyatif
               </Button>
@@ -314,7 +314,7 @@ export default function HRStrategyPage() {
                           {initiative.startDate} - {initiative.endDate}
                         </CardDescription>
                       </div>
-                      <Badge variant="outline">{initiative.phase}</Badge>
+                      <Badge variant="lightgray">{initiative.phase}</Badge>
                     </div>
                   </CardHeader>
                   <CardContent className="space-y-4">
@@ -346,11 +346,11 @@ export default function HRStrategyPage() {
                     </div>
 
                     <div className="flex justify-end gap-2">
-                      <Button variant="outline" size="sm">
+                      <Button variant="lightgray" size="sm">
                         <BarChart3 className="h-4 w-4 mr-1" />
                         Analiz
                       </Button>
-                      <Button variant="outline" size="sm" className="bg-white text-gray-700 border-gray-300 hover:bg-gray-50">
+                      <Button variant="lightgray" size="sm" className="bg-white text-gray-700 border-gray-300 hover:bg-gray-50">
                         Yönet
                       </Button>
                     </div>

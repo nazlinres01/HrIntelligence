@@ -246,7 +246,7 @@ export default function HRSpecialistDashboard() {
                       <Button size="sm" className="bg-orange-600 hover:bg-orange-700">
                         İşle
                       </Button>
-                      <Button size="sm" variant="outline">
+                      <Button size="sm" variant="lightgray">
                         Detay
                       </Button>
                     </div>

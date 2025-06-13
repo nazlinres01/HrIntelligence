@@ -169,7 +169,7 @@ export default function DepartmentManagementPage() {
           </div>
           <Dialog>
             <DialogTrigger asChild>
-              <Button variant="outline" className="border-gray-300 text-gray-700 hover:bg-gray-50 mt-4 lg:mt-0">
+              <Button variant="lightgray" className="border-gray-300 text-gray-700 hover:bg-gray-50 mt-4 lg:mt-0">
                 <Plus className="h-4 w-4 mr-2" />
                 Yeni Departman
               </Button>
@@ -262,10 +262,10 @@ export default function DepartmentManagementPage() {
                     />
                   </div>
                   <div className="flex justify-end gap-4 pt-4">
-                    <Button type="button" variant="outline" className="border-gray-300 text-gray-700 hover:bg-gray-50">
+                    <Button type="button" variant="lightgray" className="border-gray-300 text-gray-700 hover:bg-gray-50">
                       İptal
                     </Button>
-                    <Button type="submit" variant="outline" className="border-gray-300 text-gray-700 hover:bg-gray-50">
+                    <Button type="submit" variant="lightgray" className="border-gray-300 text-gray-700 hover:bg-gray-50">
                       Departman Oluştur
                     </Button>
                   </div>
@@ -369,15 +369,15 @@ export default function DepartmentManagementPage() {
 
                     <div className="flex justify-between items-center pt-2">
                       <div className="flex gap-2">
-                        <Button variant="outline" size="sm" className="border-teal-600 text-teal-600 hover:bg-teal-50">
+                        <Button variant="lightgray" size="sm" className="border-teal-600 text-teal-600 hover:bg-teal-50">
                           <Eye className="h-4 w-4 mr-1" />
                           Detaylar
                         </Button>
-                        <Button variant="outline" size="sm" className="border-teal-600 text-teal-600 hover:bg-teal-50">
+                        <Button variant="lightgray" size="sm" className="border-teal-600 text-teal-600 hover:bg-teal-50">
                           <Edit className="h-4 w-4 mr-1" />
                           Düzenle
                         </Button>
-                        <Button variant="outline" size="sm" className="border-teal-600 text-teal-600 hover:bg-teal-50">
+                        <Button variant="lightgray" size="sm" className="border-teal-600 text-teal-600 hover:bg-teal-50">
                           <BarChart3 className="h-4 w-4 mr-1" />
                           Analiz
                         </Button>

@@ -361,15 +361,15 @@ export default function Help() {
           </CardHeader>
           <CardContent>
             <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-              <Button variant="outline" className="h-20 flex-col">
+              <Button variant="lightgray" className="h-20 flex-col">
                 <Video className="h-6 w-6 mb-2" />
                 Video Eğitimler
               </Button>
-              <Button variant="outline" className="h-20 flex-col">
+              <Button variant="lightgray" className="h-20 flex-col">
                 <Download className="h-6 w-6 mb-2" />
                 Kullanım Kılavuzu
               </Button>
-              <Button variant="outline" className="h-20 flex-col">
+              <Button variant="lightgray" className="h-20 flex-col">
                 <MessageCircle className="h-6 w-6 mb-2" />
                 Topluluk Forumu
               </Button>

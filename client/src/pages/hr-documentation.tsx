@@ -204,7 +204,7 @@ export default function HRDocumentationPage() {
                   <Input placeholder="Doküman adı" />
                   <Input placeholder="Kategori" />
                   <div className="flex gap-2">
-                    <Button variant="outline" className="flex-1 border-orange-600 text-orange-600 hover:bg-orange-50">
+                    <Button variant="lightgray" className="flex-1 border-orange-600 text-orange-600 hover:bg-orange-50">
                       <Upload className="h-4 w-4 mr-2" />
                       Dosya Yükle
                     </Button>
@@ -215,7 +215,7 @@ export default function HRDocumentationPage() {
                 </div>
               </DialogContent>
             </Dialog>
-            <Button variant="outline" className="border-orange-600 text-orange-600 hover:bg-orange-50">
+            <Button variant="lightgray" className="border-orange-600 text-orange-600 hover:bg-orange-50">
               <Upload className="h-4 w-4 mr-2" />
               Toplu Yükleme
             </Button>
@@ -287,7 +287,7 @@ export default function HRDocumentationPage() {
                     </div>
 
                     <div className="flex justify-end gap-2">
-                      <Button variant="outline" size="sm">
+                      <Button variant="lightgray" size="sm">
                         <Eye className="h-4 w-4 mr-1" />
                         Görüntüle
                       </Button>
@@ -326,7 +326,7 @@ export default function HRDocumentationPage() {
                       </div>
                       <div className="flex gap-2">
                         {getStatusBadge(doc.status)}
-                        <Badge variant="outline">{doc.version}</Badge>
+                        <Badge variant="lightgray">{doc.version}</Badge>
                       </div>
                     </div>
                   </CardHeader>
@@ -352,15 +352,15 @@ export default function HRDocumentationPage() {
 
                     <div className="flex justify-between items-center pt-2">
                       <div className="flex gap-2">
-                        <Button variant="outline" size="sm" className="border-orange-600 text-orange-600 hover:bg-orange-50">
+                        <Button variant="lightgray" size="sm" className="border-orange-600 text-orange-600 hover:bg-orange-50">
                           <Eye className="h-4 w-4 mr-1" />
                           Önizle
                         </Button>
-                        <Button variant="outline" size="sm" className="border-orange-600 text-orange-600 hover:bg-orange-50">
+                        <Button variant="lightgray" size="sm" className="border-orange-600 text-orange-600 hover:bg-orange-50">
                           <Download className="h-4 w-4 mr-1" />
                           İndir
                         </Button>
-                        <Button variant="outline" size="sm" className="border-orange-600 text-orange-600 hover:bg-orange-50">
+                        <Button variant="lightgray" size="sm" className="border-orange-600 text-orange-600 hover:bg-orange-50">
                           <Edit className="h-4 w-4 mr-1" />
                           Düzenle
                         </Button>
@@ -390,7 +390,7 @@ export default function HRDocumentationPage() {
                         <CardTitle className="text-xl text-gray-800">{template.name}</CardTitle>
                         <CardDescription className="mt-1">{template.description}</CardDescription>
                       </div>
-                      <Badge variant="outline">{template.category}</Badge>
+                      <Badge variant="lightgray">{template.category}</Badge>
                     </div>
                   </CardHeader>
                   <CardContent className="space-y-4">
@@ -406,7 +406,7 @@ export default function HRDocumentationPage() {
                     </div>
 
                     <div className="flex gap-2">
-                      <Button variant="outline" size="sm" className="flex-1 border-orange-600 text-orange-600 hover:bg-orange-50">
+                      <Button variant="lightgray" size="sm" className="flex-1 border-orange-600 text-orange-600 hover:bg-orange-50">
                         <Download className="h-4 w-4 mr-1" />
                         İndir
                       </Button>

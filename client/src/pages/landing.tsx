@@ -73,7 +73,7 @@ export default function Landing() {
                   <ArrowRight className="ml-2 h-5 w-5" />
                 </Button>
                 <Button 
-                  variant="outline"
+                  variant="lightgray"
                   onClick={() => setLocation("/login")}
                   className="border-gray-300 dark:border-gray-600 px-8 py-3 text-lg font-medium"
                 >
@@ -405,7 +405,7 @@ export default function Landing() {
               <ArrowRight className="ml-2 h-5 w-5" />
             </Button>
             <Button 
-              variant="outline"
+              variant="lightgray"
               onClick={() => setLocation("/login")}
               className="border-white text-white hover:bg-white hover:text-blue-600 px-8 py-3 text-lg font-medium"
             >

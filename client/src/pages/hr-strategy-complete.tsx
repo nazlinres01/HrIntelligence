@@ -191,7 +191,7 @@ export default function HRStrategyComplete() {
             <p className="text-gray-700 text-lg">Kurumsal İK hedefleri ve stratejik planları yönetin</p>
           </div>
           <div className="flex space-x-3 mt-4 lg:mt-0">
-            <Button variant="outline" className="border-green-300 text-green-700 hover:bg-green-50">
+            <Button variant="lightgray" className="border-green-300 text-green-700 hover:bg-green-50">
               <BarChart3 className="h-4 w-4 mr-2" />
               Stratejik Analitik
             </Button>
@@ -326,7 +326,7 @@ export default function HRStrategyComplete() {
                     />
 
                     <div className="flex justify-end space-x-2 pt-4">
-                      <Button type="button" variant="outline">İptal</Button>
+                      <Button type="button" variant="lightgray">İptal</Button>
                       <Button type="submit" className="bg-green-600 hover:bg-green-700">
                         Hedef Oluştur
                       </Button>
@@ -424,15 +424,15 @@ export default function HRStrategyComplete() {
                       </div>
 
                       <div className="flex flex-col space-y-2">
-                        <Button variant="outline" size="sm" className="text-green-600 border-green-300 hover:bg-green-50">
+                        <Button variant="lightgray" size="sm" className="text-green-600 border-green-300 hover:bg-green-50">
                           <Target className="h-4 w-4 mr-2" />
                           Detayları Gör
                         </Button>
-                        <Button variant="outline" size="sm" className="text-blue-600 border-blue-300 hover:bg-blue-50">
+                        <Button variant="lightgray" size="sm" className="text-blue-600 border-blue-300 hover:bg-blue-50">
                           <BarChart3 className="h-4 w-4 mr-2" />
                           İlerleme Raporu
                         </Button>
-                        <Button variant="outline" size="sm" className="text-purple-600 border-purple-300 hover:bg-purple-50">
+                        <Button variant="lightgray" size="sm" className="text-purple-600 border-purple-300 hover:bg-purple-50">
                           <Activity className="h-4 w-4 mr-2" />
                           Görev Yönetimi
                         </Button>

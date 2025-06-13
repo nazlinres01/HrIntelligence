@@ -118,25 +118,25 @@ export default function EmployeeDashboard() {
         <CardContent>
           <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
             <Link href="/my-leaves">
-              <Button variant="outline" className="w-full h-20 flex-col gap-2 hover:bg-yellow-50">
+              <Button variant="lightgray" className="w-full h-20 flex-col gap-2 hover:bg-yellow-50">
                 <Calendar className="w-6 h-6 text-yellow-600" />
                 <span className="text-sm">İzin Talebi</span>
               </Button>
             </Link>
             <Link href="/timesheet">
-              <Button variant="outline" className="w-full h-20 flex-col gap-2 hover:bg-blue-50">
+              <Button variant="lightgray" className="w-full h-20 flex-col gap-2 hover:bg-blue-50">
                 <Clock className="w-6 h-6 text-blue-600" />
                 <span className="text-sm">Mesai Kaydı</span>
               </Button>
             </Link>
             <Link href="/expenses">
-              <Button variant="outline" className="w-full h-20 flex-col gap-2 hover:bg-green-50">
+              <Button variant="lightgray" className="w-full h-20 flex-col gap-2 hover:bg-green-50">
                 <CreditCard className="w-6 h-6 text-green-600" />
                 <span className="text-sm">Harcama</span>
               </Button>
             </Link>
             <Link href="/messages">
-              <Button variant="outline" className="w-full h-20 flex-col gap-2 hover:bg-purple-50">
+              <Button variant="lightgray" className="w-full h-20 flex-col gap-2 hover:bg-purple-50">
                 <MessageSquare className="w-6 h-6 text-purple-600" />
                 <span className="text-sm">Mesajlar</span>
               </Button>
@@ -226,7 +226,7 @@ export default function EmployeeDashboard() {
               <CardDescription>Bu ay ki başarılarınız ve gelişim alanlarınız</CardDescription>
             </div>
             <Link href="/my-performance">
-              <Button variant="outline" size="sm">
+              <Button variant="lightgray" size="sm">
                 Detaylar <ChevronRight className="w-4 h-4 ml-1" />
               </Button>
             </Link>

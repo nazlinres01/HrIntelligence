@@ -136,7 +136,7 @@ export default function Dashboard() {
               <Dialog open={inviteDialogOpen} onOpenChange={setInviteDialogOpen}>
                 <DialogTrigger asChild>
                   <Button 
-                    variant="outline" 
+                    variant="lightgray" 
                     size="sm"
                     className="border-slate-300 dark:border-slate-600 text-slate-700 dark:text-slate-300 hover:bg-slate-50 dark:hover:bg-slate-750"
                   >
@@ -231,7 +231,7 @@ export default function Dashboard() {
                         )}
                       />
                       <DialogFooter>
-                        <Button type="button" variant="outline" onClick={() => setInviteDialogOpen(false)}>
+                        <Button type="button" variant="lightgray" onClick={() => setInviteDialogOpen(false)}>
                           İptal
                         </Button>
                         <Button type="submit" disabled={inviteUserMutation.isPending}>
@@ -346,31 +346,31 @@ export default function Dashboard() {
             </CardHeader>
             <CardContent className="space-y-3">
               <Link href="/employees">
-                <Button variant="outline" className="w-full justify-start border-slate-300 dark:border-slate-600 text-slate-700 dark:text-slate-300 hover:bg-slate-50 dark:hover:bg-slate-750">
+                <Button variant="lightgray" className="w-full justify-start border-slate-300 dark:border-slate-600 text-slate-700 dark:text-slate-300 hover:bg-slate-50 dark:hover:bg-slate-750">
                   <Users className="h-4 w-4 mr-2" />
                   Çalışan Yönetimi
                 </Button>
               </Link>
               <Link href="/leaves">
-                <Button variant="outline" className="w-full justify-start border-slate-300 dark:border-slate-600 text-slate-700 dark:text-slate-300 hover:bg-slate-50 dark:hover:bg-slate-750">
+                <Button variant="lightgray" className="w-full justify-start border-slate-300 dark:border-slate-600 text-slate-700 dark:text-slate-300 hover:bg-slate-50 dark:hover:bg-slate-750">
                   <Calendar className="h-4 w-4 mr-2" />
                   İzin Yönetimi
                 </Button>
               </Link>
               <Link href="/performance">
-                <Button variant="outline" className="w-full justify-start border-slate-300 dark:border-slate-600 text-slate-700 dark:text-slate-300 hover:bg-slate-50 dark:hover:bg-slate-750">
+                <Button variant="lightgray" className="w-full justify-start border-slate-300 dark:border-slate-600 text-slate-700 dark:text-slate-300 hover:bg-slate-50 dark:hover:bg-slate-750">
                   <BarChart3 className="h-4 w-4 mr-2" />
                   Performans Takibi
                 </Button>
               </Link>
               <Link href="/payroll">
-                <Button variant="outline" className="w-full justify-start border-slate-300 dark:border-slate-600 text-slate-700 dark:text-slate-300 hover:bg-slate-50 dark:hover:bg-slate-750">
+                <Button variant="lightgray" className="w-full justify-start border-slate-300 dark:border-slate-600 text-slate-700 dark:text-slate-300 hover:bg-slate-50 dark:hover:bg-slate-750">
                   <CreditCard className="h-4 w-4 mr-2" />
                   Bordro İşlemleri
                 </Button>
               </Link>
               <Link href="/reports">
-                <Button variant="outline" className="w-full justify-start border-slate-300 dark:border-slate-600 text-slate-700 dark:text-slate-300 hover:bg-slate-50 dark:hover:bg-slate-750">
+                <Button variant="lightgray" className="w-full justify-start border-slate-300 dark:border-slate-600 text-slate-700 dark:text-slate-300 hover:bg-slate-50 dark:hover:bg-slate-750">
                   <FileText className="h-4 w-4 mr-2" />
                   Raporlar
                 </Button>
@@ -385,7 +385,7 @@ export default function Dashboard() {
             <div className="flex items-center justify-between">
               <CardTitle className="text-slate-900 dark:text-slate-100">Son Eklenen Çalışanlar</CardTitle>
               <Link href="/employees">
-                <Button variant="outline" size="sm" className="border-slate-300 dark:border-slate-600">
+                <Button variant="lightgray" size="sm" className="border-slate-300 dark:border-slate-600">
                   Tümünü Görüntüle
                   <ArrowRight className="h-4 w-4 ml-2" />
                 </Button>

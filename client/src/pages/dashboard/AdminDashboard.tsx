@@ -143,7 +143,7 @@ export default function AdminDashboard() {
             <p className="text-gray-600 dark:text-gray-400">Tüm sistemi izleyin ve yönetin</p>
           </div>
           <div className="flex items-center gap-3">
-            <Button variant="outline" onClick={handleViewNotifications}>
+            <Button variant="lightgray" onClick={handleViewNotifications}>
               <Bell className="w-4 h-4 mr-2" />
               Bildirimler
               {unreadNotifications > 0 && (
@@ -348,7 +348,7 @@ export default function AdminDashboard() {
                     )}
                   </div>
                   <div className="mt-4 pt-4 border-t border-gray-200 dark:border-gray-600">
-                    <Button variant="outline" className="w-full" onClick={handleViewAuditLogs}>
+                    <Button variant="lightgray" className="w-full" onClick={handleViewAuditLogs}>
                       <Eye className="w-4 h-4 mr-2" />
                       Tüm Aktiviteleri Görüntüle
                     </Button>
@@ -373,7 +373,7 @@ export default function AdminDashboard() {
                 </CardHeader>
                 <CardContent className="space-y-3 p-6">
                   <Button 
-                    variant="outline" 
+                    variant="lightgray" 
                     className="w-full justify-start hover:bg-blue-50 dark:hover:bg-blue-900/20 border-blue-200 dark:border-blue-800"
                     onClick={handleViewUsers}
                   >
@@ -382,7 +382,7 @@ export default function AdminDashboard() {
                   </Button>
                   
                   <Button 
-                    variant="outline" 
+                    variant="lightgray" 
                     className="w-full justify-start hover:bg-red-50 dark:hover:bg-red-900/20 border-red-200 dark:border-red-800"
                     onClick={handleViewAuditLogs}
                   >
@@ -391,7 +391,7 @@ export default function AdminDashboard() {
                   </Button>
                   
                   <Button 
-                    variant="outline" 
+                    variant="lightgray" 
                     className="w-full justify-start hover:bg-green-50 dark:hover:bg-green-900/20 border-green-200 dark:border-green-800"
                     onClick={handleViewCompanies}
                   >
@@ -400,7 +400,7 @@ export default function AdminDashboard() {
                   </Button>
                   
                   <Button 
-                    variant="outline" 
+                    variant="lightgray" 
                     className="w-full justify-start hover:bg-purple-50 dark:hover:bg-purple-900/20 border-purple-200 dark:border-purple-800"
                     onClick={handleViewAnalytics}
                   >
@@ -460,7 +460,7 @@ export default function AdminDashboard() {
                     )}
                   </div>
                   <div className="mt-4 pt-4 border-t border-gray-200 dark:border-gray-600">
-                    <Button variant="outline" className="w-full" onClick={handleViewNotifications}>
+                    <Button variant="lightgray" className="w-full" onClick={handleViewNotifications}>
                       <Eye className="w-4 h-4 mr-2" />
                       Tüm Bildirimleri Görüntüle
                     </Button>
@@ -481,7 +481,7 @@ export default function AdminDashboard() {
                 </CardHeader>
                 <CardContent className="space-y-3 p-6">
                   <Button 
-                    variant="outline" 
+                    variant="lightgray" 
                     className="w-full justify-start"
                     onClick={handleCreateReport}
                   >
@@ -490,7 +490,7 @@ export default function AdminDashboard() {
                   </Button>
                   
                   <Button 
-                    variant="outline" 
+                    variant="lightgray" 
                     className="w-full justify-start"
                     onClick={handleViewDepartments}
                   >
@@ -499,7 +499,7 @@ export default function AdminDashboard() {
                   </Button>
                   
                   <Button 
-                    variant="outline" 
+                    variant="lightgray" 
                     className="w-full justify-start"
                     onClick={handleViewRecruitment}
                   >

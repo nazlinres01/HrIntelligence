@@ -185,7 +185,7 @@ export default function DepartmentManagerDashboard() {
                           <Button size="sm" className="bg-red-600 hover:bg-red-700">
                             Onayla
                           </Button>
-                          <Button size="sm" variant="outline">
+                          <Button size="sm" variant="lightgray">
                             Reddet
                           </Button>
                         </div>

@@ -168,7 +168,7 @@ export default function HRManagerDashboard() {
               approveLeave.mutate(leave.id);
             }}
             disabled={approveLeave.isPending}
-            variant="outline"
+            variant="lightgray"
             className="flex-1 bg-white text-gray-700 border-gray-300 hover:bg-gray-50"
           >
             <Check className="w-4 h-4 mr-2" />
@@ -201,7 +201,7 @@ export default function HRManagerDashboard() {
           </div>
           <div className="flex items-center gap-4">
             <Link href="/hr/strategy">
-              <Button variant="outline" className="bg-white text-gray-700 border-gray-300 hover:bg-gray-50">
+              <Button variant="lightgray" className="bg-white text-gray-700 border-gray-300 hover:bg-gray-50">
                 <BarChart3 className="w-4 h-4 mr-2" />
                 İK Stratejisi
               </Button>
@@ -281,7 +281,7 @@ export default function HRManagerDashboard() {
                       <div className="flex gap-2">
                         <Dialog>
                           <DialogTrigger asChild>
-                            <Button size="sm" variant="outline" className="text-xs px-2 py-1">
+                            <Button size="sm" variant="lightgray" className="text-xs px-2 py-1">
                               <Eye className="w-3 h-3 mr-1" />
                               Detay
                             </Button>
@@ -290,7 +290,7 @@ export default function HRManagerDashboard() {
                         </Dialog>
                         <Button 
                           size="sm" 
-                          variant="outline"
+                          variant="lightgray"
                           className="text-xs px-2 py-1 bg-white text-gray-700 border-gray-300 hover:bg-gray-50"
                           onClick={() => approveLeave.mutate(leave.id)}
                           disabled={approveLeave.isPending}
@@ -317,7 +317,7 @@ export default function HRManagerDashboard() {
                 {approvalPendingLeaves.length > 0 && (
                   <div className="pt-3 border-t">
                     <Link href="/leaves">
-                      <Button variant="outline" className="w-full text-sm">
+                      <Button variant="lightgray" className="w-full text-sm">
                         Tüm İzinleri Görüntüle ({approvalPendingLeaves.length})
                       </Button>
                     </Link>
@@ -371,25 +371,25 @@ export default function HRManagerDashboard() {
           <CardContent>
             <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
               <Link href="/employees">
-                <Button variant="outline" className="w-full h-20 flex flex-col gap-2 bg-white text-gray-700 border-gray-300 hover:bg-gray-50">
+                <Button variant="lightgray" className="w-full h-20 flex flex-col gap-2 bg-white text-gray-700 border-gray-300 hover:bg-gray-50">
                   <Users className="w-6 h-6" />
                   <span className="text-sm">Çalışan Yönetimi</span>
                 </Button>
               </Link>
               <Link href="/leaves">
-                <Button variant="outline" className="w-full h-20 flex flex-col gap-2 bg-white text-gray-700 border-gray-300 hover:bg-gray-50">
+                <Button variant="lightgray" className="w-full h-20 flex flex-col gap-2 bg-white text-gray-700 border-gray-300 hover:bg-gray-50">
                   <Calendar className="w-6 h-6" />
                   <span className="text-sm">İzin Yönetimi</span>
                 </Button>
               </Link>
               <Link href="/performance">
-                <Button variant="outline" className="w-full h-20 flex flex-col gap-2 bg-white text-gray-700 border-gray-300 hover:bg-gray-50">
+                <Button variant="lightgray" className="w-full h-20 flex flex-col gap-2 bg-white text-gray-700 border-gray-300 hover:bg-gray-50">
                   <TrendingUp className="w-6 h-6" />
                   <span className="text-sm">Performans</span>
                 </Button>
               </Link>
               <Link href="/reports">
-                <Button variant="outline" className="w-full h-20 flex flex-col gap-2 bg-white text-gray-700 border-gray-300 hover:bg-gray-50">
+                <Button variant="lightgray" className="w-full h-20 flex flex-col gap-2 bg-white text-gray-700 border-gray-300 hover:bg-gray-50">
                   <BarChart3 className="w-6 h-6" />
                   <span className="text-sm">Raporlar</span>
                 </Button>
