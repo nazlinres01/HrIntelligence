@@ -54,6 +54,10 @@ import MyPerformance from "@/pages/my-performance";
 import MyTraining from "@/pages/my-training";
 import Messages from "@/pages/messages";
 import Announcements from "@/pages/announcements";
+import MyPayroll from "@/pages/my-payroll";
+import CareerDevelopment from "@/pages/career-development";
+import DocumentManagement from "@/pages/document-management";
+import EmployeeBenefits from "@/pages/employee-benefits";
 
 import Login from "@/pages/login";
 import Register from "@/pages/register";
