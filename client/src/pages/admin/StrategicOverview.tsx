@@ -170,7 +170,7 @@ export default function StrategicOverview() {
 
         {/* Executive Summary */}
         <div className="grid grid-cols-1 md:grid-cols-4 gap-6 mb-8">
-          <Card className="bg-gradient-to-br from-blue-500 to-blue-700 border-blue-300 shadow-lg hover:shadow-xl transition-shadow">
+          <Card className="bg-gradient-to-br from-blue-600 to-blue-800 border-blue-400 shadow-xl hover:shadow-2xl transition-all">
             <CardContent className="p-6">
               <div className="flex items-center justify-between">
                 <div>
@@ -186,7 +186,7 @@ export default function StrategicOverview() {
             </CardContent>
           </Card>
 
-          <Card className="bg-gradient-to-br from-green-500 to-green-700 border-green-300 shadow-lg hover:shadow-xl transition-shadow">
+          <Card className="bg-gradient-to-br from-green-600 to-green-800 border-green-400 shadow-xl hover:shadow-2xl transition-all">
             <CardContent className="p-6">
               <div className="flex items-center justify-between">
                 <div>
@@ -202,7 +202,7 @@ export default function StrategicOverview() {
             </CardContent>
           </Card>
 
-          <Card className="bg-gradient-to-br from-emerald-500 to-emerald-700 border-emerald-300 shadow-lg hover:shadow-xl transition-shadow">
+          <Card className="bg-gradient-to-br from-emerald-600 to-emerald-800 border-emerald-400 shadow-xl hover:shadow-2xl transition-all">
             <CardContent className="p-6">
               <div className="flex items-center justify-between">
                 <div>
@@ -218,7 +218,7 @@ export default function StrategicOverview() {
             </CardContent>
           </Card>
 
-          <Card className="bg-gradient-to-br from-purple-500 to-purple-700 border-purple-300 shadow-lg hover:shadow-xl transition-shadow">
+          <Card className="bg-gradient-to-br from-purple-600 to-purple-800 border-purple-400 shadow-xl hover:shadow-2xl transition-all">
             <CardContent className="p-6">
               <div className="flex items-center justify-between">
                 <div>
