@@ -106,13 +106,13 @@ export default function ResourcePlanningPage() {
   };
 
   return (
-    <div className="p-8 space-y-8 bg-gradient-to-br from-red-50 via-white to-rose-50 min-h-screen">
-      {/* Header */}
-      <div className="mb-8">
-        <div className="flex items-center justify-between">
+    <div className="min-h-screen bg-white">
+      <div className="p-8">
+        {/* Header */}
+        <div className="flex flex-col lg:flex-row lg:items-center lg:justify-between mb-8">
           <div>
-            <h1 className="text-4xl font-bold mb-2 text-gray-900">Kaynak Planlaması</h1>
-            <p className="text-gray-600 text-lg">İnsan kaynakları ve bütçe yönetimi</p>
+            <h1 className="text-3xl font-bold text-gray-900 mb-2">Kaynak Planlaması</h1>
+            <p className="text-gray-600">İnsan kaynakları ve bütçe yönetimi</p>
           </div>
           <div className="grid grid-cols-2 gap-4 text-center">
             <div>
@@ -127,9 +127,8 @@ export default function ResourcePlanningPage() {
             </div>
           </div>
         </div>
-      </div>
 
-      <Tabs defaultValue="projects" className="space-y-6">
+        <Tabs defaultValue="projects" className="space-y-6">
         <TabsList className="grid w-full grid-cols-4">
           <TabsTrigger value="projects">Proje Kaynakları</TabsTrigger>
           <TabsTrigger value="budget">Bütçe Yönetimi</TabsTrigger>
@@ -140,7 +139,7 @@ export default function ResourcePlanningPage() {
         <TabsContent value="projects" className="space-y-6">
           <div className="flex justify-between items-center">
             <h2 className="text-2xl font-bold text-gray-800">Proje Kaynak Dağılımı</h2>
-            <Button className="bg-red-600 hover:bg-red-700">
+            <Button className="bg-blue-600 hover:bg-blue-700 text-white">
               <Plus className="h-4 w-4 mr-2" />
               Yeni Proje Ekle
             </Button>
@@ -332,12 +331,13 @@ export default function ResourcePlanningPage() {
             </Card>
           ))}
 
-          <Button className="w-full bg-red-600 hover:bg-red-700">
+          <Button className="w-full bg-blue-600 hover:bg-blue-700 text-white">
             <Plus className="h-4 w-4 mr-2" />
             Yeni İhtiyaç Talebinde Bulun
           </Button>
         </TabsContent>
-      </Tabs>
+        </Tabs>
+      </div>
     </div>
   );
 }

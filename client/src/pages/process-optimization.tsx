@@ -133,13 +133,13 @@ export default function ProcessOptimizationPage() {
   };
 
   return (
-    <div className="p-8 space-y-8 bg-gradient-to-br from-red-50 via-white to-rose-50 min-h-screen">
-      {/* Header */}
-      <div className="mb-8">
-        <div className="flex items-center justify-between">
+    <div className="min-h-screen bg-white">
+      <div className="p-8">
+        {/* Header */}
+        <div className="flex flex-col lg:flex-row lg:items-center lg:justify-between mb-8">
           <div>
-            <h1 className="text-4xl font-bold mb-2 text-gray-900">Süreç Optimizasyonu</h1>
-            <p className="text-gray-600 text-lg">İş süreçlerini analiz edin ve verimliliği artırın</p>
+            <h1 className="text-3xl font-bold text-gray-900 mb-2">Süreç Optimizasyonu</h1>
+            <p className="text-gray-600">İş süreçlerini analiz edin ve verimliliği artırın</p>
           </div>
           <div className="grid grid-cols-2 gap-4 text-center">
             <div>
@@ -154,9 +154,8 @@ export default function ProcessOptimizationPage() {
             </div>
           </div>
         </div>
-      </div>
 
-      <Tabs defaultValue="projects" className="space-y-6">
+        <Tabs defaultValue="projects" className="space-y-6">
         <TabsList className="grid w-full grid-cols-4">
           <TabsTrigger value="projects">Optimizasyon Projeleri</TabsTrigger>
           <TabsTrigger value="kpi">Performans Metrikleri</TabsTrigger>
@@ -380,7 +379,8 @@ export default function ProcessOptimizationPage() {
             </Card>
           </div>
         </TabsContent>
-      </Tabs>
+        </Tabs>
+      </div>
     </div>
   );
 }
