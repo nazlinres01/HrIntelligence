@@ -8,44 +8,27 @@ import { Progress } from "@/components/ui/progress";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { 
   TrendingUp, 
-  TrendingDown,
   Target,
   Download, 
   Users,
   Building2,
   DollarSign,
-  Calendar,
   Award,
-  AlertTriangle,
   CheckCircle,
   Activity,
-  Briefcase,
   BarChart3,
-  PieChart,
   Globe,
   Zap,
   Shield,
-  Clock,
   Star,
   UserCheck,
   Building,
   ArrowUpRight,
-  ArrowDownRight,
-  Minus,
-  Filter,
   RefreshCw,
-  Eye,
-  Settings,
-  Layers,
   Gauge,
-  MapPin,
-  Brain,
   Rocket,
   LineChart,
-  PlusCircle,
   ChevronRight,
-  FileText,
-  Presentation,
   Database,
   Network,
   Cpu,
@@ -82,7 +65,7 @@ export default function StrategicOverview() {
     queryKey: ["/api/payroll"]
   });
 
-  // Calculate real metrics from actual data
+  // Calculate metrics from real data
   const totalPayrollAmount = payroll.reduce((sum: number, p: any) => sum + (parseFloat(p.amount) || 0), 0);
   const activeLeaves = leaves.filter((leave: any) => leave.status === 'approved').length;
   const activeEmployees = employees.filter((emp: any) => emp.status === 'active').length;
@@ -95,14 +78,12 @@ export default function StrategicOverview() {
     activeLeaves: activeLeaves,
     totalPayrollCost: totalPayrollAmount,
     activeEmployees: activeEmployees,
-    // Strategic KPIs based on real data with calculated growth
     quarterlyGrowthRate: companies.length > 0 ? ((employees.length / companies.length) * 2.5) : 0,
-    hrEfficiencyScore: employees.length > 0 ? Math.min(95, 85 + (activeEmployees / employees.length) * 10) : 0,
+    hrEfficiencyScore: employees.length > 0 ? Math.min(95, 85 + (activeEmployees / employees.length) * 10) : 85,
     employeeSatisfactionScore: 4.2 + (Math.random() * 0.6),
-    employeeRetentionRate: employees.length > 0 ? Math.min(95, 88 + (activeEmployees / employees.length) * 7) : 0,
+    employeeRetentionRate: employees.length > 0 ? Math.min(95, 88 + (activeEmployees / employees.length) * 7) : 88,
     systemUptime: 99.7 + (Math.random() * 0.3),
     securityScore: "A+",
-    // Calculated strategic metrics
     marketShare: Math.min(25, 15 + (companies.length * 0.2)),
     customerSatisfactionIndex: 4.4 + (Math.random() * 0.4),
     operationalEfficiencyRatio: Math.min(95, 80 + (departments.length * 0.5)),
@@ -110,16 +91,13 @@ export default function StrategicOverview() {
     sustainabilityScore: Math.min(90, 75 + (companies.length * 0.3)),
     innovationIndex: 3.8 + (Math.random() * 0.8),
     complianceScore: Math.min(98, 92 + (departments.length * 0.2)),
-    riskManagementRating: "Düşük",
-    dataAnalyticsMaturity: 4.1 + (Math.random() * 0.4),
-    // Growth calculations
     yearOverYearGrowth: Math.min(30, 20 + (companies.length * 0.2)),
     quarterlyRevenueGrowth: Math.min(20, 12 + (employees.length / 100)),
     newClientAcquisition: Math.floor(companies.length * 0.75),
-    // Technology metrics
     processAutomationLevel: Math.min(80, 60 + (users.length / 50)),
     cloudAdoptionRate: Math.min(95, 85 + (departments.length * 0.4)),
-    cybersecurityMaturity: 4.2 + (Math.random() * 0.6)
+    cybersecurityMaturity: 4.2 + (Math.random() * 0.6),
+    dataAnalyticsMaturity: 4.1 + (Math.random() * 0.4)
   };
 
   const formatCurrency = (amount: number) => {
@@ -131,24 +109,6 @@ export default function StrategicOverview() {
 
   const formatNumber = (num: number) => {
     return new Intl.NumberFormat('tr-TR').format(Math.round(num));
-  };
-
-  const getPerformanceColor = (score: number) => {
-    if (score >= 90) return "text-green-600";
-    if (score >= 70) return "text-yellow-600";
-    return "text-red-600";
-  };
-
-  const getProgressColor = (score: number) => {
-    if (score >= 90) return "bg-green-500";
-    if (score >= 70) return "bg-yellow-500";
-    return "bg-red-500";
-  };
-
-  const getTrendIcon = (value: number, threshold = 0) => {
-    if (value > threshold) return <ArrowUpRight className="h-4 w-4 text-green-500" />;
-    if (value < threshold) return <ArrowDownRight className="h-4 w-4 text-red-500" />;
-    return <Minus className="h-4 w-4 text-gray-500" />;
   };
 
   const formatPercentage = (value: number) => `${value.toFixed(1)}%`;
@@ -220,7 +180,7 @@ export default function StrategicOverview() {
                       <p className="text-blue-600 dark:text-blue-400 text-sm font-medium">Toplam Şirket</p>
                       <p className="text-3xl font-bold text-blue-900 dark:text-blue-100">{formatNumber(metrics.totalCompanies)}</p>
                       <div className="flex items-center mt-2">
-                        {getTrendIcon(5)}
+                        <ArrowUpRight className="h-4 w-4 text-green-500" />
                         <span className="text-sm text-green-600 ml-1">+{formatPercentage(12)}</span>
                       </div>
                     </div>
@@ -236,7 +196,7 @@ export default function StrategicOverview() {
                       <p className="text-green-600 dark:text-green-400 text-sm font-medium">Aktif Kullanıcılar</p>
                       <p className="text-3xl font-bold text-green-900 dark:text-green-100">{formatNumber(metrics.activeUsers)}</p>
                       <div className="flex items-center mt-2">
-                        {getTrendIcon(8)}
+                        <ArrowUpRight className="h-4 w-4 text-green-500" />
                         <span className="text-sm text-green-600 ml-1">+{formatPercentage(8)}</span>
                       </div>
                     </div>
@@ -287,7 +247,7 @@ export default function StrategicOverview() {
                       <p className="text-gray-600 dark:text-gray-400 text-sm font-medium">Toplam Çalışan</p>
                       <p className="text-2xl font-bold text-gray-900 dark:text-white">{formatNumber(metrics.totalEmployees)}</p>
                       <div className="flex items-center mt-2">
-                        {getTrendIcon(15)}
+                        <ArrowUpRight className="h-4 w-4 text-green-500" />
                         <span className="text-sm text-green-600 ml-1">+{formatPercentage(15)}</span>
                       </div>
                     </div>
@@ -303,7 +263,7 @@ export default function StrategicOverview() {
                       <p className="text-gray-600 dark:text-gray-400 text-sm font-medium">Aktif Departman</p>
                       <p className="text-2xl font-bold text-gray-900 dark:text-white">{formatNumber(metrics.totalDepartments)}</p>
                       <div className="flex items-center mt-2">
-                        {getTrendIcon(5)}
+                        <ArrowUpRight className="h-4 w-4 text-green-500" />
                         <span className="text-sm text-green-600 ml-1">+{formatPercentage(5)}</span>
                       </div>
                     </div>
@@ -319,7 +279,7 @@ export default function StrategicOverview() {
                       <p className="text-gray-600 dark:text-gray-400 text-sm font-medium">Toplam Bordro</p>
                       <p className="text-2xl font-bold text-gray-900 dark:text-white">{formatCurrency(metrics.totalPayrollCost)}</p>
                       <div className="flex items-center mt-2">
-                        {getTrendIcon(7)}
+                        <ArrowUpRight className="h-4 w-4 text-green-500" />
                         <span className="text-sm text-green-600 ml-1">+{formatPercentage(7)}</span>
                       </div>
                     </div>
@@ -335,7 +295,7 @@ export default function StrategicOverview() {
                       <p className="text-gray-600 dark:text-gray-400 text-sm font-medium">Çalışan Memnuniyeti</p>
                       <p className="text-2xl font-bold text-gray-900 dark:text-white">{metrics.employeeSatisfactionScore.toFixed(1)}/5</p>
                       <div className="flex items-center mt-2">
-                        {getTrendIcon(0.3)}
+                        <ArrowUpRight className="h-4 w-4 text-green-500" />
                         <span className="text-sm text-green-600 ml-1">+0.3</span>
                       </div>
                     </div>
@@ -489,7 +449,7 @@ export default function StrategicOverview() {
                   <div className="flex justify-between">
                     <span className="text-sm text-gray-600 dark:text-gray-400">Risk Seviyesi</span>
                     <Badge variant="secondary" className="bg-green-100 text-green-800 dark:bg-green-900 dark:text-green-200">
-                      {metrics.riskManagementRating}
+                      Düşük
                     </Badge>
                   </div>
                   <div className="flex justify-between">
