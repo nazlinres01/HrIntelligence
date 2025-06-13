@@ -1036,6 +1036,55 @@ export async function registerRoutes(app: Express): Promise<Server> {
     }
   });
 
+  // Dashboard Statistics Routes for All Roles
+  
+  // HR Manager Dashboard Statistics
+  app.get('/api/stats/hr-manager', isAuthenticated, async (req: any, res) => {
+    try {
+      const stats = await storage.getHRManagerStats();
+      res.json(stats);
+    } catch (error) {
+      console.error("Error fetching HR manager stats:", error);
+      res.status(500).json({ message: "İK müdürü istatistikleri alınırken hata oluştu" });
+    }
+  });
+
+  // Department Manager Dashboard Statistics
+  app.get('/api/stats/department-manager', isAuthenticated, async (req: any, res) => {
+    try {
+      const userId = req.user.claims.sub;
+      const stats = await storage.getDepartmentManagerStats(userId);
+      res.json(stats);
+    } catch (error) {
+      console.error("Error fetching department manager stats:", error);
+      res.status(500).json({ message: "Departman müdürü istatistikleri alınırken hata oluştu" });
+    }
+  });
+
+  // Admin Dashboard Statistics
+  app.get('/api/stats/admin', isAuthenticated, async (req: any, res) => {
+    try {
+      const [employeeStats, hrStats] = await Promise.all([
+        storage.getEmployeeStats(),
+        storage.getHRManagerStats()
+      ]);
+      
+      const adminStats = {
+        ...employeeStats,
+        ...hrStats,
+        totalCompanies: await storage.getAllCompanies().then(companies => companies.length),
+        totalUsers: await storage.getAllUsers().then(users => users.length),
+        systemHealth: "healthy",
+        serverUptime: process.uptime()
+      };
+      
+      res.json(adminStats);
+    } catch (error) {
+      console.error("Error fetching admin stats:", error);
+      res.status(500).json({ message: "Yönetici istatistikleri alınırken hata oluştu" });
+    }
+  });
+
   // Activities routes
   app.get('/api/activities', requireAuth, async (req: any, res) => {
     try {

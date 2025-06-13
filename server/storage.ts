@@ -927,6 +927,8 @@ export class DatabaseStorage implements IStorage {
   async getEmployeesByCompany(companyId: number): Promise<Employee[]> {
     return await db.select().from(employees).where(eq(employees.companyId, companyId));
   }
+
+
 }
 
 export const storage = new DatabaseStorage();
