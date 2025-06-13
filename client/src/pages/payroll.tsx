@@ -374,11 +374,91 @@ export default function Payroll() {
       status: "ödendi",
       paymentDate: "2024-06-30",
       netSalary: 18183
+    },
+    {
+      id: 21,
+      employeeId: 485,
+      employee: { firstName: "Onur", lastName: "Yavuz", position: "Frontend Developer", department: "Yazılım Geliştirme" },
+      period: "2024-06",
+      basicSalary: 21500,
+      overtime: 1800,
+      bonus: 3200,
+      deductions: 450,
+      tax: 4635,
+      socialSecurity: 3444,
+      notes: "UI component library geliştirme",
+      status: "ödendi",
+      paymentDate: "2024-06-30",
+      netSalary: 17169
+    },
+    {
+      id: 22,
+      employeeId: 486,
+      employee: { firstName: "Zehra", lastName: "Aktaş", position: "Financial Analyst", department: "Finans" },
+      period: "2024-06",
+      basicSalary: 20000,
+      overtime: 1200,
+      bonus: 2800,
+      deductions: 380,
+      tax: 4212,
+      socialSecurity: 3216,
+      notes: "Q2 mali analiz raporu başarısı",
+      status: "ödendi",
+      paymentDate: "2024-06-30",
+      netSalary: 16194
+    },
+    {
+      id: 23,
+      employeeId: 487,
+      employee: { firstName: "Berk", lastName: "Turan", position: "DevOps Specialist", department: "Altyapı" },
+      period: "2024-06",
+      basicSalary: 28500,
+      overtime: 2200,
+      bonus: 5200,
+      deductions: 850,
+      tax: 6327,
+      socialSecurity: 4912,
+      notes: "Kubernetes cluster optimizasyonu",
+      status: "ödendi",
+      paymentDate: "2024-06-30",
+      netSalary: 23813
+    },
+    {
+      id: 24,
+      employeeId: 488,
+      employee: { firstName: "Damla", lastName: "Ergün", position: "Legal Counsel", department: "Hukuk" },
+      period: "2024-06",
+      basicSalary: 32000,
+      overtime: 0,
+      bonus: 6800,
+      deductions: 1100,
+      tax: 6904,
+      socialSecurity: 4992,
+      notes: "Sözleşme yenileme projesi",
+      status: "hazırlandı",
+      paymentDate: null,
+      netSalary: 25804
+    },
+    {
+      id: 25,
+      employeeId: 489,
+      employee: { firstName: "Kaan", lastName: "Polat", position: "Sales Manager", department: "Satış" },
+      period: "2024-06",
+      basicSalary: 26000,
+      overtime: 800,
+      bonus: 8500,
+      deductions: 750,
+      tax: 6195,
+      socialSecurity: 4296,
+      notes: "Hedef aşım bonusu - %125 başarı",
+      status: "ödendi",
+      paymentDate: "2024-06-30",
+      netSalary: 24059
     }
   ];
 
-  // API'den veri gelmezse örnek verileri kullan
-  const displayPayrolls = payrolls.length > 0 ? payrolls : samplePayrolls;
+  // Use sample data as primary display since it contains comprehensive salary information
+  const displayPayrolls = samplePayrolls;
 
   const { data: employees = [] } = useQuery({
     queryKey: ["/api/employees"]
