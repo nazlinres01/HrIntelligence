@@ -109,6 +109,53 @@ export default function HRManagerDashboard() {
 
         {/* Content Grid */}
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+          {/* Pending Leave Approvals */}
+          <Card>
+            <CardHeader>
+              <CardTitle className="flex items-center gap-2">
+                <Calendar className="w-5 h-5 text-teal-600" />
+                Onay Bekleyen İzinler
+              </CardTitle>
+              <CardDescription>
+                İK Müdürü onayı gereken izin talepleri
+              </CardDescription>
+            </CardHeader>
+            <CardContent>
+              <div className="space-y-3">
+                {approvalPendingLeaves.length > 0 ? (
+                  approvalPendingLeaves.slice(0, 3).map((leave: any) => (
+                    <div key={leave.id} className="flex items-center justify-between p-3 bg-gray-50 rounded-lg">
+                      <div>
+                        <p className="font-medium text-sm">Çalışan #{leave.employeeId}</p>
+                        <p className="text-xs text-gray-500">{leave.leaveType} - {leave.days} gün</p>
+                        <p className="text-xs text-gray-400">{new Date(leave.startDate).toLocaleDateString('tr-TR')}</p>
+                      </div>
+                      <div className="flex gap-2">
+                        <Button size="sm" className="bg-green-600 hover:bg-green-700 text-xs px-2 py-1">
+                          Onayla
+                        </Button>
+                        <Button size="sm" variant="outline" className="text-xs px-2 py-1">
+                          Reddet
+                        </Button>
+                      </div>
+                    </div>
+                  ))
+                ) : (
+                  <p className="text-gray-500 text-center py-4">Onay bekleyen izin yok</p>
+                )}
+                {approvalPendingLeaves.length > 0 && (
+                  <div className="pt-3 border-t">
+                    <Link href="/leaves">
+                      <Button variant="outline" className="w-full text-sm">
+                        Tüm İzinleri Görüntüle ({approvalPendingLeaves.length})
+                      </Button>
+                    </Link>
+                  </div>
+                )}
+              </div>
+            </CardContent>
+          </Card>
+
           {/* Recent Notifications */}
           <Card>
             <CardHeader>
