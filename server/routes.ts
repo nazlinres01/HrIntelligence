@@ -1463,7 +1463,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
   });
 
   // Department Manager specific endpoints
-  app.get('/api/stats/department-manager', isAuthenticated, async (req: any, res) => {
+  app.get('/api/stats/department-manager', requireAuth, async (req: any, res) => {
     try {
       const userId = req.user.claims.sub;
       
@@ -1486,7 +1486,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
     }
   });
 
-  app.get('/api/department-team', isAuthenticated, async (req: any, res) => {
+  app.get('/api/department-team', requireAuth, async (req: any, res) => {
     try {
       const userId = req.user.claims.sub;
       
@@ -1541,7 +1541,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
     }
   });
 
-  app.get('/api/department-projects', isAuthenticated, async (req: any, res) => {
+  app.get('/api/department-projects', requireAuth, async (req: any, res) => {
     try {
       const userId = req.user.claims.sub;
       
@@ -1600,7 +1600,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
     }
   });
 
-  app.get('/api/pending-approvals', isAuthenticated, async (req: any, res) => {
+  app.get('/api/pending-approvals', requireAuth, async (req: any, res) => {
     try {
       const userId = req.user.claims.sub;
       
@@ -1646,7 +1646,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
     }
   });
 
-  app.post('/api/approve-request', isAuthenticated, async (req: any, res) => {
+  app.post('/api/approve-request', requireAuth, async (req: any, res) => {
     try {
       const userId = req.user.claims.sub;
       const { requestId, requestType, action, comments } = req.body;
@@ -1676,7 +1676,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
     }
   });
 
-  app.get('/api/department-analytics', isAuthenticated, async (req: any, res) => {
+  app.get('/api/department-analytics', requireAuth, async (req: any, res) => {
     try {
       const userId = req.user.claims.sub;
       
