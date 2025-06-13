@@ -70,6 +70,15 @@ import QualityControl from "@/pages/quality-control";
 import ManagementReporting from "@/pages/management-reporting";
 import TeamCommunication from "@/pages/team-communication";
 
+// HR Specialist Pages
+import HRProcesses from "@/pages/hr/processes";
+import PersonnelAffairs from "@/pages/personnel-affairs";
+import ReferenceChecks from "@/pages/reference-checks";
+import Onboarding from "@/pages/onboarding";
+import HRDocumentation from "@/pages/hr-documentation";
+import InternalCommunication from "@/pages/internal-communication";
+import DailyActivities from "@/pages/daily-activities";
+
 import Login from "@/pages/login";
 import Register from "@/pages/register";
 import NotFound from "@/pages/not-found";
@@ -187,6 +196,16 @@ function Router() {
         <Route path="/quality-control" component={QualityControl} />
         <Route path="/management-reporting" component={ManagementReporting} />
         <Route path="/team-communication" component={TeamCommunication} />
+        
+        {/* HR Specialist Routes */}
+        <Route path="/hr/processes" component={HRProcesses} />
+        <Route path="/personnel-affairs" component={PersonnelAffairs} />
+        <Route path="/applications" component={Jobs} />
+        <Route path="/reference-checks" component={ReferenceChecks} />
+        <Route path="/onboarding" component={Onboarding} />
+        <Route path="/hr-documentation" component={HRDocumentation} />
+        <Route path="/internal-communication" component={InternalCommunication} />
+        <Route path="/activities" component={DailyActivities} />
         
         <Route component={NotFound} />
           </Switch>
