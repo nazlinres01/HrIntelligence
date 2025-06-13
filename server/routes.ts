@@ -50,60 +50,6 @@ export async function registerRoutes(app: Express): Promise<Server> {
     },
   }));
 
-  // Simple auth endpoints
-  app.post('/api/auth/login', async (req, res) => {
-    try {
-      const { email, password } = req.body;
-      
-      // Test kullanıcıları için basit kontrol
-      const testUsers = {
-        'admin@techcorp.com.tr': { password: 'admin123', role: 'admin', firstName: 'Ahmet', lastName: 'Yıldırım' },
-        'ik.muduru@techcorp.com.tr': { password: 'ik123', role: 'hr_manager', firstName: 'Ayşe', lastName: 'Demir' },
-        'ik.uzman@techcorp.com.tr': { password: 'uzman123', role: 'hr_specialist', firstName: 'Mehmet', lastName: 'Kaya' },
-        'dept.muduru@techcorp.com.tr': { password: 'dept123', role: 'department_manager', firstName: 'Fatma', lastName: 'Özkan' },
-        'calisan@techcorp.com.tr': { password: 'calisan123', role: 'employee', firstName: 'Ali', lastName: 'Şahin' }
-      };
-
-      const user = testUsers[email as keyof typeof testUsers];
-      if (user && user.password === password) {
-        const userSession = {
-          id: email,
-          email,
-          firstName: user.firstName,
-          lastName: user.lastName,
-          role: user.role
-        };
-        
-        (req.session as any).user = userSession;
-        res.json({ success: true, user: userSession });
-      } else {
-        res.status(401).json({ message: 'Email veya şifre hatalı' });
-      }
-    } catch (error) {
-      console.error('Login error:', error);
-      res.status(500).json({ message: 'Sunucu hatası' });
-    }
-  });
-
-  app.get('/api/auth/user', (req, res) => {
-    const user = (req.session as any)?.user;
-    if (user) {
-      res.json(user);
-    } else {
-      res.status(401).json({ message: 'Unauthorized' });
-    }
-  });
-
-  app.post('/api/auth/logout', (req, res) => {
-    req.session.destroy((err) => {
-      if (err) {
-        res.status(500).json({ message: 'Logout failed' });
-      } else {
-        res.json({ success: true });
-      }
-    });
-  });
-
   // Auth middleware
   await setupAuth(app);
 
