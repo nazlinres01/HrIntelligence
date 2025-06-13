@@ -160,31 +160,18 @@ export default function TeamCommunicationPage() {
   };
 
   return (
-    <div className="p-8 space-y-8 bg-gradient-to-br from-red-50 via-white to-rose-50 min-h-screen">
-      {/* Header */}
-      <div className="mb-8">
-        <div className="flex items-center justify-between">
+    <div className="min-h-screen bg-white">
+      <div className="p-8">
+        {/* Header */}
+        <div className="flex flex-col lg:flex-row lg:items-center lg:justify-between mb-8">
           <div>
-            <h1 className="text-4xl font-bold mb-2 text-gray-900">Ekip İletişimi</h1>
-            <p className="text-gray-600 text-lg">Ekip üyeleriyle iletişim kurun ve işbirliği yapın</p>
-          </div>
-          <div className="grid grid-cols-2 gap-4 text-center">
-            <div>
-              <MessageCircle className="h-8 w-8 mx-auto mb-1 text-blue-600" />
-              <div className="text-2xl font-bold text-gray-900">127</div>
-              <div className="text-gray-500 text-sm">Yeni Mesaj</div>
-            </div>
-            <div>
-              <Users className="h-8 w-8 mx-auto mb-1 text-green-600" />
-              <div className="text-2xl font-bold text-gray-900">24</div>
-              <div className="text-gray-500 text-sm">Ekip Üyesi</div>
-            </div>
+            <h1 className="text-3xl font-bold text-gray-900 mb-2">Ekip İletişimi</h1>
+            <p className="text-gray-600">Ekip üyeleriyle iletişim kurun ve işbirliği yapın</p>
           </div>
         </div>
-      </div>
 
-      <Tabs defaultValue="channels" className="space-y-6">
-        <TabsList className="grid w-full grid-cols-4">
+        <Tabs defaultValue="channels" className="space-y-6">
+          <TabsList className="grid w-full grid-cols-4">
           <TabsTrigger value="channels">Kanallar</TabsTrigger>
           <TabsTrigger value="messages">Mesajlar</TabsTrigger>
           <TabsTrigger value="team">Ekip Üyeleri</TabsTrigger>
@@ -423,7 +410,8 @@ export default function TeamCommunicationPage() {
             ))}
           </div>
         </TabsContent>
-      </Tabs>
+        </Tabs>
+      </div>
     </div>
   );
 }
