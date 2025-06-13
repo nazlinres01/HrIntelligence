@@ -170,66 +170,66 @@ export default function StrategicOverview() {
 
         {/* Executive Summary */}
         <div className="grid grid-cols-1 md:grid-cols-4 gap-6 mb-8">
-          <Card className="bg-gradient-to-br from-blue-600 to-blue-800 border-blue-400 shadow-xl hover:shadow-2xl transition-all">
+          <Card className="bg-gradient-to-r from-blue-50 to-blue-100 border-blue-200">
             <CardContent className="p-6">
               <div className="flex items-center justify-between">
                 <div>
-                  <p className="text-blue-100 text-sm font-medium">Toplam Şirket</p>
-                  <p className="text-3xl font-bold text-white">45</p>
+                  <p className="text-blue-600 text-sm font-medium">Toplam Şirket</p>
+                  <p className="text-3xl font-bold text-blue-900">45</p>
                   <div className="flex items-center mt-2">
-                    <TrendingUp className="h-4 w-4 text-green-300 mr-1" />
-                    <span className="text-sm text-green-300">+3 bu ay</span>
+                    <TrendingUp className="h-4 w-4 text-green-500 mr-1" />
+                    <span className="text-sm text-green-600">+12%</span>
                   </div>
                 </div>
-                <Building2 className="h-8 w-8 text-blue-200" />
+                <Building2 className="h-8 w-8 text-blue-600" />
               </div>
             </CardContent>
           </Card>
 
-          <Card className="bg-gradient-to-br from-green-600 to-green-800 border-green-400 shadow-xl hover:shadow-2xl transition-all">
+          <Card className="bg-gradient-to-r from-green-50 to-green-100 border-green-200">
             <CardContent className="p-6">
               <div className="flex items-center justify-between">
                 <div>
-                  <p className="text-green-100 text-sm font-medium">Aktif Kullanıcılar</p>
-                  <p className="text-3xl font-bold text-white">1,247</p>
+                  <p className="text-green-600 text-sm font-medium">Aktif Kullanıcılar</p>
+                  <p className="text-3xl font-bold text-green-900">1,247</p>
                   <div className="flex items-center mt-2">
-                    <TrendingUp className="h-4 w-4 text-green-300 mr-1" />
-                    <span className="text-sm text-green-300">+127</span>
+                    <TrendingUp className="h-4 w-4 text-green-500 mr-1" />
+                    <span className="text-sm text-green-600">+8%</span>
                   </div>
                 </div>
-                <Users className="h-8 w-8 text-green-200" />
+                <Users className="h-8 w-8 text-green-600" />
               </div>
             </CardContent>
           </Card>
 
-          <Card className="bg-gradient-to-br from-emerald-600 to-emerald-800 border-emerald-400 shadow-xl hover:shadow-2xl transition-all">
+          <Card className="bg-gradient-to-r from-emerald-50 to-emerald-100 border-emerald-200">
             <CardContent className="p-6">
               <div className="flex items-center justify-between">
                 <div>
-                  <p className="text-emerald-100 text-sm font-medium">Sistem Sağlığı</p>
-                  <p className="text-3xl font-bold text-white">99.8%</p>
+                  <p className="text-emerald-600 text-sm font-medium">Sistem Sağlığı</p>
+                  <p className="text-3xl font-bold text-emerald-900">99.8%</p>
                   <div className="flex items-center mt-2">
-                    <CheckCircle className="h-4 w-4 text-emerald-300 mr-1" />
-                    <span className="text-sm text-emerald-300">Optimal</span>
+                    <CheckCircle className="h-4 w-4 text-emerald-500 mr-1" />
+                    <span className="text-sm text-emerald-600">Optimal</span>
                   </div>
                 </div>
-                <Activity className="h-8 w-8 text-emerald-200" />
+                <Activity className="h-8 w-8 text-emerald-600" />
               </div>
             </CardContent>
           </Card>
 
-          <Card className="bg-gradient-to-br from-purple-600 to-purple-800 border-purple-400 shadow-xl hover:shadow-2xl transition-all">
+          <Card className="bg-gradient-to-r from-purple-50 to-purple-100 border-purple-200">
             <CardContent className="p-6">
               <div className="flex items-center justify-between">
                 <div>
-                  <p className="text-purple-100 text-sm font-medium">Güvenlik</p>
-                  <p className="text-3xl font-bold text-white">A+</p>
+                  <p className="text-purple-600 text-sm font-medium">Güvenlik</p>
+                  <p className="text-3xl font-bold text-purple-900">A+</p>
                   <div className="flex items-center mt-2">
-                    <Shield className="h-4 w-4 text-purple-300 mr-1" />
-                    <span className="text-sm text-purple-300">Mükemmel</span>
+                    <Shield className="h-4 w-4 text-purple-500 mr-1" />
+                    <span className="text-sm text-purple-600">Mükemmel</span>
                   </div>
                 </div>
-                <Shield className="h-8 w-8 text-purple-200" />
+                <Shield className="h-8 w-8 text-purple-600" />
               </div>
             </CardContent>
           </Card>
