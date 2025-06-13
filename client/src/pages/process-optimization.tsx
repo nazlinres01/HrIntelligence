@@ -156,14 +156,14 @@ export default function ProcessOptimizationPage() {
         </div>
 
         <Tabs defaultValue="projects" className="space-y-6">
-        <TabsList className="grid w-full grid-cols-4">
-          <TabsTrigger value="projects">Optimizasyon Projeleri</TabsTrigger>
-          <TabsTrigger value="kpi">Performans Metrikleri</TabsTrigger>
-          <TabsTrigger value="bottlenecks">Darboğazlar</TabsTrigger>
-          <TabsTrigger value="tools">Analiz Araçları</TabsTrigger>
-        </TabsList>
+          <TabsList className="grid w-full grid-cols-4">
+            <TabsTrigger value="projects">Optimizasyon Projeleri</TabsTrigger>
+            <TabsTrigger value="kpi">Performans Metrikleri</TabsTrigger>
+            <TabsTrigger value="bottlenecks">Darboğazlar</TabsTrigger>
+            <TabsTrigger value="tools">Analiz Araçları</TabsTrigger>
+          </TabsList>
 
-        <TabsContent value="projects" className="space-y-6">
+          <TabsContent value="projects" className="space-y-6">
           <div className="flex justify-between items-center">
             <h2 className="text-2xl font-bold text-gray-800">Optimizasyon Projeleri</h2>
             <Button className="bg-red-600 hover:bg-red-700">
