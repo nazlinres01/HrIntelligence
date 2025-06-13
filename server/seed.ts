@@ -807,7 +807,19 @@ export async function seedDatabase() {
       }
     ];
 
-    await db.insert(users).values(allUsers);
+    // Use upsert to handle existing users gracefully
+    for (const user of allUsers) {
+      await db.insert(users).values(user).onConflictDoUpdate({
+        target: users.id,
+        set: {
+          email: user.email,
+          firstName: user.firstName,
+          lastName: user.lastName,
+          phone: user.phone,
+          updatedAt: new Date()
+        }
+      });
+    }
 
     // Create realistic employees with Turkish company structure
     const sampleEmployees = [

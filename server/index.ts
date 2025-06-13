@@ -8,6 +8,10 @@ const app = express();
 app.use(express.json());
 app.use(express.urlencoded({ extended: false }));
 
+// Seed database on startup
+console.log("Starting server with seeding...");
+seedDatabase().catch(console.error);
+
 // Session middleware will be configured in routes.ts
 
 app.use((req, res, next) => {
