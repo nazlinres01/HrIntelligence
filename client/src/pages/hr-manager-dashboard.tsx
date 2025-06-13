@@ -46,21 +46,21 @@ function Sidebar({ isCollapsed, onToggle }: SidebarProps) {
   ];
 
   return (
-    <div className={`${isCollapsed ? 'w-16' : 'w-64'} bg-gradient-to-b from-blue-600 to-blue-800 text-white h-screen fixed left-0 top-0 transition-all duration-300 z-50 shadow-2xl`}>
+    <div className={`${isCollapsed ? 'w-16' : 'w-64'} bg-white border-r border-gray-200 h-screen fixed left-0 top-0 transition-all duration-300 z-50 shadow-lg`}>
       {/* Header */}
-      <div className="p-4 border-b border-blue-500/30">
+      <div className="p-4 border-b border-gray-200">
         <div className="flex items-center justify-between">
           {!isCollapsed && (
             <div>
-              <h1 className="text-xl font-bold text-white">İK Müdürü</h1>
-              <p className="text-blue-200 text-sm">Yönetim Paneli</p>
+              <h1 className="text-xl font-bold text-gray-900">İK Müdürü</h1>
+              <p className="text-gray-600 text-sm">Yönetim Paneli</p>
             </div>
           )}
           <Button
             variant="ghost"
             size="sm"
             onClick={onToggle}
-            className="text-white hover:bg-blue-700/50"
+            className="text-gray-600 hover:bg-gray-100"
           >
             {isCollapsed ? <ChevronRight className="h-4 w-4" /> : <ChevronLeft className="h-4 w-4" />}
           </Button>
@@ -77,8 +77,8 @@ function Sidebar({ isCollapsed, onToggle }: SidebarProps) {
             <Link key={item.path} href={item.path}>
               <div className={`flex items-center px-3 py-3 mb-1 rounded-lg transition-all cursor-pointer group ${
                 isActive 
-                  ? 'bg-blue-500 text-white shadow-lg' 
-                  : 'text-blue-100 hover:bg-blue-700/50 hover:text-white'
+                  ? 'bg-gray-100 text-gray-900 shadow-sm' 
+                  : 'text-gray-600 hover:bg-gray-50 hover:text-gray-900'
               }`}>
                 <Icon className="h-5 w-5 flex-shrink-0" />
                 {!isCollapsed && (
@@ -96,7 +96,7 @@ function Sidebar({ isCollapsed, onToggle }: SidebarProps) {
       </nav>
 
       {/* User Section */}
-      <div className="absolute bottom-0 left-0 right-0 p-4 border-t border-blue-500/30">
+      <div className="absolute bottom-0 left-0 right-0 p-4 border-t border-gray-200">
         <div className="flex items-center space-x-3">
           <Avatar className="h-8 w-8">
             <AvatarImage src="/placeholder-avatar.jpg" />
@@ -147,18 +147,39 @@ export default function HRManagerDashboard() {
       <div className={`${isSidebarCollapsed ? 'ml-16' : 'ml-64'} transition-all duration-300`}>
         {/* Header */}
         <header className="bg-white shadow-sm border-b">
-          <div className="px-6 py-4">
-            <div className="flex items-center justify-between">
-              <div>
-                <h1 className="text-2xl font-bold text-gray-900">İK Müdürü Dashboard</h1>
-                <p className="text-gray-600">Hoş geldiniz, {user?.firstName || 'İK Müdürü'}</p>
+          <div className="px-8 py-6">
+            <div className="flex flex-col space-y-4">
+              <div className="flex items-center justify-between">
+                <div>
+                  <h1 className="text-3xl font-bold text-gray-900 mb-2">İK Yönetim Merkezi</h1>
+                  <p className="text-gray-600">Organizasyonel insan kaynakları yönetimi ve stratejik planlama</p>
+                </div>
+                <div className="flex items-center space-x-4">
+                  <Button className="bg-green-600 hover:bg-green-700 text-white">
+                    <Settings className="h-4 w-4 mr-2" />
+                    İK Ayarları
+                  </Button>
+                  <Button variant="outline" size="sm">
+                    <Bell className="h-4 w-4 mr-2" />
+                    Bildirimler
+                    <Badge variant="destructive" className="ml-2">3</Badge>
+                  </Button>
+                </div>
               </div>
-              <div className="flex items-center space-x-4">
-                <Button variant="outline" size="sm">
-                  <Bell className="h-4 w-4 mr-2" />
-                  Bildirimler
-                  <Badge variant="destructive" className="ml-2">3</Badge>
-                </Button>
+              
+              <div className="flex items-center space-x-8 text-sm text-gray-600">
+                <div className="flex items-center space-x-2">
+                  <Users className="h-4 w-4" />
+                  <span>156 Aktif Çalışan</span>
+                </div>
+                <div className="flex items-center space-x-2">
+                  <BarChart3 className="h-4 w-4" />
+                  <span>%87 Performans Ortalaması</span>
+                </div>
+                <div className="flex items-center space-x-2">
+                  <Clock className="h-4 w-4" />
+                  <span>8 Bekleyen Onay</span>
+                </div>
               </div>
             </div>
           </div>
@@ -168,43 +189,63 @@ export default function HRManagerDashboard() {
         <main className="p-6">
           {/* Stats Cards */}
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-8">
-            <Card className="bg-gradient-to-r from-blue-500 to-blue-600 text-white">
-              <CardHeader className="pb-2">
-                <CardTitle className="text-sm font-medium opacity-90">Toplam Çalışan</CardTitle>
-              </CardHeader>
-              <CardContent>
-                <div className="text-3xl font-bold">156</div>
-                <div className="text-sm opacity-80">+12 bu ay</div>
+            <Card className="bg-white border border-gray-200">
+              <CardContent className="p-6">
+                <div className="flex items-center justify-between">
+                  <div>
+                    <p className="text-sm font-medium text-gray-600 mb-1">Toplam Çalışan</p>
+                    <p className="text-2xl font-bold text-gray-900">156</p>
+                    <p className="text-xs text-gray-500 mt-1">+12 bu ay</p>
+                  </div>
+                  <div className="p-3 bg-blue-50 rounded-lg">
+                    <Users className="h-6 w-6 text-blue-600" />
+                  </div>
+                </div>
               </CardContent>
             </Card>
 
-            <Card className="bg-gradient-to-r from-green-500 to-green-600 text-white">
-              <CardHeader className="pb-2">
-                <CardTitle className="text-sm font-medium opacity-90">Onay Bekleyen İzinler</CardTitle>
-              </CardHeader>
-              <CardContent>
-                <div className="text-3xl font-bold">8</div>
-                <div className="text-sm opacity-80">İnceleme gereken</div>
+            <Card className="bg-white border border-gray-200">
+              <CardContent className="p-6">
+                <div className="flex items-center justify-between">
+                  <div>
+                    <p className="text-sm font-medium text-gray-600 mb-1">Bekleyen İzinler</p>
+                    <p className="text-2xl font-bold text-gray-900">8</p>
+                    <p className="text-xs text-gray-500 mt-1">İnceleme gereken</p>
+                  </div>
+                  <div className="p-3 bg-orange-50 rounded-lg">
+                    <Calendar className="h-6 w-6 text-orange-600" />
+                  </div>
+                </div>
               </CardContent>
             </Card>
 
-            <Card className="bg-gradient-to-r from-orange-500 to-orange-600 text-white">
-              <CardHeader className="pb-2">
-                <CardTitle className="text-sm font-medium opacity-90">Aktif Eğitimler</CardTitle>
-              </CardHeader>
-              <CardContent>
-                <div className="text-3xl font-bold">12</div>
-                <div className="text-sm opacity-80">Devam eden</div>
+            <Card className="bg-white border border-gray-200">
+              <CardContent className="p-6">
+                <div className="flex items-center justify-between">
+                  <div>
+                    <p className="text-sm font-medium text-gray-600 mb-1">Aktif Eğitimler</p>
+                    <p className="text-2xl font-bold text-gray-900">12</p>
+                    <p className="text-xs text-gray-500 mt-1">Devam eden</p>
+                  </div>
+                  <div className="p-3 bg-purple-50 rounded-lg">
+                    <BookOpen className="h-6 w-6 text-purple-600" />
+                  </div>
+                </div>
               </CardContent>
             </Card>
 
-            <Card className="bg-gradient-to-r from-purple-500 to-purple-600 text-white">
-              <CardHeader className="pb-2">
-                <CardTitle className="text-sm font-medium opacity-90">Bu Ay Performans</CardTitle>
-              </CardHeader>
-              <CardContent>
-                <div className="text-3xl font-bold">4.2</div>
-                <div className="text-sm opacity-80">Ortalama puan</div>
+            <Card className="bg-white border border-gray-200">
+              <CardContent className="p-6">
+                <div className="flex items-center justify-between">
+                  <div>
+                    <p className="text-sm font-medium text-gray-600 mb-1">Performans Ort.</p>
+                    <p className="text-2xl font-bold text-gray-900">87%</p>
+                    <p className="text-xs text-gray-500 mt-1">Bu ay ortalama</p>
+                  </div>
+                  <div className="p-3 bg-gray-50 rounded-lg">
+                    <BarChart3 className="h-6 w-6 text-gray-600" />
+                  </div>
+                </div>
               </CardContent>
             </Card>
           </div>
@@ -220,19 +261,19 @@ export default function HRManagerDashboard() {
                 <CardDescription>Sık kullanılan işlemler</CardDescription>
               </CardHeader>
               <CardContent className="space-y-3">
-                <Button className="w-full justify-start bg-blue-50 text-blue-700 hover:bg-blue-100">
+                <Button className="w-full justify-start bg-green-600 hover:bg-green-700 text-white">
                   <Users className="h-4 w-4 mr-2" />
                   Yeni Çalışan Ekle
                 </Button>
-                <Button className="w-full justify-start bg-green-50 text-green-700 hover:bg-green-100">
+                <Button className="w-full justify-start bg-green-600 hover:bg-green-700 text-white">
                   <Calendar className="h-4 w-4 mr-2" />
                   İzin Talepleri
                 </Button>
-                <Button className="w-full justify-start bg-orange-50 text-orange-700 hover:bg-orange-100">
+                <Button className="w-full justify-start bg-green-600 hover:bg-green-700 text-white">
                   <BookOpen className="h-4 w-4 mr-2" />
                   Eğitim Programı Oluştur
                 </Button>
-                <Button className="w-full justify-start bg-purple-50 text-purple-700 hover:bg-purple-100">
+                <Button className="w-full justify-start bg-green-600 hover:bg-green-700 text-white">
                   <BarChart3 className="h-4 w-4 mr-2" />
                   Performans Raporu
                 </Button>

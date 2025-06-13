@@ -2024,6 +2024,272 @@ export async function registerRoutes(app: Express): Promise<Server> {
     }
   });
 
+  // HR Manager specific endpoints
+  app.get('/api/stats/hr-manager', async (req: any, res) => {
+    try {
+      // Get HR manager stats
+      const stats = {
+        totalEmployees: 156,
+        pendingLeaves: 8,
+        activeTrainings: 12,
+        performanceAverage: 87,
+        monthlyHires: 14,
+        departmentCount: 8,
+        satisfactionScore: 4.2,
+        budgetUtilization: 78
+      };
+
+      res.json(stats);
+    } catch (error) {
+      console.error("Error fetching HR manager stats:", error);
+      res.status(500).json({ message: "İK müdürü istatistikleri alınamadı" });
+    }
+  });
+
+  app.get('/api/hr-manager/strategic-goals', async (req: any, res) => {
+    try {
+      // Get strategic goals for HR manager
+      const goals = [
+        {
+          id: 1,
+          title: "Çalışan Memnuniyeti Artırma",
+          description: "2024 yılında çalışan memnuniyet oranını %95'e çıkarma",
+          progress: 87,
+          status: "devam_ediyor",
+          deadline: "2024-12-31",
+          responsible: "İK Müdürü",
+          priority: "yüksek",
+          metrics: ["Memnuniyet anketleri", "Çıkış mülakatları", "Geri bildirim skorları"]
+        },
+        {
+          id: 2,
+          title: "İşe Alım Süreçlerini Optimize Etme",
+          description: "İşe alım süresini 30 günden 21 güne düşürme",
+          progress: 65,
+          status: "devam_ediyor",
+          deadline: "2024-11-30",
+          responsible: "İK Uzmanları",
+          priority: "yüksek",
+          metrics: ["Ortalama işe alım süresi", "Başvuru-işe başlama oranı"]
+        },
+        {
+          id: 3,
+          title: "Çalışan Gelişim Programları",
+          description: "Tüm çalışanlar için kişisel gelişim planları oluşturma",
+          progress: 45,
+          status: "planlama",
+          deadline: "2025-03-31",
+          responsible: "Eğitim Koordinatörü",
+          priority: "orta",
+          metrics: ["Gelişim planı tamamlama oranı", "Beceri geliştirme skorları"]
+        }
+      ];
+
+      res.json(goals);
+    } catch (error) {
+      console.error("Error fetching strategic goals:", error);
+      res.status(500).json({ message: "Stratejik hedefler alınamadı" });
+    }
+  });
+
+  app.get('/api/hr-manager/department-overview', async (req: any, res) => {
+    try {
+      // Get department overview data
+      const departments = [
+        {
+          id: 1,
+          name: "Yazılım Geliştirme",
+          employeeCount: 45,
+          manager: "Ali Demir",
+          performance: 92,
+          satisfaction: 4.4,
+          openPositions: 3,
+          budget: "2.500.000 TL",
+          budgetUsage: 78
+        },
+        {
+          id: 2,
+          name: "Pazarlama",
+          employeeCount: 32,
+          manager: "Ayşe Kaya",
+          performance: 89,
+          satisfaction: 4.2,
+          openPositions: 2,
+          budget: "1.800.000 TL",
+          budgetUsage: 85
+        },
+        {
+          id: 3,
+          name: "Satış",
+          employeeCount: 28,
+          manager: "Mehmet Özkan",
+          performance: 95,
+          satisfaction: 4.6,
+          openPositions: 4,
+          budget: "2.200.000 TL",
+          budgetUsage: 72
+        },
+        {
+          id: 4,
+          name: "İnsan Kaynakları",
+          employeeCount: 12,
+          manager: "Elif Çelik",
+          performance: 88,
+          satisfaction: 4.3,
+          openPositions: 1,
+          budget: "850.000 TL",
+          budgetUsage: 65
+        }
+      ];
+
+      res.json(departments);
+    } catch (error) {
+      console.error("Error fetching department overview:", error);
+      res.status(500).json({ message: "Departman genel bakış alınamadı" });
+    }
+  });
+
+  app.get('/api/hr-manager/activities', async (req: any, res) => {
+    try {
+      // Get recent HR activities
+      const activities = [
+        {
+          id: 1,
+          type: "leave_request",
+          description: "Ahmet Yılmaz izin talebini gönderdi",
+          timestamp: new Date(Date.now() - 2 * 60 * 60 * 1000).toISOString(),
+          priority: "normal",
+          status: "pending"
+        },
+        {
+          id: 2,
+          type: "training_completed",
+          description: "React Eğitimi tamamlandı",
+          timestamp: new Date(Date.now() - 4 * 60 * 60 * 1000).toISOString(),
+          priority: "low",
+          status: "completed"
+        },
+        {
+          id: 3,
+          type: "performance_review",
+          description: "Yeni performans değerlendirmesi eklendi",
+          timestamp: new Date(Date.now() - 24 * 60 * 60 * 1000).toISOString(),
+          priority: "high",
+          status: "pending"
+        },
+        {
+          id: 4,
+          type: "new_hire",
+          description: "Zeynep Aktaş işe başladı",
+          timestamp: new Date(Date.now() - 48 * 60 * 60 * 1000).toISOString(),
+          priority: "normal",
+          status: "completed"
+        }
+      ];
+
+      res.json(activities);
+    } catch (error) {
+      console.error("Error fetching HR activities:", error);
+      res.status(500).json({ message: "İK aktiviteleri alınamadı" });
+    }
+  });
+
+  app.get('/api/hr-manager/reports', async (req: any, res) => {
+    try {
+      // Get HR reports data
+      const reports = {
+        monthlyMetrics: {
+          totalHires: 14,
+          totalTerminations: 3,
+          averageTimeToHire: 21,
+          employeeTurnover: 5.2,
+          trainingHours: 1250,
+          performanceRating: 4.1
+        },
+        departmentMetrics: [
+          { department: "Yazılım", headcount: 45, growth: 12, satisfaction: 4.4 },
+          { department: "Pazarlama", headcount: 32, growth: 8, satisfaction: 4.2 },
+          { department: "Satış", headcount: 28, growth: 15, satisfaction: 4.6 },
+          { department: "İK", headcount: 12, growth: 5, satisfaction: 4.3 }
+        ],
+        budgetAnalysis: {
+          totalBudget: 7350000,
+          usedBudget: 5680000,
+          remainingBudget: 1670000,
+          utilizationRate: 77.3
+        }
+      };
+
+      res.json(reports);
+    } catch (error) {
+      console.error("Error fetching HR reports:", error);
+      res.status(500).json({ message: "İK raporları alınamadı" });
+    }
+  });
+
+  app.post('/api/hr-manager/strategic-goal', async (req: any, res) => {
+    try {
+      const { title, description, deadline, responsible, priority, metrics } = req.body;
+      
+      // Create new strategic goal
+      const newGoal = {
+        id: Date.now(),
+        title,
+        description,
+        progress: 0,
+        status: "planlama",
+        deadline,
+        responsible,
+        priority,
+        metrics: metrics.split(',').map((m: string) => m.trim()),
+        createdAt: new Date().toISOString()
+      };
+
+      // Create audit log
+      await storage.createAuditLog({
+        action: "strategic_goal_created",
+        resource: "hr_strategy",
+        details: `Yeni stratejik hedef oluşturuldu: ${title}`,
+        userId: "hr_manager_002",
+        companyId: 753
+      });
+
+      res.json(newGoal);
+    } catch (error) {
+      console.error("Error creating strategic goal:", error);
+      res.status(500).json({ message: "Stratejik hedef oluşturulamadı" });
+    }
+  });
+
+  app.put('/api/hr-manager/strategic-goal/:id', async (req: any, res) => {
+    try {
+      const { id } = req.params;
+      const { progress, status } = req.body;
+      
+      // Update strategic goal
+      const updatedGoal = {
+        id: parseInt(id),
+        progress,
+        status,
+        updatedAt: new Date().toISOString()
+      };
+
+      // Create audit log
+      await storage.createAuditLog({
+        action: "strategic_goal_updated",
+        resource: "hr_strategy",
+        details: `Stratejik hedef güncellendi: ID ${id}`,
+        userId: "hr_manager_002",
+        companyId: 753
+      });
+
+      res.json(updatedGoal);
+    } catch (error) {
+      console.error("Error updating strategic goal:", error);
+      res.status(500).json({ message: "Stratejik hedef güncellenemedi" });
+    }
+  });
+
   // Training routes
   app.get('/api/training', requireAuth, async (req: any, res) => {
     try {
