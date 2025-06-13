@@ -296,15 +296,15 @@ export default function EnterpriseSidebar() {
     },
     onSuccess: () => {
       toast({
-        title: "Session Terminated",
-        description: "Secure logout completed successfully.",
+        title: "Çıkış Yapıldı",
+        description: "Güvenli çıkış başarıyla tamamlandı.",
       });
       window.location.href = "/login";
     },
     onError: () => {
       toast({
-        title: "Logout Error",
-        description: "Please try again or contact IT support.",
+        title: "Çıkış Hatası",
+        description: "Lütfen tekrar deneyin veya IT desteği ile iletişime geçin.",
         variant: "destructive",
       });
     },
