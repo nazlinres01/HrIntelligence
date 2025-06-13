@@ -159,7 +159,12 @@ export default function EnterpriseSidebar() {
       <div className={cn("flex flex-col transition-all duration-300", isCollapsed ? "w-20" : "w-80")}>
         
         {/* Enterprise Brand Header */}
-        <div className="bg-gradient-to-r from-blue-600 via-blue-700 to-indigo-700 p-6 shadow-lg">
+        <div className={cn(
+          "p-6 shadow-lg",
+          userRole === 'hr_manager' 
+            ? "bg-gradient-to-r from-teal-600 via-teal-700 to-emerald-700" 
+            : "bg-gradient-to-r from-blue-600 via-blue-700 to-indigo-700"
+        )}>
           <div className="flex items-center justify-between">
             <div className={cn("flex items-center space-x-3", isCollapsed && "justify-center")}>
               <div className="relative">
