@@ -208,7 +208,7 @@ const getRoleBasedNavigation = (userRole: UserRole): NavigationSection[] => {
           items: [
             { name: "Departman Dashboard", href: "/", icon: LayoutDashboard, show: true, description: "Departman kontrol paneli ve yönetim" },
             { name: "Departman Analitiği", href: "/admin/analytics", icon: BarChart3, show: true, description: "Departman performans ve veri analizi" },
-            { name: "Stratejik Planlama", href: "/department/planning", icon: Target, show: true, description: "Departman stratejik hedef yönetimi" },
+            { name: "Stratejik Planlama", href: "/strategic-planning", icon: Target, show: true, description: "Departman stratejik hedef yönetimi" },
           ]
         },
         {
@@ -227,7 +227,7 @@ const getRoleBasedNavigation = (userRole: UserRole): NavigationSection[] => {
           color: "from-emerald-600 to-teal-600",
           items: [
             { name: "Proje Koordinasyonu", href: "/projects", icon: FolderOpen, show: true, description: "Departman proje yönetimi" },
-            { name: "Kaynak Planlaması", href: "/resources", icon: Cpu, show: true, description: "Departman kaynak dağıtımı" },
+            { name: "Kaynak Planlaması", href: "/resource-planning", icon: Cpu, show: true, description: "Departman kaynak dağıtımı" },
             { name: "Süreç Optimizasyonu", href: "/process-optimization", icon: Zap, show: true, description: "İş süreçleri iyileştirme" },
             { name: "Kalite Kontrolü", href: "/quality-control", icon: CheckCircle, show: true, description: "Departman kalite standartları" },
           ]
@@ -237,8 +237,8 @@ const getRoleBasedNavigation = (userRole: UserRole): NavigationSection[] => {
           color: "from-purple-600 to-violet-600",
           items: [
             { name: "Departman Raporları", href: "/reports", icon: FileText, show: true, description: "Departman detaylı raporları" },
-            { name: "Üst Yönetime Raporlama", href: "/executive-reports", icon: PieChart, show: true, description: "Üst düzey yönetim raporları" },
-            { name: "Ekip İletişimi", href: "/team-communication", icon: MessageSquare, show: true, description: "Departman içi iletişim" },
+            { name: "Üst Yönetime Raporlama", href: "/management-reporting", icon: PieChart, show: true, description: "Üst düzey yönetim raporları" },
+            { name: "Ekip İletişimi", href: "/team-communication", icon: MessageSquare, show: true, description: "Departman içi iletişim ve koordinasyon" },
             { name: "Bildirim Merkezi", href: "/notifications", icon: Bell, show: true, badge: "4", description: "Departman bildirimleri" },
             { name: "Toplantı Yönetimi", href: "/meetings", icon: Clock, show: true, description: "Departman toplantı planları" },
           ]
