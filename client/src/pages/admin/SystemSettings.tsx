@@ -628,7 +628,7 @@ export default function SystemSettings() {
                     </div>
 
                     <div className="flex gap-3">
-                      <Button type="submit" disabled={updateEmailConfig.isPending}>
+                      <Button type="submit" disabled={updateEmailConfig.isPending} variant="outline" className="border-gray-300 text-gray-700 hover:bg-gray-50">
                         <Save className="w-4 h-4 mr-2" />
                         E-posta Ayarları Kaydet
                       </Button>
@@ -637,6 +637,7 @@ export default function SystemSettings() {
                         variant="outline"
                         onClick={() => testEmailConnection.mutate()}
                         disabled={testEmailConnection.isPending}
+                        className="border-gray-300 text-gray-700 hover:bg-gray-50"
                       >
                         <Mail className="w-4 h-4 mr-2" />
                         Bağlantıyı Test Et
@@ -718,11 +719,11 @@ export default function SystemSettings() {
                   <Separator />
 
                   <div className="space-y-2">
-                    <Button className="w-full" variant="outline">
+                    <Button className="w-full border-gray-300 text-gray-700 hover:bg-gray-50" variant="outline">
                       <Database className="w-4 h-4 mr-2" />
                       Veritabanı Optimize Et
                     </Button>
-                    <Button className="w-full" variant="outline">
+                    <Button className="w-full border-gray-300 text-gray-700 hover:bg-gray-50" variant="outline">
                       <RefreshCw className="w-4 h-4 mr-2" />
                       İstatistikleri Yenile
                     </Button>
@@ -773,7 +774,8 @@ export default function SystemSettings() {
                   </div>
 
                   <Button 
-                    className="w-full"
+                    className="w-full border-gray-300 text-gray-700 hover:bg-gray-50"
+                    variant="outline"
                     onClick={() => createBackup.mutate()}
                     disabled={createBackup.isPending}
                   >
@@ -809,7 +811,7 @@ export default function SystemSettings() {
                           ) : (
                             <AlertTriangle className="w-4 h-4 text-red-600" />
                           )}
-                          <Button size="sm" variant="outline">
+                          <Button size="sm" variant="outline" className="border-gray-300 text-gray-700 hover:bg-gray-50">
                             <Download className="w-4 h-4" />
                           </Button>
                         </div>
@@ -846,11 +848,11 @@ export default function SystemSettings() {
                         <SelectItem value="info">Bilgi</SelectItem>
                       </SelectContent>
                     </Select>
-                    <Button variant="outline">
+                    <Button variant="outline" className="border-gray-300 text-gray-700 hover:bg-gray-50">
                       <Download className="w-4 h-4 mr-2" />
                       Logları İndir
                     </Button>
-                    <Button variant="outline">
+                    <Button variant="outline" className="border-gray-300 text-gray-700 hover:bg-gray-50">
                       <Trash2 className="w-4 h-4 mr-2" />
                       Logları Temizle
                     </Button>

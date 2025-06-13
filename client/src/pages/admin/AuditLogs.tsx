@@ -201,7 +201,7 @@ export default function AuditLogs() {
                   setFilterAction("");
                   setFilterResource("");
                 }}
-                className="w-full"
+                className="w-full border-gray-300 text-gray-700 hover:bg-gray-50"
               >
                 Filtreleri Temizle
               </Button>
