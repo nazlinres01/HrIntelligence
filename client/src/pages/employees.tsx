@@ -29,6 +29,8 @@ import {
   DollarSign
 } from "lucide-react";
 import { apiRequest } from "@/lib/queryClient";
+import { useDepartmentManager } from "@/lib/departmentUtils";
+import { useAuth } from "@/hooks/useAuth";
 
 const employeeSchema = z.object({
   firstName: z.string().min(2, "Ad en az 2 karakter olmalıdır"),

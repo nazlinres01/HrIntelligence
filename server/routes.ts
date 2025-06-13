@@ -349,6 +349,18 @@ export async function registerRoutes(app: Express): Promise<Server> {
     }
   });
 
+  // Department-specific employees for department managers
+  app.get('/api/employees/department/:departmentId', requireAuth, async (req: any, res) => {
+    try {
+      const { departmentId } = req.params;
+      const employees = await storage.getEmployeesByDepartment(parseInt(departmentId));
+      res.json(employees);
+    } catch (error) {
+      console.error("Error fetching department employees:", error);
+      res.status(500).json({ message: "Departman çalışan listesi alınırken hata oluştu" });
+    }
+  });
+
   app.get('/api/employees/:id', isAuthenticated, async (req: any, res) => {
     try {
       const { id } = req.params;
@@ -489,6 +501,18 @@ export async function registerRoutes(app: Express): Promise<Server> {
     } catch (error) {
       console.error("Error fetching leaves:", error);
       res.status(500).json({ message: "İzin listesi alınırken hata oluştu" });
+    }
+  });
+
+  // Department-specific leaves for department managers
+  app.get('/api/leaves/department/:departmentId', requireAuth, async (req: any, res) => {
+    try {
+      const { departmentId } = req.params;
+      const leaves = await storage.getLeavesByDepartment(parseInt(departmentId));
+      res.json(leaves);
+    } catch (error) {
+      console.error("Error fetching department leaves:", error);
+      res.status(500).json({ message: "Departman izin listesi alınırken hata oluştu" });
     }
   });
 

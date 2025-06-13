@@ -20,17 +20,21 @@ import {
   LogOut
 } from "lucide-react";
 import { useQuery } from "@tanstack/react-query";
+import { useDepartmentManager } from "@/lib/departmentUtils";
 
 export default function DepartmentManagerDashboard() {
   const [location] = useLocation();
+  const { departmentId, isDepartmentManager } = useDepartmentManager();
 
-  // Dashboard verileri
-  const { data: stats } = useQuery({
-    queryKey: ["/api/stats/employees"],
+  // Department-specific data queries
+  const { data: departmentEmployees = [] } = useQuery({
+    queryKey: [`/api/employees/department/${departmentId}`],
+    enabled: !!departmentId,
   });
 
-  const { data: pendingLeaves } = useQuery({
-    queryKey: ["/api/leaves"],
+  const { data: departmentLeaves = [] } = useQuery({
+    queryKey: [`/api/leaves/department/${departmentId}`],
+    enabled: !!departmentId,
   });
 
   const { data: notifications } = useQuery({
@@ -41,9 +45,18 @@ export default function DepartmentManagerDashboard() {
     queryKey: ["/api/activities"],
   });
 
-  const departmentLeaves = (pendingLeaves as any)?.filter((leave: any) => leave.status === "pending") || [];
+  // Filter only pending leaves that need department manager approval
+  const pendingLeaves = (departmentLeaves as any[]).filter((leave: any) => leave.status === "pending");
   const recentNotifications = (notifications as any)?.slice(0, 5) || [];
   const recentActivities = (activities as any)?.slice(0, 5) || [];
+
+  // Department-specific statistics
+  const departmentStats = {
+    totalEmployees: departmentEmployees.length,
+    pendingLeaves: pendingLeaves.length,
+    activeProjects: 8, // Mock data - could be fetched from API
+    avgPerformance: 4.3
+  };
 
   return (
     <div className="flex-1 flex flex-col overflow-hidden">
@@ -69,8 +82,8 @@ export default function DepartmentManagerDashboard() {
               <CardTitle className="text-sm font-medium text-gray-600">Ekip Üyelerim</CardTitle>
             </CardHeader>
             <CardContent>
-              <div className="text-2xl font-bold text-gray-900">15</div>
-              <p className="text-xs text-gray-500 mt-1">Yazılım geliştirme ekibi</p>
+              <div className="text-2xl font-bold text-gray-900">{departmentStats.totalEmployees}</div>
+              <p className="text-xs text-gray-500 mt-1">Departman çalışanları</p>
             </CardContent>
           </Card>
           
@@ -79,7 +92,7 @@ export default function DepartmentManagerDashboard() {
               <CardTitle className="text-sm font-medium text-gray-600">Onay Bekleyen İzinler</CardTitle>
             </CardHeader>
             <CardContent>
-              <div className="text-2xl font-bold text-gray-900">{departmentLeaves.length}</div>
+              <div className="text-2xl font-bold text-gray-900">{departmentStats.pendingLeaves}</div>
               <p className="text-xs text-gray-500 mt-1">Müdür onayı gereken</p>
             </CardContent>
           </Card>
@@ -89,7 +102,7 @@ export default function DepartmentManagerDashboard() {
               <CardTitle className="text-sm font-medium text-gray-600">Aktif Projeler</CardTitle>
             </CardHeader>
             <CardContent>
-              <div className="text-2xl font-bold text-gray-900">8</div>
+              <div className="text-2xl font-bold text-gray-900">{departmentStats.activeProjects}</div>
               <p className="text-xs text-gray-500 mt-1">Devam eden projeler</p>
             </CardContent>
           </Card>
@@ -99,7 +112,7 @@ export default function DepartmentManagerDashboard() {
               <CardTitle className="text-sm font-medium text-gray-600">Ekip Performansı</CardTitle>
             </CardHeader>
             <CardContent>
-              <div className="text-2xl font-bold text-gray-900">4.3/5</div>
+              <div className="text-2xl font-bold text-gray-900">{departmentStats.avgPerformance}/5</div>
               <p className="text-xs text-gray-500 mt-1">Ortalama değerlendirme</p>
             </CardContent>
           </Card>
@@ -120,33 +133,28 @@ export default function DepartmentManagerDashboard() {
             </CardHeader>
             <CardContent>
               <div className="space-y-3">
-                <div className="flex items-center justify-between p-3 bg-gray-50 rounded-lg">
-                  <div>
-                    <p className="font-medium text-sm">Ahmet Yılmaz</p>
-                    <p className="text-xs text-gray-500">Senior Developer</p>
-                  </div>
-                  <Badge variant="secondary" className="bg-green-100 text-green-800">
-                    Mükemmel
-                  </Badge>
-                </div>
-                <div className="flex items-center justify-between p-3 bg-gray-50 rounded-lg">
-                  <div>
-                    <p className="font-medium text-sm">Ayşe Demir</p>
-                    <p className="text-xs text-gray-500">Frontend Developer</p>
-                  </div>
-                  <Badge variant="secondary" className="bg-blue-100 text-blue-800">
-                    İyi
-                  </Badge>
-                </div>
-                <div className="flex items-center justify-between p-3 bg-gray-50 rounded-lg">
-                  <div>
-                    <p className="font-medium text-sm">Mehmet Özkan</p>
-                    <p className="text-xs text-gray-500">Backend Developer</p>
-                  </div>
-                  <Badge variant="secondary" className="bg-orange-100 text-orange-800">
-                    Gelişmeli
-                  </Badge>
-                </div>
+                {(departmentEmployees as any[]).length > 0 ? (
+                  (departmentEmployees as any[]).slice(0, 3).map((employee: any) => {
+                    const getPerformanceBadge = (score: number) => {
+                      if (score >= 4.5) return <Badge variant="secondary" className="bg-green-100 text-green-800">Mükemmel</Badge>;
+                      if (score >= 4.0) return <Badge variant="secondary" className="bg-blue-100 text-blue-800">İyi</Badge>;
+                      if (score >= 3.5) return <Badge variant="secondary" className="bg-yellow-100 text-yellow-800">Orta</Badge>;
+                      return <Badge variant="secondary" className="bg-orange-100 text-orange-800">Gelişmeli</Badge>;
+                    };
+
+                    return (
+                      <div key={employee.id} className="flex items-center justify-between p-3 bg-gray-50 rounded-lg">
+                        <div>
+                          <p className="font-medium text-sm">{employee.firstName} {employee.lastName}</p>
+                          <p className="text-xs text-gray-500">{employee.position}</p>
+                        </div>
+                        {getPerformanceBadge(parseFloat(employee.performanceScore || "3.5"))}
+                      </div>
+                    );
+                  })
+                ) : (
+                  <p className="text-gray-500 text-center py-4">Departman çalışanı bulunamadı</p>
+                )}
               </div>
             </CardContent>
           </Card>
@@ -164,23 +172,29 @@ export default function DepartmentManagerDashboard() {
             </CardHeader>
             <CardContent>
               <div className="space-y-3">
-                {departmentLeaves.length > 0 ? (
-                  departmentLeaves.slice(0, 4).map((leave: any) => (
-                    <div key={leave.id} className="flex items-center justify-between p-3 bg-gray-50 rounded-lg">
-                      <div>
-                        <p className="font-medium text-sm">Çalışan #{leave.employeeId}</p>
-                        <p className="text-xs text-gray-500">{leave.leaveType} - {leave.days} gün</p>
+                {pendingLeaves.length > 0 ? (
+                  pendingLeaves.slice(0, 4).map((leave: any) => {
+                    const employee = (departmentEmployees as any[]).find((emp: any) => emp.id === leave.employeeId);
+                    const employeeName = employee ? `${employee.firstName} ${employee.lastName}` : `Çalışan #${leave.employeeId}`;
+                    
+                    return (
+                      <div key={leave.id} className="flex items-center justify-between p-3 bg-gray-50 rounded-lg">
+                        <div>
+                          <p className="font-medium text-sm">{employeeName}</p>
+                          <p className="text-xs text-gray-500">{leave.leaveType} - {leave.days} gün</p>
+                          <p className="text-xs text-gray-400">{leave.startDate} - {leave.endDate}</p>
+                        </div>
+                        <div className="flex gap-2">
+                          <Button size="sm" className="bg-red-600 hover:bg-red-700">
+                            Onayla
+                          </Button>
+                          <Button size="sm" variant="outline">
+                            Reddet
+                          </Button>
+                        </div>
                       </div>
-                      <div className="flex gap-2">
-                        <Button size="sm" className="bg-red-600 hover:bg-red-700">
-                          Onayla
-                        </Button>
-                        <Button size="sm" variant="outline">
-                          Reddet
-                        </Button>
-                      </div>
-                    </div>
-                  ))
+                    );
+                  })
                 ) : (
                   <p className="text-gray-500 text-center py-4">Onay bekleyen izin yok</p>
                 )}
