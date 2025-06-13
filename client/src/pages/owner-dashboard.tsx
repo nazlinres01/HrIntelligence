@@ -267,18 +267,18 @@ export default function OwnerDashboard() {
   return (
     <div className="min-h-screen bg-gradient-to-br from-slate-50 via-blue-50 to-indigo-50 dark:from-slate-900 dark:via-slate-800 dark:to-slate-900">
       <div className="container mx-auto p-6 space-y-8">
-        {/* Modern Header */}
+        {/* Header */}
         <div className="flex flex-col lg:flex-row lg:items-center lg:justify-between gap-6">
           <div className="space-y-2">
             <div className="flex items-center gap-3">
-              <div className="p-3 bg-gradient-to-r from-blue-600 to-indigo-600 rounded-xl shadow-lg">
-                <Shield className="h-8 w-8 text-white" />
+              <div className="p-3 bg-blue-50 border border-blue-200 rounded-xl">
+                <Shield className="h-8 w-8 text-blue-600" />
               </div>
               <div>
-                <h1 className="text-4xl font-bold bg-gradient-to-r from-blue-600 to-indigo-600 bg-clip-text text-transparent">
+                <h1 className="text-4xl font-bold text-gray-900">
                   Admin Kontrol Paneli
                 </h1>
-                <p className="text-slate-600 dark:text-slate-400 text-lg">
+                <p className="text-gray-600 text-lg">
                   Kurumsal sistem yönetimi ve denetim merkezi
                 </p>
               </div>
@@ -340,7 +340,7 @@ export default function OwnerDashboard() {
             </Button>
             <Button 
               size="sm"
-              className="bg-gradient-to-r from-blue-600 to-indigo-600 hover:from-blue-700 hover:to-indigo-700 text-white shadow-lg"
+              className="bg-blue-600 hover:bg-blue-700 text-white"
               onClick={() => setIsEmployeeDialogOpen(true)}
             >
               <UserPlus className="h-4 w-4 mr-2" />
@@ -351,66 +351,66 @@ export default function OwnerDashboard() {
 
         {/* Enhanced Metrics Cards */}
         <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-4">
-          <Card className="bg-gradient-to-br from-blue-500 to-blue-600 border-0 text-white shadow-xl">
+          <Card className="bg-white border-gray-200 hover:shadow-md transition-shadow">
             <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-              <CardTitle className="text-sm font-medium text-blue-100">Toplam Çalışan</CardTitle>
-              <Users className="h-5 w-5 text-blue-200" />
+              <CardTitle className="text-sm font-medium text-gray-600">Toplam Çalışan</CardTitle>
+              <Users className="h-5 w-5 text-blue-600" />
             </CardHeader>
             <CardContent>
-              <div className="text-3xl font-bold">{stats.totalEmployees}</div>
+              <div className="text-3xl font-bold text-gray-900">{stats.totalEmployees}</div>
               <div className="flex items-center mt-2 space-x-2">
-                <TrendingUp className="h-4 w-4 text-green-300" />
-                <span className="text-sm text-blue-100">
+                <TrendingUp className="h-4 w-4 text-green-600" />
+                <span className="text-sm text-gray-500">
                   Aktif: {teamMembers.filter(m => m.isActive).length}
                 </span>
               </div>
             </CardContent>
           </Card>
 
-          <Card className="bg-gradient-to-br from-amber-500 to-orange-500 border-0 text-white shadow-xl">
+          <Card className="bg-white border-gray-200 hover:shadow-md transition-shadow">
             <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-              <CardTitle className="text-sm font-medium text-amber-100">Bekleyen Onaylar</CardTitle>
-              <Clock className="h-5 w-5 text-amber-200" />
+              <CardTitle className="text-sm font-medium text-gray-600">Bekleyen Onaylar</CardTitle>
+              <Clock className="h-5 w-5 text-orange-600" />
             </CardHeader>
             <CardContent>
-              <div className="text-3xl font-bold">
+              <div className="text-3xl font-bold text-gray-900">
                 {pendingTimeEntries.length + pendingExpenses.length}
               </div>
               <div className="flex items-center mt-2 space-x-2">
-                <AlertTriangle className="h-4 w-4 text-red-300" />
-                <span className="text-sm text-amber-100">
+                <AlertTriangle className="h-4 w-4 text-red-600" />
+                <span className="text-sm text-gray-500">
                   Zaman: {pendingTimeEntries.length}, Harcama: {pendingExpenses.length}
                 </span>
               </div>
             </CardContent>
           </Card>
 
-          <Card className="bg-gradient-to-br from-green-500 to-emerald-500 border-0 text-white shadow-xl">
+          <Card className="bg-white border-gray-200 hover:shadow-md transition-shadow">
             <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-              <CardTitle className="text-sm font-medium text-green-100">Sistem Logları</CardTitle>
-              <Activity className="h-5 w-5 text-green-200" />
+              <CardTitle className="text-sm font-medium text-gray-600">Sistem Logları</CardTitle>
+              <Activity className="h-5 w-5 text-green-600" />
             </CardHeader>
             <CardContent>
-              <div className="text-3xl font-bold">{auditLogs.length}</div>
+              <div className="text-3xl font-bold text-gray-900">{auditLogs.length}</div>
               <div className="flex items-center mt-2 space-x-2">
-                <Monitor className="h-4 w-4 text-green-300" />
-                <span className="text-sm text-green-100">
+                <Monitor className="h-4 w-4 text-green-600" />
+                <span className="text-sm text-gray-500">
                   Son 24 saat
                 </span>
               </div>
             </CardContent>
           </Card>
 
-          <Card className="bg-gradient-to-br from-purple-500 to-indigo-500 border-0 text-white shadow-xl">
+          <Card className="bg-white border-gray-200 hover:shadow-md transition-shadow">
             <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-              <CardTitle className="text-sm font-medium text-purple-100">Aylık Bordro</CardTitle>
-              <DollarSign className="h-5 w-5 text-purple-200" />
+              <CardTitle className="text-sm font-medium text-gray-600">Aylık Bordro</CardTitle>
+              <DollarSign className="h-5 w-5 text-purple-600" />
             </CardHeader>
             <CardContent>
-              <div className="text-3xl font-bold">{stats.monthlyPayroll}</div>
+              <div className="text-3xl font-bold text-gray-900">{stats.monthlyPayroll}</div>
               <div className="flex items-center mt-2 space-x-2">
-                <Award className="h-4 w-4 text-purple-300" />
-                <span className="text-sm text-purple-100">
+                <Award className="h-4 w-4 text-purple-600" />
+                <span className="text-sm text-gray-500">
                   Ortalama performans: {stats.avgPerformance}
                 </span>
               </div>
