@@ -28,7 +28,7 @@ import TalentAcquisition from "@/pages/admin/TalentAcquisition";
 import DepartmentControl from "@/pages/admin/DepartmentControl";
 import CompanyStructure from "@/pages/admin/CompanyStructure";
 import AnalyticsCenter from "@/pages/admin/AnalyticsCenter";
-import StrategicOverview from "@/pages/admin/StrategicOverview";
+
 
 // Admin System Pages
 import CompanyManagement from "@/pages/admin/CompanyManagement";
@@ -166,7 +166,7 @@ function Router() {
         <Route path="/admin/department-control" component={DepartmentControl} />
         <Route path="/admin/company-structure" component={CompanyStructure} />
         <Route path="/admin/analytics-center" component={AnalyticsCenter} />
-        <Route path="/admin/strategic-overview" component={StrategicOverview} />
+
         
         {/* Admin System Management Routes */}
         <Route path="/admin/company-management" component={CompanyManagement} />
