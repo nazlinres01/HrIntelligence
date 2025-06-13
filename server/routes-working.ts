@@ -13,6 +13,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
   app.get('/api/auth/user', isAuthenticated, async (req: any, res) => {
     try {
       const userId = req.user.claims.sub;
+      // Return mock user data for now
       res.json({
         id: userId,
         email: req.user.claims.email,
@@ -30,7 +31,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
   });
 
   // =============================================================================
-  // DASHBOARD ANALYTICS
+  // ANALYTICS & STATISTICS ROUTES
   // =============================================================================
 
   app.get('/api/stats/dashboard', async (req, res) => {
@@ -121,7 +122,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
   });
 
   // =============================================================================
-  // SYSTEM MONITORING
+  // SYSTEM MONITORING ROUTES
   // =============================================================================
 
   app.get('/api/system/health', async (req, res) => {
@@ -195,6 +196,13 @@ export async function registerRoutes(app: Express): Promise<Server> {
           timestamp: new Date(Date.now() - 3600000).toISOString(),
           severity: 'low',
         },
+        {
+          id: 3,
+          type: 'error',
+          message: 'Veritabanı bağlantı hatası (düzeltildi)',
+          timestamp: new Date(Date.now() - 7200000).toISOString(),
+          severity: 'high',
+        },
       ];
       res.json(alerts);
     } catch (error) {
@@ -202,6 +210,10 @@ export async function registerRoutes(app: Express): Promise<Server> {
       res.status(500).json({ message: "Failed to fetch system alerts" });
     }
   });
+
+  // =============================================================================
+  // MOCK DATA ENDPOINTS FOR DEVELOPMENT
+  // =============================================================================
 
   app.get('/api/companies', async (req, res) => {
     try {
@@ -330,6 +342,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
     ]);
   });
 
+  // System configuration endpoints
   app.get('/api/system/config', (req, res) => {
     res.json({
       maintenanceMode: false,
@@ -356,6 +369,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
     res.json(history);
   });
 
+  // Network and monitoring endpoints
   app.get('/api/system/network', (req, res) => {
     res.json({
       inbound: Math.floor(Math.random() * 1000),
