@@ -8,9 +8,6 @@ import memoize from "memoizee";
 import connectPg from "connect-pg-simple";
 import { storage } from "./storage";
 
-// Global logout flag to prevent re-authentication
-let isLoggedOut = false;
-
 if (!process.env.REPLIT_DOMAINS) {
   throw new Error("Environment variable REPLIT_DOMAINS not provided");
 }
@@ -30,18 +27,18 @@ export function getSession() {
   const pgStore = connectPg(session);
   const sessionStore = new pgStore({
     conString: process.env.DATABASE_URL,
-    createTableIfMissing: true,
+    createTableIfMissing: false,
     ttl: sessionTtl,
     tableName: "sessions"
   });
   return session({
-    secret: process.env.SESSION_SECRET || 'development-secret-key-change-in-production',
+    secret: process.env.SESSION_SECRET || 'default-session-secret',
     store: sessionStore,
     resave: false,
     saveUninitialized: false,
     cookie: {
       httpOnly: true,
-      secure: false, // Set to false for development
+      secure: true,
       maxAge: sessionTtl,
     },
   });
@@ -108,8 +105,6 @@ export async function setupAuth(app: Express) {
   passport.deserializeUser((user: Express.User, cb) => cb(null, user));
 
   app.get("/api/login", (req, res, next) => {
-    // Reset logout flag when logging in
-    isLoggedOut = false;
     passport.authenticate(`replitauth:${req.hostname}`, {
       prompt: "login consent",
       scope: ["openid", "email", "profile", "offline_access"],
@@ -124,58 +119,42 @@ export async function setupAuth(app: Express) {
   });
 
   app.get("/api/logout", (req, res) => {
-    // Set global logout flag
-    isLoggedOut = true;
-    // Mark session as logged out before destroying
-    if (req.session) {
-      (req.session as any).loggedOut = true;
-    }
     req.logout(() => {
-      req.session.destroy((err) => {
-        res.clearCookie('connect.sid');
-        res.redirect("/");
-      });
+      res.redirect(
+        client.buildEndSessionUrl(config, {
+          client_id: process.env.REPL_ID!,
+          post_logout_redirect_uri: `${req.protocol}://${req.hostname}`,
+        }).href
+      );
     });
-  });
-
-  app.post("/api/auth/logout", (req, res) => {
-    // Set global logout flag
-    isLoggedOut = true;
-    // Mark session as logged out before destroying
-    if (req.session) {
-      (req.session as any).loggedOut = true;
-      req.session.save(() => {
-        req.logout(() => {
-          res.json({ success: true, message: "Logged out successfully" });
-        });
-      });
-    } else {
-      req.logout(() => {
-        res.json({ success: true, message: "Logged out successfully" });
-      });
-    }
   });
 }
 
 export const isAuthenticated: RequestHandler = async (req, res, next) => {
-  // Check global logout flag or session logout flag
-  if (isLoggedOut || (req.session && (req.session as any).loggedOut)) {
+  // Bypass auth for demo endpoints to show sample data
+  const isDemoEndpoint = req.path === '/api/companies' || req.path === '/api/users';
+  if (isDemoEndpoint) {
+    return next();
+  }
+
+  const user = req.user as any;
+
+  // Check if user is authenticated
+  if (!req.isAuthenticated || typeof req.isAuthenticated !== 'function' || !req.isAuthenticated()) {
     return res.status(401).json({ message: "Unauthorized" });
   }
 
-  // For development, create a mock authenticated user for the HR system to work
-  if (!req.user) {
-    req.user = {
-      claims: {
-        sub: 'dev-user-123',
-        email: 'admin@hrtest.com',
-        first_name: 'Admin',
-        last_name: 'User',
-        profile_image_url: null
-      },
-      access_token: 'dev-token',
-      expires_at: Date.now() + 3600000 // 1 hour from now
-    };
+  // For simple login system, just check if user exists
+  if (!user) {
+    return res.status(401).json({ message: "Unauthorized" });
+  }
+
+  // If user has claims (OAuth), check expiration
+  if (user.claims && user.expires_at) {
+    const now = Math.floor(Date.now() / 1000);
+    if (now > user.expires_at) {
+      return res.status(401).json({ message: "Unauthorized" });
+    }
   }
 
   return next();

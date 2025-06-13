@@ -94,7 +94,6 @@ import JobPostings from "@/pages/job-postings";
 import InterviewScheduling from "@/pages/interview-scheduling";
 import TalentPool from "@/pages/talent-pool";
 
-import Landing from "@/pages/Landing";
 import Login from "@/pages/login";
 import Register from "@/pages/register";
 import NotFound from "@/pages/not-found";
@@ -106,7 +105,7 @@ function Router() {
   if (!isAuthenticated) {
     return (
       <Switch>
-        <Route path="/" component={Landing} />
+        <Route path="/" component={Login} />
         <Route path="/login" component={Login} />
         <Route path="/register" component={Register} />
         <Route component={NotFound} />

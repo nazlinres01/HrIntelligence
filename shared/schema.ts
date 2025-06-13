@@ -392,8 +392,6 @@ export type InsertTraining = z.infer<typeof insertTrainingSchema>;
 export type TrainingEnrollment = typeof trainingEnrollments.$inferSelect;
 export type InsertTrainingEnrollment = z.infer<typeof insertTrainingEnrollmentSchema>;
 
-
-
 // =============================================================================
 // DATABASE RELATIONS - Complete Relational Mapping
 // =============================================================================
