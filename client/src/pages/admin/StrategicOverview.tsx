@@ -169,33 +169,71 @@ export default function StrategicOverview() {
         </div>
 
         {/* Executive Summary */}
-        <Card className="bg-gradient-to-r from-blue-50 to-indigo-50 border-blue-200 mb-8">
-          <CardHeader>
-            <CardTitle className="text-blue-900 flex items-center text-xl">
-              <Target className="h-6 w-6 mr-2" />
-              Yönetici Özeti
-            </CardTitle>
-          </CardHeader>
-          <CardContent>
-            <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-              <div className="text-center">
-                <div className="text-3xl font-bold text-blue-600 mb-2">{metrics.quarterlyGrowthRate}%</div>
-                <div className="text-blue-800 font-medium">Çeyreklik Büyüme</div>
-                <div className="text-sm text-blue-600 mt-1">Hedefin üzerinde</div>
+        <div className="grid grid-cols-1 md:grid-cols-4 gap-6 mb-8">
+          <Card className="bg-gradient-to-r from-blue-50 to-blue-100 border-blue-200">
+            <CardContent className="p-6">
+              <div className="flex items-center justify-between">
+                <div>
+                  <p className="text-blue-600 text-sm font-medium">Toplam Şirket</p>
+                  <p className="text-3xl font-bold text-blue-900">45</p>
+                  <div className="flex items-center mt-2">
+                    <TrendingUp className="h-4 w-4 text-green-500 mr-1" />
+                    <span className="text-sm text-green-600">+3 bu ay</span>
+                  </div>
+                </div>
+                <Building2 className="h-8 w-8 text-blue-600" />
               </div>
-              <div className="text-center">
-                <div className="text-3xl font-bold text-green-600 mb-2">{metrics.hrEfficiencyScore.toFixed(1)}%</div>
-                <div className="text-green-800 font-medium">İK Verimliliği</div>
-                <div className="text-sm text-green-600 mt-1">Mükemmel seviye</div>
+            </CardContent>
+          </Card>
+
+          <Card className="bg-gradient-to-r from-green-50 to-green-100 border-green-200">
+            <CardContent className="p-6">
+              <div className="flex items-center justify-between">
+                <div>
+                  <p className="text-green-600 text-sm font-medium">Aktif Kullanıcılar</p>
+                  <p className="text-3xl font-bold text-green-900">1,247</p>
+                  <div className="flex items-center mt-2">
+                    <TrendingUp className="h-4 w-4 text-green-500 mr-1" />
+                    <span className="text-sm text-green-600">+127</span>
+                  </div>
+                </div>
+                <Users className="h-8 w-8 text-green-600" />
               </div>
-              <div className="text-center">
-                <div className="text-3xl font-bold text-purple-600 mb-2">{formatCurrency(metrics.revenuePerEmployee)}</div>
-                <div className="text-purple-800 font-medium">Çalışan Başına Gelir</div>
-                <div className="text-sm text-purple-600 mt-1">Sektör ortalaması üstü</div>
+            </CardContent>
+          </Card>
+
+          <Card className="bg-gradient-to-r from-emerald-50 to-emerald-100 border-emerald-200">
+            <CardContent className="p-6">
+              <div className="flex items-center justify-between">
+                <div>
+                  <p className="text-emerald-600 text-sm font-medium">Sistem Sağlığı</p>
+                  <p className="text-3xl font-bold text-emerald-900">99.8%</p>
+                  <div className="flex items-center mt-2">
+                    <CheckCircle className="h-4 w-4 text-emerald-500 mr-1" />
+                    <span className="text-sm text-emerald-600">Optimal</span>
+                  </div>
+                </div>
+                <Activity className="h-8 w-8 text-emerald-600" />
               </div>
-            </div>
-          </CardContent>
-        </Card>
+            </CardContent>
+          </Card>
+
+          <Card className="bg-gradient-to-r from-indigo-50 to-indigo-100 border-indigo-200">
+            <CardContent className="p-6">
+              <div className="flex items-center justify-between">
+                <div>
+                  <p className="text-indigo-600 text-sm font-medium">Güvenlik</p>
+                  <p className="text-3xl font-bold text-indigo-900">A+</p>
+                  <div className="flex items-center mt-2">
+                    <Shield className="h-4 w-4 text-indigo-500 mr-1" />
+                    <span className="text-sm text-indigo-600">Mükemmel</span>
+                  </div>
+                </div>
+                <Shield className="h-8 w-8 text-indigo-600" />
+              </div>
+            </CardContent>
+          </Card>
+        </div>
 
         {/* Key Strategic Metrics */}
         <div className="grid grid-cols-1 md:grid-cols-4 gap-6 mb-8">
