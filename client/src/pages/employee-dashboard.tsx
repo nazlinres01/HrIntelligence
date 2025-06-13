@@ -30,7 +30,7 @@ export default function EmployeeDashboard() {
           <h1 className="text-2xl font-bold text-gray-900">Çalışan Dashboard</h1>
           <p className="text-gray-600">Günlük işlerinizi takip edin ve hedeflerinize odaklanın</p>
         </div>
-        <Button className="bg-gray-600 hover:bg-gray-700">
+        <Button className="bg-yellow-600 hover:bg-yellow-700">
           <User className="w-4 h-4 mr-2" />
           Profil Düzenle
         </Button>
@@ -165,19 +165,19 @@ export default function EmployeeDashboard() {
         </CardHeader>
         <CardContent>
           <div className="grid grid-cols-2 md:grid-cols-4 gap-3">
-            <Button className="h-16 bg-gray-600 hover:bg-gray-700 flex flex-col items-center justify-center space-y-1">
+            <Button className="h-16 bg-yellow-600 hover:bg-yellow-700 flex flex-col items-center justify-center space-y-1">
               <Calendar className="h-4 w-4" />
               <span className="text-xs">İzin Talebi</span>
             </Button>
-            <Button className="h-16 bg-gray-600 hover:bg-gray-700 flex flex-col items-center justify-center space-y-1">
+            <Button className="h-16 bg-yellow-600 hover:bg-yellow-700 flex flex-col items-center justify-center space-y-1">
               <Clock className="h-4 w-4" />
               <span className="text-xs">Mesai Kaydı</span>
             </Button>
-            <Button className="h-16 bg-gray-600 hover:bg-gray-700 flex flex-col items-center justify-center space-y-1">
+            <Button className="h-16 bg-yellow-600 hover:bg-yellow-700 flex flex-col items-center justify-center space-y-1">
               <FileText className="h-4 w-4" />
               <span className="text-xs">Rapor Gönder</span>
             </Button>
-            <Button className="h-16 bg-gray-600 hover:bg-gray-700 flex flex-col items-center justify-center space-y-1">
+            <Button className="h-16 bg-yellow-600 hover:bg-yellow-700 flex flex-col items-center justify-center space-y-1">
               <MessageSquare className="h-4 w-4" />
               <span className="text-xs">Mesaj Gönder</span>
             </Button>
