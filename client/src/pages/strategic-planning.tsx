@@ -80,13 +80,13 @@ export default function StrategicPlanningPage() {
   };
 
   return (
-    <div className="p-8 space-y-8 bg-gradient-to-br from-red-50 via-white to-rose-50 min-h-screen">
-      {/* Header */}
-      <div className="mb-8">
-        <div className="flex items-center justify-between">
+    <div className="min-h-screen bg-white">
+      <div className="p-8">
+        {/* Header */}
+        <div className="flex flex-col lg:flex-row lg:items-center lg:justify-between mb-8">
           <div>
-            <h1 className="text-4xl font-bold mb-2 text-gray-900">Stratejik Planlama</h1>
-            <p className="text-gray-600 text-lg">Departman stratejilerini yönetin ve hedefleri takip edin</p>
+            <h1 className="text-3xl font-bold text-gray-900 mb-2">Stratejik Planlama</h1>
+            <p className="text-gray-600">Departman stratejilerini yönetin ve hedefleri takip edin</p>
           </div>
           <div className="text-center">
             <Target className="h-16 w-16 mx-auto mb-2 text-blue-600" />
@@ -94,9 +94,8 @@ export default function StrategicPlanningPage() {
             <div className="text-gray-500 text-sm">Aktif Hedef</div>
           </div>
         </div>
-      </div>
 
-      <Tabs defaultValue="objectives" className="space-y-6">
+        <Tabs defaultValue="objectives" className="space-y-6">
         <TabsList className="grid w-full grid-cols-3">
           <TabsTrigger value="objectives">Stratejik Hedefler</TabsTrigger>
           <TabsTrigger value="quarterly">Çeyreklik Hedefler</TabsTrigger>
@@ -106,7 +105,7 @@ export default function StrategicPlanningPage() {
         <TabsContent value="objectives" className="space-y-6">
           <div className="flex justify-between items-center">
             <h2 className="text-2xl font-bold text-gray-800">Stratejik Hedefler</h2>
-            <Button className="bg-red-600 hover:bg-red-700">
+            <Button className="bg-blue-600 hover:bg-blue-700 text-white">
               <Plus className="h-4 w-4 mr-2" />
               Yeni Hedef Ekle
             </Button>
@@ -114,7 +113,7 @@ export default function StrategicPlanningPage() {
 
           <div className="grid gap-6">
             {strategicObjectives.map((objective) => (
-              <Card key={objective.id} className="border-l-4 border-l-red-500">
+              <Card key={objective.id} className="bg-white border-gray-200 hover:shadow-md transition-shadow">
                 <CardHeader>
                   <div className="flex justify-between items-start">
                     <div className="flex-1">
@@ -257,7 +256,8 @@ export default function StrategicPlanningPage() {
             </Card>
           </div>
         </TabsContent>
-      </Tabs>
+        </Tabs>
+      </div>
     </div>
   );
 }
