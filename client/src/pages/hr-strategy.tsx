@@ -36,6 +36,7 @@ export default function HRStrategyPage() {
       metrics: ""
     }
   });
+  
   const strategicGoals = [
     {
       id: 1,
@@ -77,7 +78,7 @@ export default function HRStrategyPage() {
       progress: 92,
       status: "tamamlanma_aşamasında",
       deadline: "2024-07-01",
-      responsible: "İK Uzmanı",
+      responsible: "İK Müdürü",
       priority: "yüksek",
       metrics: ["Değerlendirme tamamlanma oranı", "Manager feedback", "Goal achievement"]
     }
@@ -89,32 +90,28 @@ export default function HRStrategyPage() {
       value: "8.2%",
       trend: "↓ 2.1%",
       status: "pozitif",
-      target: "<%10",
-      color: "text-green-600"
+      target: "<%10"
     },
     {
       title: "İşe Alım Süresi",
       value: "12 gün",
       trend: "↓ 3 gün",
       status: "pozitif",
-      target: "<15 gün",
-      color: "text-blue-600"
+      target: "<15 gün"
     },
     {
       title: "Eğitim ROI",
       value: "₺4.2M",
       trend: "↑ 15%",
       status: "pozitif",
-      target: ">₺3M",
-      color: "text-purple-600"
+      target: ">₺3M"
     },
     {
       title: "Çalışan NPS",
       value: "72",
       trend: "↑ 8 puan",
       status: "pozitif",
-      target: ">70",
-      color: "text-teal-600"
+      target: ">70"
     }
   ];
 
@@ -146,10 +143,10 @@ export default function HRStrategyPage() {
       name: "Çalışan Wellness Programı",
       phase: "İmplementasyon",
       completion: 75,
-      startDate: "2024-01-01",
-      endDate: "2024-08-31",
-      budget: "₺200.000",
-      team: "8 kişi",
+      startDate: "2024-01-15",
+      endDate: "2024-10-31",
+      budget: "₺320.000",
+      team: "4 kişi",
       impact: "Yüksek"
     }
   ];
@@ -157,11 +154,11 @@ export default function HRStrategyPage() {
   const getStatusBadge = (status: string) => {
     switch(status) {
       case 'aktif':
-        return <Badge className="bg-green-100 text-green-800 border-green-200">🟢 Aktif</Badge>;
+        return <Badge className="bg-gray-100 text-gray-800 border-gray-200">🟢 Aktif</Badge>;
       case 'devam_ediyor':
-        return <Badge className="bg-blue-100 text-blue-800 border-blue-200">🔄 Devam Ediyor</Badge>;
+        return <Badge className="bg-gray-100 text-gray-800 border-gray-200">🔄 Devam Ediyor</Badge>;
       case 'tamamlanma_aşamasında':
-        return <Badge className="bg-yellow-100 text-yellow-800 border-yellow-200">⚡ Tamamlanıyor</Badge>;
+        return <Badge className="bg-gray-100 text-gray-800 border-gray-200">⚡ Tamamlanıyor</Badge>;
       case 'tamamlandı':
         return <Badge className="bg-gray-100 text-gray-800 border-gray-200">✅ Tamamlandı</Badge>;
       default:
@@ -171,9 +168,9 @@ export default function HRStrategyPage() {
 
   const getPriorityColor = (priority: string) => {
     switch(priority) {
-      case 'yüksek': return 'border-l-red-500';
-      case 'orta': return 'border-l-yellow-500';
-      case 'düşük': return 'border-l-green-500';
+      case 'yüksek': return 'border-l-gray-500';
+      case 'orta': return 'border-l-gray-400';
+      case 'düşük': return 'border-l-gray-300';
       default: return 'border-l-gray-500';
     }
   };
@@ -188,7 +185,7 @@ export default function HRStrategyPage() {
               <h1 className="text-3xl font-bold text-gray-900 mb-2">İK Stratejisi</h1>
               <p className="text-gray-600">Stratejik İnsan Kaynakları planlaması ve hedef yönetimi</p>
             </div>
-            <Button className="bg-green-600 hover:bg-green-700 mt-4 lg:mt-0">
+            <Button className="mt-4 lg:mt-0">
               <Plus className="h-4 w-4 mr-2" />
               Yeni Strateji Ekle
             </Button>
@@ -204,9 +201,9 @@ export default function HRStrategyPage() {
                   <div>
                     <p className="text-gray-600 text-sm font-medium">{metric.title}</p>
                     <p className="text-3xl font-bold text-gray-900">{metric.value}</p>
-                    <p className={`text-xs mt-1 ${metric.color}`}>{metric.trend} (Hedef: {metric.target})</p>
+                    <p className="text-xs mt-1 text-gray-600">{metric.trend} (Hedef: {metric.target})</p>
                   </div>
-                  <TrendingUp className={`h-8 w-8 ${metric.color}`} />
+                  <TrendingUp className="h-8 w-8 text-gray-600" />
                 </div>
               </CardContent>
             </Card>
@@ -223,7 +220,7 @@ export default function HRStrategyPage() {
           <TabsContent value="goals" className="space-y-6">
             <div className="flex justify-between items-center">
               <h2 className="text-2xl font-bold text-gray-800">2024 Stratejik Hedefleri</h2>
-              <Button className="bg-green-600 hover:bg-green-700">
+              <Button>
                 <Target className="h-4 w-4 mr-2" />
                 Yeni Hedef Belirle
               </Button>
@@ -284,10 +281,10 @@ export default function HRStrategyPage() {
                     </div>
 
                     <div className="flex justify-end gap-2 pt-2">
-                      <Button variant="outline" size="sm" className="border-green-600 text-green-600 hover:bg-green-50">
+                      <Button variant="outline" size="sm">
                         Detaylar
                       </Button>
-                      <Button size="sm" className="bg-green-600 hover:bg-green-700">
+                      <Button size="sm">
                         Güncelle
                       </Button>
                     </div>
@@ -300,7 +297,7 @@ export default function HRStrategyPage() {
           <TabsContent value="initiatives" className="space-y-6">
             <div className="flex justify-between items-center">
               <h2 className="text-2xl font-bold text-gray-800">Stratejik İnisiyatifler</h2>
-              <Button className="bg-green-600 hover:bg-green-700">
+              <Button>
                 <Plus className="h-4 w-4 mr-2" />
                 Yeni İnisiyatif
               </Button>
@@ -349,11 +346,11 @@ export default function HRStrategyPage() {
                     </div>
 
                     <div className="flex justify-end gap-2">
-                      <Button variant="outline" size="sm" className="border-green-600 text-green-600 hover:bg-green-50">
+                      <Button variant="outline" size="sm">
                         <BarChart3 className="h-4 w-4 mr-1" />
                         Analiz
                       </Button>
-                      <Button size="sm" className="bg-green-600 hover:bg-green-700">
+                      <Button size="sm">
                         Yönet
                       </Button>
                     </div>

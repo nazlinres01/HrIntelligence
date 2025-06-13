@@ -12,17 +12,16 @@ import {
   FileText, 
   Settings, 
   Bell,
-  Home,
-  UserCheck,
-  ClipboardList,
   Award,
   BookOpen,
   BarChart3,
-  Shield,
-  LogOut,
   Eye,
   Check,
-  X
+  X,
+  Target,
+  Building2,
+  Clock,
+  AlertTriangle
 } from "lucide-react";
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { apiRequest } from "@/lib/queryClient";
@@ -35,7 +34,7 @@ export default function HRManagerDashboard() {
 
   // Dashboard verileri
   const { data: stats } = useQuery({
-    queryKey: ["/api/stats/employees"],
+    queryKey: ["/api/stats/hr-manager"],
   });
 
   const { data: pendingLeaves } = useQuery({
@@ -47,23 +46,21 @@ export default function HRManagerDashboard() {
   });
 
   const { data: activities } = useQuery({
-    queryKey: ["/api/activities"],
+    queryKey: ["/api/hr-manager/activities"],
   });
 
   const { data: employees = [] } = useQuery({
     queryKey: ["/api/employees"],
   });
 
-  const approvalPendingLeaves = pendingLeaves?.filter(leave => leave.status === "pending") || [];
+  const approvalPendingLeaves = pendingLeaves?.filter((leave: any) => leave.status === "pending") || [];
   const recentNotifications = notifications?.slice(0, 5) || [];
   const recentActivities = activities?.slice(0, 5) || [];
 
   // İzin onaylama mutations
   const approveLeave = useMutation({
     mutationFn: async (leaveId: number) => {
-      return apiRequest(`/api/leaves/${leaveId}/approve`, {
-        method: "PATCH",
-      });
+      return apiRequest("PATCH", `/api/leaves/${leaveId}/approve`);
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ["/api/leaves"] });
@@ -83,9 +80,7 @@ export default function HRManagerDashboard() {
 
   const rejectLeave = useMutation({
     mutationFn: async (leaveId: number) => {
-      return apiRequest(`/api/leaves/${leaveId}/reject`, {
-        method: "PATCH",
-      });
+      return apiRequest("PATCH", `/api/leaves/${leaveId}/reject`);
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ["/api/leaves"] });
@@ -105,7 +100,7 @@ export default function HRManagerDashboard() {
 
   // Çalışan bilgilerini bul
   const getEmployeeInfo = (employeeId: number) => {
-    const employee = employees.find((emp: any) => emp.id === employeeId);
+    const employee = (employees as any[]).find((emp: any) => emp.id === employeeId);
     return employee ? `${employee.firstName} ${employee.lastName}` : `Çalışan #${employeeId}`;
   };
 
@@ -173,7 +168,7 @@ export default function HRManagerDashboard() {
               approveLeave.mutate(leave.id);
             }}
             disabled={approveLeave.isPending}
-            className="flex-1 bg-green-600 hover:bg-green-700"
+            className="flex-1"
           >
             <Check className="w-4 h-4 mr-2" />
             İzni Onayla
@@ -205,7 +200,7 @@ export default function HRManagerDashboard() {
           </div>
           <div className="flex items-center gap-4">
             <Link href="/hr/strategy">
-              <Button className="bg-green-600 hover:bg-green-700">
+              <Button>
                 <BarChart3 className="w-4 h-4 mr-2" />
                 İK Stratejisi
               </Button>
@@ -223,7 +218,7 @@ export default function HRManagerDashboard() {
               <CardTitle className="text-sm font-medium text-gray-600">Toplam Çalışan</CardTitle>
             </CardHeader>
             <CardContent>
-              <div className="text-2xl font-bold text-gray-900">{stats?.totalEmployees || 0}</div>
+              <div className="text-2xl font-bold text-gray-900">{(stats as any)?.totalEmployees || 0}</div>
               <p className="text-xs text-gray-500 mt-1">Aktif personel sayısı</p>
             </CardContent>
           </Card>
@@ -233,27 +228,27 @@ export default function HRManagerDashboard() {
               <CardTitle className="text-sm font-medium text-gray-600">Bekleyen İzinler</CardTitle>
             </CardHeader>
             <CardContent>
-              <div className="text-2xl font-bold text-gray-900">{approvalPendingLeaves.length}</div>
+              <div className="text-2xl font-bold text-gray-900">{(stats as any)?.pendingLeaves || 0}</div>
               <p className="text-xs text-gray-500 mt-1">Onay bekleyen talepler</p>
             </CardContent>
           </Card>
           
           <Card className="bg-white border-gray-200 hover:shadow-md transition-shadow">
             <CardHeader className="pb-2">
-              <CardTitle className="text-sm font-medium text-gray-600">Aylık Bordro</CardTitle>
+              <CardTitle className="text-sm font-medium text-gray-600">Aktif Eğitimler</CardTitle>
             </CardHeader>
             <CardContent>
-              <div className="text-2xl font-bold text-gray-900">₺{stats?.monthlyPayroll || '0'}</div>
-              <p className="text-xs text-gray-500 mt-1">Bu ay toplam</p>
+              <div className="text-2xl font-bold text-gray-900">{(stats as any)?.activeTrainings || 0}</div>
+              <p className="text-xs text-gray-500 mt-1">Devam eden eğitimler</p>
             </CardContent>
           </Card>
           
           <Card className="bg-white border-gray-200 hover:shadow-md transition-shadow">
             <CardHeader className="pb-2">
-              <CardTitle className="text-sm font-medium text-gray-600">Ortalama Performans</CardTitle>
+              <CardTitle className="text-sm font-medium text-gray-600">Performans Ortalaması</CardTitle>
             </CardHeader>
             <CardContent>
-              <div className="text-2xl font-bold text-gray-900">{stats?.avgPerformance || '0'}/5</div>
+              <div className="text-2xl font-bold text-gray-900">{(stats as any)?.performanceAverage || 0}%</div>
               <p className="text-xs text-gray-500 mt-1">Genel değerlendirme</p>
             </CardContent>
           </Card>
@@ -294,7 +289,7 @@ export default function HRManagerDashboard() {
                         </Dialog>
                         <Button 
                           size="sm" 
-                          className="bg-green-600 hover:bg-green-700 text-xs px-2 py-1"
+                          className="text-xs px-2 py-1"
                           onClick={() => approveLeave.mutate(leave.id)}
                           disabled={approveLeave.isPending}
                         >
@@ -320,43 +315,11 @@ export default function HRManagerDashboard() {
                 {approvalPendingLeaves.length > 0 && (
                   <div className="pt-3 border-t">
                     <Link href="/leaves">
-                      <Button variant="outline" className="w-full text-sm border-green-600 text-green-600 hover:bg-green-50">
+                      <Button variant="outline" className="w-full text-sm">
                         Tüm İzinleri Görüntüle ({approvalPendingLeaves.length})
                       </Button>
                     </Link>
                   </div>
-                )}
-              </div>
-            </CardContent>
-          </Card>
-
-          {/* Recent Notifications */}
-          <Card>
-            <CardHeader>
-              <CardTitle className="flex items-center gap-2">
-                <Bell className="w-5 h-5 text-gray-600" />
-                Son Bildirimler
-              </CardTitle>
-              <CardDescription>
-                Güncel sistem bildirimleri ve uyarılar
-              </CardDescription>
-            </CardHeader>
-            <CardContent>
-              <div className="space-y-3">
-                {recentNotifications.length > 0 ? (
-                  recentNotifications.map((notification: any) => (
-                    <div key={notification.id} className="flex items-center gap-3 p-3 bg-gray-50 rounded-lg">
-                      <div className="w-8 h-8 bg-gray-100 rounded-full flex items-center justify-center">
-                        <Bell className="w-4 h-4 text-gray-600" />
-                      </div>
-                      <div>
-                        <p className="text-sm font-medium">{notification.title}</p>
-                        <p className="text-xs text-gray-500">{notification.message}</p>
-                      </div>
-                    </div>
-                  ))
-                ) : (
-                  <p className="text-gray-500 text-center py-4">Henüz bildirim yok</p>
                 )}
               </div>
             </CardContent>
@@ -383,7 +346,7 @@ export default function HRManagerDashboard() {
                       </div>
                       <div>
                         <p className="text-sm font-medium">{activity.description}</p>
-                        <p className="text-xs text-gray-500">{activity.type}</p>
+                        <p className="text-xs text-gray-500">{new Date(activity.timestamp).toLocaleString('tr-TR')}</p>
                       </div>
                     </div>
                   ))
@@ -406,25 +369,25 @@ export default function HRManagerDashboard() {
           <CardContent>
             <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
               <Link href="/employees">
-                <Button className="w-full h-20 flex flex-col gap-2 bg-green-600 hover:bg-green-700">
+                <Button className="w-full h-20 flex flex-col gap-2">
                   <Users className="w-6 h-6" />
                   <span className="text-sm">Çalışan Yönetimi</span>
                 </Button>
               </Link>
               <Link href="/leaves">
-                <Button className="w-full h-20 flex flex-col gap-2 bg-green-600 hover:bg-green-700">
+                <Button className="w-full h-20 flex flex-col gap-2">
                   <Calendar className="w-6 h-6" />
                   <span className="text-sm">İzin Yönetimi</span>
                 </Button>
               </Link>
               <Link href="/performance">
-                <Button className="w-full h-20 flex flex-col gap-2 bg-green-600 hover:bg-green-700">
+                <Button className="w-full h-20 flex flex-col gap-2">
                   <TrendingUp className="w-6 h-6" />
                   <span className="text-sm">Performans</span>
                 </Button>
               </Link>
               <Link href="/reports">
-                <Button className="w-full h-20 flex flex-col gap-2 bg-green-600 hover:bg-green-700">
+                <Button className="w-full h-20 flex flex-col gap-2">
                   <BarChart3 className="w-6 h-6" />
                   <span className="text-sm">Raporlar</span>
                 </Button>
