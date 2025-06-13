@@ -16,9 +16,41 @@ export default function Login() {
 
   const handleLogin = async (e: React.FormEvent) => {
     e.preventDefault();
-    
-    // Replit auth'a yönlendir
-    window.location.href = '/api/login';
+    setIsLoading(true);
+
+    try {
+      const response = await fetch("/api/auth/login", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({ email, password }),
+      });
+
+      if (response.ok) {
+        const data = await response.json();
+        toast({
+          title: "Giriş Başarılı",
+          description: `Hoş geldiniz, ${data.user.firstName}!`,
+        });
+        setLocation("/");
+      } else {
+        const error = await response.json();
+        toast({
+          title: "Giriş Hatası",
+          description: error.message || "Email veya şifre hatalı",
+          variant: "destructive",
+        });
+      }
+    } catch (error) {
+      toast({
+        title: "Bağlantı Hatası",
+        description: "Sunucuya bağlanılamadı",
+        variant: "destructive",
+      });
+    } finally {
+      setIsLoading(false);
+    }
   };
 
   const testCredentials = [
