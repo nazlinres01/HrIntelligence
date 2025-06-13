@@ -110,7 +110,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
       const company = await storage.createCompany({
         name: companyName,
         industry: "",
-        contactInfo: { email: email }
+        email: email
       });
 
       // Create user
