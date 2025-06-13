@@ -28,8 +28,9 @@ import {
   TrendingUp,
   Award,
   BookOpen,
-  DollarSign,
+  User,
   MessageSquare,
+  DollarSign,
   PieChart,
   Zap,
   CheckCircle,
@@ -190,6 +191,46 @@ const getRoleBasedNavigation = (userRole: UserRole): NavigationSection[] => {
         }
       ];
 
+    case 'employee':
+    case 'çalışan':
+      return [
+        {
+          title: "Kişisel Panom",
+          color: "from-yellow-600 to-amber-600",
+          items: [
+            { name: "Ana Sayfa", href: "/", icon: LayoutDashboard, show: true, description: "Kişisel dashboard ve günlük aktiviteler" },
+            { name: "Profilim", href: "/profile", icon: User, show: true, description: "Kişisel bilgilerim ve ayarlar" },
+          ]
+        },
+        {
+          title: "İzin ve Talepler",
+          color: "from-blue-600 to-indigo-600",
+          items: [
+            { name: "İzin Talepleri", href: "/my-leaves", icon: Calendar, show: true, description: "İzin taleplerimi yönet" },
+            { name: "Mesai Kayıtları", href: "/timesheet", icon: Clock, show: true, description: "Çalışma saatlerimi kaydet" },
+            { name: "Harcama Talepleri", href: "/expenses", icon: CreditCard, show: true, description: "Harcama taleplerimi gönder" },
+          ]
+        },
+        {
+          title: "Gelişim ve İletişim",
+          color: "from-emerald-600 to-teal-600",
+          items: [
+            { name: "Performansım", href: "/my-performance", icon: TrendingUp, show: true, description: "Performans değerlendirmelerim" },
+            { name: "Eğitimlerim", href: "/my-training", icon: BookOpen, show: true, description: "Eğitim programlarım" },
+            { name: "Mesajlar", href: "/messages", icon: MessageSquare, show: true, description: "İç iletişim mesajları" },
+            { name: "Duyurular", href: "/announcements", icon: Bell, show: true, description: "Şirket duyuruları" },
+          ]
+        },
+        {
+          title: "Diğer",
+          color: "from-gray-600 to-gray-700",
+          items: [
+            { name: "Yardım", href: "/help", icon: HelpCircle, show: true, description: "Destek ve SSS" },
+            { name: "Ayarlar", href: "/settings", icon: Settings, show: true, description: "Hesap ayarları" },
+          ]
+        }
+      ];
+
     default:
       return [
         {
@@ -249,6 +290,8 @@ export default function EnterpriseSidebar() {
             ? "bg-gradient-to-r from-teal-600 via-teal-700 to-emerald-700" 
             : userRole === 'department_manager'
             ? "bg-gradient-to-r from-red-600 via-red-700 to-rose-700"
+            : userRole === 'employee' || userRole === 'çalışan'
+            ? "bg-gradient-to-r from-yellow-600 via-yellow-700 to-amber-700"
             : "bg-gradient-to-r from-blue-600 via-blue-700 to-indigo-700"
         )}>
           <div className="flex items-center justify-between">

@@ -1,220 +1,437 @@
-import { useAuth } from "@/hooks/useAuth";
-import { useQuery, useMutation } from "@tanstack/react-query";
-import { Card, CardHeader, CardTitle, CardContent } from "@/components/ui/card";
+import React, { useState } from "react";
+import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
-import { Label } from "@/components/ui/label";
-import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Badge } from "@/components/ui/badge";
-import { Separator } from "@/components/ui/separator";
+import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
+import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog";
+import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from "@/components/ui/form";
+import { Textarea } from "@/components/ui/textarea";
 import { useToast } from "@/hooks/use-toast";
-import { roleLabels, type UserRole } from "@/lib/permissions";
-import { apiRequest, queryClient } from "@/lib/queryClient";
-import { useState } from "react";
-import { User, Settings, Lock, Calendar, Building2 } from "lucide-react";
+import { useForm } from "react-hook-form";
+import { zodResolver } from "@hookform/resolvers/zod";
+import { z } from "zod";
+import { 
+  User, 
+  Mail, 
+  Phone, 
+  MapPin, 
+  Calendar,
+  Edit,
+  Save,
+  Shield,
+  Camera,
+  Building,
+  Clock,
+  Star,
+  Award
+} from "lucide-react";
+import { apiRequest } from "@/lib/queryClient";
+import { useAuth } from "@/hooks/useAuth";
 
-export default function Profile() {
-  const { user } = useAuth();
-  const { toast } = useToast();
+const profileSchema = z.object({
+  firstName: z.string().min(2, "Ad en az 2 karakter olmalıdır"),
+  lastName: z.string().min(2, "Soyad en az 2 karakter olmalıdır"),
+  email: z.string().email("Geçerli bir e-posta adresi giriniz"),
+  phone: z.string().min(10, "Telefon numarası en az 10 karakter olmalıdır"),
+  address: z.string().optional(),
+  birthDate: z.string().optional(),
+  emergencyContact: z.string().optional(),
+  bio: z.string().optional()
+});
+
+type ProfileFormData = z.infer<typeof profileSchema>;
+
+export default function EmployeeProfile() {
   const [isEditing, setIsEditing] = useState(false);
-  const [formData, setFormData] = useState({
-    firstName: (user as any)?.firstName || "",
-    lastName: (user as any)?.lastName || "",
-    phone: (user as any)?.phone || "",
-  });
+  const [isPhotoDialogOpen, setIsPhotoDialogOpen] = useState(false);
+  const { toast } = useToast();
+  const queryClient = useQueryClient();
+  const { user } = useAuth();
 
-  const userRole = (user as any)?.role as UserRole || "employee";
-
-  const updateProfileMutation = useMutation({
-    mutationFn: async (data: typeof formData) => {
-      const res = await apiRequest("PUT", "/api/profile", data);
-      return res.json();
-    },
-    onSuccess: () => {
-      toast({
-        title: "Profil güncellendi",
-        description: "Profil bilgileriniz başarıyla güncellendi.",
-      });
-      setIsEditing(false);
-      queryClient.invalidateQueries({ queryKey: ["/api/auth/user"] });
-    },
-    onError: (error: Error) => {
-      toast({
-        title: "Hata",
-        description: error.message,
-        variant: "destructive",
-      });
-    },
-  });
-
-  const handleSubmit = (e: React.FormEvent) => {
-    e.preventDefault();
-    updateProfileMutation.mutate(formData);
+  const userData = user as any;
+  const mockEmployeeData = {
+    id: userData?.id || "employee_002",
+    firstName: userData?.firstName || "Emre",
+    lastName: userData?.lastName || "Şahin",
+    email: userData?.email || "emre.sahin@microsoft.com",
+    phone: "+90 532 123 4567",
+    address: "Kadıköy, İstanbul",
+    birthDate: "1990-05-15",
+    emergencyContact: "+90 532 987 6543",
+    bio: "Yazılım geliştirme alanında 5 yıllık deneyime sahip frontend developer",
+    profileImage: "",
+    position: "Senior Frontend Developer",
+    department: "Yazılım Geliştirme",
+    startDate: "2020-03-15",
+    employeeId: "EMP-2024-002",
+    manager: "Ali Özkan",
+    status: "Aktif",
+    workLocation: "Hibrit",
+    performanceScore: 4.2,
+    completedProjects: 15,
+    teamRating: 4.8
   };
 
-  if (!user) {
-    return <div>Yükleniyor...</div>;
-  }
+  const form = useForm<ProfileFormData>({
+    resolver: zodResolver(profileSchema),
+    defaultValues: {
+      firstName: mockEmployeeData.firstName,
+      lastName: mockEmployeeData.lastName,
+      email: mockEmployeeData.email,
+      phone: mockEmployeeData.phone,
+      address: mockEmployeeData.address,
+      birthDate: mockEmployeeData.birthDate,
+      emergencyContact: mockEmployeeData.emergencyContact,
+      bio: mockEmployeeData.bio
+    }
+  });
+
+  const updateProfileMutation = useMutation({
+    mutationFn: async (data: ProfileFormData) => {
+      return apiRequest("PUT", "/api/profile", data);
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ["/api/profile"] });
+      setIsEditing(false);
+      toast({
+        title: "Başarılı",
+        description: "Profil bilgileriniz güncellendi",
+      });
+    },
+    onError: (error) => {
+      toast({
+        title: "Hata",
+        description: "Profil güncellenirken bir hata oluştu",
+        variant: "destructive",
+      });
+    }
+  });
+
+  const onSubmit = (data: ProfileFormData) => {
+    updateProfileMutation.mutate(data);
+  };
+
+  const userInitials = `${mockEmployeeData.firstName[0]}${mockEmployeeData.lastName[0]}`;
 
   return (
-    <div className="space-y-6">
+    <div className="p-6 space-y-6">
       {/* Header */}
-      <div className="bg-gradient-to-r from-blue-600 via-blue-700 to-indigo-700 rounded-xl p-6 text-white">
-        <div className="flex items-center justify-between">
-          <div className="flex items-center space-x-4">
-            <Avatar className="h-16 w-16 ring-4 ring-white/20">
-              <AvatarImage src={(user as any).profileImageUrl} />
-              <AvatarFallback className="text-2xl bg-white/20">
-                {(user as any).firstName?.[0]}{(user as any).lastName?.[0]}
-              </AvatarFallback>
-            </Avatar>
-            <div>
-              <h1 className="text-2xl font-bold">
-                {(user as any).firstName} {(user as any).lastName}
-              </h1>
-              <p className="text-blue-100">{(user as any).email}</p>
-              <Badge variant="secondary" className="mt-2 bg-white/20 text-white border-white/30">
-                {roleLabels[userRole]}
-              </Badge>
-            </div>
-          </div>
-          <Button
-            onClick={() => setIsEditing(!isEditing)}
-            variant="secondary"
-            className="bg-white/20 hover:bg-white/30 text-white border-white/30"
-          >
-            <Settings className="h-4 w-4 mr-2" />
-            {isEditing ? "İptal" : "Düzenle"}
-          </Button>
+      <div className="flex justify-between items-center">
+        <div>
+          <h1 className="text-2xl font-bold text-gray-900">Profilim</h1>
+          <p className="text-gray-600">Kişisel bilgilerinizi görüntüleyin ve düzenleyin</p>
         </div>
+        <Button 
+          onClick={() => setIsEditing(!isEditing)}
+          className="bg-yellow-600 hover:bg-yellow-700"
+        >
+          <Edit className="w-4 h-4 mr-2" />
+          {isEditing ? "İptal" : "Düzenle"}
+        </Button>
       </div>
 
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
-        {/* Profile Info */}
-        <div className="lg:col-span-2">
+        {/* Profile Overview */}
+        <div className="lg:col-span-1">
           <Card>
-            <CardHeader>
-              <CardTitle className="flex items-center">
-                <User className="h-5 w-5 mr-2" />
-                Kişisel Bilgiler
-              </CardTitle>
+            <CardHeader className="text-center pb-4">
+              <div className="relative mx-auto">
+                <Avatar className="w-24 h-24 mx-auto">
+                  <AvatarImage src={mockEmployeeData.profileImage} />
+                  <AvatarFallback className="text-xl bg-yellow-100 text-yellow-800">
+                    {userInitials}
+                  </AvatarFallback>
+                </Avatar>
+                <Dialog open={isPhotoDialogOpen} onOpenChange={setIsPhotoDialogOpen}>
+                  <DialogTrigger asChild>
+                    <Button
+                      size="sm"
+                      className="absolute -bottom-2 -right-2 rounded-full w-8 h-8 p-0 bg-yellow-600 hover:bg-yellow-700"
+                    >
+                      <Camera className="w-4 h-4" />
+                    </Button>
+                  </DialogTrigger>
+                  <DialogContent>
+                    <DialogHeader>
+                      <DialogTitle>Profil Fotoğrafı Güncelle</DialogTitle>
+                    </DialogHeader>
+                    <div className="space-y-4">
+                      <p className="text-sm text-gray-600">
+                        Yeni profil fotoğrafınızı yükleyin
+                      </p>
+                      <div className="border-2 border-dashed border-gray-300 rounded-lg p-6 text-center">
+                        <Camera className="w-12 h-12 text-gray-400 mx-auto mb-4" />
+                        <p className="text-sm text-gray-600">Fotoğraf dosyasını buraya sürükleyin veya tıklayın</p>
+                      </div>
+                      <div className="flex justify-end gap-2">
+                        <Button variant="outline" onClick={() => setIsPhotoDialogOpen(false)}>
+                          İptal
+                        </Button>
+                        <Button className="bg-yellow-600 hover:bg-yellow-700">
+                          Kaydet
+                        </Button>
+                      </div>
+                    </div>
+                  </DialogContent>
+                </Dialog>
+              </div>
+              <div className="mt-4">
+                <h3 className="text-lg font-semibold text-gray-900">
+                  {mockEmployeeData.firstName} {mockEmployeeData.lastName}
+                </h3>
+                <p className="text-gray-600">{mockEmployeeData.position}</p>
+                <p className="text-sm text-gray-500">{mockEmployeeData.department}</p>
+                <Badge className="mt-2 bg-green-100 text-green-800">
+                  {mockEmployeeData.status}
+                </Badge>
+              </div>
             </CardHeader>
-            <CardContent>
-              {isEditing ? (
-                <form onSubmit={handleSubmit} className="space-y-4">
-                  <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                    <div>
-                      <Label htmlFor="firstName">Ad</Label>
-                      <Input
-                        id="firstName"
-                        value={formData.firstName}
-                        onChange={(e) => setFormData(prev => ({ ...prev, firstName: e.target.value }))}
-                        required
-                      />
+            <CardContent className="space-y-4">
+              <div className="space-y-3">
+                <div className="flex items-center gap-3 text-sm">
+                  <Building className="w-4 h-4 text-gray-400" />
+                  <span className="text-gray-600">Personel No:</span>
+                  <span className="font-medium">{mockEmployeeData.employeeId}</span>
+                </div>
+                <div className="flex items-center gap-3 text-sm">
+                  <User className="w-4 h-4 text-gray-400" />
+                  <span className="text-gray-600">Yönetici:</span>
+                  <span className="font-medium">{mockEmployeeData.manager}</span>
+                </div>
+                <div className="flex items-center gap-3 text-sm">
+                  <Calendar className="w-4 h-4 text-gray-400" />
+                  <span className="text-gray-600">İşe Başlama:</span>
+                  <span className="font-medium">{mockEmployeeData.startDate}</span>
+                </div>
+                <div className="flex items-center gap-3 text-sm">
+                  <MapPin className="w-4 h-4 text-gray-400" />
+                  <span className="text-gray-600">Çalışma Şekli:</span>
+                  <span className="font-medium">{mockEmployeeData.workLocation}</span>
+                </div>
+              </div>
+
+              <div className="border-t pt-4">
+                <h4 className="font-medium text-gray-900 mb-3">Performans Özeti</h4>
+                <div className="grid grid-cols-2 gap-4">
+                  <div className="text-center">
+                    <div className="flex items-center justify-center gap-1 mb-1">
+                      <Star className="w-4 h-4 text-yellow-500" />
+                      <span className="font-semibold text-lg">{mockEmployeeData.performanceScore}</span>
                     </div>
-                    <div>
-                      <Label htmlFor="lastName">Soyad</Label>
-                      <Input
-                        id="lastName"
-                        value={formData.lastName}
-                        onChange={(e) => setFormData(prev => ({ ...prev, lastName: e.target.value }))}
-                        required
-                      />
+                    <p className="text-xs text-gray-600">Performans</p>
+                  </div>
+                  <div className="text-center">
+                    <div className="flex items-center justify-center gap-1 mb-1">
+                      <Award className="w-4 h-4 text-blue-500" />
+                      <span className="font-semibold text-lg">{mockEmployeeData.completedProjects}</span>
                     </div>
-                  </div>
-                  <div>
-                    <Label htmlFor="phone">Telefon</Label>
-                    <Input
-                      id="phone"
-                      value={formData.phone}
-                      onChange={(e) => setFormData(prev => ({ ...prev, phone: e.target.value }))}
-                      placeholder="+90 555 123 4567"
-                    />
-                  </div>
-                  <div className="flex space-x-2">
-                    <Button 
-                      type="submit" 
-                      disabled={updateProfileMutation.isPending}
-                    >
-                      {updateProfileMutation.isPending ? "Kaydediliyor..." : "Kaydet"}
-                    </Button>
-                    <Button 
-                      type="button" 
-                      variant="outline" 
-                      onClick={() => setIsEditing(false)}
-                    >
-                      İptal
-                    </Button>
-                  </div>
-                </form>
-              ) : (
-                <div className="space-y-4">
-                  <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                    <div>
-                      <Label className="text-sm font-medium text-gray-500">Ad</Label>
-                      <p className="text-sm font-medium">{(user as any).firstName || "Belirtilmemiş"}</p>
-                    </div>
-                    <div>
-                      <Label className="text-sm font-medium text-gray-500">Soyad</Label>
-                      <p className="text-sm font-medium">{(user as any).lastName || "Belirtilmemiş"}</p>
-                    </div>
-                  </div>
-                  <div>
-                    <Label className="text-sm font-medium text-gray-500">E-posta</Label>
-                    <p className="text-sm font-medium">{(user as any).email}</p>
-                  </div>
-                  <div>
-                    <Label className="text-sm font-medium text-gray-500">Telefon</Label>
-                    <p className="text-sm font-medium">{(user as any).phone || "Belirtilmemiş"}</p>
+                    <p className="text-xs text-gray-600">Tamamlanan Proje</p>
                   </div>
                 </div>
-              )}
+              </div>
             </CardContent>
           </Card>
         </div>
 
-        {/* Account Info */}
-        <div className="space-y-6">
+        {/* Profile Details */}
+        <div className="lg:col-span-2">
           <Card>
             <CardHeader>
-              <CardTitle className="flex items-center">
-                <Building2 className="h-5 w-5 mr-2" />
-                Hesap Bilgileri
-              </CardTitle>
-            </CardHeader>
-            <CardContent className="space-y-4">
-              <div>
-                <Label className="text-sm font-medium text-gray-500">Rol</Label>
-                <p className="text-sm font-medium">{roleLabels[userRole]}</p>
-              </div>
-              <div>
-                <Label className="text-sm font-medium text-gray-500">Durum</Label>
-                <div className="flex items-center space-x-2">
-                  <div className="w-2 h-2 bg-green-500 rounded-full"></div>
-                  <span className="text-sm font-medium text-green-600">Aktif</span>
-                </div>
-              </div>
-              <div>
-                <Label className="text-sm font-medium text-gray-500">Kayıt Tarihi</Label>
-                <p className="text-sm font-medium">
-                  {new Date((user as any).createdAt).toLocaleDateString('tr-TR')}
-                </p>
-              </div>
-            </CardContent>
-          </Card>
-
-          <Card>
-            <CardHeader>
-              <CardTitle className="flex items-center">
-                <Lock className="h-5 w-5 mr-2" />
-                Güvenlik
-              </CardTitle>
+              <CardTitle>Kişisel Bilgiler</CardTitle>
             </CardHeader>
             <CardContent>
-              <Button variant="outline" className="w-full">
-                <Lock className="h-4 w-4 mr-2" />
-                Şifre Değiştir
-              </Button>
+              {isEditing ? (
+                <Form {...form}>
+                  <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-4">
+                    <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                      <FormField
+                        control={form.control}
+                        name="firstName"
+                        render={({ field }) => (
+                          <FormItem>
+                            <FormLabel>Ad</FormLabel>
+                            <FormControl>
+                              <Input placeholder="Adınız" {...field} />
+                            </FormControl>
+                            <FormMessage />
+                          </FormItem>
+                        )}
+                      />
+                      <FormField
+                        control={form.control}
+                        name="lastName"
+                        render={({ field }) => (
+                          <FormItem>
+                            <FormLabel>Soyad</FormLabel>
+                            <FormControl>
+                              <Input placeholder="Soyadınız" {...field} />
+                            </FormControl>
+                            <FormMessage />
+                          </FormItem>
+                        )}
+                      />
+                    </div>
+
+                    <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                      <FormField
+                        control={form.control}
+                        name="email"
+                        render={({ field }) => (
+                          <FormItem>
+                            <FormLabel>E-posta</FormLabel>
+                            <FormControl>
+                              <Input type="email" placeholder="E-posta adresiniz" {...field} />
+                            </FormControl>
+                            <FormMessage />
+                          </FormItem>
+                        )}
+                      />
+                      <FormField
+                        control={form.control}
+                        name="phone"
+                        render={({ field }) => (
+                          <FormItem>
+                            <FormLabel>Telefon</FormLabel>
+                            <FormControl>
+                              <Input placeholder="Telefon numaranız" {...field} />
+                            </FormControl>
+                            <FormMessage />
+                          </FormItem>
+                        )}
+                      />
+                    </div>
+
+                    <FormField
+                      control={form.control}
+                      name="address"
+                      render={({ field }) => (
+                        <FormItem>
+                          <FormLabel>Adres</FormLabel>
+                          <FormControl>
+                            <Input placeholder="Adresiniz" {...field} />
+                          </FormControl>
+                          <FormMessage />
+                        </FormItem>
+                      )}
+                    />
+
+                    <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                      <FormField
+                        control={form.control}
+                        name="birthDate"
+                        render={({ field }) => (
+                          <FormItem>
+                            <FormLabel>Doğum Tarihi</FormLabel>
+                            <FormControl>
+                              <Input type="date" {...field} />
+                            </FormControl>
+                            <FormMessage />
+                          </FormItem>
+                        )}
+                      />
+                      <FormField
+                        control={form.control}
+                        name="emergencyContact"
+                        render={({ field }) => (
+                          <FormItem>
+                            <FormLabel>Acil Durum İletişim</FormLabel>
+                            <FormControl>
+                              <Input placeholder="Acil durum telefonu" {...field} />
+                            </FormControl>
+                            <FormMessage />
+                          </FormItem>
+                        )}
+                      />
+                    </div>
+
+                    <FormField
+                      control={form.control}
+                      name="bio"
+                      render={({ field }) => (
+                        <FormItem>
+                          <FormLabel>Hakkımda</FormLabel>
+                          <FormControl>
+                            <Textarea placeholder="Kendiniz hakkında kısa bilgi" {...field} />
+                          </FormControl>
+                          <FormMessage />
+                        </FormItem>
+                      )}
+                    />
+
+                    <div className="flex justify-end gap-2">
+                      <Button type="button" variant="outline" onClick={() => setIsEditing(false)}>
+                        İptal
+                      </Button>
+                      <Button type="submit" className="bg-yellow-600 hover:bg-yellow-700">
+                        <Save className="w-4 h-4 mr-2" />
+                        Kaydet
+                      </Button>
+                    </div>
+                  </form>
+                </Form>
+              ) : (
+                <div className="space-y-6">
+                  <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                    <div className="space-y-4">
+                      <div>
+                        <label className="text-sm font-medium text-gray-500">Ad</label>
+                        <p className="text-gray-900">{mockEmployeeData.firstName}</p>
+                      </div>
+                      <div>
+                        <label className="text-sm font-medium text-gray-500">E-posta</label>
+                        <div className="flex items-center gap-2">
+                          <Mail className="w-4 h-4 text-gray-400" />
+                          <p className="text-gray-900">{mockEmployeeData.email}</p>
+                        </div>
+                      </div>
+                      <div>
+                        <label className="text-sm font-medium text-gray-500">Doğum Tarihi</label>
+                        <div className="flex items-center gap-2">
+                          <Calendar className="w-4 h-4 text-gray-400" />
+                          <p className="text-gray-900">{mockEmployeeData.birthDate}</p>
+                        </div>
+                      </div>
+                    </div>
+                    <div className="space-y-4">
+                      <div>
+                        <label className="text-sm font-medium text-gray-500">Soyad</label>
+                        <p className="text-gray-900">{mockEmployeeData.lastName}</p>
+                      </div>
+                      <div>
+                        <label className="text-sm font-medium text-gray-500">Telefon</label>
+                        <div className="flex items-center gap-2">
+                          <Phone className="w-4 h-4 text-gray-400" />
+                          <p className="text-gray-900">{mockEmployeeData.phone}</p>
+                        </div>
+                      </div>
+                      <div>
+                        <label className="text-sm font-medium text-gray-500">Acil Durum İletişim</label>
+                        <div className="flex items-center gap-2">
+                          <Shield className="w-4 h-4 text-gray-400" />
+                          <p className="text-gray-900">{mockEmployeeData.emergencyContact}</p>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+
+                  <div>
+                    <label className="text-sm font-medium text-gray-500">Adres</label>
+                    <div className="flex items-center gap-2 mt-1">
+                      <MapPin className="w-4 h-4 text-gray-400" />
+                      <p className="text-gray-900">{mockEmployeeData.address}</p>
+                    </div>
+                  </div>
+
+                  {mockEmployeeData.bio && (
+                    <div>
+                      <label className="text-sm font-medium text-gray-500">Hakkımda</label>
+                      <p className="text-gray-900 mt-1">{mockEmployeeData.bio}</p>
+                    </div>
+                  )}
+                </div>
+              )}
             </CardContent>
           </Card>
         </div>
