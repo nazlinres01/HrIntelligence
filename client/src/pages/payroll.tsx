@@ -182,6 +182,198 @@ export default function Payroll() {
       status: "hazırlandı",
       paymentDate: null,
       netSalary: 12744
+    },
+    {
+      id: 9,
+      employeeId: 473,
+      employee: { firstName: "Burak", lastName: "Arslan", position: "Mobile Developer", department: "Yazılım Geliştirme" },
+      period: "2024-06",
+      basicSalary: 26000,
+      overtime: 2800,
+      bonus: 4500,
+      deductions: 750,
+      tax: 5850,
+      socialSecurity: 4160,
+      notes: "Mobil uygulama lansmanı bonusu",
+      status: "ödendi",
+      paymentDate: "2024-06-30",
+      netSalary: 21740
+    },
+    {
+      id: 10,
+      employeeId: 474,
+      employee: { firstName: "Deniz", lastName: "Korkmaz", position: "Marketing Specialist", department: "Pazarlama" },
+      period: "2024-06",
+      basicSalary: 19000,
+      overtime: 1200,
+      bonus: 3000,
+      deductions: 400,
+      tax: 4080,
+      socialSecurity: 3248,
+      notes: "Kampanya başarısı bonusu",
+      status: "ödendi",
+      paymentDate: "2024-06-30",
+      netSalary: 15472
+    },
+    {
+      id: 11,
+      employeeId: 475,
+      employee: { firstName: "Oğuz", lastName: "Tan", position: "Data Analyst", department: "Veri Analizi" },
+      period: "2024-06",
+      basicSalary: 23000,
+      overtime: 1600,
+      bonus: 2500,
+      deductions: 300,
+      tax: 4830,
+      socialSecurity: 3936,
+      notes: "Veri analizi projesi bonusu",
+      status: "onay_bekliyor",
+      paymentDate: null,
+      netSalary: 17034
+    },
+    {
+      id: 12,
+      employeeId: 476,
+      employee: { firstName: "Ece", lastName: "Sönmez", position: "QA Engineer", department: "Kalite Kontrol" },
+      period: "2024-06",
+      basicSalary: 21000,
+      overtime: 2000,
+      bonus: 1800,
+      deductions: 600,
+      tax: 4320,
+      socialSecurity: 3680,
+      notes: "Test otomasyonu geliştirme",
+      status: "ödendi",
+      paymentDate: "2024-06-30",
+      netSalary: 16200
+    },
+    {
+      id: 13,
+      employeeId: 477,
+      employee: { firstName: "Kemal", lastName: "Başar", position: "Team Lead", department: "Yazılım Geliştirme" },
+      period: "2024-06",
+      basicSalary: 35000,
+      overtime: 0,
+      bonus: 8500,
+      deductions: 1200,
+      tax: 7805,
+      socialSecurity: 5600,
+      notes: "Takım lideri performans bonusu",
+      status: "ödendi",
+      paymentDate: "2024-06-30",
+      netSalary: 28895
+    },
+    {
+      id: 14,
+      employeeId: 478,
+      employee: { firstName: "Gizem", lastName: "Avcı", position: "Content Manager", department: "Pazarlama" },
+      period: "2024-06",
+      basicSalary: 17500,
+      overtime: 800,
+      bonus: 2200,
+      deductions: 350,
+      tax: 3645,
+      socialSecurity: 2928,
+      notes: "İçerik stratejisi başarısı",
+      status: "hazırlandı",
+      paymentDate: null,
+      netSalary: 13577
+    },
+    {
+      id: 15,
+      employeeId: 479,
+      employee: { firstName: "Tolga", lastName: "Güven", position: "System Administrator", department: "Altyapı" },
+      period: "2024-06",
+      basicSalary: 24500,
+      overtime: 3000,
+      bonus: 3500,
+      deductions: 500,
+      tax: 5550,
+      socialSecurity: 4400,
+      notes: "Sistem güvenliği geliştirme",
+      status: "ödendi",
+      paymentDate: "2024-06-30",
+      netSalary: 20550
+    },
+    {
+      id: 16,
+      employeeId: 480,
+      employee: { firstName: "Merve", lastName: "Doğan", position: "Business Analyst", department: "İş Geliştirme" },
+      period: "2024-06",
+      basicSalary: 22500,
+      overtime: 1400,
+      bonus: 2800,
+      deductions: 400,
+      tax: 4695,
+      socialSecurity: 3832,
+      notes: "İş süreçleri optimizasyonu",
+      status: "onay_bekliyor",
+      paymentDate: null,
+      netSalary: 16873
+    },
+    {
+      id: 17,
+      employeeId: 481,
+      employee: { firstName: "Hakan", lastName: "Çetin", position: "Security Specialist", department: "Güvenlik" },
+      period: "2024-06",
+      basicSalary: 27000,
+      overtime: 2400,
+      bonus: 5500,
+      deductions: 900,
+      tax: 6210,
+      socialSecurity: 4536,
+      notes: "Siber güvenlik projesi bonusu",
+      status: "ödendi",
+      paymentDate: "2024-06-30",
+      netSalary: 22754
+    },
+    {
+      id: 18,
+      employeeId: 482,
+      employee: { firstName: "Elif", lastName: "Özdemir", position: "Graphic Designer", department: "Tasarım" },
+      period: "2024-06",
+      basicSalary: 16500,
+      overtime: 600,
+      bonus: 1800,
+      deductions: 250,
+      tax: 3375,
+      socialSecurity: 2736,
+      notes: "Kurumsal kimlik tasarımı",
+      status: "ödendi",
+      paymentDate: "2024-06-30",
+      netSalary: 12539
+    },
+    {
+      id: 19,
+      employeeId: 483,
+      employee: { firstName: "Murat", lastName: "Şen", position: "Database Administrator", department: "Altyapı" },
+      period: "2024-06",
+      basicSalary: 25500,
+      overtime: 1800,
+      bonus: 3200,
+      deductions: 600,
+      tax: 5400,
+      socialSecurity: 4368,
+      notes: "Veritabanı optimizasyonu",
+      status: "hazırlandı",
+      paymentDate: null,
+      netSalary: 20130
+    },
+    {
+      id: 20,
+      employeeId: 484,
+      employee: { firstName: "Sıla", lastName: "Kaplan", position: "HR Business Partner", department: "İnsan Kaynakları" },
+      period: "2024-06",
+      basicSalary: 23500,
+      overtime: 0,
+      bonus: 4000,
+      deductions: 700,
+      tax: 4905,
+      socialSecurity: 3712,
+      notes: "Çalışan memnuniyeti projesi",
+      status: "ödendi",
+      paymentDate: "2024-06-30",
+      netSalary: 18183
     }
   ];
 
@@ -609,16 +801,31 @@ export default function Payroll() {
                       <td className="py-4 text-gray-700">
                         {new Date(payroll.period + "-01").toLocaleDateString('tr-TR', { month: 'long', year: 'numeric' })}
                       </td>
-                      <td className="py-4 text-gray-700">{formatCurrency(payroll.basicSalary)}</td>
-                      <td className="py-4 text-gray-700">{formatCurrency(payroll.overtime || 0)}</td>
-                      <td className="py-4 text-gray-700">{formatCurrency(payroll.bonus || 0)}</td>
-                      <td className="py-4 text-gray-700">
-                        {formatCurrency((payroll.deductions || 0) + (payroll.tax || 0) + (payroll.socialSecurity || 0))}
+                      <td className="py-4">
+                        <div className="text-gray-900 font-medium">{formatCurrency(payroll.basicSalary)}</div>
+                        <div className="text-xs text-gray-500">{payroll.employee?.department}</div>
                       </td>
                       <td className="py-4">
-                        <Badge className="bg-green-100 text-green-800">
-                          {formatCurrency(calculateNetSalary(payroll))}
-                        </Badge>
+                        <div className="text-gray-900">{formatCurrency(payroll.overtime || 0)}</div>
+                        {payroll.overtime > 0 && <div className="text-xs text-blue-600">+{Math.round((payroll.overtime / payroll.basicSalary) * 100)}%</div>}
+                      </td>
+                      <td className="py-4">
+                        <div className="text-gray-900">{formatCurrency(payroll.bonus || 0)}</div>
+                        {payroll.bonus > 0 && <div className="text-xs text-green-600">{payroll.notes}</div>}
+                      </td>
+                      <td className="py-4">
+                        <div className="text-gray-900">{formatCurrency((payroll.deductions || 0) + (payroll.tax || 0) + (payroll.socialSecurity || 0))}</div>
+                        <div className="text-xs text-gray-500">
+                          Vergi: {formatCurrency(payroll.tax || 0)} | SGK: {formatCurrency(payroll.socialSecurity || 0)}
+                        </div>
+                      </td>
+                      <td className="py-4">
+                        <div className="font-bold text-lg text-green-700">
+                          {formatCurrency(payroll.netSalary || calculateNetSalary(payroll))}
+                        </div>
+                        <div className="text-xs text-gray-500">
+                          Net: %{Math.round(((payroll.netSalary || calculateNetSalary(payroll)) / (payroll.basicSalary + (payroll.overtime || 0) + (payroll.bonus || 0))) * 100)}
+                        </div>
                       </td>
                       <td className="py-4">
                         {getStatusBadge(payroll.status)}
