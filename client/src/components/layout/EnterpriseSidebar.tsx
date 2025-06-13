@@ -209,18 +209,13 @@ const getRoleBasedNavigation = (userRole: UserRole): NavigationSection[] => {
             { name: "İzin Talepleri", href: "/my-leaves", icon: Calendar, show: true, description: "İzin taleplerimi yönet" },
             { name: "Mesai Kayıtları", href: "/timesheet", icon: Clock, show: true, description: "Çalışma saatlerimi kaydet" },
             { name: "Harcama Talepleri", href: "/expenses", icon: CreditCard, show: true, description: "Harcama taleplerimi gönder" },
-          ]
-        },
-        {
-          title: "Gelişim ve İletişim",
-          color: "from-emerald-600 to-teal-600",
-          items: [
             { name: "Performansım", href: "/my-performance", icon: TrendingUp, show: true, description: "Performans değerlendirmelerim" },
             { name: "Eğitimlerim", href: "/my-training", icon: BookOpen, show: true, description: "Eğitim programlarım" },
             { name: "Mesajlar", href: "/messages", icon: MessageSquare, show: true, description: "İç iletişim mesajları" },
             { name: "Duyurular", href: "/announcements", icon: Bell, show: true, description: "Şirket duyuruları" },
           ]
         },
+
         {
           title: "Diğer",
           color: "from-gray-600 to-gray-700",
