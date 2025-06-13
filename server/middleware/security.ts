@@ -7,7 +7,7 @@ import crypto from 'crypto';
 const rateLimitStore = new Map<string, { count: number; resetTime: number }>();
 
 // Security middleware for rate limiting
-export const rateLimiter = (maxRequests: number = 100, windowMs: number = 15 * 60 * 1000) => {
+export const rateLimiter = (maxRequests: number = 1000, windowMs: number = 15 * 60 * 1000) => {
   return (req: Request, res: Response, next: NextFunction) => {
     const clientIP = req.ip || req.connection.remoteAddress || 'unknown';
     const now = Date.now();

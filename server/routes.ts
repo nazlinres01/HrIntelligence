@@ -54,18 +54,9 @@ export async function registerRoutes(app: Express): Promise<Server> {
   // Auth middleware
   await setupAuth(app);
 
-  // Apply security middleware selectively (bypass for demo endpoints)
-  app.use((req, res, next) => {
-    const isDemoEndpoint = req.path === '/api/companies' || req.path === '/api/users';
-    if (isDemoEndpoint) {
-      return next(); // Skip security for demo data
-    }
-    sanitizeInput(req, res, () => {
-      xssProtection(req, res, () => {
-        rateLimiter()(req, res, next);
-      });
-    });
-  });
+  // Apply basic security middleware
+  app.use(xssProtection);
+  app.use(sanitizeInput);
 
   // Enhanced registration endpoint with security
   app.post('/api/auth/register', async (req, res) => {
