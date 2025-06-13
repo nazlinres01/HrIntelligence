@@ -1462,6 +1462,259 @@ export async function registerRoutes(app: Express): Promise<Server> {
     }
   });
 
+  // Department Manager specific endpoints
+  app.get('/api/stats/department-manager', isAuthenticated, async (req: any, res) => {
+    try {
+      const userId = req.user.claims.sub;
+      
+      // Get department manager stats
+      const stats = {
+        totalTeamMembers: 24,
+        averagePerformance: 89,
+        activeProjects: 7,
+        targetCompletion: 92,
+        pendingApprovals: 5,
+        monthlyBudgetUtilization: 78,
+        teamSatisfaction: 95,
+        departmentRevenue: "2.4M TL"
+      };
+
+      res.json(stats);
+    } catch (error) {
+      console.error("Error fetching department manager stats:", error);
+      res.status(500).json({ message: "Departman müdürü istatistikleri alınamadı" });
+    }
+  });
+
+  app.get('/api/department-team', isAuthenticated, async (req: any, res) => {
+    try {
+      const userId = req.user.claims.sub;
+      
+      // Get department team members
+      const teamMembers = [
+        {
+          id: "emp_001",
+          name: "Ahmet Yılmaz",
+          position: "Senior Yazılım Geliştirici",
+          performance: 95,
+          tasksCompleted: 28,
+          totalTasks: 30,
+          lastActivity: "2 saat önce",
+          status: "active"
+        },
+        {
+          id: "emp_002", 
+          name: "Ayşe Demir",
+          position: "UI/UX Designer",
+          performance: 88,
+          tasksCompleted: 15,
+          totalTasks: 18,
+          lastActivity: "1 saat önce",
+          status: "active"
+        },
+        {
+          id: "emp_003",
+          name: "Mehmet Kaya", 
+          position: "Backend Developer",
+          performance: 92,
+          tasksCompleted: 22,
+          totalTasks: 25,
+          lastActivity: "30 dakika önce",
+          status: "active"
+        },
+        {
+          id: "emp_004",
+          name: "Fatma Özkan",
+          position: "QA Engineer", 
+          performance: 90,
+          tasksCompleted: 18,
+          totalTasks: 20,
+          lastActivity: "4 saat önce",
+          status: "active"
+        }
+      ];
+
+      res.json(teamMembers);
+    } catch (error) {
+      console.error("Error fetching department team:", error);
+      res.status(500).json({ message: "Departman takımı bilgileri alınamadı" });
+    }
+  });
+
+  app.get('/api/department-projects', isAuthenticated, async (req: any, res) => {
+    try {
+      const userId = req.user.claims.sub;
+      
+      // Get department projects
+      const projects = [
+        {
+          id: 1,
+          name: "E-ticaret Platformu",
+          progress: 75,
+          deadline: "2024-12-15",
+          teamSize: 5,
+          budget: "850.000 TL",
+          status: "progress",
+          priority: "high",
+          manager: "Ahmet Yılmaz"
+        },
+        {
+          id: 2,
+          name: "Mobil Uygulama Geliştirme",
+          progress: 45,
+          deadline: "2024-12-30", 
+          teamSize: 3,
+          budget: "620.000 TL",
+          status: "progress",
+          priority: "medium",
+          manager: "Ayşe Demir"
+        },
+        {
+          id: 3,
+          name: "API Modernizasyonu",
+          progress: 90,
+          deadline: "2024-12-10",
+          teamSize: 4,
+          budget: "420.000 TL", 
+          status: "nearly_complete",
+          priority: "high",
+          manager: "Mehmet Kaya"
+        },
+        {
+          id: 4,
+          name: "Database Optimizasyonu",
+          progress: 25,
+          deadline: "2024-12-20",
+          teamSize: 2,
+          budget: "180.000 TL",
+          status: "early",
+          priority: "low", 
+          manager: "Fatma Özkan"
+        }
+      ];
+
+      res.json(projects);
+    } catch (error) {
+      console.error("Error fetching department projects:", error);
+      res.status(500).json({ message: "Departman projeleri alınamadı" });
+    }
+  });
+
+  app.get('/api/pending-approvals', isAuthenticated, async (req: any, res) => {
+    try {
+      const userId = req.user.claims.sub;
+      
+      // Get pending approvals for department manager
+      const approvals = [
+        {
+          id: 1,
+          type: "leave",
+          employeeName: "Ahmet Yılmaz",
+          requestType: "Yıllık İzin",
+          startDate: "2024-12-20",
+          endDate: "2024-12-25",
+          days: 5,
+          reason: "Aile ziyareti",
+          submittedAt: "2024-12-10"
+        },
+        {
+          id: 2,
+          type: "expense",
+          employeeName: "Ayşe Demir",
+          requestType: "Seyahat Gideri",
+          amount: "2.500 TL",
+          description: "İstanbul müşteri ziyareti",
+          category: "Ulaşım",
+          submittedAt: "2024-12-11"
+        },
+        {
+          id: 3,
+          type: "overtime",
+          employeeName: "Mehmet Kaya",
+          requestType: "Fazla Mesai",
+          date: "2024-12-09",
+          hours: 4,
+          reason: "Proje deadline",
+          submittedAt: "2024-12-10"
+        }
+      ];
+
+      res.json(approvals);
+    } catch (error) {
+      console.error("Error fetching pending approvals:", error);
+      res.status(500).json({ message: "Bekleyen onaylar alınamadı" });
+    }
+  });
+
+  app.post('/api/approve-request', isAuthenticated, async (req: any, res) => {
+    try {
+      const userId = req.user.claims.sub;
+      const { requestId, requestType, action, comments } = req.body;
+      
+      // Process approval/rejection
+      const result = {
+        id: requestId,
+        status: action, // 'approved' or 'rejected'
+        approvedBy: userId,
+        approvedAt: new Date().toISOString(),
+        comments: comments || ""
+      };
+
+      // Create audit log
+      await storage.createAuditLog({
+        action: `${requestType}_${action}`,
+        resource: "approval_request",
+        details: `${requestType} talebi ${action === 'approved' ? 'onaylandı' : 'reddedildi'}: ${comments}`,
+        userId: userId,
+        companyId: 753
+      });
+
+      res.json(result);
+    } catch (error) {
+      console.error("Error processing approval:", error);
+      res.status(500).json({ message: "Onay işlemi gerçekleştirilemedi" });
+    }
+  });
+
+  app.get('/api/department-analytics', isAuthenticated, async (req: any, res) => {
+    try {
+      const userId = req.user.claims.sub;
+      
+      // Get department analytics data
+      const analytics = {
+        performanceMetrics: {
+          averagePerformance: 89.2,
+          topPerformer: "Ahmet Yılmaz",
+          improvementNeeded: 1,
+          monthlyTrend: [85, 87, 89, 92, 89]
+        },
+        productivityMetrics: {
+          tasksCompleted: 156,
+          tasksInProgress: 23,
+          averageCompletionTime: "2.3 gün",
+          monthlyProductivity: [92, 94, 89, 95, 93]
+        },
+        projectMetrics: {
+          onTimeDelivery: 87,
+          budgetAdherence: 93,
+          qualityScore: 91,
+          clientSatisfaction: 95
+        },
+        teamMetrics: {
+          attendance: 96,
+          turnoverRate: 8,
+          trainingCompletion: 94,
+          teamSatisfaction: 92
+        }
+      };
+
+      res.json(analytics);
+    } catch (error) {
+      console.error("Error fetching department analytics:", error);
+      res.status(500).json({ message: "Departman analitikleri alınamadı" });
+    }
+  });
+
   // Training routes
   app.get('/api/training', requireAuth, async (req: any, res) => {
     try {

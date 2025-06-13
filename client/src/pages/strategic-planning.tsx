@@ -105,7 +105,7 @@ export default function StrategicPlanningPage() {
         <TabsContent value="objectives" className="space-y-6">
           <div className="flex justify-between items-center">
             <h2 className="text-2xl font-bold text-gray-800">Stratejik Hedefler</h2>
-            <Button className="bg-blue-600 hover:bg-blue-700 text-white">
+            <Button className="bg-red-600 hover:bg-red-700 text-white">
               <Plus className="h-4 w-4 mr-2" />
               Yeni Hedef Ekle
             </Button>
@@ -161,7 +161,7 @@ export default function StrategicPlanningPage() {
                     </div>
                   </div>
 
-                  <Button variant="outline" className="w-full">
+                  <Button variant="outline" className="w-full border-red-200 text-red-600 hover:bg-red-50">
                     Detayları Görüntüle
                     <ChevronRight className="h-4 w-4 ml-2" />
                   </Button>
@@ -212,7 +212,7 @@ export default function StrategicPlanningPage() {
               </CardHeader>
               <CardContent>
                 <p className="text-gray-600 mb-4">Departmanın güçlü ve zayıf yönlerini analiz edin</p>
-                <Button variant="outline" className="w-full">Analiz Başlat</Button>
+                <Button variant="outline" className="w-full border-red-200 text-red-600 hover:bg-red-50">Analiz Başlat</Button>
               </CardContent>
             </Card>
 
@@ -225,7 +225,7 @@ export default function StrategicPlanningPage() {
               </CardHeader>
               <CardContent>
                 <p className="text-gray-600 mb-4">Proje zaman çizelgelerini görselleştirin</p>
-                <Button variant="outline" className="w-full">Şema Oluştur</Button>
+                <Button variant="outline" className="w-full border-red-200 text-red-600 hover:bg-red-50">Şema Oluştur</Button>
               </CardContent>
             </Card>
 
@@ -238,7 +238,7 @@ export default function StrategicPlanningPage() {
               </CardHeader>
               <CardContent>
                 <p className="text-gray-600 mb-4">İnsan kaynakları ve bütçe planlaması</p>
-                <Button variant="outline" className="w-full">Planlama Başlat</Button>
+                <Button variant="outline" className="w-full border-red-200 text-red-600 hover:bg-red-50">Planlama Başlat</Button>
               </CardContent>
             </Card>
 
@@ -251,7 +251,7 @@ export default function StrategicPlanningPage() {
               </CardHeader>
               <CardContent>
                 <p className="text-gray-600 mb-4">Potansiyel riskleri belirleyin ve önlem alın</p>
-                <Button variant="outline" className="w-full">Risk Analizi</Button>
+                <Button variant="outline" className="w-full border-red-200 text-red-600 hover:bg-red-50">Risk Analizi</Button>
               </CardContent>
             </Card>
           </div>
