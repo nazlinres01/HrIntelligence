@@ -77,11 +77,11 @@ const getRoleBasedNavigation = (userRole: UserRole): NavigationSection[] => {
           title: "Kurumsal Yönetim",
           color: "from-emerald-600 to-teal-600",
           items: [
-            { name: "Şirket Yönetimi", href: "/companies", icon: Building2, show: true, description: "Şirket yapısı ve organizasyon" },
+            { name: "Şirket Yönetimi", href: "/admin/company-management", icon: Building2, show: true, description: "Şirket yapısı ve organizasyon" },
             { name: "Kullanıcı Yönetimi", href: "/admin/users", icon: Users, show: true, description: "Kullanıcı erişim ve yetkileri" },
             { name: "Departman Kontrolü", href: "/departments", icon: Target, show: true, description: "Departman organizasyonu" },
-            { name: "Güvenlik & Denetim", href: "/admin/security", icon: Shield, show: true, description: "Güvenlik politikaları ve denetim" },
-            { name: "Sistem Ayarları", href: "/admin/settings", icon: Settings, show: true, description: "Global sistem konfigürasyonu" },
+            { name: "Güvenlik & Denetim", href: "/admin/security-audit", icon: Shield, show: true, description: "Güvenlik politikaları ve denetim" },
+            { name: "Sistem Ayarları", href: "/admin/system-settings", icon: Settings, show: true, description: "Global sistem konfigürasyonu" },
           ]
         },
         {
