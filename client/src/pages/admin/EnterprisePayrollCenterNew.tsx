@@ -183,7 +183,7 @@ export default function EnterprisePayrollCenter() {
             <p className="text-gray-600">Kurumsal bordro sistemi ve ücret yönetimi</p>
           </div>
           <div className="flex space-x-3">
-            <Button variant="outline" className="border-gray-300 text-gray-700">
+            <Button variant="lightgray" className="border-gray-300 text-gray-700">
               <Download className="h-4 w-4 mr-2" />
               Rapor İndir
             </Button>
@@ -301,7 +301,7 @@ export default function EnterprisePayrollCenter() {
                     <div className="flex justify-end space-x-3 pt-4">
                       <Button 
                         type="button" 
-                        variant="outline" 
+                        variant="lightgray" 
                         onClick={() => setIsDialogOpen(false)}
                         className="border-gray-300 text-gray-700"
                       >

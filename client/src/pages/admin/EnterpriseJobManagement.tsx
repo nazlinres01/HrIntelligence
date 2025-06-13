@@ -190,7 +190,7 @@ export default function EnterpriseJobManagement() {
       case "urgent":
         return <Badge className="bg-red-100 text-red-800">Acil</Badge>;
       default:
-        return <Badge variant="outline">{status}</Badge>;
+        return <Badge variant="lightgray">{status}</Badge>;
     }
   };
 
@@ -205,7 +205,7 @@ export default function EnterpriseJobManagement() {
       case "internship":
         return <Badge className="bg-yellow-100 text-yellow-800">Staj</Badge>;
       default:
-        return <Badge variant="outline">{type}</Badge>;
+        return <Badge variant="lightgray">{type}</Badge>;
     }
   };
 
@@ -258,7 +258,7 @@ export default function EnterpriseJobManagement() {
             <p className="text-gray-600">İş ilanlarını oluşturun ve başvuruları yönetin</p>
           </div>
           <div className="flex space-x-3">
-            <Button variant="outline" className="border-gray-200 text-gray-700 hover:bg-gray-50">
+            <Button variant="lightgray" className="border-gray-200 text-gray-700 hover:bg-gray-50">
               <Download className="mr-2 h-4 w-4" />
               Rapor İndir
             </Button>
@@ -333,7 +333,7 @@ export default function EnterpriseJobManagement() {
                   </div>
 
                   <DialogFooter>
-                    <Button type="button" variant="outline" onClick={() => setIsDialogOpen(false)}>
+                    <Button type="button" variant="lightgray" onClick={() => setIsDialogOpen(false)}>
                       İptal
                     </Button>
                     <Button 
@@ -449,7 +449,7 @@ export default function EnterpriseJobManagement() {
                     <TableCell>
                       <div className="flex items-center space-x-2">
                         <Button
-                          variant="outline"
+                          variant="lightgray"
                           size="sm"
                           onClick={() => handleEdit(job)}
                           className="text-blue-600 border-blue-200 hover:bg-blue-50"
@@ -457,14 +457,14 @@ export default function EnterpriseJobManagement() {
                           <Edit className="h-3 w-3" />
                         </Button>
                         <Button
-                          variant="outline"
+                          variant="lightgray"
                           size="sm"
                           className="text-green-600 border-green-200 hover:bg-green-50"
                         >
                           <Eye className="h-3 w-3" />
                         </Button>
                         <Button
-                          variant="outline"
+                          variant="lightgray"
                           size="sm"
                           onClick={() => deleteJobMutation.mutate(job.id)}
                           className="text-red-600 border-red-200 hover:bg-red-50"

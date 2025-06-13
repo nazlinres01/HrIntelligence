@@ -159,7 +159,7 @@ export default function HRManagerDashboard() {
                     <Settings className="h-4 w-4 mr-2" />
                     İK Ayarları
                   </Button>
-                  <Button variant="outline" size="sm">
+                  <Button variant="lightgray" size="sm">
                     <Bell className="h-4 w-4 mr-2" />
                     Bildirimler
                     <Badge variant="destructive" className="ml-2">3</Badge>

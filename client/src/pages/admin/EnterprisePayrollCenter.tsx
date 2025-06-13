@@ -215,7 +215,7 @@ export default function EnterprisePayrollCenter() {
       case "failed":
         return <Badge className="bg-red-600 text-white">Failed</Badge>;
       default:
-        return <Badge variant="outline">{status}</Badge>;
+        return <Badge variant="lightgray">{status}</Badge>;
     }
   };
 
@@ -426,11 +426,11 @@ export default function EnterprisePayrollCenter() {
             <div className="flex items-center justify-between">
               <CardTitle className="text-xl font-semibold">Employee Compensation Details</CardTitle>
               <div className="flex items-center space-x-2">
-                <Badge variant="outline" className="text-green-600 border-green-600">
+                <Badge variant="lightgray" className="text-green-600 border-green-600">
                   {processedCount} Processed
                 </Badge>
                 {pendingCount > 0 && (
-                  <Badge variant="outline" className="text-amber-600 border-amber-600">
+                  <Badge variant="lightgray" className="text-amber-600 border-amber-600">
                     {pendingCount} Pending
                   </Badge>
                 )}

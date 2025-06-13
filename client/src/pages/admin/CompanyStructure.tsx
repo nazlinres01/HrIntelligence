@@ -193,7 +193,7 @@ export default function CompanyStructure() {
             <p className="text-gray-600">Kurumsal yapı, şirket bilgileri ve organizasyon şeması</p>
           </div>
           <div className="flex space-x-3">
-            <Button variant="outline" className="border-gray-300 text-gray-700">
+            <Button variant="lightgray" className="border-gray-300 text-gray-700">
               <Download className="h-4 w-4 mr-2" />
               Rapor İndir
             </Button>
@@ -391,7 +391,7 @@ export default function CompanyStructure() {
                     <div className="flex justify-end space-x-3 pt-4">
                       <Button 
                         type="button" 
-                        variant="outline" 
+                        variant="lightgray" 
                         onClick={() => setIsCompanyDialogOpen(false)}
                         className="border-gray-300 text-gray-700"
                       >

@@ -421,7 +421,7 @@ export default function EnterpriseCompanyManagement() {
                 <div className="flex justify-end space-x-3">
                   <Button
                     type="button"
-                    variant="outline"
+                    variant="lightgray"
                     onClick={() => setIsCreateDialogOpen(false)}
                     className="border-gray-600 text-gray-300 hover:bg-gray-700"
                   >
@@ -624,7 +624,7 @@ export default function EnterpriseCompanyManagement() {
                 <div className="flex justify-end space-x-3">
                   <Button
                     type="button"
-                    variant="outline"
+                    variant="lightgray"
                     onClick={() => {
                       setIsEditDialogOpen(false);
                       setEditingCompany(null);
