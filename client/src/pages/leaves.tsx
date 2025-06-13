@@ -364,7 +364,7 @@ export default function Leaves() {
         <div className="flex items-center gap-2">
           <Dialog>
             <DialogTrigger asChild>
-              <Button className="bg-teal-600 hover:bg-teal-700">
+              <Button variant="outline" className="border-gray-300 text-gray-700 hover:bg-gray-50">
                 <Calendar className="w-4 h-4 mr-2" />
                 Yeni İzin Talebi
               </Button>

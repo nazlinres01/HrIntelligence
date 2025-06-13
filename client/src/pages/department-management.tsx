@@ -169,7 +169,7 @@ export default function DepartmentManagementPage() {
           </div>
           <Dialog>
             <DialogTrigger asChild>
-              <Button className="bg-teal-600 hover:bg-teal-700 mt-4 lg:mt-0">
+              <Button variant="outline" className="border-gray-300 text-gray-700 hover:bg-gray-50 mt-4 lg:mt-0">
                 <Plus className="h-4 w-4 mr-2" />
                 Yeni Departman
               </Button>
@@ -262,10 +262,10 @@ export default function DepartmentManagementPage() {
                     />
                   </div>
                   <div className="flex justify-end gap-4 pt-4">
-                    <Button type="button" variant="outline" className="border-teal-600 text-teal-600 hover:bg-teal-50">
+                    <Button type="button" variant="outline" className="border-gray-300 text-gray-700 hover:bg-gray-50">
                       İptal
                     </Button>
-                    <Button type="submit" className="bg-teal-600 hover:bg-teal-700">
+                    <Button type="submit" variant="outline" className="border-gray-300 text-gray-700 hover:bg-gray-50">
                       Departman Oluştur
                     </Button>
                   </div>
