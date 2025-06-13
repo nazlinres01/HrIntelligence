@@ -88,11 +88,9 @@ export interface IStorage {
   // Dashboard statistics
   getEmployeeStats(): Promise<{
     totalEmployees: number;
-    activeEmployees: number;
-    onLeaveEmployees: number;
-    newHires: number;
-    avgPerformance: string;
+    activeLeaves: number;
     monthlyPayroll: string;
+    avgPerformance: string;
   }>;
   
   getHRManagerStats(): Promise<{
@@ -782,15 +780,12 @@ export class DatabaseStorage implements IStorage {
   // Dashboard Statistics Methods
   async getEmployeeStats(): Promise<{
     totalEmployees: number;
-    activeEmployees: number;
-    onLeaveEmployees: number;
-    newHires: number;
-    avgPerformance: string;
+    activeLeaves: number;
     monthlyPayroll: string;
+    avgPerformance: string;
   }> {
     const allEmployees = await db.select().from(employees);
     const totalEmployees = allEmployees.length;
-    const activeEmployees = allEmployees.filter(emp => emp.status === 'active').length;
     
     // Get employees currently on leave
     const currentDate = new Date().toISOString().split('T')[0];
@@ -799,13 +794,7 @@ export class DatabaseStorage implements IStorage {
         eq(leaves.status, 'approved'),
         eq(leaves.startDate, currentDate)
       ));
-    const onLeaveEmployees = onLeaveResult.length;
-
-    // Get new hires this month
-    const currentMonth = new Date().toISOString().slice(0, 7);
-    const newHires = allEmployees.filter(emp => 
-      emp.startDate && emp.startDate.toString().slice(0, 7) === currentMonth
-    ).length;
+    const activeLeaves = onLeaveResult.length;
 
     // Calculate average performance
     const performanceResults = await db.select().from(performance);
@@ -814,15 +803,14 @@ export class DatabaseStorage implements IStorage {
       : '0.0';
 
     // Calculate monthly payroll
+    const currentMonth = new Date().toISOString().slice(0, 7);
     const payrollResults = await db.select().from(payroll)
       .where(eq(payroll.month, currentMonth));
     const monthlyPayroll = payrollResults.reduce((sum, p) => sum + parseFloat(p.netSalary || '0'), 0).toLocaleString('tr-TR');
 
     return {
       totalEmployees,
-      activeEmployees,
-      onLeaveEmployees,
-      newHires,
+      activeLeaves,
       avgPerformance,
       monthlyPayroll
     };

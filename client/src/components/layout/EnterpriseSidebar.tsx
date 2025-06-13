@@ -68,28 +68,42 @@ const getRoleBasedNavigation = (userRole: UserRole): NavigationSection[] => {
           title: "Yönetici Panosu",
           color: "from-blue-600 to-indigo-600",
           items: [
-            { name: "Stratejik Genel Bakış", href: "/admin/strategic-overview", icon: LayoutDashboard, show: true, description: "Üst düzey KPI'lar" },
-            { name: "Analitik Merkezi", href: "/admin/analytics-center", icon: BarChart3, show: true, description: "İş zekası raporları" },
+            { name: "Stratejik Genel Bakış", href: "/", icon: LayoutDashboard, show: true, description: "Üst düzey KPI'lar ve dashboard" },
+            { name: "Analitik Merkezi", href: "/admin/analytics", icon: BarChart3, show: true, description: "İş zekası raporları ve analiz" },
+            { name: "Sistem İzleme", href: "/admin/monitoring", icon: Activity, show: true, description: "Sistem performansı ve sağlık" },
           ]
         },
         {
           title: "Kurumsal Yönetim",
           color: "from-emerald-600 to-teal-600",
           items: [
-            { name: "Şirket Yapısı", href: "/admin/company-structure", icon: Building2, show: true, description: "Organizasyon hiyerarşisi" },
-            { name: "Kullanıcı Yönetimi", href: "/admin/users", icon: Users, show: true, description: "Erişim ve yetkiler" },
-            { name: "Departman Kontrolü", href: "/admin/department-control", icon: Target, show: true, description: "Organizasyon birimleri" },
+            { name: "Şirket Yönetimi", href: "/companies", icon: Building2, show: true, description: "Şirket yapısı ve organizasyon" },
+            { name: "Kullanıcı Yönetimi", href: "/admin/users", icon: Users, show: true, description: "Kullanıcı erişim ve yetkileri" },
+            { name: "Departman Kontrolü", href: "/departments", icon: Target, show: true, description: "Departman organizasyonu" },
+            { name: "Güvenlik & Denetim", href: "/admin/security", icon: Shield, show: true, description: "Güvenlik politikaları ve denetim" },
+            { name: "Sistem Ayarları", href: "/admin/settings", icon: Settings, show: true, description: "Global sistem konfigürasyonu" },
           ]
         },
         {
           title: "İnsan Kaynakları Operasyonları",
-          color: "from-gray-600 to-gray-700",
+          color: "from-purple-600 to-violet-600",
           items: [
-            { name: "Yetenek Kazanımı", href: "/admin/talent-acquisition", icon: Briefcase, show: true, description: "Stratejik işe alım süreçleri" },
-            { name: "Ücret & Haklar", href: "/admin/payroll-new", icon: DollarSign, show: true, description: "Bordro ve maaş yönetimi" },
-            { name: "İzin & Devamsızlık", href: "/leaves", icon: Calendar, show: true, description: "İzin talep ve onay süreçleri" },
-            { name: "Performans Değerlendirme", href: "/performance", icon: TrendingUp, show: true, description: "KPI takip ve analiz" },
-            { name: "Eğitim & Gelişim", href: "/training", icon: BookOpen, show: true, description: "Personel gelişim programları" },
+            { name: "Çalışan Yönetimi", href: "/employees", icon: Users, show: true, description: "Tüm çalışan kayıtları" },
+            { name: "İşe Alım Süreçleri", href: "/jobs", icon: Briefcase, show: true, description: "İş ilanları ve başvuru süreçleri" },
+            { name: "Bordro & Maaş", href: "/payroll", icon: DollarSign, show: true, description: "Bordro ve maaş yönetimi" },
+            { name: "İzin Yönetimi", href: "/leaves", icon: Calendar, show: true, description: "İzin talep ve onay süreçleri" },
+            { name: "Performans Yönetimi", href: "/performance", icon: TrendingUp, show: true, description: "Performans değerlendirme sistemi" },
+            { name: "Eğitim Programları", href: "/training", icon: BookOpen, show: true, description: "Eğitim ve gelişim programları" },
+          ]
+        },
+        {
+          title: "Raporlama & İletişim",
+          color: "from-orange-600 to-red-600",
+          items: [
+            { name: "Kurumsal Raporlar", href: "/reports", icon: FileText, show: true, description: "Detaylı kurumsal raporlar" },
+            { name: "Duyuru Yönetimi", href: "/announcements", icon: Bell, show: true, description: "Kurumsal duyuru yönetimi" },
+            { name: "Bildirim Merkezi", href: "/notifications", icon: Bell, show: true, badge: "3", description: "Sistem bildirimleri" },
+            { name: "Aktivite Günlüğü", href: "/activities", icon: Clock, show: true, description: "Sistem aktivite takibi" },
           ]
         }
       ];
@@ -101,28 +115,41 @@ const getRoleBasedNavigation = (userRole: UserRole): NavigationSection[] => {
           title: "İK Komuta Merkezi",
           color: "from-teal-600 to-emerald-600",
           items: [
-            { name: "İK Panosu", href: "/", icon: LayoutDashboard, show: true, description: "İK operasyonları genel bakış" },
-            { name: "İşgücü Analitiği", href: "/admin/analytics", icon: BarChart3, show: true, description: "Personel metrikleri" },
+            { name: "İK Dashboard", href: "/", icon: LayoutDashboard, show: true, description: "İK operasyonları ana kontrol paneli" },
+            { name: "İşgücü Analitiği", href: "/admin/analytics", icon: BarChart3, show: true, description: "Personel metrikleri ve analizler" },
+            { name: "İK Stratejisi", href: "/hr/strategy", icon: Target, show: true, description: "İK stratejik planlama" },
           ]
         },
         {
-          title: "Çalışan İşlemleri",
+          title: "Personel Yönetimi",
           color: "from-blue-600 to-indigo-600",
           items: [
-            { name: "Çalışan Yönetimi", href: "/employees", icon: Users, show: true, description: "Personel bilgileri ve işlemleri" },
-            { name: "İzin Yönetimi", href: "/leaves", icon: Calendar, show: true, description: "İzin talep ve onay süreçleri" },
-            { name: "Performans Değerlendirme", href: "/performance", icon: TrendingUp, show: true, description: "Performans takip ve raporları" },
-            { name: "Bordro Yönetimi", href: "/payroll", icon: CreditCard, show: true, description: "Maaş ve bordro işlemleri" },
-            { name: "İş İlanları", href: "/jobs", icon: Briefcase, show: true, description: "İş ilanı yönetimi ve başvuru takibi" },
+            { name: "Çalışan Kayıtları", href: "/employees", icon: Users, show: true, description: "Tüm personel bilgileri ve işlemleri" },
+            { name: "Departman Yönetimi", href: "/departments", icon: Building2, show: true, description: "Organizasyon yapısı yönetimi" },
+            { name: "İzin & Devamsızlık", href: "/leaves", icon: Calendar, show: true, description: "İzin talep ve onay süreçleri" },
+            { name: "Bordro & Maaş", href: "/payroll", icon: DollarSign, show: true, description: "Maaş ve bordro yönetimi" },
+            { name: "Performans Sistemi", href: "/performance", icon: TrendingUp, show: true, description: "Performans değerlendirme sistemi" },
           ]
         },
         {
-          title: "Raporlar & Analiz",
+          title: "İşe Alım & Gelişim",
           color: "from-emerald-600 to-teal-600",
           items: [
-            { name: "İK Raporları", href: "/reports", icon: FileText, show: true, description: "Detaylı İK analizleri" },
-            { name: "Eğitim Programları", href: "/training", icon: BookOpen, show: true, description: "Personel gelişim programları" },
-            { name: "Bildirimler", href: "/notifications", icon: Bell, show: true, description: "Sistem bildirimleri" },
+            { name: "İş İlanları", href: "/jobs", icon: Briefcase, show: true, description: "İş ilanı yönetimi ve yayınlama" },
+            { name: "Başvuru Değerlendirme", href: "/applications", icon: FileText, show: true, description: "Başvuru süreçleri ve değerlendirme" },
+            { name: "Mülakat Planları", href: "/interviews", icon: Clock, show: true, description: "Mülakat programı ve takip" },
+            { name: "Eğitim Programları", href: "/training", icon: BookOpen, show: true, description: "Personel gelişim ve eğitim" },
+            { name: "Yetenek Havuzu", href: "/talent-pool", icon: Star, show: true, description: "Yetenek havuzu yönetimi" },
+          ]
+        },
+        {
+          title: "Raporlama & İletişim",
+          color: "from-purple-600 to-violet-600",
+          items: [
+            { name: "İK Raporları", href: "/reports", icon: FileText, show: true, description: "Detaylı İK analizleri ve raporlar" },
+            { name: "Duyuru Yönetimi", href: "/announcements", icon: Bell, show: true, description: "Kurumsal duyuru yönetimi" },
+            { name: "Bildirim Merkezi", href: "/notifications", icon: Bell, show: true, badge: "5", description: "İK bildirimleri ve uyarılar" },
+            { name: "Aktivite Takibi", href: "/activities", icon: Activity, show: true, description: "İK işlemleri aktivite günlüğü" },
           ]
         }
       ];
@@ -134,59 +161,86 @@ const getRoleBasedNavigation = (userRole: UserRole): NavigationSection[] => {
           title: "İK Operasyon Merkezi",
           color: "from-orange-600 to-red-600",
           items: [
-            { name: "İK Panosu", href: "/", icon: LayoutDashboard, show: true, description: "İK operasyonları genel bakış" },
-            { name: "Çalışan Analizi", href: "/admin/analytics", icon: BarChart3, show: true, description: "Personel analizleri" },
+            { name: "İK Dashboard", href: "/", icon: LayoutDashboard, show: true, description: "İK uzmanı kontrol paneli" },
+            { name: "Personel Analitiği", href: "/admin/analytics", icon: BarChart3, show: true, description: "Detaylı personel analizleri" },
+            { name: "İK Süreçleri", href: "/hr/processes", icon: Zap, show: true, description: "İK süreç yönetimi" },
           ]
         },
         {
           title: "Personel İşlemleri",
           color: "from-blue-600 to-indigo-600",
           items: [
-            { name: "Çalışan Kayıtları", href: "/employees", icon: Users, show: true, description: "Çalışan bilgileri ve kayıt işlemleri" },
-            { name: "İzin Takibi", href: "/leaves", icon: Calendar, show: true, description: "İzin durumları ve takip" },
-            { name: "Performans Kayıtları", href: "/performance", icon: TrendingUp, show: true, description: "Performans değerlendirmeleri" },
-            { name: "Bordro Kayıtları", href: "/payroll", icon: CreditCard, show: true, description: "Maaş ve bordro takibi" },
+            { name: "Çalışan Kayıtları", href: "/employees", icon: Users, show: true, description: "Personel dosyaları ve bilgiler" },
+            { name: "İzin Koordinasyonu", href: "/leaves", icon: Calendar, show: true, description: "İzin takip ve koordinasyon" },
+            { name: "Bordro Destek", href: "/payroll", icon: DollarSign, show: true, description: "Bordro işlemleri desteği" },
+            { name: "Performans Takibi", href: "/performance", icon: TrendingUp, show: true, description: "Performans değerlendirme süreçleri" },
+            { name: "Özlük İşleri", href: "/personnel-affairs", icon: FileText, show: true, description: "Özlük işlemleri yönetimi" },
           ]
         },
         {
-          title: "Destek & Raporlama",
+          title: "İşe Alım Desteği",
           color: "from-emerald-600 to-teal-600",
           items: [
-            { name: "İK Raporları", href: "/reports", icon: FileText, show: true, description: "Personel raporları" },
-            { name: "Eğitim Kayıtları", href: "/training", icon: BookOpen, show: true, description: "Eğitim programları takibi" },
-            { name: "Bildirimler", href: "/notifications", icon: Bell, show: true, description: "Sistem bildirimleri" },
+            { name: "Başvuru İnceleme", href: "/applications", icon: Briefcase, show: true, description: "İş başvuru değerlendirmeleri" },
+            { name: "Referans Kontrolleri", href: "/reference-checks", icon: CheckCircle, show: true, description: "Aday referans kontrolü" },
+            { name: "Oryantasyon Süreci", href: "/onboarding", icon: User, show: true, description: "Yeni çalışan oryantasyonu" },
+            { name: "Eğitim Koordinasyonu", href: "/training", icon: BookOpen, show: true, description: "Eğitim program koordinasyonu" },
+          ]
+        },
+        {
+          title: "Dokümantasyon & İletişim",
+          color: "from-purple-600 to-violet-600",
+          items: [
+            { name: "İK Dokümantasyonu", href: "/hr-documentation", icon: Database, show: true, description: "İK doküman yönetimi" },
+            { name: "İç İletişim", href: "/internal-communication", icon: MessageSquare, show: true, description: "İç iletişim koordinasyonu" },
+            { name: "Bildirim Takibi", href: "/notifications", icon: Bell, show: true, badge: "2", description: "İK uzmanı bildirimleri" },
+            { name: "Günlük Aktiviteler", href: "/activities", icon: Clock, show: true, description: "Günlük iş takibi" },
           ]
         }
       ];
 
     case 'department_manager':
+    case 'departman_müdürü':
       return [
         {
           title: "Departman Yönetim Merkezi",
           color: "from-red-600 to-rose-600",
           items: [
-            { name: "Departman Panosu", href: "/", icon: LayoutDashboard, show: true, description: "Departman genel bakış ve yönetim" },
-            { name: "Departman Analizi", href: "/admin/analytics", icon: BarChart3, show: true, description: "Departman performans analizleri" },
+            { name: "Departman Dashboard", href: "/", icon: LayoutDashboard, show: true, description: "Departman kontrol paneli ve yönetim" },
+            { name: "Departman Analitiği", href: "/admin/analytics", icon: BarChart3, show: true, description: "Departman performans ve veri analizi" },
+            { name: "Stratejik Planlama", href: "/department/planning", icon: Target, show: true, description: "Departman stratejik hedef yönetimi" },
           ]
         },
         {
-          title: "Ekip Yönetimi",
+          title: "Ekip & İnsan Kaynakları",
           color: "from-blue-600 to-indigo-600",
           items: [
-            { name: "Ekip Üyeleri", href: "/employees", icon: Users, show: true, description: "Departman çalışanları yönetimi" },
-            { name: "İzin Onayları", href: "/leaves", icon: Calendar, show: true, description: "Departman izin taleplerini onayla" },
-            { name: "Performans Değerlendirme", href: "/performance", icon: TrendingUp, show: true, description: "Ekip performans değerlendirmeleri" },
-            { name: "Hedef Takibi", href: "/targets", icon: Target, show: true, description: "Departman hedeflerini takip et" },
+            { name: "Ekip Yönetimi", href: "/employees", icon: Users, show: true, description: "Departman personeli yönetimi" },
+            { name: "İzin & Onay Süreçleri", href: "/leaves", icon: Calendar, show: true, description: "Ekip izin taleplerini değerlendir" },
+            { name: "Performans Yönetimi", href: "/performance", icon: TrendingUp, show: true, description: "Ekip performans değerlendirmeleri" },
+            { name: "Bordro Onayları", href: "/payroll", icon: DollarSign, show: true, description: "Departman bordro onay süreçleri" },
+            { name: "Ekip Gelişimi", href: "/training", icon: BookOpen, show: true, description: "Personel gelişim ve eğitim planları" },
           ]
         },
         {
-          title: "Operasyonel İşlemler",
+          title: "Operasyonel Yönetim",
           color: "from-emerald-600 to-teal-600",
           items: [
-            { name: "Proje Yönetimi", href: "/projects", icon: FolderOpen, show: true, description: "Departman projelerini yönet" },
-            { name: "Toplantı Planları", href: "/meetings", icon: Calendar, show: true, description: "Ekip toplantıları planla" },
-            { name: "Departman Raporları", href: "/reports", icon: FileText, show: true, description: "Departman raporları oluştur" },
-            { name: "Bildirimler", href: "/notifications", icon: Bell, show: true, description: "Departman bildirimleri" },
+            { name: "Proje Koordinasyonu", href: "/projects", icon: FolderOpen, show: true, description: "Departman proje yönetimi" },
+            { name: "Kaynak Planlaması", href: "/resources", icon: Cpu, show: true, description: "Departman kaynak dağıtımı" },
+            { name: "Süreç Optimizasyonu", href: "/process-optimization", icon: Zap, show: true, description: "İş süreçleri iyileştirme" },
+            { name: "Kalite Kontrolü", href: "/quality-control", icon: CheckCircle, show: true, description: "Departman kalite standartları" },
+          ]
+        },
+        {
+          title: "İletişim & Raporlama",
+          color: "from-purple-600 to-violet-600",
+          items: [
+            { name: "Departman Raporları", href: "/reports", icon: FileText, show: true, description: "Departman detaylı raporları" },
+            { name: "Üst Yönetime Raporlama", href: "/executive-reports", icon: PieChart, show: true, description: "Üst düzey yönetim raporları" },
+            { name: "Ekip İletişimi", href: "/team-communication", icon: MessageSquare, show: true, description: "Departman içi iletişim" },
+            { name: "Bildirim Merkezi", href: "/notifications", icon: Bell, show: true, badge: "4", description: "Departman bildirimleri" },
+            { name: "Toplantı Yönetimi", href: "/meetings", icon: Clock, show: true, description: "Departman toplantı planları" },
           ]
         }
       ];
@@ -198,17 +252,21 @@ const getRoleBasedNavigation = (userRole: UserRole): NavigationSection[] => {
           title: "Çalışan Portalı",
           color: "from-yellow-600 to-amber-600",
           items: [
-            { name: "Ana Sayfa", href: "/", icon: LayoutDashboard, show: true, description: "Kişisel dashboard ve günlük aktiviteler" },
-            { name: "Profilim", href: "/profile", icon: User, show: true, description: "Kişisel bilgilerim ve ayarlar" },
-            { name: "İzin Talepleri", href: "/my-leaves", icon: Calendar, show: true, description: "İzin taleplerimi yönet" },
-            { name: "Mesai Kayıtları", href: "/timesheet", icon: Clock, show: true, description: "Çalışma saatlerimi kaydet" },
-            { name: "Harcama Talepleri", href: "/expenses", icon: CreditCard, show: true, description: "Harcama taleplerimi gönder" },
-            { name: "Performansım", href: "/my-performance", icon: TrendingUp, show: true, description: "Performans değerlendirmelerim" },
-            { name: "Eğitimlerim", href: "/my-training", icon: BookOpen, show: true, description: "Eğitim programlarım" },
-            { name: "Mesajlar", href: "/messages", icon: MessageSquare, show: true, description: "İç iletişim mesajları" },
-            { name: "Duyurular", href: "/announcements", icon: Bell, show: true, description: "Şirket duyuruları" },
-            { name: "Yardım", href: "/help", icon: HelpCircle, show: true, description: "Destek ve SSS" },
-            { name: "Ayarlar", href: "/settings", icon: Settings, show: true, description: "Hesap ayarları" },
+            { name: "Ana Dashboard", href: "/", icon: LayoutDashboard, show: true, description: "Kişisel kontrol paneli ve günlük aktiviteler" },
+            { name: "Kişisel Profil", href: "/profile", icon: User, show: true, description: "Kişisel bilgilerim ve profil ayarları" },
+            { name: "İzin Yönetimi", href: "/my-leaves", icon: Calendar, show: true, description: "İzin taleplerimi oluştur ve takip et" },
+            { name: "Mesai & Zaman", href: "/timesheet", icon: Clock, show: true, description: "Çalışma saatlerimi kaydet ve görüntüle" },
+            { name: "Harcama Raporu", href: "/expenses", icon: CreditCard, show: true, description: "İş harcamalarımı kaydet ve talep et" },
+            { name: "Performans Takibi", href: "/my-performance", icon: TrendingUp, show: true, description: "Performans değerlendirmelerim ve hedeflerim" },
+            { name: "Eğitim Programlarım", href: "/my-training", icon: BookOpen, show: true, description: "Katıldığım ve katılacağım eğitimler" },
+            { name: "Bordro & Maaş", href: "/my-payroll", icon: DollarSign, show: true, description: "Maaş bilgilerim ve bordro geçmişi" },
+            { name: "İç Mesajlaşma", href: "/messages", icon: MessageSquare, show: true, badge: "3", description: "Departman ve İK ile iletişim" },
+            { name: "Şirket Duyuruları", href: "/announcements", icon: Bell, show: true, description: "Kurumsal duyuru ve haberler" },
+            { name: "Dokümanlarım", href: "/my-documents", icon: FileText, show: true, description: "Kişisel iş dokümanları" },
+            { name: "Takım Çalışması", href: "/team-collaboration", icon: Users, show: true, description: "Departman ekip işbirliği" },
+            { name: "Kariyer Gelişimi", href: "/career-development", icon: Star, show: true, description: "Kariyer planları ve fırsatlar" },
+            { name: "Yardım & Destek", href: "/help", icon: HelpCircle, show: true, description: "SSS ve teknik destek" },
+            { name: "Hesap Ayarları", href: "/settings", icon: Settings, show: true, description: "Profil ve bildirim ayarları" },
           ]
         }
       ];
