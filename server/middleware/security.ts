@@ -1,235 +1,304 @@
 import { Request, Response, NextFunction } from 'express';
-import { z } from 'zod';
+import { storage } from '../storage';
+import bcrypt from 'bcrypt';
+import crypto from 'crypto';
 
-// Rate limiting configurations
-export const authRateLimit = {
-  windowMs: 15 * 60 * 1000, // 15 minutes
-  max: 5,
-  message: {
-    error: 'Çok fazla giriş denemesi yapıldı. 15 dakika sonra tekrar deneyin.',
-    code: 'RATE_LIMIT_EXCEEDED'
-  }
-};
+// Rate limiting store (in production use Redis)
+const rateLimitStore = new Map<string, { count: number; resetTime: number }>();
 
-export const apiRateLimit = {
-  windowMs: 15 * 60 * 1000,
-  max: 100,
-  message: {
-    error: 'API limiti aşıldı. Lütfen daha sonra tekrar deneyin.',
-    code: 'API_RATE_LIMIT_EXCEEDED'
-  }
-};
-
-// Input validation middleware
-export const validateInput = (schema: z.ZodSchema) => {
+// Security middleware for rate limiting
+export const rateLimiter = (maxRequests: number = 100, windowMs: number = 15 * 60 * 1000) => {
   return (req: Request, res: Response, next: NextFunction) => {
+    const clientIP = req.ip || req.connection.remoteAddress || 'unknown';
+    const now = Date.now();
+    const windowStart = now - windowMs;
+    
+    // Clean old entries
+    for (const [ip, data] of rateLimitStore.entries()) {
+      if (data.resetTime < windowStart) {
+        rateLimitStore.delete(ip);
+      }
+    }
+    
+    const clientData = rateLimitStore.get(clientIP);
+    
+    if (!clientData) {
+      rateLimitStore.set(clientIP, { count: 1, resetTime: now + windowMs });
+      return next();
+    }
+    
+    if (clientData.count >= maxRequests) {
+      return res.status(429).json({ 
+        message: 'Çok fazla istek. Lütfen daha sonra tekrar deneyin.',
+        retryAfter: Math.ceil((clientData.resetTime - now) / 1000)
+      });
+    }
+    
+    clientData.count++;
+    next();
+  };
+};
+
+// Authentication middleware with enhanced security
+export const authenticate = async (req: any, res: Response, next: NextFunction) => {
+  try {
+    const token = req.headers.authorization?.replace('Bearer ', '') || req.session?.token;
+    
+    if (!token) {
+      return res.status(401).json({ message: 'Unauthorized - Token bulunamadı' });
+    }
+    
+    // Verify session token
+    const session = await storage.getActiveSession(token);
+    if (!session || session.expiresAt < new Date()) {
+      return res.status(401).json({ message: 'Unauthorized - Session süresi dolmuş' });
+    }
+    
+    // Get user with company details
+    const user = await storage.getUserWithCompany(session.userId);
+    if (!user || !user.isActive) {
+      return res.status(401).json({ message: 'Unauthorized - Kullanıcı aktif değil' });
+    }
+    
+    // Update last activity
+    await storage.updateSessionActivity(session.id);
+    
+    req.user = user;
+    req.session = session;
+    next();
+    
+  } catch (error) {
+    console.error('Authentication error:', error);
+    res.status(401).json({ message: 'Unauthorized - Authentication failed' });
+  }
+};
+
+// Role-based authorization middleware
+export const authorize = (requiredRoles: string[] = [], requiredPermissions: string[] = []) => {
+  return async (req: any, res: Response, next: NextFunction) => {
     try {
-      const validated = schema.parse(req.body);
-      req.body = validated;
-      next();
-    } catch (error) {
-      if (error instanceof z.ZodError) {
-        return res.status(400).json({
-          error: 'Geçersiz veri formatı',
-          details: error.errors.map(err => ({
-            field: err.path.join('.'),
-            message: err.message,
-            code: err.code
-          }))
+      if (!req.user) {
+        return res.status(401).json({ message: 'Unauthorized' });
+      }
+      
+      const user = req.user;
+      
+      // Check role requirement
+      if (requiredRoles.length > 0 && !requiredRoles.includes(user.role)) {
+        return res.status(403).json({ 
+          message: 'Forbidden - Yeterli yetki yok',
+          required: requiredRoles,
+          current: user.role
         });
       }
-      next(error);
+      
+      // Check specific permissions
+      if (requiredPermissions.length > 0) {
+        const userPermissions = await storage.getUserPermissions(user.id, user.companyId);
+        const hasPermission = requiredPermissions.every(permission => 
+          userPermissions.some(p => p.permission === permission && p.isActive)
+        );
+        
+        if (!hasPermission) {
+          return res.status(403).json({ 
+            message: 'Forbidden - Yeterli izin yok',
+            required: requiredPermissions
+          });
+        }
+      }
+      
+      next();
+      
+    } catch (error) {
+      console.error('Authorization error:', error);
+      res.status(403).json({ message: 'Forbidden - Authorization failed' });
     }
   };
 };
 
-// SQL injection prevention
+// Input validation middleware
+export const validateInput = (schema: any) => {
+  return (req: Request, res: Response, next: NextFunction) => {
+    try {
+      const result = schema.safeParse(req.body);
+      if (!result.success) {
+        return res.status(400).json({
+          message: 'Geçersiz veri formatı',
+          errors: result.error.errors.map((err: any) => ({
+            field: err.path.join('.'),
+            message: err.message
+          }))
+        });
+      }
+      req.body = result.data;
+      next();
+    } catch (error) {
+      res.status(400).json({ message: 'Validation error' });
+    }
+  };
+};
+
+// SQL injection protection
 export const sanitizeInput = (req: Request, res: Response, next: NextFunction) => {
   const sanitize = (obj: any): any => {
     if (typeof obj === 'string') {
-      return obj
-        .replace(/['";\\]/g, '')
-        .replace(/(\b(DROP|DELETE|UPDATE|INSERT|SELECT|UNION|CREATE|ALTER|EXEC|EXECUTE)\b)/gi, '')
-        .trim();
+      return obj.replace(/[<>]/g, '').trim();
     }
     if (Array.isArray(obj)) {
       return obj.map(sanitize);
     }
     if (obj && typeof obj === 'object') {
       const sanitized: any = {};
-      Object.keys(obj).forEach(key => {
+      for (const key in obj) {
         sanitized[key] = sanitize(obj[key]);
-      });
+      }
       return sanitized;
     }
     return obj;
   };
-
-  if (req.body) req.body = sanitize(req.body);
-  if (req.query) req.query = sanitize(req.query);
-  if (req.params) req.params = sanitize(req.params);
+  
+  req.body = sanitize(req.body);
+  req.query = sanitize(req.query);
   next();
 };
 
-// XSS prevention
-export const preventXSS = (req: Request, res: Response, next: NextFunction) => {
-  const escapeHtml = (unsafe: string): string => {
-    return unsafe
-      .replace(/&/g, "&amp;")
-      .replace(/</g, "&lt;")
-      .replace(/>/g, "&gt;")
-      .replace(/"/g, "&quot;")
-      .replace(/'/g, "&#039;");
-  };
-
-  const sanitizeObject = (obj: any): any => {
-    if (typeof obj === 'string') {
-      return escapeHtml(obj);
-    }
-    if (Array.isArray(obj)) {
-      return obj.map(sanitizeObject);
-    }
-    if (obj && typeof obj === 'object') {
-      const sanitized: any = {};
-      Object.keys(obj).forEach(key => {
-        sanitized[key] = sanitizeObject(obj[key]);
-      });
-      return sanitized;
-    }
-    return obj;
-  };
-
-  if (req.body) {
-    req.body = sanitizeObject(req.body);
-  }
+// XSS protection
+export const xssProtection = (req: Request, res: Response, next: NextFunction) => {
+  res.setHeader('X-XSS-Protection', '1; mode=block');
+  res.setHeader('X-Content-Type-Options', 'nosniff');
+  res.setHeader('X-Frame-Options', 'DENY');
+  res.setHeader('Strict-Transport-Security', 'max-age=31536000; includeSubDomains');
   next();
 };
 
-// Request logging middleware
-export const requestLogger = (req: Request, res: Response, next: NextFunction) => {
-  const start = Date.now();
-  const originalSend = res.send;
-
-  res.send = function(body) {
-    const duration = Date.now() - start;
-    console.log(`${new Date().toISOString()} ${req.method} ${req.path} ${res.statusCode} ${duration}ms`);
-    
-    if (res.statusCode >= 400) {
-      console.warn(`Security Alert: ${req.ip} - ${req.method} ${req.path} - Status: ${res.statusCode}`);
-    }
-    
-    return originalSend.call(this, body);
-  };
-
-  next();
-};
-
-// File upload security
-export const validateFileUpload = (req: Request, res: Response, next: NextFunction) => {
-  const allowedMimeTypes = [
-    'application/vnd.ms-excel',
-    'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet',
-    'text/csv',
-    'application/csv'
-  ];
-
-  const maxFileSize = 10 * 1024 * 1024; // 10MB
-
-  if (req.file) {
-    if (!allowedMimeTypes.includes(req.file.mimetype)) {
-      return res.status(400).json({
-        error: 'Geçersiz dosya türü',
-        allowedTypes: ['Excel (.xlsx, .xls)', 'CSV (.csv)']
-      });
-    }
-
-    if (req.file.size > maxFileSize) {
-      return res.status(400).json({
-        error: 'Dosya çok büyük',
-        maxSize: '10MB'
-      });
-    }
-
-    const dangerousPatterns = [/\.exe$/, /\.bat$/, /\.cmd$/, /\.scr$/, /\.js$/, /\.php$/];
-    if (dangerousPatterns.some(pattern => pattern.test(req.file!.originalname))) {
-      return res.status(400).json({
-        error: 'Güvenlik nedeniyle bu dosya türü kabul edilmiyor'
-      });
-    }
-  }
-
-  next();
-};
-
-// Permission middleware
-export const requirePermission = (permission: string) => {
-  return (req: Request, res: Response, next: NextFunction) => {
-    const user = (req as any).user;
-    
-    if (!user) {
-      return res.status(401).json({ error: 'Kimlik doğrulama gerekli' });
-    }
-
-    if (user.role === 'admin') {
-      return next();
-    }
-
-    const rolePermissions: { [key: string]: string[] } = {
-      'hr_manager': ['employees:read', 'employees:write', 'leaves:read', 'leaves:write', 'reports:read'],
-      'employee': ['employees:read', 'leaves:read', 'leaves:write'],
-      'viewer': ['employees:read', 'leaves:read', 'reports:read']
-    };
-
-    const userPermissions = rolePermissions[user.role] || [];
-    
-    if (!userPermissions.includes(permission)) {
-      return res.status(403).json({ 
-        error: 'Bu işlem için yetkiniz bulunmuyor',
-        required: permission,
-        current: userPermissions
-      });
-    }
-
-    next();
-  };
-};
-
-// Audit logging
+// Audit logging middleware
 export const auditLog = (action: string, resource: string) => {
-  return (req: Request, res: Response, next: NextFunction) => {
+  return async (req: any, res: Response, next: NextFunction) => {
     const originalSend = res.send;
+    const startTime = Date.now();
     
-    res.send = function(body) {
-      const user = (req as any).user;
-      const logEntry = {
-        timestamp: new Date().toISOString(),
-        userId: user?.id || 'anonymous',
-        action,
-        resource,
-        method: req.method,
-        path: req.path,
-        ip: req.ip,
-        userAgent: req.get('User-Agent'),
-        status: res.statusCode,
-        success: res.statusCode < 400
-      };
-
-      console.log('AUDIT LOG:', logEntry);
-      return originalSend.call(this, body);
+    res.send = function(data) {
+      const responseTime = Date.now() - startTime;
+      const statusCode = res.statusCode;
+      
+      // Log the action
+      if (req.user) {
+        storage.createAuditLog({
+          userId: req.user.id,
+          action,
+          resource,
+          resourceId: req.params.id || null,
+          details: {
+            method: req.method,
+            url: req.originalUrl,
+            statusCode,
+            responseTime,
+            userAgent: req.get('User-Agent'),
+            body: req.method !== 'GET' ? req.body : undefined
+          },
+          ipAddress: req.ip,
+          userAgent: req.get('User-Agent'),
+          companyId: req.user.companyId
+        }).catch(console.error);
+      }
+      
+      return originalSend.call(this, data);
     };
-
+    
     next();
   };
+};
+
+// Company isolation middleware
+export const companyIsolation = async (req: any, res: Response, next: NextFunction) => {
+  try {
+    if (!req.user) {
+      return res.status(401).json({ message: 'Unauthorized' });
+    }
+    
+    // Add company filter to query
+    req.companyId = req.user.companyId;
+    next();
+    
+  } catch (error) {
+    console.error('Company isolation error:', error);
+    res.status(500).json({ message: 'Internal server error' });
+  }
+};
+
+// Password strength validation
+export const validatePasswordStrength = (password: string): { valid: boolean; message?: string } => {
+  if (password.length < 8) {
+    return { valid: false, message: 'Şifre en az 8 karakter olmalıdır' };
+  }
+  
+  if (!/[A-Z]/.test(password)) {
+    return { valid: false, message: 'Şifre en az bir büyük harf içermelidir' };
+  }
+  
+  if (!/[a-z]/.test(password)) {
+    return { valid: false, message: 'Şifre en az bir küçük harf içermelidir' };
+  }
+  
+  if (!/[0-9]/.test(password)) {
+    return { valid: false, message: 'Şifre en az bir rakam içermelidir' };
+  }
+  
+  if (!/[!@#$%^&*(),.?":{}|<>]/.test(password)) {
+    return { valid: false, message: 'Şifre en az bir özel karakter içermelidir' };
+  }
+  
+  return { valid: true };
+};
+
+// Generate secure tokens
+export const generateSecureToken = (length: number = 32): string => {
+  return crypto.randomBytes(length).toString('hex');
+};
+
+// Hash password
+export const hashPassword = async (password: string): Promise<string> => {
+  const saltRounds = 12;
+  return await bcrypt.hash(password, saltRounds);
+};
+
+// Verify password
+export const verifyPassword = async (password: string, hash: string): Promise<boolean> => {
+  return await bcrypt.compare(password, hash);
+};
+
+// CORS configuration
+export const corsConfig = {
+  origin: function (origin: string | undefined, callback: Function) {
+    const allowedOrigins = [
+      'http://localhost:5000',
+      'http://localhost:3000',
+      process.env.FRONTEND_URL
+    ].filter(Boolean);
+    
+    if (!origin || allowedOrigins.includes(origin)) {
+      callback(null, true);
+    } else {
+      callback(new Error('CORS policy violation'));
+    }
+  },
+  credentials: true,
+  methods: ['GET', 'POST', 'PUT', 'DELETE', 'PATCH', 'OPTIONS'],
+  allowedHeaders: ['Content-Type', 'Authorization', 'X-Requested-With']
 };
 
 export default {
-  authRateLimit,
-  apiRateLimit,
+  rateLimiter,
+  authenticate,
+  authorize,
   validateInput,
   sanitizeInput,
-  preventXSS,
-  requestLogger,
-  validateFileUpload,
-  requirePermission,
-  auditLog
+  xssProtection,
+  auditLog,
+  companyIsolation,
+  validatePasswordStrength,
+  generateSecureToken,
+  hashPassword,
+  verifyPassword,
+  corsConfig
 };

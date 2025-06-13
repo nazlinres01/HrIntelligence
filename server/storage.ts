@@ -14,8 +14,18 @@ import {
   expenseReports,
   messages,
   trainings,
+  trainingEnrollments,
   jobs,
   jobApplications,
+  interviews,
+  rolePermissions,
+  securitySessions,
+  passwordResetTokens,
+  companySettings,
+  fileUploads,
+  systemLogs,
+  strategicGoals,
+  hrAnalytics,
   type Company,
   type InsertCompany,
   type User,
@@ -44,17 +54,68 @@ import {
   type InsertExpenseReport,
   type Message,
   type InsertMessage,
+  type Training,
+  type InsertTraining,
+  type TrainingEnrollment,
+  type InsertTrainingEnrollment,
+  type Job,
+  type InsertJob,
+  type JobApplication,
+  type InsertJobApplication,
+  type Interview,
+  type InsertInterview,
+  type RolePermission,
+  type InsertRolePermission,
+  type SecuritySession,
+  type InsertSecuritySession,
+  type PasswordResetToken,
+  type InsertPasswordResetToken,
+  type CompanySetting,
+  type InsertCompanySetting,
+  type FileUpload,
+  type InsertFileUpload,
+  type SystemLog,
+  type InsertSystemLog,
 } from "@shared/schema";
 import { db } from "./db";
-import { eq, desc, and, or } from "drizzle-orm";
+import { eq, desc, and, or, count, sql, like, gte, lte, asc } from "drizzle-orm";
 
 export interface IStorage {
   // User operations for authentication
   getUser(id: string): Promise<User | undefined>;
   getUserByEmail(email: string): Promise<User | undefined>;
+  getUserWithCompany(id: string): Promise<User & { company?: Company } | undefined>;
   getAllUsers(): Promise<User[]>;
   upsertUser(user: UpsertUser): Promise<User>;
   updateUser(id: string, userData: Partial<UpsertUser>): Promise<User>;
+
+  // Security operations
+  getActiveSession(token: string): Promise<SecuritySession | undefined>;
+  createSecuritySession(session: InsertSecuritySession): Promise<SecuritySession>;
+  updateSessionActivity(sessionId: number): Promise<void>;
+  deactivateSession(sessionId: number): Promise<void>;
+  getUserPermissions(userId: string, companyId: number): Promise<RolePermission[]>;
+  createPasswordResetToken(token: InsertPasswordResetToken): Promise<PasswordResetToken>;
+  getPasswordResetToken(token: string): Promise<PasswordResetToken | undefined>;
+  usePasswordResetToken(tokenId: number): Promise<void>;
+
+  // System operations
+  createSystemLog(log: InsertSystemLog): Promise<SystemLog>;
+  getSystemLogs(limit?: number): Promise<SystemLog[]>;
+  createFileUpload(upload: InsertFileUpload): Promise<FileUpload>;
+  getFileUpload(id: number): Promise<FileUpload | undefined>;
+
+  // Company settings
+  getCompanySetting(companyId: number, category: string, key: string): Promise<CompanySetting | undefined>;
+  upsertCompanySetting(setting: InsertCompanySetting): Promise<CompanySetting>;
+  getCompanySettings(companyId: number, category?: string): Promise<CompanySetting[]>;
+
+  // Interview operations
+  createInterview(interview: InsertInterview): Promise<Interview>;
+  getInterview(id: number): Promise<Interview | undefined>;
+  getInterviewsByApplication(applicationId: number): Promise<Interview[]>;
+  updateInterview(id: number, interview: Partial<InsertInterview>): Promise<Interview>;
+  deleteInterview(id: number): Promise<boolean>;
 
   // Company operations
   getCompany(id: number): Promise<Company | undefined>;
@@ -247,6 +308,216 @@ export class DatabaseStorage implements IStorage {
 
   async getAllUsers(): Promise<User[]> {
     return await db.select().from(users).orderBy(desc(users.createdAt));
+  }
+
+  async getUserWithCompany(id: string): Promise<User & { company?: Company } | undefined> {
+    const result = await db
+      .select()
+      .from(users)
+      .leftJoin(companies, eq(users.companyId, companies.id))
+      .where(eq(users.id, id));
+    
+    if (result.length === 0) return undefined;
+    
+    const user = result[0].users;
+    const company = result[0].companies;
+    
+    return { ...user, company: company || undefined };
+  }
+
+  // Security operations
+  async getActiveSession(token: string): Promise<SecuritySession | undefined> {
+    const [session] = await db
+      .select()
+      .from(securitySessions)
+      .where(and(
+        eq(securitySessions.sessionToken, token),
+        eq(securitySessions.isActive, true),
+        gte(securitySessions.expiresAt, new Date())
+      ));
+    return session;
+  }
+
+  async createSecuritySession(sessionData: InsertSecuritySession): Promise<SecuritySession> {
+    const [session] = await db
+      .insert(securitySessions)
+      .values(sessionData)
+      .returning();
+    return session;
+  }
+
+  async updateSessionActivity(sessionId: number): Promise<void> {
+    await db
+      .update(securitySessions)
+      .set({ lastActivity: new Date() })
+      .where(eq(securitySessions.id, sessionId));
+  }
+
+  async deactivateSession(sessionId: number): Promise<void> {
+    await db
+      .update(securitySessions)
+      .set({ isActive: false })
+      .where(eq(securitySessions.id, sessionId));
+  }
+
+  async getUserPermissions(userId: string, companyId: number): Promise<RolePermission[]> {
+    const user = await this.getUser(userId);
+    if (!user) return [];
+
+    return await db
+      .select()
+      .from(rolePermissions)
+      .where(and(
+        eq(rolePermissions.role, user.role),
+        eq(rolePermissions.companyId, companyId),
+        eq(rolePermissions.isActive, true)
+      ));
+  }
+
+  async createPasswordResetToken(tokenData: InsertPasswordResetToken): Promise<PasswordResetToken> {
+    const [token] = await db
+      .insert(passwordResetTokens)
+      .values(tokenData)
+      .returning();
+    return token;
+  }
+
+  async getPasswordResetToken(token: string): Promise<PasswordResetToken | undefined> {
+    const [resetToken] = await db
+      .select()
+      .from(passwordResetTokens)
+      .where(and(
+        eq(passwordResetTokens.token, token),
+        eq(passwordResetTokens.used, false),
+        gte(passwordResetTokens.expiresAt, new Date())
+      ));
+    return resetToken;
+  }
+
+  async usePasswordResetToken(tokenId: number): Promise<void> {
+    await db
+      .update(passwordResetTokens)
+      .set({ used: true })
+      .where(eq(passwordResetTokens.id, tokenId));
+  }
+
+  // System operations
+  async createSystemLog(logData: InsertSystemLog): Promise<SystemLog> {
+    const [log] = await db
+      .insert(systemLogs)
+      .values(logData)
+      .returning();
+    return log;
+  }
+
+  async getSystemLogs(limit: number = 100): Promise<SystemLog[]> {
+    return await db
+      .select()
+      .from(systemLogs)
+      .orderBy(desc(systemLogs.createdAt))
+      .limit(limit);
+  }
+
+  async createFileUpload(uploadData: InsertFileUpload): Promise<FileUpload> {
+    const [upload] = await db
+      .insert(fileUploads)
+      .values(uploadData)
+      .returning();
+    return upload;
+  }
+
+  async getFileUpload(id: number): Promise<FileUpload | undefined> {
+    const [upload] = await db
+      .select()
+      .from(fileUploads)
+      .where(eq(fileUploads.id, id));
+    return upload;
+  }
+
+  // Company settings
+  async getCompanySetting(companyId: number, category: string, key: string): Promise<CompanySetting | undefined> {
+    const [setting] = await db
+      .select()
+      .from(companySettings)
+      .where(and(
+        eq(companySettings.companyId, companyId),
+        eq(companySettings.category, category),
+        eq(companySettings.key, key)
+      ));
+    return setting;
+  }
+
+  async upsertCompanySetting(settingData: InsertCompanySetting): Promise<CompanySetting> {
+    const [setting] = await db
+      .insert(companySettings)
+      .values(settingData)
+      .onConflictDoUpdate({
+        target: [companySettings.companyId, companySettings.category, companySettings.key],
+        set: {
+          value: settingData.value,
+          updatedAt: new Date(),
+          updatedBy: settingData.updatedBy
+        }
+      })
+      .returning();
+    return setting;
+  }
+
+  async getCompanySettings(companyId: number, category?: string): Promise<CompanySetting[]> {
+    const conditions = [eq(companySettings.companyId, companyId)];
+    if (category) {
+      conditions.push(eq(companySettings.category, category));
+    }
+    
+    return await db
+      .select()
+      .from(companySettings)
+      .where(and(...conditions))
+      .orderBy(companySettings.category, companySettings.key);
+  }
+
+  // Interview operations
+  async createInterview(interviewData: InsertInterview): Promise<Interview> {
+    const [interview] = await db
+      .insert(interviews)
+      .values(interviewData)
+      .returning();
+    return interview;
+  }
+
+  async getInterview(id: number): Promise<Interview | undefined> {
+    const [interview] = await db
+      .select()
+      .from(interviews)
+      .where(eq(interviews.id, id));
+    return interview;
+  }
+
+  async getInterviewsByApplication(applicationId: number): Promise<Interview[]> {
+    return await db
+      .select()
+      .from(interviews)
+      .where(eq(interviews.applicationId, applicationId))
+      .orderBy(interviews.scheduledDate);
+  }
+
+  async updateInterview(id: number, interviewData: Partial<InsertInterview>): Promise<Interview> {
+    const [interview] = await db
+      .update(interviews)
+      .set({
+        ...interviewData,
+        updatedAt: new Date()
+      })
+      .where(eq(interviews.id, id))
+      .returning();
+    return interview;
+  }
+
+  async deleteInterview(id: number): Promise<boolean> {
+    const result = await db
+      .delete(interviews)
+      .where(eq(interviews.id, id));
+    return result.rowCount > 0;
   }
 
   // Company operations

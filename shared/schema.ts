@@ -1,6 +1,7 @@
 import { pgTable, text, serial, integer, boolean, date, decimal, timestamp, varchar, jsonb, index, time } from "drizzle-orm/pg-core";
 import { createInsertSchema } from "drizzle-zod";
 import { z } from "zod";
+import { relations } from "drizzle-orm";
 
 // Session storage table for Replit Auth
 export const sessions = pgTable(
@@ -391,9 +392,218 @@ export type InsertTraining = z.infer<typeof insertTrainingSchema>;
 export type TrainingEnrollment = typeof trainingEnrollments.$inferSelect;
 export type InsertTrainingEnrollment = z.infer<typeof insertTrainingEnrollmentSchema>;
 
+// =============================================================================
+// DATABASE RELATIONS - Complete Relational Mapping
+// =============================================================================
+
+// Company Relations
+export const companiesRelations = relations(companies, ({ many }) => ({
+  users: many(users),
+  employees: many(employees),
+  departments: many(departments),
+  strategicGoals: many(strategicGoals),
+  hrAnalytics: many(hrAnalytics),
+  trainings: many(trainings),
+  jobs: many(jobs),
+}));
+
+// User Relations
+export const usersRelations = relations(users, ({ one, many }) => ({
+  company: one(companies, {
+    fields: [users.companyId],
+    references: [companies.id],
+  }),
+  createdGoals: many(strategicGoals),
+  settings: many(settings),
+  notifications: many(notifications),
+  auditLogs: many(auditLogs),
+  timeEntries: many(timeEntries),
+  expenseReports: many(expenseReports),
+  sentMessages: many(messages, { relationName: "sentMessages" }),
+  receivedMessages: many(messages, { relationName: "receivedMessages" }),
+  trainingEnrollments: many(trainingEnrollments),
+  jobApplications: many(jobApplications),
+}));
+
+// Employee Relations
+export const employeesRelations = relations(employees, ({ one, many }) => ({
+  company: one(companies, {
+    fields: [employees.companyId],
+    references: [companies.id],
+  }),
+  department: one(departments, {
+    fields: [employees.department],
+    references: [departments.name],
+  }),
+  managedDepartments: many(departments),
+  leaves: many(leaves),
+  performanceRecords: many(performance),
+  payrollRecords: many(payroll),
+  activitiesPerformed: many(activities),
+  approvedLeaves: many(leaves, { relationName: "approvedLeaves" }),
+  reviewsGiven: many(performance, { relationName: "reviewsGiven" }),
+}));
+
+// Department Relations
+export const departmentsRelations = relations(departments, ({ one, many }) => ({
+  company: one(companies, {
+    fields: [departments.companyId],
+    references: [companies.id],
+  }),
+  manager: one(employees, {
+    fields: [departments.managerId],
+    references: [employees.id],
+  }),
+  employees: many(employees),
+}));
+
+// Strategic Goals Relations
+export const strategicGoalsRelations = relations(strategicGoals, ({ one }) => ({
+  company: one(companies, {
+    fields: [strategicGoals.companyId],
+    references: [companies.id],
+  }),
+  creator: one(users, {
+    fields: [strategicGoals.createdBy],
+    references: [users.id],
+  }),
+}));
+
+// HR Analytics Relations
+export const hrAnalyticsRelations = relations(hrAnalytics, ({ one }) => ({
+  company: one(companies, {
+    fields: [hrAnalytics.companyId],
+    references: [companies.id],
+  }),
+}));
+
+// Leave Relations
+export const leavesRelations = relations(leaves, ({ one }) => ({
+  employee: one(employees, {
+    fields: [leaves.employeeId],
+    references: [employees.id],
+  }),
+  approver: one(employees, {
+    fields: [leaves.approvedBy],
+    references: [employees.id],
+  }),
+}));
+
+// Performance Relations
+export const performanceRelations = relations(performance, ({ one }) => ({
+  employee: one(employees, {
+    fields: [performance.employeeId],
+    references: [employees.id],
+  }),
+  reviewer: one(employees, {
+    fields: [performance.reviewedBy],
+    references: [employees.id],
+  }),
+}));
+
+// Payroll Relations
+export const payrollRelations = relations(payroll, ({ one }) => ({
+  employee: one(employees, {
+    fields: [payroll.employeeId],
+    references: [employees.id],
+  }),
+}));
+
+// Activity Relations
+export const activitiesRelations = relations(activities, ({ one }) => ({
+  performer: one(employees, {
+    fields: [activities.performedBy],
+    references: [employees.id],
+  }),
+}));
+
+// Settings Relations
+export const settingsRelations = relations(settings, ({ one }) => ({
+  user: one(users, {
+    fields: [settings.userId],
+    references: [users.id],
+  }),
+}));
+
+// Notification Relations
+export const notificationsRelations = relations(notifications, ({ one }) => ({
+  user: one(users, {
+    fields: [notifications.userId],
+    references: [users.id],
+  }),
+}));
+
+// Audit Log Relations
+export const auditLogsRelations = relations(auditLogs, ({ one }) => ({
+  user: one(users, {
+    fields: [auditLogs.userId],
+    references: [users.id],
+  }),
+}));
+
+// Time Entry Relations
+export const timeEntriesRelations = relations(timeEntries, ({ one }) => ({
+  user: one(users, {
+    fields: [timeEntries.userId],
+    references: [users.id],
+  }),
+  approver: one(users, {
+    fields: [timeEntries.approvedBy],
+    references: [users.id],
+  }),
+}));
+
+// Expense Report Relations
+export const expenseReportsRelations = relations(expenseReports, ({ one }) => ({
+  user: one(users, {
+    fields: [expenseReports.userId],
+    references: [users.id],
+  }),
+  approver: one(users, {
+    fields: [expenseReports.approvedBy],
+    references: [users.id],
+  }),
+}));
+
+// Message Relations
+export const messagesRelations = relations(messages, ({ one }) => ({
+  sender: one(users, {
+    fields: [messages.fromUserId],
+    references: [users.id],
+    relationName: "sentMessages",
+  }),
+  recipient: one(users, {
+    fields: [messages.toUserId],
+    references: [users.id],
+    relationName: "receivedMessages",
+  }),
+}));
+
+// Training Relations
+export const trainingsRelations = relations(trainings, ({ one, many }) => ({
+  company: one(companies, {
+    fields: [trainings.companyId],
+    references: [companies.id],
+  }),
+  enrollments: many(trainingEnrollments),
+}));
+
+// Training Enrollment Relations
+export const trainingEnrollmentsRelations = relations(trainingEnrollments, ({ one }) => ({
+  training: one(trainings, {
+    fields: [trainingEnrollments.trainingId],
+    references: [trainings.id],
+  }),
+  user: one(users, {
+    fields: [trainingEnrollments.userId],
+    references: [users.id],
+  }),
+}));
+
 // Job postings table
 export const jobs = pgTable("jobs", {
   id: serial("id").primaryKey(),
+  companyId: integer("company_id").references(() => companies.id).notNull(),
   title: varchar("title").notNull(),
   department: varchar("department").notNull(),
   location: varchar("location").notNull(),
@@ -402,8 +612,11 @@ export const jobs = pgTable("jobs", {
   requirements: text("requirements").notNull(),
   salary: varchar("salary"),
   status: varchar("status").default("active"), // active, closed, draft
+  postedBy: varchar("posted_by").references(() => users.id),
   postedDate: date("posted_date").notNull(),
   closingDate: date("closing_date"),
+  views: integer("views").default(0),
+  applicationCount: integer("application_count").default(0),
   createdAt: timestamp("created_at").defaultNow(),
   updatedAt: timestamp("updated_at").defaultNow(),
 });
@@ -412,19 +625,123 @@ export const jobs = pgTable("jobs", {
 export const jobApplications = pgTable("job_applications", {
   id: serial("id").primaryKey(),
   jobId: integer("job_id").references(() => jobs.id).notNull(),
+  applicantId: varchar("applicant_id").references(() => users.id),
   candidateName: varchar("candidate_name").notNull(),
   candidateEmail: varchar("candidate_email").notNull(),
   phone: varchar("phone"),
   resumeUrl: varchar("resume_url"),
   coverLetter: text("cover_letter"),
   status: varchar("status").default("under_review"), // under_review, interview_scheduled, rejected, hired
+  stage: varchar("stage").default("application"), // application, phone_screen, technical_interview, final_interview, offer
   appliedDate: date("applied_date").notNull(),
   experience: varchar("experience"),
   education: varchar("education"),
+  skills: text("skills"),
+  expectedSalary: varchar("expected_salary"),
+  availableFrom: date("available_from"),
+  notes: text("notes"),
   createdAt: timestamp("created_at").defaultNow(),
   updatedAt: timestamp("updated_at").defaultNow(),
 });
 
+// Interview schedules table
+export const interviews = pgTable("interviews", {
+  id: serial("id").primaryKey(),
+  applicationId: integer("application_id").references(() => jobApplications.id).notNull(),
+  interviewerId: varchar("interviewer_id").references(() => users.id),
+  scheduledDate: timestamp("scheduled_date").notNull(),
+  duration: integer("duration").default(60), // in minutes
+  type: varchar("type").notNull(), // phone, video, in_person, technical
+  location: varchar("location"),
+  meetingLink: varchar("meeting_link"),
+  status: varchar("status").default("scheduled"), // scheduled, completed, cancelled, rescheduled
+  feedback: text("feedback"),
+  rating: integer("rating"), // 1-5
+  notes: text("notes"),
+  createdAt: timestamp("created_at").defaultNow(),
+  updatedAt: timestamp("updated_at").defaultNow(),
+});
+
+// Role permissions table for comprehensive RBAC
+export const rolePermissions = pgTable("role_permissions", {
+  id: serial("id").primaryKey(),
+  role: varchar("role").notNull(),
+  resource: varchar("resource").notNull(), // employees, payroll, performance, etc.
+  permission: varchar("permission").notNull(), // create, read, update, delete, approve
+  companyId: integer("company_id").references(() => companies.id),
+  isActive: boolean("is_active").default(true),
+  createdAt: timestamp("created_at").defaultNow(),
+});
+
+// Security sessions table for session management
+export const securitySessions = pgTable("security_sessions", {
+  id: serial("id").primaryKey(),
+  userId: varchar("user_id").references(() => users.id).notNull(),
+  sessionToken: varchar("session_token").notNull().unique(),
+  deviceInfo: jsonb("device_info"),
+  ipAddress: varchar("ip_address"),
+  location: varchar("location"),
+  isActive: boolean("is_active").default(true),
+  lastActivity: timestamp("last_activity").defaultNow(),
+  expiresAt: timestamp("expires_at").notNull(),
+  createdAt: timestamp("created_at").defaultNow(),
+});
+
+// Password reset tokens
+export const passwordResetTokens = pgTable("password_reset_tokens", {
+  id: serial("id").primaryKey(),
+  userId: varchar("user_id").references(() => users.id).notNull(),
+  token: varchar("token").notNull().unique(),
+  expiresAt: timestamp("expires_at").notNull(),
+  used: boolean("used").default(false),
+  createdAt: timestamp("created_at").defaultNow(),
+});
+
+// Company settings table
+export const companySettings = pgTable("company_settings", {
+  id: serial("id").primaryKey(),
+  companyId: integer("company_id").references(() => companies.id).notNull(),
+  category: varchar("category").notNull(), // security, payroll, leave_policy, etc.
+  key: varchar("key").notNull(),
+  value: text("value").notNull(),
+  isEncrypted: boolean("is_encrypted").default(false),
+  updatedBy: varchar("updated_by").references(() => users.id),
+  updatedAt: timestamp("updated_at").defaultNow(),
+});
+
+// File uploads table for document management
+export const fileUploads = pgTable("file_uploads", {
+  id: serial("id").primaryKey(),
+  fileName: varchar("file_name").notNull(),
+  originalName: varchar("original_name").notNull(),
+  fileType: varchar("file_type").notNull(),
+  fileSize: integer("file_size").notNull(),
+  filePath: varchar("file_path").notNull(),
+  uploadedBy: varchar("uploaded_by").references(() => users.id),
+  companyId: integer("company_id").references(() => companies.id),
+  category: varchar("category").notNull(), // resume, contract, report, etc.
+  isPublic: boolean("is_public").default(false),
+  createdAt: timestamp("created_at").defaultNow(),
+});
+
+// System logs for comprehensive tracking
+export const systemLogs = pgTable("system_logs", {
+  id: serial("id").primaryKey(),
+  level: varchar("level").notNull(), // info, warning, error, critical
+  message: text("message").notNull(),
+  context: jsonb("context"),
+  userId: varchar("user_id"),
+  companyId: integer("company_id"),
+  ipAddress: varchar("ip_address"),
+  userAgent: varchar("user_agent"),
+  endpoint: varchar("endpoint"),
+  method: varchar("method"),
+  responseTime: integer("response_time"),
+  statusCode: integer("status_code"),
+  createdAt: timestamp("created_at").defaultNow(),
+});
+
+// Additional schema exports and relations for new tables
 export const insertJobSchema = createInsertSchema(jobs).omit({
   id: true,
   createdAt: true,
@@ -437,10 +754,140 @@ export const insertJobApplicationSchema = createInsertSchema(jobApplications).om
   updatedAt: true,
 });
 
+export const insertInterviewSchema = createInsertSchema(interviews).omit({
+  id: true,
+  createdAt: true,
+  updatedAt: true,
+});
+
+export const insertRolePermissionSchema = createInsertSchema(rolePermissions).omit({
+  id: true,
+  createdAt: true,
+});
+
+export const insertSecuritySessionSchema = createInsertSchema(securitySessions).omit({
+  id: true,
+  createdAt: true,
+});
+
+export const insertPasswordResetTokenSchema = createInsertSchema(passwordResetTokens).omit({
+  id: true,
+  createdAt: true,
+});
+
+export const insertCompanySettingSchema = createInsertSchema(companySettings).omit({
+  id: true,
+  updatedAt: true,
+});
+
+export const insertFileUploadSchema = createInsertSchema(fileUploads).omit({
+  id: true,
+  createdAt: true,
+});
+
+export const insertSystemLogSchema = createInsertSchema(systemLogs).omit({
+  id: true,
+  createdAt: true,
+});
+
+// Types for all new tables
 export type Job = typeof jobs.$inferSelect;
 export type InsertJob = z.infer<typeof insertJobSchema>;
 export type JobApplication = typeof jobApplications.$inferSelect;
 export type InsertJobApplication = z.infer<typeof insertJobApplicationSchema>;
+export type Interview = typeof interviews.$inferSelect;
+export type InsertInterview = z.infer<typeof insertInterviewSchema>;
+export type RolePermission = typeof rolePermissions.$inferSelect;
+export type InsertRolePermission = z.infer<typeof insertRolePermissionSchema>;
+export type SecuritySession = typeof securitySessions.$inferSelect;
+export type InsertSecuritySession = z.infer<typeof insertSecuritySessionSchema>;
+export type PasswordResetToken = typeof passwordResetTokens.$inferSelect;
+export type InsertPasswordResetToken = z.infer<typeof insertPasswordResetTokenSchema>;
+export type CompanySetting = typeof companySettings.$inferSelect;
+export type InsertCompanySetting = z.infer<typeof insertCompanySettingSchema>;
+export type FileUpload = typeof fileUploads.$inferSelect;
+export type InsertFileUpload = z.infer<typeof insertFileUploadSchema>;
+export type SystemLog = typeof systemLogs.$inferSelect;
+export type InsertSystemLog = z.infer<typeof insertSystemLogSchema>;
+
+// Extended relations for new tables
+export const jobsRelations = relations(jobs, ({ one, many }) => ({
+  company: one(companies, {
+    fields: [jobs.companyId],
+    references: [companies.id],
+  }),
+  poster: one(users, {
+    fields: [jobs.postedBy],
+    references: [users.id],
+  }),
+  applications: many(jobApplications),
+}));
+
+export const jobApplicationsRelations = relations(jobApplications, ({ one, many }) => ({
+  job: one(jobs, {
+    fields: [jobApplications.jobId],
+    references: [jobs.id],
+  }),
+  applicant: one(users, {
+    fields: [jobApplications.applicantId],
+    references: [users.id],
+  }),
+  interviews: many(interviews),
+}));
+
+export const interviewsRelations = relations(interviews, ({ one }) => ({
+  application: one(jobApplications, {
+    fields: [interviews.applicationId],
+    references: [jobApplications.id],
+  }),
+  interviewer: one(users, {
+    fields: [interviews.interviewerId],
+    references: [users.id],
+  }),
+}));
+
+export const rolePermissionsRelations = relations(rolePermissions, ({ one }) => ({
+  company: one(companies, {
+    fields: [rolePermissions.companyId],
+    references: [companies.id],
+  }),
+}));
+
+export const securitySessionsRelations = relations(securitySessions, ({ one }) => ({
+  user: one(users, {
+    fields: [securitySessions.userId],
+    references: [users.id],
+  }),
+}));
+
+export const passwordResetTokensRelations = relations(passwordResetTokens, ({ one }) => ({
+  user: one(users, {
+    fields: [passwordResetTokens.userId],
+    references: [users.id],
+  }),
+}));
+
+export const companySettingsRelations = relations(companySettings, ({ one }) => ({
+  company: one(companies, {
+    fields: [companySettings.companyId],
+    references: [companies.id],
+  }),
+  updater: one(users, {
+    fields: [companySettings.updatedBy],
+    references: [users.id],
+  }),
+}));
+
+export const fileUploadsRelations = relations(fileUploads, ({ one }) => ({
+  uploader: one(users, {
+    fields: [fileUploads.uploadedBy],
+    references: [users.id],
+  }),
+  company: one(companies, {
+    fields: [fileUploads.companyId],
+    references: [companies.id],
+  }),
+}));
 
 // Permission type for role-based access control
 export type Permission = {

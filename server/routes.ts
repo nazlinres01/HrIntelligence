@@ -8,12 +8,13 @@ import { requireAuth, requireRole } from "./middleware/auth";
 import { insertEmployeeSchema, insertLeaveSchema, insertPerformanceSchema, insertPayrollSchema, insertDepartmentSchema, users } from "@shared/schema";
 import { 
   sanitizeInput, 
-  preventXSS, 
-  requestLogger, 
+  xssProtection, 
+  rateLimiter, 
   validateInput,
-  requirePermission,
+  authenticate,
+  authorize,
   auditLog,
-  validateFileUpload
+  companyIsolation
 } from "./middleware/security";
 import { z } from "zod";
 import { db } from "./db";
