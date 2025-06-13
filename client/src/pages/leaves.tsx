@@ -6,7 +6,10 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
-import { Calendar, Check, X, Filter, Search, Clock, CheckCircle, XCircle, AlertCircle } from "lucide-react";
+import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
+import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog";
+import { Textarea } from "@/components/ui/textarea";
+import { Calendar, Check, X, Filter, Search, Clock, CheckCircle, XCircle, AlertCircle, Eye } from "lucide-react";
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { apiRequest } from "@/lib/queryClient";
 import { useToast } from "@/hooks/use-toast";
@@ -133,6 +136,152 @@ export default function Leaves() {
     return types[type] || type;
   };
 
+  // Yeni izin talebi mutation
+  const createLeave = useMutation({
+    mutationFn: async (leaveData: any) => {
+      return apiRequest("/api/leaves", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify(leaveData),
+      });
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ["/api/leaves"] });
+      toast({
+        title: "İzin Talebi Oluşturuldu",
+        description: "İzin talebiniz başarıyla gönderildi.",
+      });
+    },
+    onError: () => {
+      toast({
+        title: "Hata",
+        description: "İzin talebi oluşturulurken bir hata oluştu.",
+        variant: "destructive",
+      });
+    },
+  });
+
+  // Yeni izin formu komponenti
+  const NewLeaveForm = () => {
+    const [leaveType, setLeaveType] = useState("");
+    const [startDate, setStartDate] = useState("");
+    const [endDate, setEndDate] = useState("");
+    const [reason, setReason] = useState("");
+
+    const calculateDays = () => {
+      if (startDate && endDate) {
+        const start = new Date(startDate);
+        const end = new Date(endDate);
+        const diffTime = Math.abs(end.getTime() - start.getTime());
+        const diffDays = Math.ceil(diffTime / (1000 * 60 * 60 * 24)) + 1;
+        return diffDays;
+      }
+      return 0;
+    };
+
+    const handleSubmit = (e: React.FormEvent) => {
+      e.preventDefault();
+      if (!leaveType || !startDate || !endDate) {
+        toast({
+          title: "Eksik Bilgi",
+          description: "Lütfen tüm gerekli alanları doldurun.",
+          variant: "destructive",
+        });
+        return;
+      }
+
+      const days = calculateDays();
+      createLeave.mutate({
+        leaveType,
+        startDate,
+        endDate,
+        days,
+        reason,
+        status: "pending",
+        appliedDate: new Date().toISOString(),
+      });
+
+      // Form temizle
+      setLeaveType("");
+      setStartDate("");
+      setEndDate("");
+      setReason("");
+    };
+
+    return (
+      <form onSubmit={handleSubmit} className="space-y-4">
+        <div>
+          <Label htmlFor="leaveType">İzin Türü</Label>
+          <Select value={leaveType} onValueChange={setLeaveType}>
+            <SelectTrigger>
+              <SelectValue placeholder="İzin türü seçin" />
+            </SelectTrigger>
+            <SelectContent>
+              <SelectItem value="annual">Yıllık İzin</SelectItem>
+              <SelectItem value="sick">Hastalık İzni</SelectItem>
+              <SelectItem value="maternity">Doğum İzni</SelectItem>
+              <SelectItem value="paternity">Babalık İzni</SelectItem>
+              <SelectItem value="personal">Kişisel İzin</SelectItem>
+              <SelectItem value="emergency">Acil Durum İzni</SelectItem>
+            </SelectContent>
+          </Select>
+        </div>
+
+        <div className="grid grid-cols-2 gap-4">
+          <div>
+            <Label htmlFor="startDate">Başlangıç Tarihi</Label>
+            <Input
+              id="startDate"
+              type="date"
+              value={startDate}
+              onChange={(e) => setStartDate(e.target.value)}
+            />
+          </div>
+          <div>
+            <Label htmlFor="endDate">Bitiş Tarihi</Label>
+            <Input
+              id="endDate"
+              type="date"
+              value={endDate}
+              onChange={(e) => setEndDate(e.target.value)}
+            />
+          </div>
+        </div>
+
+        {startDate && endDate && (
+          <div className="p-3 bg-teal-50 rounded-lg">
+            <p className="text-sm text-teal-700">
+              <strong>Toplam İzin Süresi:</strong> {calculateDays()} gün
+            </p>
+          </div>
+        )}
+
+        <div>
+          <Label htmlFor="reason">Açıklama (İsteğe Bağlı)</Label>
+          <Textarea
+            id="reason"
+            placeholder="İzin sebebinizi kısaca açıklayın..."
+            value={reason}
+            onChange={(e) => setReason(e.target.value)}
+            rows={3}
+          />
+        </div>
+
+        <div className="flex gap-3 pt-4">
+          <Button
+            type="submit"
+            disabled={createLeave.isPending}
+            className="flex-1 bg-teal-600 hover:bg-teal-700"
+          >
+            {createLeave.isPending ? "Gönderiliyor..." : "İzin Talebini Gönder"}
+          </Button>
+        </div>
+      </form>
+    );
+  };
+
   const LeaveCard = ({ leave, showActions = false }: { leave: Leave; showActions?: boolean }) => (
     <Card className="mb-4">
       <CardHeader className="pb-3">
@@ -216,6 +365,23 @@ export default function Leaves() {
           <p className="text-gray-600">Çalışan izin talepleri ve onay işlemleri</p>
         </div>
         <div className="flex items-center gap-2">
+          <Dialog>
+            <DialogTrigger asChild>
+              <Button className="bg-teal-600 hover:bg-teal-700">
+                <Calendar className="w-4 h-4 mr-2" />
+                Yeni İzin Talebi
+              </Button>
+            </DialogTrigger>
+            <DialogContent className="max-w-lg">
+              <DialogHeader>
+                <DialogTitle>Yeni İzin Talebi</DialogTitle>
+                <DialogDescription>
+                  İzin talebinizi oluşturun
+                </DialogDescription>
+              </DialogHeader>
+              <NewLeaveForm />
+            </DialogContent>
+          </Dialog>
           <Badge variant="secondary" className="bg-yellow-100 text-yellow-800">
             {pendingLeaves.length} Bekleyen
           </Badge>
@@ -280,9 +446,13 @@ export default function Leaves() {
         </CardContent>
       </Card>
 
-      {/* İzin Talepleri Tabları */}
-      <Tabs defaultValue="pending" className="space-y-4">
-        <TabsList className="grid w-full grid-cols-3">
+      {/* İzin Talepleri Tablosu */}
+      <Tabs defaultValue="all" className="space-y-4">
+        <TabsList className="grid w-full grid-cols-4">
+          <TabsTrigger value="all" className="flex items-center gap-2">
+            <Calendar className="w-4 h-4" />
+            Tümü ({filteredLeaves.length})
+          </TabsTrigger>
           <TabsTrigger value="pending" className="flex items-center gap-2">
             <Clock className="w-4 h-4" />
             Bekleyen ({pendingLeaves.length})
@@ -297,55 +467,479 @@ export default function Leaves() {
           </TabsTrigger>
         </TabsList>
 
+        {/* Tüm İzinler Tablosu */}
+        <TabsContent value="all">
+          <Card>
+            <CardHeader>
+              <CardTitle>Tüm İzin Talepleri</CardTitle>
+              <CardDescription>Sistemdeki tüm izin talepleri tablo formatında</CardDescription>
+            </CardHeader>
+            <CardContent>
+              <Table>
+                <TableHeader>
+                  <TableRow>
+                    <TableHead>Çalışan</TableHead>
+                    <TableHead>İzin Türü</TableHead>
+                    <TableHead>Başlangıç</TableHead>
+                    <TableHead>Bitiş</TableHead>
+                    <TableHead>Gün Sayısı</TableHead>
+                    <TableHead>Durum</TableHead>
+                    <TableHead>İşlemler</TableHead>
+                  </TableRow>
+                </TableHeader>
+                <TableBody>
+                  {filteredLeaves.map((leave: Leave) => (
+                    <TableRow key={leave.id}>
+                      <TableCell className="font-medium">{leave.employeeName}</TableCell>
+                      <TableCell>{getLeaveTypeLabel(leave.leaveType)}</TableCell>
+                      <TableCell>{new Date(leave.startDate).toLocaleDateString('tr-TR')}</TableCell>
+                      <TableCell>{new Date(leave.endDate).toLocaleDateString('tr-TR')}</TableCell>
+                      <TableCell>{leave.days} gün</TableCell>
+                      <TableCell>{getStatusBadge(leave.status)}</TableCell>
+                      <TableCell>
+                        <div className="flex gap-1">
+                          <Dialog>
+                            <DialogTrigger asChild>
+                              <Button size="sm" variant="outline" className="h-8 w-8 p-0">
+                                <Eye className="w-4 h-4" />
+                              </Button>
+                            </DialogTrigger>
+                            <DialogContent className="max-w-2xl">
+                              <DialogHeader>
+                                <DialogTitle>İzin Talebi Detayları</DialogTitle>
+                                <DialogDescription>
+                                  {leave.employeeName} tarafından gönderilen izin talebi
+                                </DialogDescription>
+                              </DialogHeader>
+                              <div className="space-y-6">
+                                <div className="grid grid-cols-2 gap-4">
+                                  <div>
+                                    <Label className="text-sm font-medium text-gray-600">Çalışan</Label>
+                                    <p className="text-sm font-medium">{leave.employeeName}</p>
+                                  </div>
+                                  <div>
+                                    <Label className="text-sm font-medium text-gray-600">İzin Türü</Label>
+                                    <p className="text-sm">{getLeaveTypeLabel(leave.leaveType)}</p>
+                                  </div>
+                                  <div>
+                                    <Label className="text-sm font-medium text-gray-600">Başlangıç Tarihi</Label>
+                                    <p className="text-sm">{new Date(leave.startDate).toLocaleDateString('tr-TR')}</p>
+                                  </div>
+                                  <div>
+                                    <Label className="text-sm font-medium text-gray-600">Bitiş Tarihi</Label>
+                                    <p className="text-sm">{new Date(leave.endDate).toLocaleDateString('tr-TR')}</p>
+                                  </div>
+                                  <div>
+                                    <Label className="text-sm font-medium text-gray-600">Toplam Gün</Label>
+                                    <p className="text-sm font-medium">{leave.days} gün</p>
+                                  </div>
+                                  <div>
+                                    <Label className="text-sm font-medium text-gray-600">Başvuru Tarihi</Label>
+                                    <p className="text-sm">{new Date(leave.appliedDate).toLocaleDateString('tr-TR')}</p>
+                                  </div>
+                                </div>
+                                
+                                {leave.reason && (
+                                  <div>
+                                    <Label className="text-sm font-medium text-gray-600">Açıklama</Label>
+                                    <div className="mt-2 p-3 bg-gray-50 rounded-lg">
+                                      <p className="text-sm">{leave.reason}</p>
+                                    </div>
+                                  </div>
+                                )}
+
+                                {leave.status === "pending" && (
+                                  <div className="flex gap-3 pt-4">
+                                    <Button 
+                                      onClick={() => {
+                                        approveLeave.mutate(leave.id);
+                                      }}
+                                      disabled={approveLeave.isPending}
+                                      className="flex-1 bg-green-600 hover:bg-green-700"
+                                    >
+                                      <Check className="w-4 h-4 mr-2" />
+                                      İzni Onayla
+                                    </Button>
+                                    <Button 
+                                      onClick={() => {
+                                        rejectLeave.mutate(leave.id);
+                                      }}
+                                      disabled={rejectLeave.isPending}
+                                      variant="destructive"
+                                      className="flex-1"
+                                    >
+                                      <X className="w-4 h-4 mr-2" />
+                                      İzni Reddet
+                                    </Button>
+                                  </div>
+                                )}
+                              </div>
+                            </DialogContent>
+                          </Dialog>
+                          {leave.status === "pending" && (
+                            <>
+                              <Button 
+                                size="sm" 
+                                onClick={() => approveLeave.mutate(leave.id)}
+                                disabled={approveLeave.isPending}
+                                className="h-8 w-8 p-0 bg-green-600 hover:bg-green-700"
+                              >
+                                <Check className="w-4 h-4" />
+                              </Button>
+                              <Button 
+                                size="sm" 
+                                onClick={() => rejectLeave.mutate(leave.id)}
+                                disabled={rejectLeave.isPending}
+                                variant="destructive"
+                                className="h-8 w-8 p-0"
+                              >
+                                <X className="w-4 h-4" />
+                              </Button>
+                            </>
+                          )}
+                        </div>
+                      </TableCell>
+                    </TableRow>
+                  ))}
+                </TableBody>
+              </Table>
+              {filteredLeaves.length === 0 && (
+                <div className="text-center py-8 text-gray-500">
+                  <Calendar className="w-12 h-12 mx-auto mb-4 text-gray-400" />
+                  <p>Filtre kriterlerine uygun izin bulunamadı.</p>
+                </div>
+              )}
+            </CardContent>
+          </Card>
+        </TabsContent>
+
         <TabsContent value="pending">
-          <div className="space-y-4">
-            {pendingLeaves.length === 0 ? (
-              <Card>
-                <CardContent className="p-6 text-center">
-                  <Calendar className="w-12 h-12 mx-auto text-gray-400 mb-4" />
-                  <p className="text-gray-500">Bekleyen izin talebi bulunmuyor.</p>
-                </CardContent>
-              </Card>
-            ) : (
-              pendingLeaves.map((leave: Leave) => (
-                <LeaveCard key={leave.id} leave={leave} showActions={true} />
-              ))
-            )}
-          </div>
+          <Card>
+            <CardHeader>
+              <CardTitle>Onay Bekleyen İzinler</CardTitle>
+              <CardDescription>İK Müdürü onayı bekleyen izin talepleri</CardDescription>
+            </CardHeader>
+            <CardContent>
+              <Table>
+                <TableHeader>
+                  <TableRow>
+                    <TableHead>Çalışan</TableHead>
+                    <TableHead>İzin Türü</TableHead>
+                    <TableHead>Başlangıç</TableHead>
+                    <TableHead>Bitiş</TableHead>
+                    <TableHead>Gün Sayısı</TableHead>
+                    <TableHead>İşlemler</TableHead>
+                  </TableRow>
+                </TableHeader>
+                <TableBody>
+                  {pendingLeaves.map((leave: Leave) => (
+                    <TableRow key={leave.id}>
+                      <TableCell className="font-medium">{leave.employeeName}</TableCell>
+                      <TableCell>{getLeaveTypeLabel(leave.leaveType)}</TableCell>
+                      <TableCell>{new Date(leave.startDate).toLocaleDateString('tr-TR')}</TableCell>
+                      <TableCell>{new Date(leave.endDate).toLocaleDateString('tr-TR')}</TableCell>
+                      <TableCell>{leave.days} gün</TableCell>
+                      <TableCell>
+                        <div className="flex gap-1">
+                          <Dialog>
+                            <DialogTrigger asChild>
+                              <Button size="sm" variant="outline" className="h-8 w-8 p-0">
+                                <Eye className="w-4 h-4" />
+                              </Button>
+                            </DialogTrigger>
+                            <DialogContent className="max-w-2xl">
+                              <DialogHeader>
+                                <DialogTitle>İzin Talebi Detayları</DialogTitle>
+                                <DialogDescription>
+                                  {leave.employeeName} tarafından gönderilen izin talebi
+                                </DialogDescription>
+                              </DialogHeader>
+                              <div className="space-y-6">
+                                <div className="grid grid-cols-2 gap-4">
+                                  <div>
+                                    <Label className="text-sm font-medium text-gray-600">Çalışan</Label>
+                                    <p className="text-sm font-medium">{leave.employeeName}</p>
+                                  </div>
+                                  <div>
+                                    <Label className="text-sm font-medium text-gray-600">İzin Türü</Label>
+                                    <p className="text-sm">{getLeaveTypeLabel(leave.leaveType)}</p>
+                                  </div>
+                                  <div>
+                                    <Label className="text-sm font-medium text-gray-600">Başlangıç Tarihi</Label>
+                                    <p className="text-sm">{new Date(leave.startDate).toLocaleDateString('tr-TR')}</p>
+                                  </div>
+                                  <div>
+                                    <Label className="text-sm font-medium text-gray-600">Bitiş Tarihi</Label>
+                                    <p className="text-sm">{new Date(leave.endDate).toLocaleDateString('tr-TR')}</p>
+                                  </div>
+                                  <div>
+                                    <Label className="text-sm font-medium text-gray-600">Toplam Gün</Label>
+                                    <p className="text-sm font-medium">{leave.days} gün</p>
+                                  </div>
+                                  <div>
+                                    <Label className="text-sm font-medium text-gray-600">Başvuru Tarihi</Label>
+                                    <p className="text-sm">{new Date(leave.appliedDate).toLocaleDateString('tr-TR')}</p>
+                                  </div>
+                                </div>
+                                
+                                {leave.reason && (
+                                  <div>
+                                    <Label className="text-sm font-medium text-gray-600">Açıklama</Label>
+                                    <div className="mt-2 p-3 bg-gray-50 rounded-lg">
+                                      <p className="text-sm">{leave.reason}</p>
+                                    </div>
+                                  </div>
+                                )}
+
+                                <div className="flex gap-3 pt-4">
+                                  <Button 
+                                    onClick={() => {
+                                      approveLeave.mutate(leave.id);
+                                    }}
+                                    disabled={approveLeave.isPending}
+                                    className="flex-1 bg-green-600 hover:bg-green-700"
+                                  >
+                                    <Check className="w-4 h-4 mr-2" />
+                                    İzni Onayla
+                                  </Button>
+                                  <Button 
+                                    onClick={() => {
+                                      rejectLeave.mutate(leave.id);
+                                    }}
+                                    disabled={rejectLeave.isPending}
+                                    variant="destructive"
+                                    className="flex-1"
+                                  >
+                                    <X className="w-4 h-4 mr-2" />
+                                    İzni Reddet
+                                  </Button>
+                                </div>
+                              </div>
+                            </DialogContent>
+                          </Dialog>
+                          <Button 
+                            size="sm" 
+                            onClick={() => approveLeave.mutate(leave.id)}
+                            disabled={approveLeave.isPending}
+                            className="h-8 w-8 p-0 bg-green-600 hover:bg-green-700"
+                          >
+                            <Check className="w-4 h-4" />
+                          </Button>
+                          <Button 
+                            size="sm" 
+                            onClick={() => rejectLeave.mutate(leave.id)}
+                            disabled={rejectLeave.isPending}
+                            variant="destructive"
+                            className="h-8 w-8 p-0"
+                          >
+                            <X className="w-4 h-4" />
+                          </Button>
+                        </div>
+                      </TableCell>
+                    </TableRow>
+                  ))}
+                </TableBody>
+              </Table>
+              {pendingLeaves.length === 0 && (
+                <div className="text-center py-8 text-gray-500">
+                  <Clock className="w-12 h-12 mx-auto mb-4 text-gray-400" />
+                  <p>Onay bekleyen izin talebi bulunmuyor.</p>
+                </div>
+              )}
+            </CardContent>
+          </Card>
         </TabsContent>
 
         <TabsContent value="approved">
-          <div className="space-y-4">
-            {approvedLeaves.length === 0 ? (
-              <Card>
-                <CardContent className="p-6 text-center">
-                  <CheckCircle className="w-12 h-12 mx-auto text-gray-400 mb-4" />
-                  <p className="text-gray-500">Onaylanmış izin bulunmuyor.</p>
-                </CardContent>
-              </Card>
-            ) : (
-              approvedLeaves.map((leave: Leave) => (
-                <LeaveCard key={leave.id} leave={leave} />
-              ))
-            )}
-          </div>
+          <Card>
+            <CardHeader>
+              <CardTitle>Onaylanmış İzinler</CardTitle>
+              <CardDescription>Onaylanmış izin talepleri</CardDescription>
+            </CardHeader>
+            <CardContent>
+              <Table>
+                <TableHeader>
+                  <TableRow>
+                    <TableHead>Çalışan</TableHead>
+                    <TableHead>İzin Türü</TableHead>
+                    <TableHead>Başlangıç</TableHead>
+                    <TableHead>Bitiş</TableHead>
+                    <TableHead>Gün Sayısı</TableHead>
+                    <TableHead>Durum</TableHead>
+                    <TableHead>İşlemler</TableHead>
+                  </TableRow>
+                </TableHeader>
+                <TableBody>
+                  {approvedLeaves.map((leave: Leave) => (
+                    <TableRow key={leave.id}>
+                      <TableCell className="font-medium">{leave.employeeName}</TableCell>
+                      <TableCell>{getLeaveTypeLabel(leave.leaveType)}</TableCell>
+                      <TableCell>{new Date(leave.startDate).toLocaleDateString('tr-TR')}</TableCell>
+                      <TableCell>{new Date(leave.endDate).toLocaleDateString('tr-TR')}</TableCell>
+                      <TableCell>{leave.days} gün</TableCell>
+                      <TableCell>{getStatusBadge(leave.status)}</TableCell>
+                      <TableCell>
+                        <Dialog>
+                          <DialogTrigger asChild>
+                            <Button size="sm" variant="outline" className="h-8 w-8 p-0">
+                              <Eye className="w-4 h-4" />
+                            </Button>
+                          </DialogTrigger>
+                          <DialogContent className="max-w-2xl">
+                            <DialogHeader>
+                              <DialogTitle>İzin Talebi Detayları</DialogTitle>
+                              <DialogDescription>
+                                {leave.employeeName} tarafından gönderilen izin talebi
+                              </DialogDescription>
+                            </DialogHeader>
+                            <div className="space-y-6">
+                              <div className="grid grid-cols-2 gap-4">
+                                <div>
+                                  <Label className="text-sm font-medium text-gray-600">Çalışan</Label>
+                                  <p className="text-sm font-medium">{leave.employeeName}</p>
+                                </div>
+                                <div>
+                                  <Label className="text-sm font-medium text-gray-600">İzin Türü</Label>
+                                  <p className="text-sm">{getLeaveTypeLabel(leave.leaveType)}</p>
+                                </div>
+                                <div>
+                                  <Label className="text-sm font-medium text-gray-600">Başlangıç Tarihi</Label>
+                                  <p className="text-sm">{new Date(leave.startDate).toLocaleDateString('tr-TR')}</p>
+                                </div>
+                                <div>
+                                  <Label className="text-sm font-medium text-gray-600">Bitiş Tarihi</Label>
+                                  <p className="text-sm">{new Date(leave.endDate).toLocaleDateString('tr-TR')}</p>
+                                </div>
+                                <div>
+                                  <Label className="text-sm font-medium text-gray-600">Toplam Gün</Label>
+                                  <p className="text-sm font-medium">{leave.days} gün</p>
+                                </div>
+                                <div>
+                                  <Label className="text-sm font-medium text-gray-600">Başvuru Tarihi</Label>
+                                  <p className="text-sm">{new Date(leave.appliedDate).toLocaleDateString('tr-TR')}</p>
+                                </div>
+                              </div>
+                              
+                              {leave.reason && (
+                                <div>
+                                  <Label className="text-sm font-medium text-gray-600">Açıklama</Label>
+                                  <div className="mt-2 p-3 bg-gray-50 rounded-lg">
+                                    <p className="text-sm">{leave.reason}</p>
+                                  </div>
+                                </div>
+                              )}
+                            </div>
+                          </DialogContent>
+                        </Dialog>
+                      </TableCell>
+                    </TableRow>
+                  ))}
+                </TableBody>
+              </Table>
+              {approvedLeaves.length === 0 && (
+                <div className="text-center py-8 text-gray-500">
+                  <CheckCircle className="w-12 h-12 mx-auto mb-4 text-gray-400" />
+                  <p>Onaylanmış izin bulunmuyor.</p>
+                </div>
+              )}
+            </CardContent>
+          </Card>
         </TabsContent>
 
         <TabsContent value="rejected">
-          <div className="space-y-4">
-            {rejectedLeaves.length === 0 ? (
-              <Card>
-                <CardContent className="p-6 text-center">
-                  <XCircle className="w-12 h-12 mx-auto text-gray-400 mb-4" />
-                  <p className="text-gray-500">Reddedilmiş izin bulunmuyor.</p>
-                </CardContent>
-              </Card>
-            ) : (
-              rejectedLeaves.map((leave: Leave) => (
-                <LeaveCard key={leave.id} leave={leave} />
-              ))
-            )}
-          </div>
+          <Card>
+            <CardHeader>
+              <CardTitle>Reddedilmiş İzinler</CardTitle>
+              <CardDescription>Reddedilmiş izin talepleri</CardDescription>
+            </CardHeader>
+            <CardContent>
+              <Table>
+                <TableHeader>
+                  <TableRow>
+                    <TableHead>Çalışan</TableHead>
+                    <TableHead>İzin Türü</TableHead>
+                    <TableHead>Başlangıç</TableHead>
+                    <TableHead>Bitiş</TableHead>
+                    <TableHead>Gün Sayısı</TableHead>
+                    <TableHead>Durum</TableHead>
+                    <TableHead>İşlemler</TableHead>
+                  </TableRow>
+                </TableHeader>
+                <TableBody>
+                  {rejectedLeaves.map((leave: Leave) => (
+                    <TableRow key={leave.id}>
+                      <TableCell className="font-medium">{leave.employeeName}</TableCell>
+                      <TableCell>{getLeaveTypeLabel(leave.leaveType)}</TableCell>
+                      <TableCell>{new Date(leave.startDate).toLocaleDateString('tr-TR')}</TableCell>
+                      <TableCell>{new Date(leave.endDate).toLocaleDateString('tr-TR')}</TableCell>
+                      <TableCell>{leave.days} gün</TableCell>
+                      <TableCell>{getStatusBadge(leave.status)}</TableCell>
+                      <TableCell>
+                        <Dialog>
+                          <DialogTrigger asChild>
+                            <Button size="sm" variant="outline" className="h-8 w-8 p-0">
+                              <Eye className="w-4 h-4" />
+                            </Button>
+                          </DialogTrigger>
+                          <DialogContent className="max-w-2xl">
+                            <DialogHeader>
+                              <DialogTitle>İzin Talebi Detayları</DialogTitle>
+                              <DialogDescription>
+                                {leave.employeeName} tarafından gönderilen izin talebi
+                              </DialogDescription>
+                            </DialogHeader>
+                            <div className="space-y-6">
+                              <div className="grid grid-cols-2 gap-4">
+                                <div>
+                                  <Label className="text-sm font-medium text-gray-600">Çalışan</Label>
+                                  <p className="text-sm font-medium">{leave.employeeName}</p>
+                                </div>
+                                <div>
+                                  <Label className="text-sm font-medium text-gray-600">İzin Türü</Label>
+                                  <p className="text-sm">{getLeaveTypeLabel(leave.leaveType)}</p>
+                                </div>
+                                <div>
+                                  <Label className="text-sm font-medium text-gray-600">Başlangıç Tarihi</Label>
+                                  <p className="text-sm">{new Date(leave.startDate).toLocaleDateString('tr-TR')}</p>
+                                </div>
+                                <div>
+                                  <Label className="text-sm font-medium text-gray-600">Bitiş Tarihi</Label>
+                                  <p className="text-sm">{new Date(leave.endDate).toLocaleDateString('tr-TR')}</p>
+                                </div>
+                                <div>
+                                  <Label className="text-sm font-medium text-gray-600">Toplam Gün</Label>
+                                  <p className="text-sm font-medium">{leave.days} gün</p>
+                                </div>
+                                <div>
+                                  <Label className="text-sm font-medium text-gray-600">Başvuru Tarihi</Label>
+                                  <p className="text-sm">{new Date(leave.appliedDate).toLocaleDateString('tr-TR')}</p>
+                                </div>
+                              </div>
+                              
+                              {leave.reason && (
+                                <div>
+                                  <Label className="text-sm font-medium text-gray-600">Açıklama</Label>
+                                  <div className="mt-2 p-3 bg-gray-50 rounded-lg">
+                                    <p className="text-sm">{leave.reason}</p>
+                                  </div>
+                                </div>
+                              )}
+                            </div>
+                          </DialogContent>
+                        </Dialog>
+                      </TableCell>
+                    </TableRow>
+                  ))}
+                </TableBody>
+              </Table>
+              {rejectedLeaves.length === 0 && (
+                <div className="text-center py-8 text-gray-500">
+                  <XCircle className="w-12 h-12 mx-auto mb-4 text-gray-400" />
+                  <p>Reddedilmiş izin bulunmuyor.</p>
+                </div>
+              )}
+            </CardContent>
+          </Card>
         </TabsContent>
       </Tabs>
     </div>
