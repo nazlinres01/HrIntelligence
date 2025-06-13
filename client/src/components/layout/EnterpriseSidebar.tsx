@@ -70,7 +70,7 @@ const getRoleBasedNavigation = (userRole: UserRole): NavigationSection[] => {
           items: [
             { name: "Stratejik Genel Bakış", href: "/", icon: LayoutDashboard, show: true, description: "Üst düzey KPI'lar ve dashboard" },
             { name: "Analitik Merkezi", href: "/admin/analytics", icon: BarChart3, show: true, description: "İş zekası raporları ve analiz" },
-            { name: "Sistem İzleme", href: "/admin/monitoring", icon: Activity, show: true, description: "Sistem performansı ve sağlık" },
+            { name: "Sistem İzleme", href: "/admin/system-monitoring", icon: Activity, show: true, description: "Sistem performansı ve sağlık" },
           ]
         },
         {

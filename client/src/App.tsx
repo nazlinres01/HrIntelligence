@@ -30,6 +30,12 @@ import CompanyStructure from "@/pages/admin/CompanyStructure";
 import AnalyticsCenter from "@/pages/admin/AnalyticsCenter";
 import StrategicOverview from "@/pages/admin/StrategicOverview";
 
+// Admin System Pages
+import CompanyManagement from "@/pages/admin/CompanyManagement";
+import SecurityAudit from "@/pages/admin/SecurityAudit";
+import SystemSettings from "@/pages/admin/SystemSettings";
+import SystemMonitoring from "@/pages/admin/SystemMonitoring";
+
 // Other Pages
 import Employees from "@/pages/employees";
 import Performance from "@/pages/performance";
@@ -161,6 +167,12 @@ function Router() {
         <Route path="/admin/company-structure" component={CompanyStructure} />
         <Route path="/admin/analytics-center" component={AnalyticsCenter} />
         <Route path="/admin/strategic-overview" component={StrategicOverview} />
+        
+        {/* Admin System Management Routes */}
+        <Route path="/admin/company-management" component={CompanyManagement} />
+        <Route path="/admin/security-audit" component={SecurityAudit} />
+        <Route path="/admin/system-settings" component={SystemSettings} />
+        <Route path="/admin/system-monitoring" component={SystemMonitoring} />
         
         {/* HR Management Routes */}
         <Route path="/employees" component={Employees} />
