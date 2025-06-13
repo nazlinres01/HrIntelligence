@@ -4,8 +4,14 @@ import bcrypt from "bcrypt";
 
 export async function seedDatabase() {
   try {
-    // Skip clearing data to reduce database load
     console.log("Checking existing data...");
+    
+    // Check if companies already exist
+    const existingCompanies = await db.select().from(companies);
+    if (existingCompanies.length > 0) {
+      console.log("Companies already exist, skipping seeding");
+      return;
+    }
 
     console.log("Seeding database with comprehensive Turkish company data...");
 
