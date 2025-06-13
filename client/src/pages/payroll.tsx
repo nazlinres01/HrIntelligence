@@ -249,14 +249,14 @@ export default function Payroll() {
 
   // Filter payrolls
   const filteredPayrolls = React.useMemo(() => {
-    return payrolls.filter((payroll: any) => {
+    return displayPayrolls.filter((payroll: any) => {
       const matchesSearch = payroll.employee?.firstName?.toLowerCase()?.includes(searchTerm.toLowerCase()) ||
                            payroll.employee?.lastName?.toLowerCase()?.includes(searchTerm.toLowerCase()) ||
                            payroll.period?.toLowerCase()?.includes(searchTerm.toLowerCase());
       const matchesPeriod = periodFilter === "all" || payroll.period === periodFilter;
       return matchesSearch && matchesPeriod;
     });
-  }, [payrolls, searchTerm, periodFilter]);
+  }, [displayPayrolls, searchTerm, periodFilter]);
 
   const handleSubmit = (data: PayrollFormData) => {
     createPayrollMutation.mutate(data);
@@ -281,7 +281,22 @@ export default function Payroll() {
   };
 
   const getTotalPayroll = () => {
-    return payrolls.reduce((total: number, payroll: any) => total + calculateNetSalary(payroll), 0);
+    return displayPayrolls.reduce((total: number, payroll: any) => total + calculateNetSalary(payroll), 0);
+  };
+
+  const getStatusBadge = (status: string) => {
+    switch(status) {
+      case 'ödendi':
+        return <Badge className="bg-green-100 text-green-800 border-green-200">✅ Ödendi</Badge>;
+      case 'hazırlandı':
+        return <Badge className="bg-blue-100 text-blue-800 border-blue-200">📋 Hazırlandı</Badge>;
+      case 'onay_bekliyor':
+        return <Badge className="bg-yellow-100 text-yellow-800 border-yellow-200">⏳ Onay Bekliyor</Badge>;
+      case 'iptal':
+        return <Badge className="bg-red-100 text-red-800 border-red-200">❌ İptal</Badge>;
+      default:
+        return <Badge variant="outline">Belirsiz</Badge>;
+    }
   };
 
   if (payrollsLoading) {
@@ -496,7 +511,7 @@ export default function Payroll() {
               <div className="flex items-center justify-between">
                 <div>
                   <p className="text-green-600 text-sm font-medium">Ödenen Çalışan</p>
-                  <p className="text-3xl font-bold text-green-900">{payrolls.length}</p>
+                  <p className="text-3xl font-bold text-green-900">{displayPayrolls.filter((p: any) => p.status === 'ödendi').length}</p>
                 </div>
                 <Users className="h-8 w-8 text-green-600" />
               </div>
@@ -509,7 +524,7 @@ export default function Payroll() {
                 <div>
                   <p className="text-orange-600 text-sm font-medium">Ortalama Maaş</p>
                   <p className="text-3xl font-bold text-orange-900">
-                    {payrolls.length > 0 ? formatCurrency(getTotalPayroll() / payrolls.length) : formatCurrency(0)}
+                    {displayPayrolls.length > 0 ? formatCurrency(getTotalPayroll() / displayPayrolls.length) : formatCurrency(0)}
                   </p>
                 </div>
                 <TrendingUp className="h-8 w-8 text-orange-600" />
