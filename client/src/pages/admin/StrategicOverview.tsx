@@ -14,12 +14,10 @@ import {
   Users,
   Building2,
   DollarSign,
-  Calendar,
   Award,
   AlertTriangle,
   CheckCircle,
   Activity,
-  Briefcase,
   BarChart3,
   PieChart,
   Globe,
@@ -38,16 +36,26 @@ import {
   Network,
   Gauge,
   ArrowUpRight,
-  ArrowDownRight
+  ArrowDownRight,
+  Calendar,
+  Filter,
+  RefreshCw,
+  Eye,
+  Settings,
+  ChevronUp,
+  ChevronDown,
+  Plus,
+  Minus
 } from "lucide-react";
-import { LineChart, Line, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer, AreaChart, Area, BarChart, Bar, PieChart as RechartsPieChart, Cell } from 'recharts';
+import { LineChart, Line, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer, AreaChart, Area, BarChart, Bar, PieChart as RechartsPieChart, Cell, RadialBarChart, RadialBar, ComposedChart, Pie } from 'recharts';
 
 export default function StrategicOverview() {
   const [timeRange, setTimeRange] = useState("quarterly");
-  const [selectedView, setSelectedView] = useState("overview");
+  const [selectedView, setSelectedView] = useState("executive");
+  const [refreshing, setRefreshing] = useState(false);
 
   // API Data Queries
-  const { data: dashboardStats } = useQuery({
+  const { data: dashboardStats, refetch: refetchDashboard } = useQuery({
     queryKey: ["/api/stats/dashboard"]
   });
 
@@ -71,70 +79,115 @@ export default function StrategicOverview() {
     queryKey: ["/api/employees"]
   });
 
-  const { data: performanceHistory } = useQuery({
-    queryKey: ["/api/system/performance-history"]
-  });
-
-  // Chart Data Processing
-  const companyGrowthData = [
-    { month: 'Oca', companies: 72, employees: 1150 },
-    { month: 'Şub', companies: 75, employees: 1185 },
-    { month: 'Mar', companies: 78, employees: 1210 },
-    { month: 'Nis', companies: 82, employees: 1235 },
-    { month: 'May', companies: 85, employees: 1247 },
-  ];
-
-  const revenueData = [
-    { month: 'Oca', revenue: 12500000, target: 12000000 },
-    { month: 'Şub', revenue: 13200000, target: 12500000 },
-    { month: 'Mar', revenue: 14100000, target: 13000000 },
-    { month: 'Nis', revenue: 14800000, target: 13500000 },
-    { month: 'May', revenue: 15250000, target: 14000000 },
-  ];
-
-  const departmentData = [
-    { name: 'İK', value: 35, color: '#3b82f6' },
-    { name: 'Muhasebe', value: 28, color: '#10b981' },
-    { name: 'Satış', value: 22, color: '#f59e0b' },
-    { name: 'Pazarlama', value: 15, color: '#ef4444' },
-  ];
-
-  const performanceMetrics = [
-    { metric: 'Çalışan Memnuniyeti', current: 87, target: 85, trend: 'up' },
-    { metric: 'Şirket Büyümesi', current: 12.5, target: 10, trend: 'up' },
-    { metric: 'Operasyonel Verimlilik', current: 94, target: 90, trend: 'up' },
-    { metric: 'İnovasyon Endeksi', current: 78, target: 80, trend: 'down' },
-  ];
-
-  const strategicGoals = [
+  // Enhanced Chart Data
+  const executiveMetrics = [
     { 
-      title: 'Dijital Dönüşüm',
-      progress: 75,
-      deadline: '2024 Q3',
-      status: 'on-track',
-      initiatives: 3
+      title: "Operasyonel Mükemmellik", 
+      value: 94, 
+      target: 90, 
+      trend: 8.2, 
+      status: "excellent",
+      color: "#10b981"
     },
     { 
-      title: 'Sürdürülebilirlik',
-      progress: 60,
-      deadline: '2024 Q4',
-      status: 'at-risk',
-      initiatives: 5
+      title: "Finansal Performans", 
+      value: 89, 
+      target: 85, 
+      trend: 12.5, 
+      status: "good",
+      color: "#3b82f6"
     },
     { 
-      title: 'Küresel Genişleme',
-      progress: 45,
-      deadline: '2025 Q1',
-      status: 'on-track',
-      initiatives: 7
+      title: "İnsan Kaynakları", 
+      value: 87, 
+      target: 80, 
+      trend: 5.7, 
+      status: "good",
+      color: "#8b5cf6"
     },
     { 
-      title: 'Yetenek Yönetimi',
-      progress: 85,
-      deadline: '2024 Q2',
-      status: 'ahead',
-      initiatives: 4
+      title: "Teknoloji & İnovasyon", 
+      value: 76, 
+      target: 75, 
+      trend: -2.1, 
+      status: "warning",
+      color: "#f59e0b"
+    },
+  ];
+
+  const monthlyPerformance = [
+    { month: 'Ocak', revenue: 12500000, employees: 1150, efficiency: 85, satisfaction: 82 },
+    { month: 'Şubat', revenue: 13200000, employees: 1185, efficiency: 87, satisfaction: 84 },
+    { month: 'Mart', revenue: 14100000, employees: 1210, efficiency: 89, satisfaction: 86 },
+    { month: 'Nisan', revenue: 14800000, employees: 1235, efficiency: 91, satisfaction: 87 },
+    { month: 'Mayıs', revenue: 15250000, employees: 1247, efficiency: 94, satisfaction: 89 },
+  ];
+
+  const departmentPerformance = [
+    { name: 'İnsan Kaynakları', budget: 2500000, spent: 2100000, efficiency: 94, headcount: 35 },
+    { name: 'Teknoloji', budget: 5000000, spent: 4200000, efficiency: 91, headcount: 128 },
+    { name: 'Satış', budget: 3200000, spent: 2950000, efficiency: 88, headcount: 95 },
+    { name: 'Pazarlama', budget: 2800000, spent: 2600000, efficiency: 85, headcount: 42 },
+    { name: 'Operasyon', budget: 4100000, spent: 3800000, efficiency: 92, headcount: 156 },
+  ];
+
+  const strategicInitiatives = [
+    {
+      title: "Dijital Dönüşüm 2024",
+      category: "Teknoloji",
+      progress: 78,
+      budget: 8500000,
+      spent: 6200000,
+      timeline: "Q4 2024",
+      risk: "düşük",
+      impact: "yüksek",
+      owner: "CTO",
+      milestones: { completed: 12, total: 16 }
+    },
+    {
+      title: "Sürdürülebilirlik Programı",
+      category: "Operasyon",
+      progress: 65,
+      budget: 3200000,
+      spent: 1950000,
+      timeline: "Q1 2025",
+      risk: "orta",
+      impact: "yüksek",
+      owner: "COO",
+      milestones: { completed: 8, total: 14 }
+    },
+    {
+      title: "Global Pazar Genişleme",
+      category: "Stratejik",
+      progress: 43,
+      budget: 12000000,
+      spent: 4800000,
+      timeline: "Q2 2025",
+      risk: "yüksek",
+      impact: "kritik",
+      owner: "CEO",
+      milestones: { completed: 6, total: 18 }
+    },
+    {
+      title: "Çalışan Deneyimi Programı",
+      category: "İK",
+      progress: 89,
+      budget: 1800000,
+      spent: 1450000,
+      timeline: "Q3 2024",
+      risk: "düşük",
+      impact: "orta",
+      owner: "CHRO",
+      milestones: { completed: 15, total: 17 }
     }
+  ];
+
+  const kpiTrends = [
+    { period: 'Q1 2024', customerSat: 82, employeeSat: 79, revenue: 42500000, efficiency: 85 },
+    { period: 'Q2 2024', customerSat: 85, employeeSat: 82, revenue: 45200000, efficiency: 88 },
+    { period: 'Q3 2024', customerSat: 87, employeeSat: 84, revenue: 47100000, efficiency: 91 },
+    { period: 'Q4 2024', customerSat: 89, employeeSat: 87, revenue: 48800000, efficiency: 94 },
+    { period: 'Q1 2025', customerSat: 91, employeeSat: 89, revenue: 50250000, efficiency: 96 },
   ];
 
   const formatCurrency = (value: number) => {
@@ -146,316 +199,256 @@ export default function StrategicOverview() {
     }).format(value);
   };
 
-  const getStatusColor = (status: string) => {
-    switch(status) {
-      case 'ahead': return 'text-green-600 bg-green-50 border-green-200';
-      case 'on-track': return 'text-blue-600 bg-blue-50 border-blue-200';
-      case 'at-risk': return 'text-orange-600 bg-orange-50 border-orange-200';
-      case 'behind': return 'text-red-600 bg-red-50 border-red-200';
+  const getRiskColor = (risk: string) => {
+    switch(risk) {
+      case 'düşük': return 'text-green-600 bg-green-50 border-green-200';
+      case 'orta': return 'text-yellow-600 bg-yellow-50 border-yellow-200';
+      case 'yüksek': return 'text-red-600 bg-red-50 border-red-200';
       default: return 'text-gray-600 bg-gray-50 border-gray-200';
     }
   };
 
-  const getStatusText = (status: string) => {
-    switch(status) {
-      case 'ahead': return 'Hedefin Önünde';
-      case 'on-track': return 'Hedefte';
-      case 'at-risk': return 'Risk Altında';
-      case 'behind': return 'Geride';
-      default: return 'Belirsiz';
+  const getImpactColor = (impact: string) => {
+    switch(impact) {
+      case 'kritik': return 'text-purple-600 bg-purple-50 border-purple-200';
+      case 'yüksek': return 'text-blue-600 bg-blue-50 border-blue-200';
+      case 'orta': return 'text-orange-600 bg-orange-50 border-orange-200';
+      default: return 'text-gray-600 bg-gray-50 border-gray-200';
     }
   };
 
+  const handleRefresh = async () => {
+    setRefreshing(true);
+    await refetchDashboard();
+    setTimeout(() => setRefreshing(false), 1000);
+  };
+
   return (
-    <div className="min-h-screen bg-gradient-to-br from-slate-50 via-blue-50 to-indigo-50 p-6">
-      <div className="max-w-7xl mx-auto space-y-8">
+    <div className="min-h-screen bg-gradient-to-br from-slate-50 via-indigo-50 to-purple-50 p-6">
+      <div className="max-w-8xl mx-auto space-y-8">
         
-        {/* Header Section */}
-        <div className="flex flex-col lg:flex-row lg:items-center lg:justify-between gap-6">
-          <div>
-            <h1 className="text-4xl font-bold bg-gradient-to-r from-blue-600 via-indigo-600 to-purple-600 bg-clip-text text-transparent">
-              Stratejik Genel Bakış
-            </h1>
-            <p className="text-lg text-gray-600 mt-2">
-              Kurumsal performans ve stratejik hedeflerin kapsamlı analizi
-            </p>
-          </div>
-          
-          <div className="flex flex-col sm:flex-row gap-3">
-            <Select value={timeRange} onValueChange={setTimeRange}>
-              <SelectTrigger className="w-48">
-                <SelectValue />
-              </SelectTrigger>
-              <SelectContent>
-                <SelectItem value="weekly">Son Hafta</SelectItem>
-                <SelectItem value="monthly">Son Ay</SelectItem>
-                <SelectItem value="quarterly">Son Çeyrek</SelectItem>
-                <SelectItem value="yearly">Son Yıl</SelectItem>
-              </SelectContent>
-            </Select>
-            
-            <Button className="bg-gradient-to-r from-blue-600 to-indigo-600 hover:from-blue-700 hover:to-indigo-700">
-              <Download className="w-4 h-4 mr-2" />
-              Rapor İndir
-            </Button>
+        {/* Executive Header */}
+        <div className="relative overflow-hidden rounded-3xl bg-gradient-to-r from-indigo-900 via-purple-900 to-pink-900 p-8 text-white">
+          <div className="absolute inset-0 bg-black/20"></div>
+          <div className="relative z-10">
+            <div className="flex flex-col lg:flex-row lg:items-center lg:justify-between gap-6">
+              <div>
+                <h1 className="text-5xl font-bold mb-3">
+                  Stratejik Genel Bakış
+                </h1>
+                <p className="text-xl text-indigo-100 mb-4">
+                  Kurumsal performans ve stratejik hedeflerin kapsamlı yönetici özeti
+                </p>
+                <div className="flex items-center gap-4 text-sm">
+                  <div className="flex items-center gap-2">
+                    <Calendar className="w-4 h-4" />
+                    <span>Son Güncelleme: {new Date().toLocaleDateString('tr-TR')}</span>
+                  </div>
+                  <div className="flex items-center gap-2">
+                    <Users className="w-4 h-4" />
+                    <span>{dashboardStats?.totalEmployees || 1247} Çalışan</span>
+                  </div>
+                  <div className="flex items-center gap-2">
+                    <Building2 className="w-4 h-4" />
+                    <span>{companyStats?.total || 85} Şirket</span>
+                  </div>
+                </div>
+              </div>
+              
+              <div className="flex flex-col sm:flex-row gap-3">
+                <Select value={timeRange} onValueChange={setTimeRange}>
+                  <SelectTrigger className="w-48 bg-white/10 border-white/20 text-white">
+                    <SelectValue />
+                  </SelectTrigger>
+                  <SelectContent>
+                    <SelectItem value="weekly">Son Hafta</SelectItem>
+                    <SelectItem value="monthly">Son Ay</SelectItem>
+                    <SelectItem value="quarterly">Son Çeyrek</SelectItem>
+                    <SelectItem value="yearly">Son Yıl</SelectItem>
+                  </SelectContent>
+                </Select>
+                
+                <Button 
+                  onClick={handleRefresh}
+                  disabled={refreshing}
+                  className="bg-white/10 border-white/20 hover:bg-white/20 text-white"
+                >
+                  <RefreshCw className={`w-4 h-4 mr-2 ${refreshing ? 'animate-spin' : ''}`} />
+                  Yenile
+                </Button>
+                
+                <Button className="bg-white text-indigo-900 hover:bg-indigo-50">
+                  <Download className="w-4 h-4 mr-2" />
+                  Rapor İndir
+                </Button>
+              </div>
+            </div>
           </div>
         </div>
 
-        {/* Key Performance Indicators */}
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
-          <Card className="border-0 shadow-lg bg-gradient-to-br from-blue-500 to-blue-600 text-white">
-            <CardContent className="p-6">
-              <div className="flex items-center justify-between">
-                <div>
-                  <p className="text-blue-100 text-sm font-medium">Toplam Şirket</p>
-                  <p className="text-3xl font-bold">{companyStats?.total || 85}</p>
-                  <div className="flex items-center mt-2">
-                    <ArrowUpRight className="w-4 h-4 text-green-300" />
-                    <span className="text-green-300 text-sm ml-1">+{companyStats?.growth || 12.5}%</span>
+        {/* Executive KPI Dashboard */}
+        <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-4 gap-6">
+          {executiveMetrics.map((metric, index) => (
+            <Card key={index} className="border-0 shadow-xl bg-white/80 backdrop-blur-sm hover:shadow-2xl transition-all duration-300">
+              <CardContent className="p-6">
+                <div className="flex items-start justify-between mb-4">
+                  <div className="space-y-1">
+                    <p className="text-sm font-medium text-gray-600">{metric.title}</p>
+                    <p className="text-3xl font-bold" style={{ color: metric.color }}>{metric.value}%</p>
+                  </div>
+                  <div className="text-right">
+                    <div className={`flex items-center gap-1 ${metric.trend > 0 ? 'text-green-600' : 'text-red-600'}`}>
+                      {metric.trend > 0 ? (
+                        <ChevronUp className="w-4 h-4" />
+                      ) : (
+                        <ChevronDown className="w-4 h-4" />
+                      )}
+                      <span className="text-sm font-medium">{Math.abs(metric.trend)}%</span>
+                    </div>
                   </div>
                 </div>
-                <Building2 className="w-12 h-12 text-blue-200" />
-              </div>
-            </CardContent>
-          </Card>
-
-          <Card className="border-0 shadow-lg bg-gradient-to-br from-green-500 to-green-600 text-white">
-            <CardContent className="p-6">
-              <div className="flex items-center justify-between">
-                <div>
-                  <p className="text-green-100 text-sm font-medium">Toplam Çalışan</p>
-                  <p className="text-3xl font-bold">{dashboardStats?.totalEmployees || 1247}</p>
-                  <div className="flex items-center mt-2">
-                    <ArrowUpRight className="w-4 h-4 text-green-300" />
-                    <span className="text-green-300 text-sm ml-1">+{dashboardStats?.newEmployeesThisMonth || 23} bu ay</span>
+                
+                <div className="space-y-3">
+                  <div className="flex items-center justify-between text-sm">
+                    <span className="text-gray-600">Hedef: {metric.target}%</span>
+                    <Badge className={`${metric.value >= metric.target ? 'bg-green-100 text-green-800' : 'bg-orange-100 text-orange-800'} border-0`}>
+                      {metric.value >= metric.target ? 'Hedefte' : 'Geride'}
+                    </Badge>
                   </div>
+                  <Progress value={metric.value} className="h-2" style={{ 
+                    '--progress-background': metric.color 
+                  } as React.CSSProperties} />
                 </div>
-                <Users className="w-12 h-12 text-green-200" />
-              </div>
-            </CardContent>
-          </Card>
-
-          <Card className="border-0 shadow-lg bg-gradient-to-br from-purple-500 to-purple-600 text-white">
-            <CardContent className="p-6">
-              <div className="flex items-center justify-between">
-                <div>
-                  <p className="text-purple-100 text-sm font-medium">Toplam Gelir</p>
-                  <p className="text-3xl font-bold">{dashboardStats?.totalRevenue || "₺15,250,000"}</p>
-                  <div className="flex items-center mt-2">
-                    <ArrowUpRight className="w-4 h-4 text-green-300" />
-                    <span className="text-green-300 text-sm ml-1">+8.2%</span>
-                  </div>
-                </div>
-                <DollarSign className="w-12 h-12 text-purple-200" />
-              </div>
-            </CardContent>
-          </Card>
-
-          <Card className="border-0 shadow-lg bg-gradient-to-br from-orange-500 to-orange-600 text-white">
-            <CardContent className="p-6">
-              <div className="flex items-center justify-between">
-                <div>
-                  <p className="text-orange-100 text-sm font-medium">Performans Skoru</p>
-                  <p className="text-3xl font-bold">{dashboardStats?.performanceScore || 87.5}</p>
-                  <div className="flex items-center mt-2">
-                    <ArrowUpRight className="w-4 h-4 text-green-300" />
-                    <span className="text-green-300 text-sm ml-1">+2.1%</span>
-                  </div>
-                </div>
-                <Target className="w-12 h-12 text-orange-200" />
-              </div>
-            </CardContent>
-          </Card>
+              </CardContent>
+            </Card>
+          ))}
         </div>
 
         {/* Main Content Tabs */}
         <Tabs value={selectedView} onValueChange={setSelectedView} className="space-y-6">
-          <TabsList className="grid w-full grid-cols-4 lg:w-fit lg:grid-cols-4">
-            <TabsTrigger value="overview" className="flex items-center gap-2">
-              <BarChart3 className="w-4 h-4" />
-              Genel Bakış
+          <TabsList className="grid w-full grid-cols-4 lg:w-fit lg:grid-cols-4 bg-white/50 backdrop-blur-sm">
+            <TabsTrigger value="executive" className="flex items-center gap-2 data-[state=active]:bg-white">
+              <Star className="w-4 h-4" />
+              Yönetici Özeti
             </TabsTrigger>
-            <TabsTrigger value="performance" className="flex items-center gap-2">
-              <Target className="w-4 h-4" />
+            <TabsTrigger value="performance" className="flex items-center gap-2 data-[state=active]:bg-white">
+              <BarChart3 className="w-4 h-4" />
               Performans
             </TabsTrigger>
-            <TabsTrigger value="strategic" className="flex items-center gap-2">
+            <TabsTrigger value="initiatives" className="flex items-center gap-2 data-[state=active]:bg-white">
               <Rocket className="w-4 h-4" />
-              Stratejik Hedefler
+              Stratejik Girişimler
             </TabsTrigger>
-            <TabsTrigger value="analytics" className="flex items-center gap-2">
+            <TabsTrigger value="analytics" className="flex items-center gap-2 data-[state=active]:bg-white">
               <Brain className="w-4 h-4" />
-              Analitik
+              Gelişmiş Analitik
             </TabsTrigger>
           </TabsList>
 
-          {/* Overview Tab */}
-          <TabsContent value="overview" className="space-y-6">
+          {/* Executive Summary Tab */}
+          <TabsContent value="executive" className="space-y-6">
+            {/* Monthly Performance Trend */}
+            <Card className="border-0 shadow-xl bg-white/80 backdrop-blur-sm">
+              <CardHeader>
+                <CardTitle className="flex items-center gap-2 text-xl">
+                  <TrendingUp className="w-6 h-6 text-blue-600" />
+                  Aylık Performans Trendi
+                </CardTitle>
+              </CardHeader>
+              <CardContent>
+                <ResponsiveContainer width="100%" height={400}>
+                  <ComposedChart data={monthlyPerformance}>
+                    <CartesianGrid strokeDasharray="3 3" stroke="#f0f0f0" />
+                    <XAxis dataKey="month" />
+                    <YAxis yAxisId="left" />
+                    <YAxis yAxisId="right" orientation="right" />
+                    <Tooltip 
+                      formatter={(value, name) => {
+                        if (name === 'revenue') return [formatCurrency(Number(value)), 'Gelir'];
+                        if (name === 'employees') return [value + ' kişi', 'Çalışan Sayısı'];
+                        if (name === 'efficiency') return [value + '%', 'Verimlilik'];
+                        if (name === 'satisfaction') return [value + '%', 'Memnuniyet'];
+                        return [value, name];
+                      }}
+                    />
+                    <Bar yAxisId="left" dataKey="revenue" fill="#3b82f6" name="revenue" />
+                    <Line yAxisId="right" type="monotone" dataKey="efficiency" stroke="#10b981" strokeWidth={3} name="efficiency" />
+                    <Line yAxisId="right" type="monotone" dataKey="satisfaction" stroke="#8b5cf6" strokeWidth={3} name="satisfaction" />
+                  </ComposedChart>
+                </ResponsiveContainer>
+              </CardContent>
+            </Card>
+
+            {/* Department Performance Grid */}
             <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
-              {/* Company Growth Chart */}
-              <Card className="border-0 shadow-lg">
+              <Card className="border-0 shadow-xl bg-white/80 backdrop-blur-sm">
                 <CardHeader>
                   <CardTitle className="flex items-center gap-2">
-                    <Building className="w-5 h-5 text-blue-600" />
-                    Şirket ve Çalışan Büyümesi
+                    <Building className="w-5 h-5 text-purple-600" />
+                    Departman Performansı
+                  </CardTitle>
+                </CardHeader>
+                <CardContent>
+                  <div className="space-y-4">
+                    {departmentPerformance.map((dept, index) => (
+                      <div key={index} className="p-4 rounded-lg bg-gray-50 border">
+                        <div className="flex items-center justify-between mb-2">
+                          <h4 className="font-semibold">{dept.name}</h4>
+                          <Badge className="bg-blue-100 text-blue-800 border-0">
+                            {dept.efficiency}% Verimli
+                          </Badge>
+                        </div>
+                        <div className="grid grid-cols-2 gap-4 text-sm">
+                          <div>
+                            <span className="text-gray-600">Bütçe:</span>
+                            <p className="font-medium">{formatCurrency(dept.budget)}</p>
+                          </div>
+                          <div>
+                            <span className="text-gray-600">Harcanan:</span>
+                            <p className="font-medium">{formatCurrency(dept.spent)}</p>
+                          </div>
+                        </div>
+                        <Progress value={(dept.spent / dept.budget) * 100} className="mt-3 h-2" />
+                      </div>
+                    ))}
+                  </div>
+                </CardContent>
+              </Card>
+
+              <Card className="border-0 shadow-xl bg-white/80 backdrop-blur-sm">
+                <CardHeader>
+                  <CardTitle className="flex items-center gap-2">
+                    <Target className="w-5 h-5 text-green-600" />
+                    Çeyreklik KPI Trendi
                   </CardTitle>
                 </CardHeader>
                 <CardContent>
                   <ResponsiveContainer width="100%" height={300}>
-                    <AreaChart data={companyGrowthData}>
+                    <AreaChart data={kpiTrends}>
                       <CartesianGrid strokeDasharray="3 3" stroke="#f0f0f0" />
-                      <XAxis dataKey="month" />
+                      <XAxis dataKey="period" />
                       <YAxis />
-                      <Tooltip 
-                        formatter={(value, name) => [
-                          name === 'companies' ? value + ' şirket' : value + ' çalışan',
-                          name === 'companies' ? 'Şirket Sayısı' : 'Çalışan Sayısı'
-                        ]}
-                      />
+                      <Tooltip />
                       <Area 
                         type="monotone" 
-                        dataKey="companies" 
+                        dataKey="customerSat" 
                         stackId="1"
                         stroke="#3b82f6" 
-                        fill="url(#companyGradient)"
+                        fill="#3b82f6"
+                        fillOpacity={0.6}
+                        name="Müşteri Memnuniyeti"
                       />
                       <Area 
                         type="monotone" 
-                        dataKey="employees" 
+                        dataKey="employeeSat" 
                         stackId="2"
                         stroke="#10b981" 
-                        fill="url(#employeeGradient)"
+                        fill="#10b981"
+                        fillOpacity={0.6}
+                        name="Çalışan Memnuniyeti"
                       />
-                      <defs>
-                        <linearGradient id="companyGradient" x1="0" y1="0" x2="0" y2="1">
-                          <stop offset="5%" stopColor="#3b82f6" stopOpacity={0.8}/>
-                          <stop offset="95%" stopColor="#3b82f6" stopOpacity={0.1}/>
-                        </linearGradient>
-                        <linearGradient id="employeeGradient" x1="0" y1="0" x2="0" y2="1">
-                          <stop offset="5%" stopColor="#10b981" stopOpacity={0.8}/>
-                          <stop offset="95%" stopColor="#10b981" stopOpacity={0.1}/>
-                        </linearGradient>
-                      </defs>
                     </AreaChart>
                   </ResponsiveContainer>
-                </CardContent>
-              </Card>
-
-              {/* Revenue Growth Chart */}
-              <Card className="border-0 shadow-lg">
-                <CardHeader>
-                  <CardTitle className="flex items-center gap-2">
-                    <DollarSign className="w-5 h-5 text-green-600" />
-                    Gelir Büyümesi vs Hedef
-                  </CardTitle>
-                </CardHeader>
-                <CardContent>
-                  <ResponsiveContainer width="100%" height={300}>
-                    <LineChart data={revenueData}>
-                      <CartesianGrid strokeDasharray="3 3" stroke="#f0f0f0" />
-                      <XAxis dataKey="month" />
-                      <YAxis tickFormatter={(value) => formatCurrency(value)} />
-                      <Tooltip 
-                        formatter={(value) => [formatCurrency(Number(value)), 'Tutar']}
-                      />
-                      <Line 
-                        type="monotone" 
-                        dataKey="revenue" 
-                        stroke="#10b981" 
-                        strokeWidth={3}
-                        name="Gerçekleşen"
-                      />
-                      <Line 
-                        type="monotone" 
-                        dataKey="target" 
-                        stroke="#6b7280" 
-                        strokeDasharray="5 5"
-                        strokeWidth={2}
-                        name="Hedef"
-                      />
-                    </LineChart>
-                  </ResponsiveContainer>
-                </CardContent>
-              </Card>
-            </div>
-
-            {/* Department Distribution */}
-            <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
-              <Card className="border-0 shadow-lg">
-                <CardHeader>
-                  <CardTitle className="flex items-center gap-2">
-                    <PieChart className="w-5 h-5 text-purple-600" />
-                    Departman Dağılımı
-                  </CardTitle>
-                </CardHeader>
-                <CardContent>
-                  <ResponsiveContainer width="100%" height={250}>
-                    <RechartsPieChart>
-                      <Pie
-                        data={departmentData}
-                        cx="50%"
-                        cy="50%"
-                        outerRadius={80}
-                        dataKey="value"
-                        label={({ name, percent }) => `${name} ${(percent * 100).toFixed(0)}%`}
-                      >
-                        {departmentData.map((entry, index) => (
-                          <Cell key={`cell-${index}`} fill={entry.color} />
-                        ))}
-                      </Pie>
-                      <Tooltip />
-                    </RechartsPieChart>
-                  </ResponsiveContainer>
-                </CardContent>
-              </Card>
-
-              {/* Quick Stats */}
-              <Card className="border-0 shadow-lg lg:col-span-2">
-                <CardHeader>
-                  <CardTitle className="flex items-center gap-2">
-                    <Activity className="w-5 h-5 text-indigo-600" />
-                    Hızlı İstatistikler
-                  </CardTitle>
-                </CardHeader>
-                <CardContent>
-                  <div className="grid grid-cols-2 gap-6">
-                    <div className="space-y-4">
-                      <div className="flex items-center justify-between">
-                        <span className="text-sm text-gray-600">Aktif İzinler</span>
-                        <span className="font-semibold">{dashboardStats?.activeLeaves || 23}</span>
-                      </div>
-                      <div className="flex items-center justify-between">
-                        <span className="text-sm text-gray-600">Aylık Bordro</span>
-                        <span className="font-semibold">{dashboardStats?.monthlyPayroll || "₺2,500,000"}</span>
-                      </div>
-                      <div className="flex items-center justify-between">
-                        <span className="text-sm text-gray-600">Ortalama Performans</span>
-                        <span className="font-semibold">{dashboardStats?.avgPerformance || "4.2"}/5</span>
-                      </div>
-                      <div className="flex items-center justify-between">
-                        <span className="text-sm text-gray-600">Sistem Çalışma Süresi</span>
-                        <span className="font-semibold">{systemHealth?.uptime || 99.8}%</span>
-                      </div>
-                    </div>
-                    <div className="space-y-4">
-                      <div className="flex items-center justify-between">
-                        <span className="text-sm text-gray-600">Aktif Kullanıcılar</span>
-                        <span className="font-semibold">{systemHealth?.activeUsers || 147}</span>
-                      </div>
-                      <div className="flex items-center justify-between">
-                        <span className="text-sm text-gray-600">Yanıt Süresi</span>
-                        <span className="font-semibold">{systemHealth?.responseTime || 245}ms</span>
-                      </div>
-                      <div className="flex items-center justify-between">
-                        <span className="text-sm text-gray-600">Sistem Yükü</span>
-                        <span className="font-semibold">{systemHealth?.systemLoad || 34.2}%</span>
-                      </div>
-                      <div className="flex items-center justify-between">
-                        <span className="text-sm text-gray-600">Bellek Kullanımı</span>
-                        <span className="font-semibold">{systemHealth?.memoryUsage || 68.5}%</span>
-                      </div>
-                    </div>
-                  </div>
                 </CardContent>
               </Card>
             </div>
@@ -463,156 +456,271 @@ export default function StrategicOverview() {
 
           {/* Performance Tab */}
           <TabsContent value="performance" className="space-y-6">
-            <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
-              {performanceMetrics.map((metric, index) => (
-                <Card key={index} className="border-0 shadow-lg">
-                  <CardContent className="p-6">
-                    <div className="flex items-center justify-between mb-4">
-                      <h3 className="font-semibold text-lg">{metric.metric}</h3>
-                      {metric.trend === 'up' ? (
-                        <TrendingUp className="w-5 h-5 text-green-500" />
-                      ) : (
-                        <TrendingDown className="w-5 h-5 text-red-500" />
-                      )}
-                    </div>
-                    <div className="space-y-3">
-                      <div className="flex items-center justify-between">
-                        <span className="text-sm text-gray-600">Mevcut</span>
-                        <span className="font-semibold text-xl">{metric.current}%</span>
-                      </div>
-                      <Progress value={metric.current} className="h-3" />
-                      <div className="flex items-center justify-between text-sm">
-                        <span className="text-gray-600">Hedef: {metric.target}%</span>
-                        <span className={`font-medium ${
-                          metric.current >= metric.target ? 'text-green-600' : 'text-orange-600'
-                        }`}>
-                          {metric.current >= metric.target ? 'Hedefte' : 'Hedefin Altında'}
-                        </span>
-                      </div>
-                    </div>
-                  </CardContent>
-                </Card>
-              ))}
-            </div>
-          </TabsContent>
-
-          {/* Strategic Goals Tab */}
-          <TabsContent value="strategic" className="space-y-6">
-            <div className="grid gap-6">
-              {strategicGoals.map((goal, index) => (
-                <Card key={index} className="border-0 shadow-lg">
-                  <CardContent className="p-6">
-                    <div className="flex items-center justify-between mb-4">
-                      <div className="flex items-center gap-3">
-                        <Target className="w-6 h-6 text-blue-600" />
-                        <h3 className="font-semibold text-xl">{goal.title}</h3>
-                      </div>
-                      <Badge className={`${getStatusColor(goal.status)} border`}>
-                        {getStatusText(goal.status)}
-                      </Badge>
-                    </div>
-                    
-                    <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-                      <div className="md:col-span-2">
-                        <div className="space-y-3">
-                          <div className="flex items-center justify-between">
-                            <span className="text-sm text-gray-600">İlerleme</span>
-                            <span className="font-semibold">{goal.progress}%</span>
-                          </div>
-                          <Progress value={goal.progress} className="h-3" />
-                        </div>
-                      </div>
-                      
-                      <div className="space-y-3">
-                        <div className="flex items-center justify-between">
-                          <span className="text-sm text-gray-600">Hedef Tarih</span>
-                          <span className="font-medium">{goal.deadline}</span>
-                        </div>
-                        <div className="flex items-center justify-between">
-                          <span className="text-sm text-gray-600">Girişimler</span>
-                          <span className="font-medium">{goal.initiatives} aktif</span>
-                        </div>
-                      </div>
-                    </div>
-                  </CardContent>
-                </Card>
-              ))}
-            </div>
-          </TabsContent>
-
-          {/* Analytics Tab */}
-          <TabsContent value="analytics" className="space-y-6">
-            <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
-              <Card className="border-0 shadow-lg">
+            <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
+              {/* Real-time Metrics */}
+              <Card className="border-0 shadow-xl bg-white/80 backdrop-blur-sm">
                 <CardHeader>
                   <CardTitle className="flex items-center gap-2">
-                    <Brain className="w-5 h-5 text-purple-600" />
-                    Gelişmiş Analitik
+                    <Activity className="w-5 h-5 text-blue-600" />
+                    Gerçek Zamanlı Metrikler
                   </CardTitle>
                 </CardHeader>
                 <CardContent>
-                  <div className="space-y-4">
-                    <div className="p-4 bg-blue-50 rounded-lg border border-blue-200">
-                      <h4 className="font-semibold text-blue-900 mb-2">Öngörü Analizi</h4>
-                      <p className="text-sm text-blue-700">
-                        Mevcut büyüme trendine göre, önümüzdeki çeyrekte %15 büyüme bekleniyor.
-                      </p>
+                  <div className="space-y-6">
+                    <div className="text-center">
+                      <div className="text-3xl font-bold text-green-600 mb-1">
+                        {systemHealth?.uptime || 99.8}%
+                      </div>
+                      <p className="text-sm text-gray-600">Sistem Çalışma Süresi</p>
                     </div>
-                    <div className="p-4 bg-green-50 rounded-lg border border-green-200">
-                      <h4 className="font-semibold text-green-900 mb-2">Risk Analizi</h4>
-                      <p className="text-sm text-green-700">
-                        Düşük risk seviyesi. Tüm kritik göstergeler normal aralıkta.
-                      </p>
+                    
+                    <div className="text-center">
+                      <div className="text-3xl font-bold text-blue-600 mb-1">
+                        {systemHealth?.activeUsers || 147}
+                      </div>
+                      <p className="text-sm text-gray-600">Aktif Kullanıcı</p>
                     </div>
-                    <div className="p-4 bg-orange-50 rounded-lg border border-orange-200">
-                      <h4 className="font-semibold text-orange-900 mb-2">Fırsat Analizi</h4>
-                      <p className="text-sm text-orange-700">
-                        Yeni pazar segmentlerinde %22 büyüme potansiyeli tespit edildi.
-                      </p>
+                    
+                    <div className="text-center">
+                      <div className="text-3xl font-bold text-purple-600 mb-1">
+                        {systemHealth?.responseTime || 245}ms
+                      </div>
+                      <p className="text-sm text-gray-600">Ortalama Yanıt Süresi</p>
                     </div>
                   </div>
                 </CardContent>
               </Card>
 
-              <Card className="border-0 shadow-lg">
+              {/* System Health */}
+              <Card className="border-0 shadow-xl bg-white/80 backdrop-blur-sm lg:col-span-2">
                 <CardHeader>
                   <CardTitle className="flex items-center gap-2">
-                    <Gauge className="w-5 h-5 text-indigo-600" />
-                    Performans Özeti
+                    <Shield className="w-5 h-5 text-green-600" />
+                    Sistem Sağlığı
+                  </CardTitle>
+                </CardHeader>
+                <CardContent>
+                  <div className="grid grid-cols-2 gap-6">
+                    <div className="space-y-4">
+                      <div>
+                        <div className="flex items-center justify-between mb-2">
+                          <span className="text-sm font-medium">CPU Kullanımı</span>
+                          <span className="text-sm text-gray-600">{systemHealth?.systemLoad || 34.2}%</span>
+                        </div>
+                        <Progress value={systemHealth?.systemLoad || 34.2} className="h-2" />
+                      </div>
+                      
+                      <div>
+                        <div className="flex items-center justify-between mb-2">
+                          <span className="text-sm font-medium">Bellek Kullanımı</span>
+                          <span className="text-sm text-gray-600">{systemHealth?.memoryUsage || 68.5}%</span>
+                        </div>
+                        <Progress value={systemHealth?.memoryUsage || 68.5} className="h-2" />
+                      </div>
+                    </div>
+                    
+                    <div className="space-y-4">
+                      <div>
+                        <div className="flex items-center justify-between mb-2">
+                          <span className="text-sm font-medium">Disk Kullanımı</span>
+                          <span className="text-sm text-gray-600">{systemHealth?.diskUsage || 42.1}%</span>
+                        </div>
+                        <Progress value={systemHealth?.diskUsage || 42.1} className="h-2" />
+                      </div>
+                      
+                      <div>
+                        <div className="flex items-center justify-between mb-2">
+                          <span className="text-sm font-medium">Veritabanı Durumu</span>
+                          <Badge className="bg-green-100 text-green-800 border-0">
+                            {systemHealth?.database ? 'Sağlıklı' : 'Sorunlu'}
+                          </Badge>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                </CardContent>
+              </Card>
+            </div>
+          </TabsContent>
+
+          {/* Strategic Initiatives Tab */}
+          <TabsContent value="initiatives" className="space-y-6">
+            <div className="grid gap-6">
+              {strategicInitiatives.map((initiative, index) => (
+                <Card key={index} className="border-0 shadow-xl bg-white/80 backdrop-blur-sm">
+                  <CardContent className="p-6">
+                    <div className="grid grid-cols-1 lg:grid-cols-4 gap-6">
+                      {/* Initiative Info */}
+                      <div className="lg:col-span-2">
+                        <div className="flex items-start justify-between mb-4">
+                          <div>
+                            <h3 className="text-xl font-bold mb-2">{initiative.title}</h3>
+                            <Badge className="bg-indigo-100 text-indigo-800 border-0 mb-2">
+                              {initiative.category}
+                            </Badge>
+                            <p className="text-sm text-gray-600">Sahip: {initiative.owner}</p>
+                          </div>
+                          <div className="text-right">
+                            <Badge className={`${getRiskColor(initiative.risk)} border mb-2`}>
+                              Risk: {initiative.risk}
+                            </Badge>
+                            <br />
+                            <Badge className={`${getImpactColor(initiative.impact)} border`}>
+                              Etki: {initiative.impact}
+                            </Badge>
+                          </div>
+                        </div>
+                        
+                        <div className="space-y-3">
+                          <div>
+                            <div className="flex items-center justify-between mb-2">
+                              <span className="text-sm font-medium">İlerleme</span>
+                              <span className="text-lg font-bold text-blue-600">{initiative.progress}%</span>
+                            </div>
+                            <Progress value={initiative.progress} className="h-3" />
+                          </div>
+                          
+                          <div className="flex items-center justify-between text-sm">
+                            <span className="text-gray-600">Hedef Tarih</span>
+                            <span className="font-medium">{initiative.timeline}</span>
+                          </div>
+                        </div>
+                      </div>
+
+                      {/* Budget & Milestones */}
+                      <div className="space-y-4">
+                        <div>
+                          <h4 className="font-semibold text-sm mb-2">Bütçe Durumu</h4>
+                          <div className="space-y-2">
+                            <div className="flex justify-between text-sm">
+                              <span>Toplam:</span>
+                              <span className="font-medium">{formatCurrency(initiative.budget)}</span>
+                            </div>
+                            <div className="flex justify-between text-sm">
+                              <span>Harcanan:</span>
+                              <span className="font-medium">{formatCurrency(initiative.spent)}</span>
+                            </div>
+                            <Progress value={(initiative.spent / initiative.budget) * 100} className="h-2" />
+                          </div>
+                        </div>
+                      </div>
+
+                      <div className="space-y-4">
+                        <div>
+                          <h4 className="font-semibold text-sm mb-2">Kilometre Taşları</h4>
+                          <div className="flex items-center gap-3">
+                            <div className="text-2xl font-bold text-green-600">
+                              {initiative.milestones.completed}
+                            </div>
+                            <div className="text-gray-400">/</div>
+                            <div className="text-2xl font-bold text-gray-600">
+                              {initiative.milestones.total}
+                            </div>
+                          </div>
+                          <Progress 
+                            value={(initiative.milestones.completed / initiative.milestones.total) * 100} 
+                            className="h-2 mt-2" 
+                          />
+                        </div>
+                      </div>
+                    </div>
+                  </CardContent>
+                </Card>
+              ))}
+            </div>
+          </TabsContent>
+
+          {/* Advanced Analytics Tab */}
+          <TabsContent value="analytics" className="space-y-6">
+            <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+              <Card className="border-0 shadow-xl bg-white/80 backdrop-blur-sm">
+                <CardHeader>
+                  <CardTitle className="flex items-center gap-2">
+                    <Brain className="w-5 h-5 text-purple-600" />
+                    Öngörü Analitiği
                   </CardTitle>
                 </CardHeader>
                 <CardContent>
                   <div className="space-y-6">
-                    <div>
-                      <div className="flex items-center justify-between mb-2">
-                        <span className="text-sm font-medium">Genel Performans</span>
-                        <span className="text-lg font-bold text-green-600">Mükemmel</span>
-                      </div>
-                      <Progress value={92} className="h-2" />
+                    <div className="p-4 bg-gradient-to-r from-blue-50 to-indigo-50 rounded-lg border border-blue-200">
+                      <h4 className="font-semibold text-blue-900 mb-2">Gelir Projeksiyonu</h4>
+                      <p className="text-sm text-blue-700 mb-3">
+                        Mevcut büyüme trendine göre 2024 yıl sonu gelir projeksiyonu:
+                      </p>
+                      <div className="text-2xl font-bold text-blue-900">₺187.5M</div>
+                      <div className="text-sm text-blue-600">+18.2% YoY büyüme</div>
                     </div>
                     
-                    <div>
-                      <div className="flex items-center justify-between mb-2">
-                        <span className="text-sm font-medium">Finansal Sağlık</span>
-                        <span className="text-lg font-bold text-blue-600">Çok İyi</span>
-                      </div>
-                      <Progress value={88} className="h-2" />
+                    <div className="p-4 bg-gradient-to-r from-green-50 to-emerald-50 rounded-lg border border-green-200">
+                      <h4 className="font-semibold text-green-900 mb-2">Çalışan Analizi</h4>
+                      <p className="text-sm text-green-700 mb-3">
+                        Optimum takım büyüklüğü ve performans korelasyonu:
+                      </p>
+                      <div className="text-2xl font-bold text-green-900">1,485</div>
+                      <div className="text-sm text-green-600">Önerilen çalışan sayısı</div>
                     </div>
                     
-                    <div>
-                      <div className="flex items-center justify-between mb-2">
-                        <span className="text-sm font-medium">Operasyonel Verimlilik</span>
-                        <span className="text-lg font-bold text-purple-600">İyi</span>
+                    <div className="p-4 bg-gradient-to-r from-orange-50 to-red-50 rounded-lg border border-orange-200">
+                      <h4 className="font-semibold text-orange-900 mb-2">Risk Değerlendirmesi</h4>
+                      <p className="text-sm text-orange-700 mb-3">
+                        Kritik risk faktörleri ve önlem önerileri:
+                      </p>
+                      <div className="text-2xl font-bold text-orange-900">Düşük</div>
+                      <div className="text-sm text-orange-600">Genel risk seviyesi</div>
+                    </div>
+                  </div>
+                </CardContent>
+              </Card>
+
+              <Card className="border-0 shadow-xl bg-white/80 backdrop-blur-sm">
+                <CardHeader>
+                  <CardTitle className="flex items-center gap-2">
+                    <Gauge className="w-5 h-5 text-indigo-600" />
+                    Performans Skorları
+                  </CardTitle>
+                </CardHeader>
+                <CardContent>
+                  <div className="space-y-6">
+                    <div className="text-center">
+                      <div className="text-5xl font-bold bg-gradient-to-r from-green-600 to-blue-600 bg-clip-text text-transparent mb-2">
+                        A+
                       </div>
-                      <Progress value={84} className="h-2" />
+                      <p className="text-lg font-semibold text-gray-700">Genel Performans Notu</p>
+                      <p className="text-sm text-gray-600">En yüksek %10'luk dilimde</p>
                     </div>
                     
-                    <div>
-                      <div className="flex items-center justify-between mb-2">
-                        <span className="text-sm font-medium">İnovasyon Kapasitesi</span>
-                        <span className="text-lg font-bold text-orange-600">Orta</span>
+                    <div className="space-y-4">
+                      <div>
+                        <div className="flex items-center justify-between mb-2">
+                          <span className="text-sm font-medium">Finansal Sağlık</span>
+                          <span className="font-bold text-green-600">96/100</span>
+                        </div>
+                        <Progress value={96} className="h-2" />
                       </div>
-                      <Progress value={76} className="h-2" />
+                      
+                      <div>
+                        <div className="flex items-center justify-between mb-2">
+                          <span className="text-sm font-medium">Operasyonel Mükemmellik</span>
+                          <span className="font-bold text-blue-600">94/100</span>
+                        </div>
+                        <Progress value={94} className="h-2" />
+                      </div>
+                      
+                      <div>
+                        <div className="flex items-center justify-between mb-2">
+                          <span className="text-sm font-medium">İnovasyon Kapasitesi</span>
+                          <span className="font-bold text-purple-600">87/100</span>
+                        </div>
+                        <Progress value={87} className="h-2" />
+                      </div>
+                      
+                      <div>
+                        <div className="flex items-center justify-between mb-2">
+                          <span className="text-sm font-medium">Sürdürülebilirlik</span>
+                          <span className="font-bold text-orange-600">83/100</span>
+                        </div>
+                        <Progress value={83} className="h-2" />
+                      </div>
                     </div>
                   </div>
                 </CardContent>
