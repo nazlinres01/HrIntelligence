@@ -6,7 +6,7 @@ import { TooltipProvider } from "@/components/ui/tooltip";
 import { LanguageProvider } from "@/hooks/use-language";
 import { useAuth } from "./hooks/useAuth";
 import EnterpriseSidebar from "@/components/layout/EnterpriseSidebar";
-import EnterpriseAdminDashboard from "@/pages/admin-dashboard";
+import EnterpriseAdminDashboard from "@/pages/dashboard/EnterpriseAdminDashboard";
 import HRManagerDashboard from "@/pages/hr-strategy-complete";
 import HRSpecialistDashboard from "@/pages/hr-specialist-dashboard";
 import DepartmentManagerDashboard from "@/pages/department-manager-dashboard";
