@@ -591,6 +591,7 @@ export default function Payroll() {
                     <th className="pb-3 text-sm font-medium text-gray-600">Prim/Bonus</th>
                     <th className="pb-3 text-sm font-medium text-gray-600">Kesintiler</th>
                     <th className="pb-3 text-sm font-medium text-gray-600">Net Maaş</th>
+                    <th className="pb-3 text-sm font-medium text-gray-600">Durum</th>
                     <th className="pb-3 text-sm font-medium text-gray-600">İşlemler</th>
                   </tr>
                 </thead>
@@ -618,6 +619,9 @@ export default function Payroll() {
                         <Badge className="bg-green-100 text-green-800">
                           {formatCurrency(calculateNetSalary(payroll))}
                         </Badge>
+                      </td>
+                      <td className="py-4">
+                        {getStatusBadge(payroll.status)}
                       </td>
                       <td className="py-4">
                         <div className="flex space-x-2">
