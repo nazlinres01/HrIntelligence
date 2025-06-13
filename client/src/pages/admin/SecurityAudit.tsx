@@ -1,125 +1,141 @@
-import { useState } from "react";
-import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
+import { useState, useEffect } from "react";
+import { useQuery } from "@tanstack/react-query";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
-import { Badge } from "@/components/ui/badge";
 import { Input } from "@/components/ui/input";
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
+import { Badge } from "@/components/ui/badge";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Progress } from "@/components/ui/progress";
-import { Separator } from "@/components/ui/separator";
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
-import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog";
+import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
 import { 
   Shield, 
   AlertTriangle, 
   CheckCircle, 
-  Lock, 
+  XCircle, 
   Eye, 
+  Lock, 
+  Key, 
+  Server, 
   Users, 
-  Activity, 
-  Clock,
-  Search,
-  Filter,
+  FileText,
   Download,
   RefreshCw,
-  FileText,
-  Globe,
-  Cpu,
+  Search,
+  Filter,
+  Calendar,
+  Clock,
   Database,
-  Wifi,
-  Key,
-  UserCheck,
-  AlertCircle,
-  XCircle,
-  Settings,
-  Zap,
-  MonitorSpeaker
+  Network,
+  Monitor
 } from "lucide-react";
-import { apiRequest } from "@/lib/queryClient";
-import { useToast } from "@/hooks/use-toast";
 
 export default function SecurityAudit() {
-  const [selectedTimeRange, setSelectedTimeRange] = useState("24h");
   const [searchQuery, setSearchQuery] = useState("");
   const [selectedSeverity, setSelectedSeverity] = useState("all");
-  const { toast } = useToast();
-  const queryClient = useQueryClient();
+  const [selectedTimeRange, setSelectedTimeRange] = useState("7");
+  const [refreshing, setRefreshing] = useState(false);
 
-  const { data: auditLogs, isLoading: logsLoading } = useQuery({
-    queryKey: ["/api/audit-logs", selectedTimeRange],
-  });
+  // Security metrics data
+  const securityMetrics = {
+    overallScore: 78,
+    criticalIssues: 3,
+    highIssues: 12,
+    mediumIssues: 28,
+    lowIssues: 45,
+    resolvedIssues: 156,
+    lastScanDate: "2024-06-13T20:30:00Z"
+  };
 
-  const { data: securityMetrics } = useQuery({
-    queryKey: ["/api/security/metrics"],
-  });
-
-  const { data: activeThreats } = useQuery({
-    queryKey: ["/api/security/threats"],
-  });
-
-  const { data: vulnerabilities } = useQuery({
-    queryKey: ["/api/security/vulnerabilities"],
-  });
-
-  const { data: accessLogs } = useQuery({
-    queryKey: ["/api/security/access-logs"],
-  });
-
-  const { data: systemAlerts } = useQuery({
-    queryKey: ["/api/security/alerts"],
-  });
-
-  const runSecurityScan = useMutation({
-    mutationFn: async () => {
-      return apiRequest("POST", "/api/security/scan");
+  // Mock audit logs data
+  const auditLogs = [
+    {
+      id: 1,
+      timestamp: "2024-06-13T20:25:00Z",
+      event: "Başarısız Giriş Denemesi",
+      user: "admin@teknolojisumo.com",
+      ip: "192.168.1.100",
+      severity: "high",
+      status: "detected",
+      description: "Çoklu başarısız giriş denemesi tespit edildi"
     },
-    onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ["/api/security"] });
-      toast({
-        title: "Güvenlik Taraması Başlatıldı",
-        description: "Sistem güvenlik taraması başarıyla başlatıldı.",
-      });
+    {
+      id: 2,
+      timestamp: "2024-06-13T20:20:00Z",
+      event: "Yetkisiz Dosya Erişimi",
+      user: "mehmet.yilmaz@teknolojisumo.com",
+      ip: "10.0.0.45",
+      severity: "critical",
+      status: "blocked",
+      description: "Yetkisiz kullanıcı kritik dosyalara erişim denedi"
     },
-    onError: () => {
-      toast({
-        title: "Hata",
-        description: "Güvenlik taraması başlatılırken hata oluştu.",
-        variant: "destructive",
-      });
+    {
+      id: 3,
+      timestamp: "2024-06-13T20:15:00Z",
+      event: "Şüpheli Ağ Trafiği",
+      user: "system",
+      ip: "external",
+      severity: "medium",
+      status: "monitoring",
+      description: "Olağandışı ağ trafiği paterni tespit edildi"
     },
-  });
+    {
+      id: 4,
+      timestamp: "2024-06-13T20:10:00Z",
+      event: "Sistem Güncellemesi",
+      user: "system",
+      ip: "localhost",
+      severity: "low",
+      status: "completed",
+      description: "Güvenlik yamaları başarıyla uygulandı"
+    },
+    {
+      id: 5,
+      timestamp: "2024-06-13T20:05:00Z",
+      event: "Privilege Escalation",
+      user: "ayse.demir@teknolojisumo.com",
+      ip: "192.168.1.150",
+      severity: "high",
+      status: "investigating",
+      description: "Kullanıcı yetki yükseltme işlemi gerçekleştirdi"
+    }
+  ];
 
-  const getSeverityBadge = (severity: string) => {
+  const handleRefresh = async () => {
+    setRefreshing(true);
+    // Simulate API call
+    await new Promise(resolve => setTimeout(resolve, 2000));
+    setRefreshing(false);
+  };
+
+  const getSeverityColor = (severity: string) => {
     switch (severity) {
-      case 'critical':
-        return <Badge className="bg-red-100 text-red-800">Kritik</Badge>;
-      case 'high':
-        return <Badge className="bg-orange-100 text-orange-800">Yüksek</Badge>;
-      case 'medium':
-        return <Badge className="bg-yellow-100 text-yellow-800">Orta</Badge>;
-      case 'low':
-        return <Badge className="bg-blue-100 text-blue-800">Düşük</Badge>;
-      default:
-        return <Badge className="bg-gray-100 text-gray-800">Belirsiz</Badge>;
+      case "critical": return "bg-red-100 text-red-800";
+      case "high": return "bg-orange-100 text-orange-800";
+      case "medium": return "bg-yellow-100 text-yellow-800";
+      case "low": return "bg-blue-100 text-blue-800";
+      default: return "bg-gray-100 text-gray-800";
     }
   };
 
-  if (logsLoading) {
-    return (
-      <div className="min-h-screen bg-gradient-to-br from-gray-50 via-white to-gray-100 p-6">
-        <div className="max-w-7xl mx-auto">
-          <div className="space-y-6">
-            <div className="h-16 bg-white/80 rounded-xl shadow-sm animate-pulse border border-gray-200"></div>
-            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
-              {[...Array(8)].map((_, i) => (
-                <div key={i} className="h-32 bg-white/80 rounded-xl shadow-sm animate-pulse border border-gray-200"></div>
-              ))}
-            </div>
-          </div>
-        </div>
-      </div>
-    );
-  }
+  const getStatusColor = (status: string) => {
+    switch (status) {
+      case "detected": return "bg-red-100 text-red-800";
+      case "blocked": return "bg-orange-100 text-orange-800";
+      case "monitoring": return "bg-yellow-100 text-yellow-800";
+      case "investigating": return "bg-blue-100 text-blue-800";
+      case "completed": return "bg-green-100 text-green-800";
+      default: return "bg-gray-100 text-gray-800";
+    }
+  };
+
+  const filteredLogs = auditLogs.filter(log => {
+    const matchesSearch = log.event.toLowerCase().includes(searchQuery.toLowerCase()) ||
+                         log.user.toLowerCase().includes(searchQuery.toLowerCase()) ||
+                         log.description.toLowerCase().includes(searchQuery.toLowerCase());
+    const matchesSeverity = selectedSeverity === "all" || log.severity === selectedSeverity;
+    return matchesSearch && matchesSeverity;
+  });
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-gray-50 via-white to-gray-100 p-6">
@@ -127,439 +143,128 @@ export default function SecurityAudit() {
         {/* Header */}
         <div className="flex items-center justify-between mb-8">
           <div>
-            <h1 className="text-4xl font-bold text-gray-900 mb-2">Güvenlik Denetimi ve İzleme</h1>
-            <p className="text-gray-600 text-lg">Sistem Güvenliği, Tehdit Analizi ve Denetim Raporları</p>
+            <h1 className="text-4xl font-bold text-gray-900 mb-2">Güvenlik Denetimi</h1>
+            <p className="text-gray-600 text-lg">Sistem Güvenliğini İzleyin, Tehditleri Tespit Edin ve Güvenlik Önlemlerini Yönetin</p>
           </div>
-          <div className="flex items-center gap-3">
-            <Select value={selectedTimeRange} onValueChange={setSelectedTimeRange}>
-              <SelectTrigger className="w-32">
-                <SelectValue />
-              </SelectTrigger>
-              <SelectContent>
-                <SelectItem value="1h">Son 1 Saat</SelectItem>
-                <SelectItem value="24h">Son 24 Saat</SelectItem>
-                <SelectItem value="7d">Son 7 Gün</SelectItem>
-                <SelectItem value="30d">Son 30 Gün</SelectItem>
-              </SelectContent>
-            </Select>
+          <div className="flex space-x-3">
             <Button 
-              variant="outline"
-              onClick={() => runSecurityScan.mutate()}
-              disabled={runSecurityScan.isPending}
+              variant="outline" 
+              onClick={handleRefresh}
+              disabled={refreshing}
+              className="border-gray-300 text-gray-700"
             >
-              <Shield className="w-4 h-4 mr-2" />
-              {runSecurityScan.isPending ? "Taranıyor..." : "Güvenlik Taraması"}
-            </Button>
-          </div>
-        </div>
-
-        {/* Security Metrics Grid */}
-        <div className="grid grid-cols-1 md:grid-cols-4 gap-6">
-          <Card className="bg-white border-gray-200 hover:shadow-xl transition-all duration-300">
-            <CardContent className="p-6">
-              <div className="flex items-center justify-between">
-                <div>
-                  <p className="text-sm font-medium text-gray-600">Güvenlik Skoru</p>
-                  <p className="text-3xl font-bold text-green-600">92%</p>
-                  <p className="text-xs text-gray-500 mt-1">Mükemmel durum</p>
-                </div>
-                <Shield className="h-8 w-8 text-green-600" />
-              </div>
-            </CardContent>
-          </Card>
-
-          <Card className="bg-white border-gray-200 hover:shadow-xl transition-all duration-300">
-            <CardContent className="p-6">
-              <div className="flex items-center justify-between">
-                <div>
-                  <p className="text-sm font-medium text-gray-600">Aktif Tehditler</p>
-                  <p className="text-3xl font-bold text-red-600">{(systemAlerts as any)?.length || 3}</p>
-                  <p className="text-xs text-gray-500 mt-1">Acil müdahale gerekli</p>
-                </div>
-                <AlertTriangle className="h-8 w-8 text-red-600" />
-              </div>
-            </CardContent>
-          </Card>
-
-          <Card className="bg-white border-gray-200 hover:shadow-xl transition-all duration-300">
-            <CardContent className="p-6">
-              <div className="flex items-center justify-between">
-                <div>
-                  <p className="text-sm font-medium text-gray-600">Zayıflıklar</p>
-                  <p className="text-3xl font-bold text-yellow-600">{(vulnerabilities as any)?.length || 7}</p>
-                  <p className="text-xs text-gray-500 mt-1">Güncelleme önerilir</p>
-                </div>
-                <XCircle className="h-8 w-8 text-yellow-600" />
-              </div>
-            </CardContent>
-          </Card>
-
-          <Card className="bg-white border-gray-200 hover:shadow-xl transition-all duration-300">
-            <CardContent className="p-6">
-              <div className="flex items-center justify-between">
-                <div>
-                  <p className="text-sm font-medium text-gray-600">Başarısız Girişler</p>
-                  <p className="text-3xl font-bold text-orange-600">{(accessLogs as any)?.failedLogins || 24}</p>
-                  <p className="text-xs text-gray-500 mt-1">Son 24 saatte</p>
-                </div>
-                <Lock className="h-8 w-8 text-orange-600" />
-              </div>
-            </CardContent>
-          </Card>
-        </div>
-      </div>
-    </div>
-  );
-}
-        return <Badge>Bilinmeyen</Badge>;
-    }
-  };
-
-  const getStatusIcon = (status: string) => {
-    switch (status) {
-      case 'secure':
-        return <CheckCircle className="w-5 h-5 text-emerald-600" />;
-      case 'warning':
-        return <AlertTriangle className="w-5 h-5 text-yellow-600" />;
-      case 'critical':
-        return <XCircle className="w-5 h-5 text-red-600" />;
-      default:
-        return <AlertCircle className="w-5 h-5 text-gray-600" />;
-    }
-  };
-
-  const getComplianceScore = () => {
-    const total = securityMetrics?.totalChecks || 100;
-    const passed = securityMetrics?.passedChecks || 85;
-    return Math.round((passed / total) * 100);
-  };
-
-  const filteredLogs = auditLogs?.filter((log: any) => {
-    const matchesSearch = log.action?.toLowerCase().includes(searchQuery.toLowerCase()) ||
-                         log.userEmail?.toLowerCase().includes(searchQuery.toLowerCase());
-    const matchesSeverity = selectedSeverity === 'all' || log.severity === selectedSeverity;
-    return matchesSearch && matchesSeverity;
-  }) || [];
-
-  return (
-    <div className="flex-1 flex flex-col overflow-hidden">
-      {/* Header */}
-      <header className="bg-white border-b border-gray-200 px-6 py-6">
-        <div className="flex items-center justify-between">
-          <div>
-            <h2 className="text-3xl font-bold text-gray-900">Güvenlik Denetimi</h2>
-            <p className="text-gray-600">Sistem güvenliği izleme ve denetim merkezi</p>
-          </div>
-          <div className="flex items-center gap-3">
-            <Button 
-              variant="outline"
-              onClick={() => queryClient.invalidateQueries({ queryKey: ["/api/security"] })}
-            >
-              <RefreshCw className="w-4 h-4 mr-2" />
+              <RefreshCw className={`mr-2 h-4 w-4 ${refreshing ? 'animate-spin' : ''}`} />
               Yenile
             </Button>
-            <Button 
-              onClick={() => runSecurityScan.mutate()}
-              disabled={runSecurityScan.isPending}
-            >
-              <Shield className="w-4 h-4 mr-2" />
-              Güvenlik Taraması
+            <Button variant="outline" className="border-gray-300 text-gray-700">
+              <Download className="mr-2 h-4 w-4" />
+              Rapor İndir
             </Button>
           </div>
         </div>
-      </header>
 
-      {/* Main Content */}
-      <main className="flex-1 overflow-auto p-6">
-        {/* Security Overview Cards */}
-        <div className="grid grid-cols-1 md:grid-cols-4 gap-6 mb-6">
-          <Card>
-            <CardContent className="p-6">
-              <div className="flex items-center justify-between">
-                <div>
-                  <p className="text-sm font-medium text-gray-600">Güvenlik Skoru</p>
-                  <p className="text-3xl font-bold text-gray-900">{getComplianceScore()}%</p>
-                  <p className="text-xs text-emerald-600 mt-1">+5% bu ay</p>
-                </div>
-                <Shield className="h-8 w-8 text-emerald-600" />
+        {/* Security Score Alert */}
+        <Alert className="border-orange-200 bg-orange-50">
+          <AlertTriangle className="h-4 w-4 text-orange-600" />
+          <AlertTitle className="text-orange-800">Güvenlik Durumu: Orta Seviye Risk</AlertTitle>
+          <AlertDescription className="text-orange-700">
+            Sistemde {securityMetrics.criticalIssues} kritik ve {securityMetrics.highIssues} yüksek öncelikli güvenlik sorunu tespit edildi. 
+            Acil müdahale gerekiyor.
+          </AlertDescription>
+        </Alert>
+
+        {/* Security Metrics Cards */}
+        <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-4">
+          <Card className="bg-white border-gray-200 hover:shadow-xl transition-all duration-300">
+            <CardContent className="flex items-center p-6">
+              <div className="p-3 bg-blue-100 rounded-full mr-4">
+                <Shield className="h-6 w-6 text-blue-600" />
+              </div>
+              <div>
+                <div className="text-3xl font-bold text-gray-900">{securityMetrics.overallScore}%</div>
+                <p className="text-sm text-blue-600 font-medium">Genel Güvenlik Skoru</p>
+                <Progress value={securityMetrics.overallScore} className="mt-2 h-2" />
               </div>
             </CardContent>
           </Card>
-          
-          <Card>
-            <CardContent className="p-6">
-              <div className="flex items-center justify-between">
-                <div>
-                  <p className="text-sm font-medium text-gray-600">Aktif Tehditler</p>
-                  <p className="text-3xl font-bold text-gray-900">{activeThreats?.length || 0}</p>
-                  <p className="text-xs text-gray-500 mt-1">Son 24 saat</p>
-                </div>
-                <AlertTriangle className="h-8 w-8 text-red-600" />
+
+          <Card className="bg-white border-gray-200 hover:shadow-xl transition-all duration-300">
+            <CardContent className="flex items-center p-6">
+              <div className="p-3 bg-red-100 rounded-full mr-4">
+                <XCircle className="h-6 w-6 text-red-600" />
+              </div>
+              <div>
+                <div className="text-3xl font-bold text-gray-900">{securityMetrics.criticalIssues}</div>
+                <p className="text-sm text-red-600 font-medium">Kritik Sorunlar</p>
               </div>
             </CardContent>
           </Card>
-          
-          <Card>
-            <CardContent className="p-6">
-              <div className="flex items-center justify-between">
-                <div>
-                  <p className="text-sm font-medium text-gray-600">Güvenlik Açıkları</p>
-                  <p className="text-3xl font-bold text-gray-900">{vulnerabilities?.length || 0}</p>
-                  <p className="text-xs text-yellow-600 mt-1">3 kritik</p>
-                </div>
-                <XCircle className="h-8 w-8 text-orange-600" />
+
+          <Card className="bg-white border-gray-200 hover:shadow-xl transition-all duration-300">
+            <CardContent className="flex items-center p-6">
+              <div className="p-3 bg-orange-100 rounded-full mr-4">
+                <AlertTriangle className="h-6 w-6 text-orange-600" />
+              </div>
+              <div>
+                <div className="text-3xl font-bold text-gray-900">{securityMetrics.highIssues}</div>
+                <p className="text-sm text-orange-600 font-medium">Yüksek Öncelik</p>
               </div>
             </CardContent>
           </Card>
-          
-          <Card>
-            <CardContent className="p-6">
-              <div className="flex items-center justify-between">
-                <div>
-                  <p className="text-sm font-medium text-gray-600">Başarısız Girişler</p>
-                  <p className="text-3xl font-bold text-gray-900">{securityMetrics?.failedLogins || 0}</p>
-                  <p className="text-xs text-gray-500 mt-1">Son 1 saat</p>
-                </div>
-                <Lock className="h-8 w-8 text-purple-600" />
+
+          <Card className="bg-white border-gray-200 hover:shadow-xl transition-all duration-300">
+            <CardContent className="flex items-center p-6">
+              <div className="p-3 bg-green-100 rounded-full mr-4">
+                <CheckCircle className="h-6 w-6 text-green-600" />
+              </div>
+              <div>
+                <div className="text-3xl font-bold text-gray-900">{securityMetrics.resolvedIssues}</div>
+                <p className="text-sm text-green-600 font-medium">Çözümlenen</p>
               </div>
             </CardContent>
           </Card>
         </div>
 
-        <Tabs defaultValue="overview" className="space-y-6">
-          <TabsList className="grid w-full grid-cols-5">
-            <TabsTrigger value="overview">Genel Bakış</TabsTrigger>
-            <TabsTrigger value="threats">Tehdit Analizi</TabsTrigger>
-            <TabsTrigger value="access">Erişim Logları</TabsTrigger>
-            <TabsTrigger value="vulnerabilities">Güvenlik Açıkları</TabsTrigger>
-            <TabsTrigger value="compliance">Uyumluluk</TabsTrigger>
+        {/* Main Content Tabs */}
+        <Tabs defaultValue="audit-logs" className="w-full">
+          <TabsList className="grid w-full grid-cols-4 bg-white border border-gray-200">
+            <TabsTrigger value="audit-logs" className="data-[state=active]:bg-blue-50 data-[state=active]:text-blue-700">
+              <FileText className="mr-2 h-4 w-4" />
+              Denetim Günlükleri
+            </TabsTrigger>
+            <TabsTrigger value="vulnerabilities" className="data-[state=active]:bg-blue-50 data-[state=active]:text-blue-700">
+              <AlertTriangle className="mr-2 h-4 w-4" />
+              Güvenlik Açıkları
+            </TabsTrigger>
+            <TabsTrigger value="access-control" className="data-[state=active]:bg-blue-50 data-[state=active]:text-blue-700">
+              <Lock className="mr-2 h-4 w-4" />
+              Erişim Kontrolü
+            </TabsTrigger>
+            <TabsTrigger value="network-security" className="data-[state=active]:bg-blue-50 data-[state=active]:text-blue-700">
+              <Network className="mr-2 h-4 w-4" />
+              Ağ Güvenliği
+            </TabsTrigger>
           </TabsList>
 
-          <TabsContent value="overview" className="space-y-6">
-            {/* Security Status Dashboard */}
-            <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
-              <Card>
-                <CardHeader>
-                  <CardTitle className="flex items-center gap-2">
-                    <Activity className="w-5 h-5" />
-                    Sistem Güvenlik Durumu
-                  </CardTitle>
-                </CardHeader>
-                <CardContent className="space-y-4">
-                  <div className="flex items-center justify-between p-3 bg-emerald-50 rounded-lg">
-                    <div className="flex items-center gap-3">
-                      <CheckCircle className="w-5 h-5 text-emerald-600" />
-                      <div>
-                        <p className="font-medium text-emerald-900">Firewall Koruması</p>
-                        <p className="text-sm text-emerald-700">Aktif ve güncel</p>
-                      </div>
-                    </div>
-                    <Badge className="bg-emerald-100 text-emerald-800">Aktif</Badge>
-                  </div>
-
-                  <div className="flex items-center justify-between p-3 bg-emerald-50 rounded-lg">
-                    <div className="flex items-center gap-3">
-                      <CheckCircle className="w-5 h-5 text-emerald-600" />
-                      <div>
-                        <p className="font-medium text-emerald-900">SSL Sertifikaları</p>
-                        <p className="text-sm text-emerald-700">Geçerli - 89 gün kaldı</p>
-                      </div>
-                    </div>
-                    <Badge className="bg-emerald-100 text-emerald-800">Güvenli</Badge>
-                  </div>
-
-                  <div className="flex items-center justify-between p-3 bg-yellow-50 rounded-lg">
-                    <div className="flex items-center gap-3">
-                      <AlertTriangle className="w-5 h-5 text-yellow-600" />
-                      <div>
-                        <p className="font-medium text-yellow-900">Antivirüs Koruması</p>
-                        <p className="text-sm text-yellow-700">Güncelleme gerekli</p>
-                      </div>
-                    </div>
-                    <Badge className="bg-yellow-100 text-yellow-800">Uyarı</Badge>
-                  </div>
-
-                  <div className="flex items-center justify-between p-3 bg-red-50 rounded-lg">
-                    <div className="flex items-center gap-3">
-                      <XCircle className="w-5 h-5 text-red-600" />
-                      <div>
-                        <p className="font-medium text-red-900">İki Faktörlü Kimlik Doğrulama</p>
-                        <p className="text-sm text-red-700">%23 kullanıcı etkinleştirdi</p>
-                      </div>
-                    </div>
-                    <Badge className="bg-red-100 text-red-800">Risk</Badge>
-                  </div>
-                </CardContent>
-              </Card>
-
-              <Card>
-                <CardHeader>
-                  <CardTitle className="flex items-center gap-2">
-                    <Activity className="w-5 h-5" />
-                    Güvenlik Metrikleri
-                  </CardTitle>
-                </CardHeader>
-                <CardContent className="space-y-4">
-                  <div>
-                    <div className="flex justify-between items-center mb-2">
-                      <span className="text-sm font-medium">Genel Güvenlik Skoru</span>
-                      <span className="text-sm text-gray-600">{getComplianceScore()}%</span>
-                    </div>
-                    <Progress value={getComplianceScore()} className="h-2" />
-                  </div>
-
-                  <div>
-                    <div className="flex justify-between items-center mb-2">
-                      <span className="text-sm font-medium">Veri Şifreleme</span>
-                      <span className="text-sm text-gray-600">95%</span>
-                    </div>
-                    <Progress value={95} className="h-2" />
-                  </div>
-
-                  <div>
-                    <div className="flex justify-between items-center mb-2">
-                      <span className="text-sm font-medium">Erişim Kontrolü</span>
-                      <span className="text-sm text-gray-600">88%</span>
-                    </div>
-                    <Progress value={88} className="h-2" />
-                  </div>
-
-                  <div>
-                    <div className="flex justify-between items-center mb-2">
-                      <span className="text-sm font-medium">Güvenlik Güncellemeleri</span>
-                      <span className="text-sm text-gray-600">92%</span>
-                    </div>
-                    <Progress value={92} className="h-2" />
-                  </div>
-
-                  <Separator />
-
-                  <div className="grid grid-cols-2 gap-4 text-center">
-                    <div className="p-3 bg-gray-50 rounded-lg">
-                      <p className="text-2xl font-bold text-gray-900">24/7</p>
-                      <p className="text-xs text-gray-600">İzleme</p>
-                    </div>
-                    <div className="p-3 bg-gray-50 rounded-lg">
-                      <p className="text-2xl font-bold text-gray-900">99.9%</p>
-                      <p className="text-xs text-gray-600">Uptime</p>
-                    </div>
-                  </div>
-                </CardContent>
-              </Card>
-            </div>
-
-            {/* Recent Security Events */}
-            <Card>
-              <CardHeader>
-                <CardTitle className="flex items-center gap-2">
-                  <Clock className="w-5 h-5" />
-                  Son Güvenlik Olayları
-                </CardTitle>
-                <CardDescription>
-                  Son 24 saatteki güvenlik olayları ve uyarılar
-                </CardDescription>
-              </CardHeader>
-              <CardContent>
-                <div className="space-y-3">
-                  {systemAlerts?.slice(0, 5).map((alert: any, index: number) => (
-                    <div key={index} className="flex items-center justify-between p-3 border rounded-lg">
-                      <div className="flex items-center gap-3">
-                        {getStatusIcon(alert.severity)}
-                        <div>
-                          <p className="font-medium text-sm">{alert.title}</p>
-                          <p className="text-xs text-gray-500">{alert.description}</p>
-                        </div>
-                      </div>
-                      <div className="text-right">
-                        {getSeverityBadge(alert.severity)}
-                        <p className="text-xs text-gray-500 mt-1">
-                          {new Date(alert.timestamp).toLocaleString('tr-TR')}
-                        </p>
-                      </div>
-                    </div>
-                  )) || (
-                    <p className="text-center py-8 text-gray-500">Son güvenlik olayı bulunamadı</p>
-                  )}
-                </div>
-              </CardContent>
-            </Card>
-          </TabsContent>
-
-          <TabsContent value="threats" className="space-y-6">
-            <Card>
-              <CardHeader>
-                <CardTitle className="flex items-center gap-2">
-                  <Shield className="w-5 h-5" />
-                  Aktif Tehdit Analizi
-                </CardTitle>
-                <CardDescription>
-                  Sistem tarafından tespit edilen aktif tehditler ve risk analizleri
-                </CardDescription>
-              </CardHeader>
-              <CardContent>
-                <div className="space-y-4">
-                  {activeThreats?.map((threat: any, index: number) => (
-                    <div key={index} className="border rounded-lg p-4">
-                      <div className="flex items-center justify-between mb-3">
-                        <div className="flex items-center gap-3">
-                          <AlertTriangle className="w-5 h-5 text-red-600" />
-                          <h3 className="font-semibold">{threat.type}</h3>
-                        </div>
-                        {getSeverityBadge(threat.severity)}
-                      </div>
-                      <p className="text-sm text-gray-600 mb-3">{threat.description}</p>
-                      <div className="grid grid-cols-3 gap-4 text-sm">
-                        <div>
-                          <span className="font-medium">Kaynak IP:</span>
-                          <p className="text-gray-600">{threat.sourceIp}</p>
-                        </div>
-                        <div>
-                          <span className="font-medium">Hedef:</span>
-                          <p className="text-gray-600">{threat.target}</p>
-                        </div>
-                        <div>
-                          <span className="font-medium">Tespit Zamanı:</span>
-                          <p className="text-gray-600">{new Date(threat.detectedAt).toLocaleString('tr-TR')}</p>
-                        </div>
-                      </div>
-                      <div className="flex gap-2 mt-3">
-                        <Button size="sm" variant="destructive">
-                          Engelle
-                        </Button>
-                        <Button size="sm" variant="outline">
-                          Analiz Et
-                        </Button>
-                        <Button size="sm" variant="outline">
-                          Yoksay
-                        </Button>
-                      </div>
-                    </div>
-                  )) || (
-                    <div className="text-center py-8">
-                      <CheckCircle className="w-12 h-12 text-emerald-600 mx-auto mb-4" />
-                      <p className="text-gray-500">Aktif tehdit tespit edilmedi</p>
-                    </div>
-                  )}
-                </div>
-              </CardContent>
-            </Card>
-          </TabsContent>
-
-          <TabsContent value="access" className="space-y-6">
-            {/* Filters */}
-            <Card>
-              <CardContent className="p-4">
-                <div className="flex items-center gap-4">
+          <TabsContent value="audit-logs" className="space-y-6">
+            {/* Filter Section */}
+            <Card className="bg-white border-gray-200">
+              <CardContent className="p-6">
+                <div className="flex flex-col sm:flex-row gap-4">
                   <div className="flex-1">
-                    <Input
-                      placeholder="Kullanıcı adı, IP adresi veya işlem ara..."
-                      value={searchQuery}
-                      onChange={(e) => setSearchQuery(e.target.value)}
-                    />
+                    <div className="relative">
+                      <Search className="absolute left-3 top-3 h-4 w-4 text-gray-400" />
+                      <Input
+                        placeholder="Denetim günlüklerinde ara..."
+                        value={searchQuery}
+                        onChange={(e) => setSearchQuery(e.target.value)}
+                        className="pl-10"
+                      />
+                    </div>
                   </div>
                   <Select value={selectedSeverity} onValueChange={setSelectedSeverity}>
-                    <SelectTrigger className="w-48">
-                      <SelectValue />
+                    <SelectTrigger className="w-full sm:w-48">
+                      <SelectValue placeholder="Önem derecesi" />
                     </SelectTrigger>
                     <SelectContent>
                       <SelectItem value="all">Tüm Seviyeler</SelectItem>
@@ -567,176 +272,202 @@ export default function SecurityAudit() {
                       <SelectItem value="high">Yüksek</SelectItem>
                       <SelectItem value="medium">Orta</SelectItem>
                       <SelectItem value="low">Düşük</SelectItem>
-                      <SelectItem value="info">Bilgi</SelectItem>
                     </SelectContent>
                   </Select>
                   <Select value={selectedTimeRange} onValueChange={setSelectedTimeRange}>
-                    <SelectTrigger className="w-32">
-                      <SelectValue />
+                    <SelectTrigger className="w-full sm:w-48">
+                      <SelectValue placeholder="Zaman aralığı" />
                     </SelectTrigger>
                     <SelectContent>
-                      <SelectItem value="1h">Son 1 Saat</SelectItem>
-                      <SelectItem value="24h">Son 24 Saat</SelectItem>
-                      <SelectItem value="7d">Son 7 Gün</SelectItem>
-                      <SelectItem value="30d">Son 30 Gün</SelectItem>
+                      <SelectItem value="1">Son 24 Saat</SelectItem>
+                      <SelectItem value="7">Son 7 Gün</SelectItem>
+                      <SelectItem value="30">Son 30 Gün</SelectItem>
+                      <SelectItem value="90">Son 90 Gün</SelectItem>
                     </SelectContent>
                   </Select>
                 </div>
               </CardContent>
             </Card>
 
-            {/* Access Logs */}
-            <Card>
+            {/* Audit Logs Table */}
+            <Card className="bg-white border-gray-200">
               <CardHeader>
-                <CardTitle className="flex items-center gap-2">
-                  <Eye className="w-5 h-5" />
-                  Erişim Logları
-                </CardTitle>
-                <CardDescription>
-                  Sistem erişim kayıtları ve kullanıcı aktiviteleri
-                </CardDescription>
+                <CardTitle className="text-xl text-gray-900">Güvenlik Olayları</CardTitle>
+                <CardDescription>Son güvenlik olayları ve denetim kayıtları</CardDescription>
               </CardHeader>
               <CardContent>
-                {logsLoading ? (
-                  <div className="flex items-center justify-center h-32">
-                    <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-purple-600"></div>
-                  </div>
-                ) : (
-                  <div className="space-y-2">
-                    {filteredLogs.slice(0, 20).map((log: any, index: number) => (
-                      <div key={index} className="flex items-center justify-between p-3 border rounded-lg hover:bg-gray-50">
-                        <div className="flex items-center gap-3">
-                          <UserCheck className="w-4 h-4 text-gray-500" />
-                          <div>
-                            <p className="font-medium text-sm">{log.action}</p>
-                            <p className="text-xs text-gray-500">
-                              {log.userEmail} • {log.ipAddress}
-                            </p>
+                <div className="space-y-4">
+                  {filteredLogs.map((log) => (
+                    <div key={log.id} className="border border-gray-200 rounded-lg p-4 hover:bg-gray-50 transition-colors">
+                      <div className="flex items-start justify-between">
+                        <div className="flex-1">
+                          <div className="flex items-center gap-3 mb-2">
+                            <h3 className="font-semibold text-gray-900">{log.event}</h3>
+                            <Badge className={getSeverityColor(log.severity)}>
+                              {log.severity === 'critical' ? 'Kritik' :
+                               log.severity === 'high' ? 'Yüksek' :
+                               log.severity === 'medium' ? 'Orta' : 'Düşük'}
+                            </Badge>
+                            <Badge className={getStatusColor(log.status)}>
+                              {log.status === 'detected' ? 'Tespit Edildi' :
+                               log.status === 'blocked' ? 'Engellendi' :
+                               log.status === 'monitoring' ? 'İzleniyor' :
+                               log.status === 'investigating' ? 'Araştırılıyor' : 'Tamamlandı'}
+                            </Badge>
+                          </div>
+                          <p className="text-gray-600 mb-3">{log.description}</p>
+                          <div className="flex items-center gap-4 text-sm text-gray-500">
+                            <div className="flex items-center gap-1">
+                              <Users className="h-4 w-4" />
+                              <span>{log.user}</span>
+                            </div>
+                            <div className="flex items-center gap-1">
+                              <Server className="h-4 w-4" />
+                              <span>{log.ip}</span>
+                            </div>
+                            <div className="flex items-center gap-1">
+                              <Clock className="h-4 w-4" />
+                              <span>{new Date(log.timestamp).toLocaleString('tr-TR')}</span>
+                            </div>
                           </div>
                         </div>
-                        <div className="text-right">
-                          {getSeverityBadge(log.severity || 'info')}
-                          <p className="text-xs text-gray-500 mt-1">
-                            {new Date(log.timestamp).toLocaleString('tr-TR')}
-                          </p>
-                        </div>
+                        <Button variant="outline" size="sm">
+                          <Eye className="h-4 w-4 mr-2" />
+                          Detay
+                        </Button>
                       </div>
-                    ))}
-                  </div>
-                )}
+                    </div>
+                  ))}
+                </div>
               </CardContent>
             </Card>
           </TabsContent>
 
           <TabsContent value="vulnerabilities" className="space-y-6">
-            <Card>
+            <Card className="bg-white border-gray-200">
               <CardHeader>
-                <CardTitle className="flex items-center gap-2">
-                  <XCircle className="w-5 h-5" />
-                  Güvenlik Açıkları
-                </CardTitle>
-                <CardDescription>
-                  Sistem güvenlik açıkları ve önerilen düzeltme adımları
-                </CardDescription>
+                <CardTitle className="text-xl text-gray-900">Güvenlik Açıkları</CardTitle>
+                <CardDescription>Sistem güvenlik açıkları ve önerileri</CardDescription>
               </CardHeader>
               <CardContent>
                 <div className="space-y-4">
-                  {vulnerabilities?.map((vuln: any, index: number) => (
-                    <div key={index} className="border rounded-lg p-4">
-                      <div className="flex items-center justify-between mb-3">
-                        <h3 className="font-semibold">{vuln.title}</h3>
-                        {getSeverityBadge(vuln.severity)}
-                      </div>
-                      <p className="text-sm text-gray-600 mb-3">{vuln.description}</p>
-                      <div className="bg-gray-50 rounded-lg p-3 mb-3">
-                        <p className="text-sm font-medium mb-2">Önerilen Çözüm:</p>
-                        <p className="text-sm text-gray-600">{vuln.solution}</p>
-                      </div>
-                      <div className="flex items-center justify-between">
-                        <div className="flex items-center gap-4 text-sm text-gray-500">
-                          <span>Etkilenen Sistem: {vuln.affectedSystem}</span>
-                          <span>CVSS Skoru: {vuln.cvssScore}</span>
-                        </div>
-                        <Button size="sm">
-                          Düzeltme Uygula
-                        </Button>
-                      </div>
-                    </div>
-                  )) || (
-                    <div className="text-center py-8">
-                      <CheckCircle className="w-12 h-12 text-emerald-600 mx-auto mb-4" />
-                      <p className="text-gray-500">Kritik güvenlik açığı tespit edilmedi</p>
-                    </div>
-                  )}
+                  <Alert className="border-red-200 bg-red-50">
+                    <XCircle className="h-4 w-4 text-red-600" />
+                    <AlertTitle className="text-red-800">Kritik: Güvenlik Duvarı Konfigürasyonu</AlertTitle>
+                    <AlertDescription className="text-red-700">
+                      Güvenlik duvarında açık portlar tespit edildi. Acil müdahale gerekiyor.
+                    </AlertDescription>
+                  </Alert>
+                  
+                  <Alert className="border-orange-200 bg-orange-50">
+                    <AlertTriangle className="h-4 w-4 text-orange-600" />
+                    <AlertTitle className="text-orange-800">Yüksek: SSL Sertifikası Süresi</AlertTitle>
+                    <AlertDescription className="text-orange-700">
+                      SSL sertifikası 15 gün içinde sona erecek. Yenileme işlemi planlanmalı.
+                    </AlertDescription>
+                  </Alert>
+                  
+                  <Alert className="border-yellow-200 bg-yellow-50">
+                    <AlertTriangle className="h-4 w-4 text-yellow-600" />
+                    <AlertTitle className="text-yellow-800">Orta: Güvenlik Yamaları</AlertTitle>
+                    <AlertDescription className="text-yellow-700">
+                      12 adet güvenlik yaması mevcut. Sistem güncellemesi önerilir.
+                    </AlertDescription>
+                  </Alert>
                 </div>
               </CardContent>
             </Card>
           </TabsContent>
 
-          <TabsContent value="compliance" className="space-y-6">
-            <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
-              <Card>
+          <TabsContent value="access-control" className="space-y-6">
+            <div className="grid gap-6 md:grid-cols-2">
+              <Card className="bg-white border-gray-200">
                 <CardHeader>
-                  <CardTitle className="flex items-center gap-2">
-                    <Shield className="w-5 h-5" />
-                    Uyumluluk Standartları
-                  </CardTitle>
-                </CardHeader>
-                <CardContent className="space-y-4">
-                  {[
-                    { name: "ISO 27001", status: "Uyumlu", score: 95 },
-                    { name: "SOX Compliance", status: "Uyumlu", score: 92 },
-                    { name: "GDPR", status: "Kısmi Uyumlu", score: 78 },
-                    { name: "PCI DSS", status: "Uyumlu", score: 88 }
-                  ].map((standard, index) => (
-                    <div key={index} className="flex items-center justify-between p-3 border rounded-lg">
-                      <div>
-                        <p className="font-medium">{standard.name}</p>
-                        <p className="text-sm text-gray-500">{standard.status}</p>
-                      </div>
-                      <div className="text-right">
-                        <p className="font-bold text-lg">{standard.score}%</p>
-                        <Progress value={standard.score} className="w-20 h-2 mt-1" />
-                      </div>
-                    </div>
-                  ))}
-                </CardContent>
-              </Card>
-
-              <Card>
-                <CardHeader>
-                  <CardTitle className="flex items-center gap-2">
-                    <FileText className="w-5 h-5" />
-                    Denetim Raporları
-                  </CardTitle>
+                  <CardTitle className="text-lg text-gray-900">Kullanıcı Yetkileri</CardTitle>
                 </CardHeader>
                 <CardContent>
                   <div className="space-y-3">
-                    {[
-                      { name: "Aylık Güvenlik Raporu", date: "2024-12-01", status: "Tamamlandı" },
-                      { name: "Üç Aylık Risk Analizi", date: "2024-11-15", status: "İnceleme" },
-                      { name: "Yıllık Uyumluluk Raporu", date: "2024-10-30", status: "Hazırlanıyor" }
-                    ].map((report, index) => (
-                      <div key={index} className="flex items-center justify-between p-3 border rounded-lg">
-                        <div>
-                          <p className="font-medium text-sm">{report.name}</p>
-                          <p className="text-xs text-gray-500">{report.date}</p>
-                        </div>
-                        <div className="flex items-center gap-2">
-                          <Badge variant="outline">{report.status}</Badge>
-                          <Button size="sm" variant="outline">
-                            <Download className="w-4 h-4" />
-                          </Button>
-                        </div>
-                      </div>
-                    ))}
+                    <div className="flex justify-between items-center">
+                      <span className="text-gray-700">Admin Kullanıcıları</span>
+                      <Badge className="bg-red-100 text-red-800">5</Badge>
+                    </div>
+                    <div className="flex justify-between items-center">
+                      <span className="text-gray-700">Standart Kullanıcılar</span>
+                      <Badge className="bg-green-100 text-green-800">142</Badge>
+                    </div>
+                    <div className="flex justify-between items-center">
+                      <span className="text-gray-700">Misafir Erişimleri</span>
+                      <Badge className="bg-yellow-100 text-yellow-800">8</Badge>
+                    </div>
+                  </div>
+                </CardContent>
+              </Card>
+
+              <Card className="bg-white border-gray-200">
+                <CardHeader>
+                  <CardTitle className="text-lg text-gray-900">Erişim İstatistikleri</CardTitle>
+                </CardHeader>
+                <CardContent>
+                  <div className="space-y-3">
+                    <div className="flex justify-between items-center">
+                      <span className="text-gray-700">Başarılı Girişler</span>
+                      <span className="font-semibold text-green-600">1,247</span>
+                    </div>
+                    <div className="flex justify-between items-center">
+                      <span className="text-gray-700">Başarısız Girişler</span>
+                      <span className="font-semibold text-red-600">23</span>
+                    </div>
+                    <div className="flex justify-between items-center">
+                      <span className="text-gray-700">Şüpheli Aktiviteler</span>
+                      <span className="font-semibold text-orange-600">7</span>
+                    </div>
                   </div>
                 </CardContent>
               </Card>
             </div>
           </TabsContent>
+
+          <TabsContent value="network-security" className="space-y-6">
+            <div className="grid gap-6 md:grid-cols-3">
+              <Card className="bg-white border-gray-200">
+                <CardHeader>
+                  <CardTitle className="text-lg text-gray-900">Firewall Durumu</CardTitle>
+                </CardHeader>
+                <CardContent className="text-center">
+                  <div className="p-4 bg-green-100 rounded-full w-16 h-16 mx-auto mb-4 flex items-center justify-center">
+                    <Shield className="h-8 w-8 text-green-600" />
+                  </div>
+                  <Badge className="bg-green-100 text-green-800">Aktif</Badge>
+                </CardContent>
+              </Card>
+
+              <Card className="bg-white border-gray-200">
+                <CardHeader>
+                  <CardTitle className="text-lg text-gray-900">DDoS Koruması</CardTitle>
+                </CardHeader>
+                <CardContent className="text-center">
+                  <div className="p-4 bg-blue-100 rounded-full w-16 h-16 mx-auto mb-4 flex items-center justify-center">
+                    <Monitor className="h-8 w-8 text-blue-600" />
+                  </div>
+                  <Badge className="bg-blue-100 text-blue-800">İzleniyor</Badge>
+                </CardContent>
+              </Card>
+
+              <Card className="bg-white border-gray-200">
+                <CardHeader>
+                  <CardTitle className="text-lg text-gray-900">Ağ Trafiği</CardTitle>
+                </CardHeader>
+                <CardContent className="text-center">
+                  <div className="p-4 bg-yellow-100 rounded-full w-16 h-16 mx-auto mb-4 flex items-center justify-center">
+                    <Database className="h-8 w-8 text-yellow-600" />
+                  </div>
+                  <Badge className="bg-yellow-100 text-yellow-800">Normal</Badge>
+                </CardContent>
+              </Card>
+            </div>
+          </TabsContent>
         </Tabs>
-      </main>
+      </div>
     </div>
   );
 }

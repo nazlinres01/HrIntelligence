@@ -203,167 +203,264 @@ export default function DepartmentManagement() {
               <Download className="mr-2 h-4 w-4" />
               Dışa Aktar
             </Button>
-          <Dialog open={isDialogOpen} onOpenChange={setIsDialogOpen}>
-            <DialogTrigger asChild>
-              <Button 
-                onClick={() => {
-                  setEditingDepartment(null);
-                  resetForm();
-                }}
-                className="bg-blue-600 hover:bg-blue-700 text-white shadow-lg"
-              >
-                <Plus className="mr-2 h-4 w-4" />
-                Yeni Departman Ekle
-              </Button>
-            </DialogTrigger>
-          </Dialog>
-        </div>
-      </div>
+            <Dialog open={isDialogOpen} onOpenChange={setIsDialogOpen}>
+              <DialogTrigger asChild>
+                <Button 
+                  onClick={() => {
+                    setEditingDepartment(null);
+                    resetForm();
+                  }}
+                  className="bg-blue-600 hover:bg-blue-700 text-white shadow-lg"
+                >
+                  <Plus className="mr-2 h-4 w-4" />
+                  Yeni Departman Ekle
+                </Button>
+              </DialogTrigger>
+              <DialogContent className="max-w-2xl">
+                <DialogHeader>
+                  <DialogTitle>
+                    {editingDepartment ? "Departman Düzenle" : "Yeni Departman Oluştur"}
+                  </DialogTitle>
+                  <DialogDescription>
+                    Departman bilgilerini girin ve yönetim hiyerarşisini belirleyin.
+                  </DialogDescription>
+                </DialogHeader>
+                <form onSubmit={handleSubmit} className="space-y-6">
+                  <div className="grid grid-cols-2 gap-4">
+                    <div className="space-y-2">
+                      <Label htmlFor="name">Departman Adı</Label>
+                      <Input
+                        id="name"
+                        value={formData.name}
+                        onChange={(e) => setFormData({ ...formData, name: e.target.value })}
+                        placeholder="Örn: İnsan Kaynakları"
+                        required
+                      />
+                    </div>
+                    <div className="space-y-2">
+                      <Label htmlFor="companyId">Şirket</Label>
+                      <Select value={formData.companyId} onValueChange={(value) => setFormData({ ...formData, companyId: value })}>
+                        <SelectTrigger>
+                          <SelectValue placeholder="Şirket seçin" />
+                        </SelectTrigger>
+                        <SelectContent>
+                          {Array.isArray(companies) && companies.map((company: any) => (
+                            <SelectItem key={company.id} value={company.id.toString()}>
+                              {company.name}
+                            </SelectItem>
+                          ))}
+                        </SelectContent>
+                      </Select>
+                    </div>
+                  </div>
+                  
+                  <div className="space-y-2">
+                    <Label htmlFor="description">Açıklama</Label>
+                    <Textarea
+                      id="description"
+                      value={formData.description}
+                      onChange={(e) => setFormData({ ...formData, description: e.target.value })}
+                      placeholder="Departmanın görev ve sorumluluklarını açıklayın"
+                      rows={3}
+                    />
+                  </div>
 
-      {/* Statistics Cards */}
-      <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-4">
-        <Card className="bg-white dark:bg-gray-800 border-gray-200 dark:border-gray-700">
-          <CardContent className="flex items-center p-6">
-            <div className="p-3 bg-blue-100 dark:bg-blue-900/30 rounded-full mr-4">
-              <Target className="h-6 w-6 text-blue-600" />
-            </div>
-            <div>
-              <div className="text-3xl font-bold text-gray-900 dark:text-white">
-                {Array.isArray(departments) ? departments.length : 0}
-              </div>
-              <p className="text-sm text-blue-600 dark:text-blue-400 font-medium">
-                Toplam Departman
-              </p>
-            </div>
-          </CardContent>
-        </Card>
+                  <div className="grid grid-cols-2 gap-4">
+                    <div className="space-y-2">
+                      <Label htmlFor="managerId">Departman Müdürü</Label>
+                      <Select value={formData.managerId} onValueChange={(value) => setFormData({ ...formData, managerId: value })}>
+                        <SelectTrigger>
+                          <SelectValue placeholder="Müdür seçin" />
+                        </SelectTrigger>
+                        <SelectContent>
+                          <SelectItem value="">Atanmamış</SelectItem>
+                          {Array.isArray(employees) && employees.map((employee: any) => (
+                            <SelectItem key={employee.id} value={employee.id.toString()}>
+                              {employee.firstName} {employee.lastName}
+                            </SelectItem>
+                          ))}
+                        </SelectContent>
+                      </Select>
+                    </div>
+                    <div className="space-y-2">
+                      <Label htmlFor="budget">Bütçe (TL)</Label>
+                      <Input
+                        id="budget"
+                        type="number"
+                        value={formData.budget}
+                        onChange={(e) => setFormData({ ...formData, budget: e.target.value })}
+                        placeholder="Örn: 500000"
+                      />
+                    </div>
+                  </div>
 
-        <Card className="bg-white dark:bg-gray-800 border-gray-200 dark:border-gray-700">
-          <CardContent className="flex items-center p-6">
-            <div className="p-3 bg-green-100 dark:bg-green-900/30 rounded-full mr-4">
-              <Users className="h-6 w-6 text-green-600" />
-            </div>
-            <div>
-              <div className="text-3xl font-bold text-gray-900 dark:text-white">
-                {Array.isArray(employees) ? employees.length : 0}
-              </div>
-              <p className="text-sm text-green-600 dark:text-green-400 font-medium">
-                Toplam Çalışan
-              </p>
-            </div>
-          </CardContent>
-        </Card>
+                  <div className="space-y-2">
+                    <Label htmlFor="goals">Hedefler</Label>
+                    <Textarea
+                      id="goals"
+                      value={formData.goals}
+                      onChange={(e) => setFormData({ ...formData, goals: e.target.value })}
+                      placeholder="Departmanın yıllık hedeflerini belirtin"
+                      rows={3}
+                    />
+                  </div>
 
-        <Card className="bg-white dark:bg-gray-800 border-gray-200 dark:border-gray-700">
-          <CardContent className="flex items-center p-6">
-            <div className="p-3 bg-purple-100 dark:bg-purple-900/30 rounded-full mr-4">
-              <Building2 className="h-6 w-6 text-purple-600" />
-            </div>
-            <div>
-              <div className="text-3xl font-bold text-gray-900 dark:text-white">
-                {Array.isArray(companies) ? companies.length : 0}
-              </div>
-              <p className="text-sm text-purple-600 dark:text-purple-400 font-medium">
-                Aktif Şirket
-              </p>
-            </div>
-          </CardContent>
-        </Card>
-
-        <Card className="bg-white dark:bg-gray-800 border-gray-200 dark:border-gray-700">
-          <CardContent className="flex items-center p-6">
-            <div className="p-3 bg-orange-100 dark:bg-orange-900/30 rounded-full mr-4">
-              <DollarSign className="h-6 w-6 text-orange-600" />
-            </div>
-            <div>
-              <div className="text-3xl font-bold text-gray-900 dark:text-white">
-                ₺2.4M
-              </div>
-              <p className="text-sm text-orange-600 dark:text-orange-400 font-medium">
-                Toplam Bütçe
-              </p>
-            </div>
-          </CardContent>
-        </Card>
-      </div>
-
-      {/* Search and Filter Controls */}
-      <div className="flex flex-col sm:flex-row gap-4 items-start sm:items-center justify-between bg-white dark:bg-gray-800 p-6 rounded-lg border border-gray-200 dark:border-gray-700">
-        <div className="flex flex-1 gap-4">
-          <div className="relative flex-1 max-w-sm">
-            <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 h-4 w-4" />
-            <Input
-              placeholder="Departman ara..."
-              className="pl-10"
-              value={searchTerm}
-              onChange={(e) => setSearchTerm(e.target.value)}
-            />
+                  <DialogFooter>
+                    <Button type="button" variant="outline" onClick={() => setIsDialogOpen(false)}>
+                      İptal
+                    </Button>
+                    <Button type="submit" disabled={createDepartmentMutation.isPending || updateDepartmentMutation.isPending}>
+                      {editingDepartment ? "Güncelle" : "Oluştur"}
+                    </Button>
+                  </DialogFooter>
+                </form>
+              </DialogContent>
+            </Dialog>
           </div>
-          <Select value={selectedCompany} onValueChange={setSelectedCompany}>
-            <SelectTrigger className="w-48">
-              <Filter className="h-4 w-4 mr-2" />
-              <SelectValue placeholder="Şirket filtrele" />
-            </SelectTrigger>
-            <SelectContent>
-              <SelectItem value="all">Tüm Şirketler</SelectItem>
-              {Array.isArray(companies) && companies.map((company: any) => (
-                <SelectItem key={company.id} value={company.id.toString()}>
-                  {company.name}
-                </SelectItem>
-              ))}
-            </SelectContent>
-          </Select>
         </div>
-        <div className="flex gap-2">
-          <Button variant="outline" size="sm">
-            Sırala
-          </Button>
-          <Button variant="outline" size="sm">
-            <Filter className="h-4 w-4 mr-2" />
-            Filtrele
-          </Button>
-        </div>
-      </div>
 
-      {/* Department Cards */}
-      {filteredDepartments.length > 0 ? (
-        <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-3">
-          {filteredDepartments.map((department: any) => (
-            <Card key={department.id} className="hover:shadow-lg transition-shadow duration-200 bg-white dark:bg-gray-800">
-              <CardHeader>
-                <div className="flex items-start justify-between">
-                  <div className="flex items-center space-x-3">
-                    <div className="p-2 bg-purple-100 dark:bg-purple-900 rounded-lg">
-                      <Target className="h-6 w-6 text-purple-600 dark:text-purple-400" />
-                    </div>
-                    <div>
-                      <CardTitle className="text-lg">{department.name}</CardTitle>
-                      <CardDescription>{getCompanyName(department.companyId)}</CardDescription>
-                    </div>
-                  </div>
-                  <Badge variant="outline">
-                    {department.employeeCount || 0} çalışan
-                  </Badge>
+        {/* Statistics Cards */}
+        <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-4">
+          <Card className="bg-white border-gray-200 hover:shadow-xl transition-all duration-300">
+            <CardContent className="flex items-center p-6">
+              <div className="p-3 bg-blue-100 rounded-full mr-4">
+                <Target className="h-6 w-6 text-blue-600" />
+              </div>
+              <div>
+                <div className="text-3xl font-bold text-gray-900">
+                  {Array.isArray(departments) ? departments.length : 0}
                 </div>
-              </CardHeader>
-              <CardContent>
-                <div className="space-y-3">
-                  <div className="flex items-center justify-between text-sm">
-                    <span className="font-medium text-gray-600 dark:text-gray-400">Müdür:</span>
-                    <span className="text-gray-900 dark:text-white">{getManagerName(department.managerId)}</span>
-                  </div>
-                  {department.budget && (
-                    <div className="flex items-center justify-between text-sm">
-                      <span className="font-medium text-gray-600 dark:text-gray-400">Bütçe:</span>
-                      <span className="text-gray-900 dark:text-white">₺{department.budget?.toLocaleString()}</span>
+                <p className="text-sm text-blue-600 font-medium">
+                  Toplam Departman
+                </p>
+              </div>
+            </CardContent>
+          </Card>
+
+          <Card className="bg-white border-gray-200 hover:shadow-xl transition-all duration-300">
+            <CardContent className="flex items-center p-6">
+              <div className="p-3 bg-green-100 rounded-full mr-4">
+                <Users className="h-6 w-6 text-green-600" />
+              </div>
+              <div>
+                <div className="text-3xl font-bold text-gray-900">
+                  {Array.isArray(employees) ? employees.length : 0}
+                </div>
+                <p className="text-sm text-green-600 font-medium">
+                  Toplam Çalışan
+                </p>
+              </div>
+            </CardContent>
+          </Card>
+
+          <Card className="bg-white border-gray-200 hover:shadow-xl transition-all duration-300">
+            <CardContent className="flex items-center p-6">
+              <div className="p-3 bg-yellow-100 rounded-full mr-4">
+                <Building2 className="h-6 w-6 text-yellow-600" />
+              </div>
+              <div>
+                <div className="text-3xl font-bold text-gray-900">
+                  {Array.isArray(companies) ? companies.length : 0}
+                </div>
+                <p className="text-sm text-yellow-600 font-medium">
+                  Aktif Şirket
+                </p>
+              </div>
+            </CardContent>
+          </Card>
+
+          <Card className="bg-white border-gray-200 hover:shadow-xl transition-all duration-300">
+            <CardContent className="flex items-center p-6">
+              <div className="p-3 bg-purple-100 rounded-full mr-4">
+                <DollarSign className="h-6 w-6 text-purple-600" />
+              </div>
+              <div>
+                <div className="text-3xl font-bold text-gray-900">
+                  ₺2.4M
+                </div>
+                <p className="text-sm text-purple-600 font-medium">
+                  Toplam Bütçe
+                </p>
+              </div>
+            </CardContent>
+          </Card>
+        </div>
+
+        {/* Filter Section */}
+        <Card className="bg-white border-gray-200">
+          <CardContent className="p-6">
+            <div className="flex flex-col sm:flex-row gap-4">
+              <div className="flex-1">
+                <div className="relative">
+                  <Search className="absolute left-3 top-3 h-4 w-4 text-gray-400" />
+                  <Input
+                    placeholder="Departman ara..."
+                    value={searchTerm}
+                    onChange={(e) => setSearchTerm(e.target.value)}
+                    className="pl-10"
+                  />
+                </div>
+              </div>
+              <Select value={selectedCompany} onValueChange={setSelectedCompany}>
+                <SelectTrigger className="w-full sm:w-48">
+                  <SelectValue placeholder="Şirket filtrele" />
+                </SelectTrigger>
+                <SelectContent>
+                  <SelectItem value="all">Tüm Şirketler</SelectItem>
+                  {Array.isArray(companies) && companies.map((company: any) => (
+                    <SelectItem key={company.id} value={company.id.toString()}>
+                      {company.name}
+                    </SelectItem>
+                  ))}
+                </SelectContent>
+              </Select>
+            </div>
+          </CardContent>
+        </Card>
+
+        {/* Departments List */}
+        <div className="grid gap-4">
+          {filteredDepartments.map((department: any) => (
+            <Card key={department.id} className="bg-white border-gray-200 hover:shadow-lg transition-all duration-300">
+              <CardContent className="p-6">
+                <div className="flex items-center justify-between">
+                  <div className="flex-1">
+                    <div className="flex items-center gap-4">
+                      <div className="p-2 bg-blue-100 rounded-lg">
+                        <Building2 className="h-5 w-5 text-blue-600" />
+                      </div>
+                      <div>
+                        <h3 className="text-lg font-semibold text-gray-900">{department.name}</h3>
+                        <p className="text-sm text-gray-500">{getCompanyName(department.companyId)}</p>
+                      </div>
                     </div>
-                  )}
-                  {department.description && (
-                    <p className="text-sm text-gray-600 dark:text-gray-400 line-clamp-2">
-                      {department.description}
-                    </p>
-                  )}
-                  <div className="flex justify-end space-x-2 pt-2">
+                    <div className="mt-4 grid grid-cols-2 md:grid-cols-4 gap-4">
+                      <div>
+                        <p className="text-xs text-gray-500">Müdür</p>
+                        <p className="text-sm font-medium">{getManagerName(department.managerId)}</p>
+                      </div>
+                      <div>
+                        <p className="text-xs text-gray-500">Bütçe</p>
+                        <p className="text-sm font-medium">
+                          {department.budget ? `₺${department.budget.toLocaleString()}` : "Belirtilmemiş"}
+                        </p>
+                      </div>
+                      <div>
+                        <p className="text-xs text-gray-500">Çalışan Sayısı</p>
+                        <p className="text-sm font-medium">
+                          {Array.isArray(employees) ? employees.filter((e: any) => e.departmentId === department.id).length : 0}
+                        </p>
+                      </div>
+                      <div>
+                        <p className="text-xs text-gray-500">Durum</p>
+                        <Badge className="bg-green-100 text-green-800">Aktif</Badge>
+                      </div>
+                    </div>
+                    {department.description && (
+                      <p className="mt-3 text-sm text-gray-600">{department.description}</p>
+                    )}
+                  </div>
+                  <div className="flex items-center gap-2 ml-4">
                     <Button
                       variant="outline"
                       size="sm"
@@ -375,7 +472,7 @@ export default function DepartmentManagement() {
                       variant="outline"
                       size="sm"
                       onClick={() => handleDelete(department.id)}
-                      className="text-red-600 hover:text-red-700 hover:bg-red-50"
+                      className="text-red-600 hover:text-red-800"
                     >
                       <Trash2 className="h-4 w-4" />
                     </Button>
@@ -385,112 +482,7 @@ export default function DepartmentManagement() {
             </Card>
           ))}
         </div>
-      ) : (
-        <div className="text-center py-12">
-          <Target className="h-12 w-12 text-gray-400 mx-auto mb-4" />
-          <h3 className="text-lg font-medium text-gray-900 dark:text-white mb-2">Henüz departman yok</h3>
-          <p className="text-gray-600 dark:text-gray-400 mb-4">İlk departmanınızı ekleyerek başlayın</p>
-          <Button onClick={() => setIsDialogOpen(true)}>
-            <Plus className="h-4 w-4 mr-2" />
-            Yeni Departman Ekle
-          </Button>
-        </div>
-      )}
-
-      {/* Dialog for Creating/Editing Department */}
-      <Dialog open={isDialogOpen} onOpenChange={setIsDialogOpen}>
-        <DialogContent className="sm:max-w-[500px]">
-          <DialogHeader>
-            <DialogTitle>{editingDepartment ? "Departman Düzenle" : "Yeni Departman Ekle"}</DialogTitle>
-            <DialogDescription>
-              Departman bilgilerini doldurun ve kaydedin.
-            </DialogDescription>
-          </DialogHeader>
-          <form onSubmit={handleSubmit} className="space-y-4">
-            <div className="grid grid-cols-2 gap-4">
-              <div>
-                <Label htmlFor="name">Departman Adı</Label>
-                <Input
-                  id="name"
-                  value={formData.name}
-                  onChange={(e) => setFormData({...formData, name: e.target.value})}
-                  required
-                />
-              </div>
-              <div>
-                <Label htmlFor="companyId">Şirket</Label>
-                <Select value={formData.companyId} onValueChange={(value) => setFormData({...formData, companyId: value})}>
-                  <SelectTrigger>
-                    <SelectValue placeholder="Şirket seçin" />
-                  </SelectTrigger>
-                  <SelectContent>
-                    {Array.isArray(companies) && companies.map((company: any) => (
-                      <SelectItem key={company.id} value={company.id.toString()}>
-                        {company.name}
-                      </SelectItem>
-                    ))}
-                  </SelectContent>
-                </Select>
-              </div>
-            </div>
-            <div>
-              <Label htmlFor="description">Açıklama</Label>
-              <Textarea
-                id="description"
-                value={formData.description}
-                onChange={(e) => setFormData({...formData, description: e.target.value})}
-                placeholder="Departman açıklaması..."
-                rows={3}
-              />
-            </div>
-            <div className="grid grid-cols-2 gap-4">
-              <div>
-                <Label htmlFor="managerId">Departman Müdürü</Label>
-                <Select value={formData.managerId} onValueChange={(value) => setFormData({...formData, managerId: value})}>
-                  <SelectTrigger>
-                    <SelectValue placeholder="Müdür seçin" />
-                  </SelectTrigger>
-                  <SelectContent>
-                    {Array.isArray(employees) && employees.map((employee: any) => (
-                      <SelectItem key={employee.id} value={employee.id.toString()}>
-                        {employee.firstName} {employee.lastName}
-                      </SelectItem>
-                    ))}
-                  </SelectContent>
-                </Select>
-              </div>
-              <div>
-                <Label htmlFor="budget">Bütçe (TRY)</Label>
-                <Input
-                  id="budget"
-                  type="number"
-                  value={formData.budget}
-                  onChange={(e) => setFormData({...formData, budget: e.target.value})}
-                  placeholder="0"
-                />
-              </div>
-            </div>
-            <div>
-              <Label htmlFor="goals">Hedefler (virgülle ayırın)</Label>
-              <Textarea
-                id="goals"
-                value={formData.goals}
-                onChange={(e) => setFormData({...formData, goals: e.target.value})}
-                placeholder="Satış artışı, Müşteri memnuniyeti, Kalite iyileştirme"
-                rows={2}
-              />
-            </div>
-            <DialogFooter>
-              <Button type="button" variant="outline" onClick={() => setIsDialogOpen(false)}>
-                İptal
-              </Button>
-              <Button type="submit" disabled={createDepartmentMutation.isPending || updateDepartmentMutation.isPending}>
-                {editingDepartment ? "Güncelle" : "Oluştur"}
-              </Button>
-            </DialogFooter>
-          </form>
-        </DialogContent>
-      </Dialog>
+      </div>
     </div>
   );
 }
