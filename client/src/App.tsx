@@ -46,6 +46,10 @@ import TestPage from "@/pages/test";
 import Targets from "@/pages/targets";
 import Projects from "@/pages/projects";
 import Meetings from "@/pages/meetings";
+import Profile from "@/pages/profile";
+import MyLeaves from "@/pages/my-leaves";
+import Timesheet from "@/pages/timesheet";
+import Expenses from "@/pages/expenses";
 
 import Login from "@/pages/login";
 import Register from "@/pages/register";
@@ -139,6 +143,12 @@ function Router() {
         <Route path="/targets" component={Targets} />
         <Route path="/projects" component={Projects} />
         <Route path="/meetings" component={Meetings} />
+        
+        {/* Employee-specific routes */}
+        <Route path="/profile" component={Profile} />
+        <Route path="/my-leaves" component={MyLeaves} />
+        <Route path="/timesheet" component={Timesheet} />
+        <Route path="/expenses" component={Expenses} />
         
         <Route component={NotFound} />
           </Switch>

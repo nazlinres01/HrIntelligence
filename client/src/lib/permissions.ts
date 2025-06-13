@@ -1,4 +1,4 @@
-export type UserRole = "owner" | "admin" | "hr_manager" | "hr_specialist" | "department_manager" | "employee";
+export type UserRole = "owner" | "admin" | "hr_manager" | "hr_specialist" | "department_manager" | "employee" | "çalışan";
 
 export interface Permission {
   canViewDashboard: boolean;
@@ -135,7 +135,29 @@ export const rolePermissions: Record<UserRole, Permission> = {
     canRequestLeave: true,
   },
   employee: {
-    canViewDashboard: false,
+    canViewDashboard: true,
+    canViewEmployees: false,
+    canEditEmployees: false,
+    canDeleteEmployees: false,
+    canViewPerformance: false,
+    canEditPerformance: false,
+    canViewPayroll: false,
+    canEditPayroll: false,
+    canViewReports: false,
+    canManageTeam: false,
+    canViewAuditLogs: false,
+    canManageEmployees: false,
+    canManagePayroll: false,
+    canManageLeaves: false,
+    canManagePerformance: false,
+    canManageCompany: false,
+    canManageDepartments: false,
+    canViewAllData: false,
+    canManageOwnProfile: true,
+    canRequestLeave: true,
+  },
+  çalışan: {
+    canViewDashboard: true,
     canViewEmployees: false,
     canEditEmployees: false,
     canDeleteEmployees: false,
@@ -173,4 +195,5 @@ export const roleLabels: Record<UserRole, string> = {
   hr_specialist: "İK Uzmanı",
   department_manager: "Departman Müdürü",
   employee: "Çalışan",
+  çalışan: "Çalışan",
 };
