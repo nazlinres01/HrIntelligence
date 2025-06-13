@@ -135,22 +135,22 @@ export default function ProcessOptimizationPage() {
   return (
     <div className="p-8 space-y-8 bg-gradient-to-br from-red-50 via-white to-rose-50 min-h-screen">
       {/* Header */}
-      <div className="bg-gradient-to-r from-red-600 to-rose-700 rounded-2xl shadow-xl p-8 text-white">
+      <div className="mb-8">
         <div className="flex items-center justify-between">
           <div>
-            <h1 className="text-4xl font-bold mb-2">Süreç Optimizasyonu</h1>
-            <p className="text-red-100 text-lg">İş süreçlerini analiz edin ve verimliliği artırın</p>
+            <h1 className="text-4xl font-bold mb-2 text-gray-900">Süreç Optimizasyonu</h1>
+            <p className="text-gray-600 text-lg">İş süreçlerini analiz edin ve verimliliği artırın</p>
           </div>
           <div className="grid grid-cols-2 gap-4 text-center">
             <div>
-              <Zap className="h-8 w-8 mx-auto mb-1" />
-              <div className="text-2xl font-bold">78%</div>
-              <div className="text-red-200 text-sm">Ortalama Verimlilik</div>
+              <Zap className="h-8 w-8 mx-auto mb-1 text-yellow-600" />
+              <div className="text-2xl font-bold text-gray-900">78%</div>
+              <div className="text-gray-500 text-sm">Ortalama Verimlilik</div>
             </div>
             <div>
-              <TrendingUp className="h-8 w-8 mx-auto mb-1" />
-              <div className="text-2xl font-bold">+12%</div>
-              <div className="text-red-200 text-sm">Bu Ay İyileşme</div>
+              <TrendingUp className="h-8 w-8 mx-auto mb-1 text-green-600" />
+              <div className="text-2xl font-bold text-gray-900">+12%</div>
+              <div className="text-gray-500 text-sm">Bu Ay İyileşme</div>
             </div>
           </div>
         </div>

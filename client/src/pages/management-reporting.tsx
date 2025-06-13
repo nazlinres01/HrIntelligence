@@ -156,22 +156,22 @@ export default function ManagementReportingPage() {
   return (
     <div className="p-8 space-y-8 bg-gradient-to-br from-red-50 via-white to-rose-50 min-h-screen">
       {/* Header */}
-      <div className="bg-gradient-to-r from-red-600 to-rose-700 rounded-2xl shadow-xl p-8 text-white">
+      <div className="mb-8">
         <div className="flex items-center justify-between">
           <div>
-            <h1 className="text-4xl font-bold mb-2">Üst Yönetime Raporlama</h1>
-            <p className="text-red-100 text-lg">Yönetici raporlarını hazırlayın ve takip edin</p>
+            <h1 className="text-4xl font-bold mb-2 text-gray-900">Üst Yönetime Raporlama</h1>
+            <p className="text-gray-600 text-lg">Yönetici raporlarını hazırlayın ve takip edin</p>
           </div>
           <div className="grid grid-cols-2 gap-4 text-center">
             <div>
-              <FileText className="h-8 w-8 mx-auto mb-1" />
-              <div className="text-2xl font-bold">12</div>
-              <div className="text-red-200 text-sm">Aktif Rapor</div>
+              <FileText className="h-8 w-8 mx-auto mb-1 text-blue-600" />
+              <div className="text-2xl font-bold text-gray-900">12</div>
+              <div className="text-gray-500 text-sm">Aktif Rapor</div>
             </div>
             <div>
-              <Calendar className="h-8 w-8 mx-auto mb-1" />
-              <div className="text-2xl font-bold">3</div>
-              <div className="text-red-200 text-sm">Yaklaşan Deadline</div>
+              <Calendar className="h-8 w-8 mx-auto mb-1 text-orange-600" />
+              <div className="text-2xl font-bold text-gray-900">3</div>
+              <div className="text-gray-500 text-sm">Yaklaşan Deadline</div>
             </div>
           </div>
         </div>

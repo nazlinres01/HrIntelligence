@@ -82,16 +82,16 @@ export default function StrategicPlanningPage() {
   return (
     <div className="p-8 space-y-8 bg-gradient-to-br from-red-50 via-white to-rose-50 min-h-screen">
       {/* Header */}
-      <div className="bg-gradient-to-r from-red-600 to-rose-700 rounded-2xl shadow-xl p-8 text-white">
+      <div className="mb-8">
         <div className="flex items-center justify-between">
           <div>
-            <h1 className="text-4xl font-bold mb-2">Stratejik Planlama</h1>
-            <p className="text-red-100 text-lg">Departman stratejilerini yönetin ve hedefleri takip edin</p>
+            <h1 className="text-4xl font-bold mb-2 text-gray-900">Stratejik Planlama</h1>
+            <p className="text-gray-600 text-lg">Departman stratejilerini yönetin ve hedefleri takip edin</p>
           </div>
           <div className="text-center">
-            <Target className="h-16 w-16 mx-auto mb-2" />
-            <div className="text-2xl font-bold">3</div>
-            <div className="text-red-200 text-sm">Aktif Hedef</div>
+            <Target className="h-16 w-16 mx-auto mb-2 text-blue-600" />
+            <div className="text-2xl font-bold text-gray-900">3</div>
+            <div className="text-gray-500 text-sm">Aktif Hedef</div>
           </div>
         </div>
       </div>

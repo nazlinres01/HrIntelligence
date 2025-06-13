@@ -162,22 +162,22 @@ export default function TeamCommunicationPage() {
   return (
     <div className="p-8 space-y-8 bg-gradient-to-br from-red-50 via-white to-rose-50 min-h-screen">
       {/* Header */}
-      <div className="bg-gradient-to-r from-red-600 to-rose-700 rounded-2xl shadow-xl p-8 text-white">
+      <div className="mb-8">
         <div className="flex items-center justify-between">
           <div>
-            <h1 className="text-4xl font-bold mb-2">Ekip İletişimi</h1>
-            <p className="text-red-100 text-lg">Ekip üyeleriyle iletişim kurun ve işbirliği yapın</p>
+            <h1 className="text-4xl font-bold mb-2 text-gray-900">Ekip İletişimi</h1>
+            <p className="text-gray-600 text-lg">Ekip üyeleriyle iletişim kurun ve işbirliği yapın</p>
           </div>
           <div className="grid grid-cols-2 gap-4 text-center">
             <div>
-              <MessageCircle className="h-8 w-8 mx-auto mb-1" />
-              <div className="text-2xl font-bold">127</div>
-              <div className="text-red-200 text-sm">Yeni Mesaj</div>
+              <MessageCircle className="h-8 w-8 mx-auto mb-1 text-blue-600" />
+              <div className="text-2xl font-bold text-gray-900">127</div>
+              <div className="text-gray-500 text-sm">Yeni Mesaj</div>
             </div>
             <div>
-              <Users className="h-8 w-8 mx-auto mb-1" />
-              <div className="text-2xl font-bold">24</div>
-              <div className="text-red-200 text-sm">Ekip Üyesi</div>
+              <Users className="h-8 w-8 mx-auto mb-1 text-green-600" />
+              <div className="text-2xl font-bold text-gray-900">24</div>
+              <div className="text-gray-500 text-sm">Ekip Üyesi</div>
             </div>
           </div>
         </div>
