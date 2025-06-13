@@ -267,15 +267,15 @@ export default function PersonnelAffairsPage() {
 
                     <div className="flex justify-between items-center pt-2">
                       <div className="flex gap-2">
-                        <Button variant="outline" size="sm">
+                        <Button variant="outline" size="sm" className="border-orange-600 text-orange-600 hover:bg-orange-50">
                           <Eye className="h-4 w-4 mr-1" />
                           Görüntüle
                         </Button>
-                        <Button variant="outline" size="sm">
+                        <Button variant="outline" size="sm" className="border-orange-600 text-orange-600 hover:bg-orange-50">
                           <Edit className="h-4 w-4 mr-1" />
                           Düzenle
                         </Button>
-                        <Button variant="outline" size="sm">
+                        <Button variant="outline" size="sm" className="border-orange-600 text-orange-600 hover:bg-orange-50">
                           <Download className="h-4 w-4 mr-1" />
                           İndir
                         </Button>
@@ -327,7 +327,7 @@ export default function PersonnelAffairsPage() {
                     </div>
 
                     <div className="flex justify-end gap-2">
-                      <Button variant="outline" size="sm">
+                      <Button variant="outline" size="sm" className="border-orange-600 text-orange-600 hover:bg-orange-50">
                         Detaylar
                       </Button>
                       <Button size="sm" className="bg-orange-600 hover:bg-orange-700">
@@ -361,7 +361,7 @@ export default function PersonnelAffairsPage() {
                         <Badge variant={docType.required ? "default" : "outline"}>
                           {docType.required ? "Zorunlu" : "İsteğe Bağlı"}
                         </Badge>
-                        <Button variant="outline" size="sm">
+                        <Button variant="outline" size="sm" className="border-orange-600 text-orange-600 hover:bg-orange-50">
                           Şablonu İndir
                         </Button>
                       </div>

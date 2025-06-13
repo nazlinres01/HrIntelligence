@@ -329,7 +329,7 @@ export default function ReferenceChecksPage() {
                     />
                   </div>
                   <div className="flex justify-end gap-4 pt-4">
-                    <Button type="button" variant="outline">
+                    <Button type="button" variant="outline" className="border-orange-600 text-orange-600 hover:bg-orange-50">
                       İptal
                     </Button>
                     <Button type="submit" className="bg-orange-600 hover:bg-orange-700">
@@ -453,7 +453,7 @@ export default function ReferenceChecksPage() {
                         {check.checkDate && `Tamamlanma: ${check.checkDate}`}
                       </div>
                       <div className="flex gap-2">
-                        <Button variant="outline" size="sm">
+                        <Button variant="outline" size="sm" className="border-orange-600 text-orange-600 hover:bg-orange-50">
                           <Edit className="h-4 w-4 mr-1" />
                           Düzenle
                         </Button>

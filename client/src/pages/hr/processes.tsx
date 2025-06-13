@@ -279,7 +279,7 @@ export default function HRProcessesPage() {
                           <p className="font-medium">{template.estimatedDuration}</p>
                         </div>
                         <div className="flex gap-2">
-                          <Button variant="outline" size="sm">
+                          <Button variant="outline" size="sm" className="border-orange-600 text-orange-600 hover:bg-orange-50">
                             Şablonu Düzenle
                           </Button>
                           <Button size="sm" className="bg-orange-600 hover:bg-orange-700">
