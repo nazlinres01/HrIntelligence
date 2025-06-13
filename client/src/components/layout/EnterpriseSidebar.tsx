@@ -175,7 +175,7 @@ const getRoleBasedNavigation = (userRole: UserRole): NavigationSection[] => {
             { name: "Ekip Üyeleri", href: "/employees", icon: Users, show: true, description: "Departman çalışanları yönetimi" },
             { name: "İzin Onayları", href: "/leaves", icon: Calendar, show: true, description: "Departman izin taleplerini onayla" },
             { name: "Performans Değerlendirme", href: "/performance", icon: TrendingUp, show: true, description: "Ekip performans değerlendirmeleri" },
-            { name: "Hedef Takibi", href: "/goals", icon: Target, show: true, description: "Departman hedeflerini takip et" },
+            { name: "Hedef Takibi", href: "/targets", icon: Target, show: true, description: "Departman hedeflerini takip et" },
           ]
         },
         {
