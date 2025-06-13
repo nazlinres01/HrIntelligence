@@ -43,6 +43,9 @@ import Settings from "@/pages/settings";
 import Notifications from "@/pages/notifications";
 import Team from "@/pages/team";
 import TestPage from "@/pages/test";
+import Targets from "@/pages/targets";
+import Projects from "@/pages/projects";
+import Meetings from "@/pages/meetings";
 
 import Login from "@/pages/login";
 import Register from "@/pages/register";
@@ -131,6 +134,11 @@ function Router() {
         <Route path="/team" component={Team} />
         <Route path="/help" component={Help} />
         <Route path="/test" component={TestPage} />
+        
+        {/* New Management Pages */}
+        <Route path="/targets" component={Targets} />
+        <Route path="/projects" component={Projects} />
+        <Route path="/meetings" component={Meetings} />
         
         <Route component={NotFound} />
           </Switch>
