@@ -485,16 +485,16 @@ export default function SystemSettings() {
                         </div>
                         <div className="flex items-center gap-2">
                           {getStatusBadge(apiKey.status)}
-                          <Button size="sm" variant="outline">
+                          <Button size="sm" variant="lightgray">
                             <Copy className="w-4 h-4" />
                           </Button>
-                          <Button size="sm" variant="outline">
+                          <Button size="sm" variant="lightgray">
                             <Edit className="w-4 h-4" />
                           </Button>
                         </div>
                       </div>
                     ))}
-                    <Button className="w-full" variant="outline">
+                    <Button className="w-full" variant="lightgray">
                       <Key className="w-4 h-4 mr-2" />
                       Yeni API Anahtarı Oluştur
                     </Button>
@@ -719,11 +719,11 @@ export default function SystemSettings() {
                   <Separator />
 
                   <div className="space-y-2">
-                    <Button className="w-full border-gray-300 text-gray-700 hover:bg-gray-50" variant="outline">
+                    <Button className="w-full" variant="lightgray">
                       <Database className="w-4 h-4 mr-2" />
                       Veritabanı Optimize Et
                     </Button>
-                    <Button className="w-full border-gray-300 text-gray-700 hover:bg-gray-50" variant="outline">
+                    <Button className="w-full" variant="lightgray">
                       <RefreshCw className="w-4 h-4 mr-2" />
                       İstatistikleri Yenile
                     </Button>
@@ -774,8 +774,8 @@ export default function SystemSettings() {
                   </div>
 
                   <Button 
-                    className="w-full border-gray-300 text-gray-700 hover:bg-gray-50"
-                    variant="outline"
+                    className="w-full"
+                    variant="lightgray"
                     onClick={() => createBackup.mutate()}
                     disabled={createBackup.isPending}
                   >
