@@ -295,6 +295,52 @@ export const insertExpenseReportSchema = createInsertSchema(expenseReports).omit
   createdAt: true,
 });
 
+// Training programs table
+export const trainings = pgTable("trainings", {
+  id: serial("id").primaryKey(),
+  companyId: integer("company_id").references(() => companies.id).notNull(),
+  title: varchar("title").notNull(),
+  description: text("description"),
+  instructor: varchar("instructor"),
+  startDate: date("start_date").notNull(),
+  endDate: date("end_date").notNull(),
+  duration: integer("duration"), // in hours
+  capacity: integer("capacity").default(50),
+  enrolledCount: integer("enrolled_count").default(0),
+  status: varchar("status").default("planned"), // planned, ongoing, completed, cancelled
+  category: varchar("category").notNull(), // technical, leadership, compliance, etc.
+  cost: decimal("cost", { precision: 10, scale: 2 }).default("0.00"),
+  location: varchar("location"),
+  materials: text("materials"),
+  requirements: text("requirements"),
+  createdAt: timestamp("created_at").defaultNow(),
+  updatedAt: timestamp("updated_at").defaultNow(),
+});
+
+// Training enrollments table
+export const trainingEnrollments = pgTable("training_enrollments", {
+  id: serial("id").primaryKey(),
+  trainingId: integer("training_id").references(() => trainings.id).notNull(),
+  userId: varchar("user_id").references(() => users.id).notNull(),
+  enrolledAt: timestamp("enrolled_at").defaultNow(),
+  status: varchar("status").default("enrolled"), // enrolled, completed, cancelled
+  completedAt: timestamp("completed_at"),
+  feedback: text("feedback"),
+  rating: integer("rating"), // 1-5 stars
+});
+
+export const insertTrainingSchema = createInsertSchema(trainings).omit({
+  id: true,
+  createdAt: true,
+  updatedAt: true,
+});
+
+export const insertTrainingEnrollmentSchema = createInsertSchema(trainingEnrollments).omit({
+  id: true,
+  enrolledAt: true,
+  completedAt: true,
+});
+
 export const insertMessageSchema = createInsertSchema(messages).omit({
   id: true,
   createdAt: true,
@@ -309,25 +355,10 @@ export type ExpenseReport = typeof expenseReports.$inferSelect;
 export type InsertExpenseReport = z.infer<typeof insertExpenseReportSchema>;
 export type Message = typeof messages.$inferSelect;
 export type InsertMessage = z.infer<typeof insertMessageSchema>;
-
-// Training programs table
-export const trainings = pgTable("trainings", {
-  id: serial("id").primaryKey(),
-  title: varchar("title").notNull(),
-  description: text("description"),
-  instructor: varchar("instructor"),
-  category: varchar("category").notNull(),
-  duration: integer("duration"), // hours
-  startDate: date("start_date"),
-  endDate: date("end_date"),
-  maxParticipants: integer("max_participants"),
-  location: varchar("location"),
-  status: varchar("status").default("scheduled"), // scheduled, active, completed, cancelled
-  objectives: text("objectives"),
-  requirements: text("requirements"),
-  createdAt: timestamp("created_at").defaultNow(),
-  updatedAt: timestamp("updated_at").defaultNow(),
-});
+export type Training = typeof trainings.$inferSelect;
+export type InsertTraining = z.infer<typeof insertTrainingSchema>;
+export type TrainingEnrollment = typeof trainingEnrollments.$inferSelect;
+export type InsertTrainingEnrollment = z.infer<typeof insertTrainingEnrollmentSchema>;
 
 // Job postings table
 export const jobs = pgTable("jobs", {
@@ -363,12 +394,6 @@ export const jobApplications = pgTable("job_applications", {
   updatedAt: timestamp("updated_at").defaultNow(),
 });
 
-export const insertTrainingSchema = createInsertSchema(trainings).omit({
-  id: true,
-  createdAt: true,
-  updatedAt: true,
-});
-
 export const insertJobSchema = createInsertSchema(jobs).omit({
   id: true,
   createdAt: true,
@@ -381,8 +406,6 @@ export const insertJobApplicationSchema = createInsertSchema(jobApplications).om
   updatedAt: true,
 });
 
-export type Training = typeof trainings.$inferSelect;
-export type InsertTraining = z.infer<typeof insertTrainingSchema>;
 export type Job = typeof jobs.$inferSelect;
 export type InsertJob = z.infer<typeof insertJobSchema>;
 export type JobApplication = typeof jobApplications.$inferSelect;
