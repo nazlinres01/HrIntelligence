@@ -1,8 +1,6 @@
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
-import { Progress } from "@/components/ui/progress";
-import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { useQuery } from "@tanstack/react-query";
 import { 
   Users, Target, TrendingUp, Clock, 
@@ -24,349 +22,192 @@ export default function DepartmentManagerDashboard() {
   });
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-red-50 to-rose-100">
-      <div className="container mx-auto p-6 space-y-8">
-        
-        {/* Header */}
-        <div className="bg-gradient-to-r from-red-600 via-red-700 to-rose-700 rounded-2xl p-8 text-white shadow-2xl">
-          <div className="flex items-center justify-between">
-            <div>
-              <h1 className="text-4xl font-bold mb-2">Departman Müdürü Dashboard</h1>
-              <p className="text-red-100 text-lg">Takımınızı yönetin ve hedeflere ulaşın</p>
-            </div>
-            <div className="hidden md:flex items-center space-x-6">
-              <div className="text-center">
-                <div className="text-3xl font-bold">24</div>
-                <div className="text-red-200 text-sm">Takım Üyesi</div>
-              </div>
-              <div className="text-center">
-                <div className="text-3xl font-bold">89%</div>
-                <div className="text-red-200 text-sm">Performans</div>
-              </div>
-              <div className="text-center">
-                <div className="text-3xl font-bold">7</div>
-                <div className="text-red-200 text-sm">Aktif Proje</div>
-              </div>
-            </div>
-          </div>
+    <div className="p-6 space-y-6">
+      
+      {/* Header */}
+      <div className="flex justify-between items-center">
+        <div>
+          <h1 className="text-2xl font-bold text-gray-900">Departman Müdürü</h1>
+          <p className="text-gray-600">Takımınızı yönetin ve hedeflere ulaşın</p>
         </div>
+        <Button className="bg-red-600 hover:bg-red-700">
+          <Settings className="w-4 h-4 mr-2" />
+          Departman Ayarları
+        </Button>
+      </div>
 
-        {/* Quick Stats */}
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
-          <Card className="border-red-200 bg-gradient-to-br from-red-50 to-white">
-            <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-              <CardTitle className="text-sm font-medium text-red-700">Takım Performansı</CardTitle>
-              <TrendingUp className="h-4 w-4 text-red-600" />
-            </CardHeader>
-            <CardContent>
-              <div className="text-2xl font-bold text-red-800">89%</div>
-              <p className="text-xs text-red-600">Bu ay +5%</p>
-            </CardContent>
-          </Card>
-
-          <Card className="border-red-200 bg-gradient-to-br from-red-50 to-white">
-            <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-              <CardTitle className="text-sm font-medium text-red-700">Tamamlanan Projeler</CardTitle>
-              <CheckCircle className="h-4 w-4 text-red-600" />
-            </CardHeader>
-            <CardContent>
-              <div className="text-2xl font-bold text-red-800">12</div>
-              <p className="text-xs text-red-600">Bu çeyrekte</p>
-            </CardContent>
-          </Card>
-
-          <Card className="border-red-200 bg-gradient-to-br from-red-50 to-white">
-            <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-              <CardTitle className="text-sm font-medium text-red-700">Bekleyen Onaylar</CardTitle>
-              <Clock className="h-4 w-4 text-red-600" />
-            </CardHeader>
-            <CardContent>
-              <div className="text-2xl font-bold text-red-800">5</div>
-              <p className="text-xs text-red-600">Acil işlem gerekli</p>
-            </CardContent>
-          </Card>
-
-          <Card className="border-red-200 bg-gradient-to-br from-red-50 to-white">
-            <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-              <CardTitle className="text-sm font-medium text-red-700">Bütçe Kullanımı</CardTitle>
-              <BarChart3 className="h-4 w-4 text-red-600" />
-            </CardHeader>
-            <CardContent>
-              <div className="text-2xl font-bold text-red-800">67%</div>
-              <p className="text-xs text-red-600">Hedefin altında</p>
-            </CardContent>
-          </Card>
-        </div>
-
-        {/* Main Content Tabs */}
-        <Tabs defaultValue="team" className="space-y-6">
-          <TabsList className="grid w-full grid-cols-4 bg-white border border-red-200">
-            <TabsTrigger value="team" className="data-[state=active]:bg-red-600 data-[state=active]:text-white">
-              Takım
-            </TabsTrigger>
-            <TabsTrigger value="projects" className="data-[state=active]:bg-red-600 data-[state=active]:text-white">
-              Projeler
-            </TabsTrigger>
-            <TabsTrigger value="approvals" className="data-[state=active]:bg-red-600 data-[state=active]:text-white">
-              Onaylar
-            </TabsTrigger>
-            <TabsTrigger value="analytics" className="data-[state=active]:bg-red-600 data-[state=active]:text-white">
-              Analitik
-            </TabsTrigger>
-          </TabsList>
-
-          <TabsContent value="team" className="space-y-6">
-            <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
-              
-              {/* Team Overview */}
-              <Card className="border-red-200 bg-gradient-to-br from-red-50 to-white">
-                <CardHeader>
-                  <CardTitle className="text-red-700 flex items-center gap-2">
-                    <Users className="h-5 w-5" />
-                    Takım Özeti
-                  </CardTitle>
-                </CardHeader>
-                <CardContent className="space-y-4">
-                  {[
-                    { name: "Ali Yılmaz", role: "Senior Developer", performance: 95, status: "active" },
-                    { name: "Ayşe Demir", role: "UI/UX Designer", performance: 88, status: "active" },
-                    { name: "Mehmet Kaya", role: "Project Manager", performance: 92, status: "leave" },
-                    { name: "Fatma Özkan", role: "QA Engineer", performance: 87, status: "active" }
-                  ].map((member, index) => (
-                    <div key={index} className="flex items-center justify-between p-3 bg-white rounded-lg border border-red-100">
-                      <div className="flex items-center space-x-3">
-                        <div className="w-10 h-10 bg-red-100 rounded-full flex items-center justify-center">
-                          <span className="text-red-600 font-medium">{member.name.charAt(0)}</span>
-                        </div>
-                        <div>
-                          <p className="font-medium text-gray-900">{member.name}</p>
-                          <p className="text-sm text-gray-600">{member.role}</p>
-                        </div>
-                      </div>
-                      <div className="flex items-center space-x-3">
-                        <div className="text-center">
-                          <div className="text-sm font-bold text-red-700">{member.performance}%</div>
-                          <div className="text-xs text-gray-500">Performans</div>
-                        </div>
-                        <Badge variant={member.status === "active" ? "default" : "secondary"}>
-                          {member.status === "active" ? "Aktif" : "İzinli"}
-                        </Badge>
-                      </div>
-                    </div>
-                  ))}
-                </CardContent>
-              </Card>
-
-              {/* Team Performance */}
-              <Card className="border-red-200 bg-gradient-to-br from-red-50 to-white">
-                <CardHeader>
-                  <CardTitle className="text-red-700 flex items-center gap-2">
-                    <Award className="h-5 w-5" />
-                    Takım Performansı
-                  </CardTitle>
-                </CardHeader>
-                <CardContent className="space-y-4">
-                  <div className="space-y-3">
-                    <div className="flex justify-between items-center">
-                      <span className="text-sm text-gray-600">Hedef Tamamlama</span>
-                      <span className="font-bold text-red-700">92%</span>
-                    </div>
-                    <Progress value={92} className="h-2" />
-                  </div>
-                  
-                  <div className="space-y-3">
-                    <div className="flex justify-between items-center">
-                      <span className="text-sm text-gray-600">Zamanında Teslimat</span>
-                      <span className="font-bold text-red-700">85%</span>
-                    </div>
-                    <Progress value={85} className="h-2" />
-                  </div>
-
-                  <div className="space-y-3">
-                    <div className="flex justify-between items-center">
-                      <span className="text-sm text-gray-600">Kalite Skoru</span>
-                      <span className="font-bold text-red-700">94%</span>
-                    </div>
-                    <Progress value={94} className="h-2" />
-                  </div>
-
-                  <div className="space-y-3">
-                    <div className="flex justify-between items-center">
-                      <span className="text-sm text-gray-600">Takım Memnuniyeti</span>
-                      <span className="font-bold text-red-700">88%</span>
-                    </div>
-                    <Progress value={88} className="h-2" />
-                  </div>
-                </CardContent>
-              </Card>
-            </div>
-          </TabsContent>
-
-          <TabsContent value="projects" className="space-y-6">
-            <Card className="border-red-200 bg-gradient-to-br from-red-50 to-white">
-              <CardHeader>
-                <CardTitle className="text-red-700">Aktif Projeler</CardTitle>
-              </CardHeader>
-              <CardContent>
-                <div className="space-y-4">
-                  {[
-                    { name: "E-ticaret Platform Geliştirme", progress: 75, deadline: "2024-02-15", priority: "Yüksek", team: 8 },
-                    { name: "Mobil Uygulama Yenileme", progress: 45, deadline: "2024-03-01", priority: "Orta", team: 5 },
-                    { name: "API Entegrasyonu", progress: 90, deadline: "2024-01-30", priority: "Yüksek", team: 3 },
-                    { name: "UI/UX Tasarım Güncellemesi", progress: 60, deadline: "2024-02-20", priority: "Düşük", team: 4 }
-                  ].map((project, index) => (
-                    <div key={index} className="p-4 bg-white rounded-lg border border-red-100">
-                      <div className="flex items-center justify-between mb-3">
-                        <h3 className="font-medium text-gray-900">{project.name}</h3>
-                        <Badge variant={
-                          project.priority === "Yüksek" ? "destructive" : 
-                          project.priority === "Orta" ? "default" : "secondary"
-                        }>
-                          {project.priority}
-                        </Badge>
-                      </div>
-                      <div className="space-y-2">
-                        <div className="flex justify-between text-sm">
-                          <span className="text-gray-600">Takım: {project.team} kişi</span>
-                          <span className="text-gray-600">Bitiş: {project.deadline}</span>
-                        </div>
-                        <Progress value={project.progress} className="h-2" />
-                        <div className="flex justify-between text-xs">
-                          <span className="text-gray-500">{project.progress}% tamamlandı</span>
-                          <Button size="sm" className="bg-red-600 hover:bg-red-700">
-                            Detaylar
-                          </Button>
-                        </div>
-                      </div>
-                    </div>
-                  ))}
-                </div>
-              </CardContent>
-            </Card>
-          </TabsContent>
-
-          <TabsContent value="approvals" className="space-y-6">
-            <Card className="border-red-200 bg-gradient-to-br from-red-50 to-white">
-              <CardHeader>
-                <CardTitle className="text-red-700">Bekleyen Onaylar</CardTitle>
-              </CardHeader>
-              <CardContent>
-                <div className="space-y-4">
-                  {[
-                    { type: "İzin Talebi", requester: "Ali Yılmaz", details: "5 günlük yıllık izin", date: "2024-01-20", urgent: true },
-                    { type: "Harcama Onayı", requester: "Ayşe Demir", details: "Tasarım araçları lisansı", date: "2024-01-19", urgent: false },
-                    { type: "Proje Bütçesi", requester: "Mehmet Kaya", details: "Ek geliştirici kaynağı", date: "2024-01-18", urgent: true },
-                    { type: "Performans Değerlendirmesi", requester: "Fatma Özkan", details: "Çeyreklik değerlendirme", date: "2024-01-17", urgent: false }
-                  ].map((approval, index) => (
-                    <div key={index} className="flex items-center justify-between p-4 bg-white rounded-lg border border-red-100">
-                      <div className="flex items-center space-x-3">
-                        {approval.urgent && <AlertTriangle className="h-5 w-5 text-red-500" />}
-                        <div>
-                          <h3 className="font-medium text-gray-900">{approval.type}</h3>
-                          <p className="text-sm text-gray-600">{approval.requester} - {approval.details}</p>
-                          <p className="text-xs text-gray-500">{approval.date}</p>
-                        </div>
-                      </div>
-                      <div className="flex space-x-2">
-                        <Button size="sm" variant="outline" className="border-red-200 text-red-700">
-                          Reddet
-                        </Button>
-                        <Button size="sm" className="bg-red-600 hover:bg-red-700">
-                          Onayla
-                        </Button>
-                      </div>
-                    </div>
-                  ))}
-                </div>
-              </CardContent>
-            </Card>
-          </TabsContent>
-
-          <TabsContent value="analytics" className="space-y-6">
-            <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
-              <Card className="border-red-200 bg-gradient-to-br from-red-50 to-white">
-                <CardHeader>
-                  <CardTitle className="text-red-700">Departman İstatistikleri</CardTitle>
-                </CardHeader>
-                <CardContent>
-                  <div className="space-y-4">
-                    <div className="flex justify-between items-center">
-                      <span className="text-sm text-gray-600">Toplam proje</span>
-                      <span className="font-bold text-red-700">24</span>
-                    </div>
-                    <div className="flex justify-between items-center">
-                      <span className="text-sm text-gray-600">Tamamlanan</span>
-                      <span className="font-bold text-green-600">18</span>
-                    </div>
-                    <div className="flex justify-between items-center">
-                      <span className="text-sm text-gray-600">Devam eden</span>
-                      <span className="font-bold text-blue-600">6</span>
-                    </div>
-                    <div className="flex justify-between items-center">
-                      <span className="text-sm text-gray-600">Bütçe kullanımı</span>
-                      <span className="font-bold text-orange-600">67%</span>
-                    </div>
-                  </div>
-                </CardContent>
-              </Card>
-
-              <Card className="border-red-200 bg-gradient-to-br from-red-50 to-white">
-                <CardHeader>
-                  <CardTitle className="text-red-700">Takım Metrikleri</CardTitle>
-                </CardHeader>
-                <CardContent>
-                  <div className="space-y-4">
-                    <div className="flex justify-between items-center">
-                      <span className="text-sm text-gray-600">Ortalama performans</span>
-                      <span className="font-bold text-red-700">89%</span>
-                    </div>
-                    <div className="flex justify-between items-center">
-                      <span className="text-sm text-gray-600">Memnuniyet oranı</span>
-                      <span className="font-bold text-green-600">88%</span>
-                    </div>
-                    <div className="flex justify-between items-center">
-                      <span className="text-sm text-gray-600">Devamsızlık oranı</span>
-                      <span className="font-bold text-red-600">3%</span>
-                    </div>
-                    <div className="flex justify-between items-center">
-                      <span className="text-sm text-gray-600">Eğitim tamamlama</span>
-                      <span className="font-bold text-purple-600">94%</span>
-                    </div>
-                  </div>
-                </CardContent>
-              </Card>
-            </div>
-          </TabsContent>
-        </Tabs>
-
-        {/* Quick Actions */}
-        <Card className="border-red-200 bg-gradient-to-br from-red-50 to-white">
-          <CardHeader>
-            <CardTitle className="text-red-700">Hızlı İşlemler</CardTitle>
-          </CardHeader>
-          <CardContent>
-            <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
-              <Button className="h-20 bg-red-600 hover:bg-red-700 flex flex-col items-center justify-center space-y-2">
-                <Users className="h-6 w-6" />
-                <span className="text-sm">Takım Toplantısı</span>
-              </Button>
-              <Button className="h-20 bg-red-600 hover:bg-red-700 flex flex-col items-center justify-center space-y-2">
-                <Target className="h-6 w-6" />
-                <span className="text-sm">Hedef Belirle</span>
-              </Button>
-              <Button className="h-20 bg-red-600 hover:bg-red-700 flex flex-col items-center justify-center space-y-2">
-                <CheckCircle className="h-6 w-6" />
-                <span className="text-sm">Onay Ver</span>
-              </Button>
-              <Button className="h-20 bg-red-600 hover:bg-red-700 flex flex-col items-center justify-center space-y-2">
-                <BarChart3 className="h-6 w-6" />
-                <span className="text-sm">Rapor Oluştur</span>
-              </Button>
+      {/* Quick Stats */}
+      <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
+        <Card>
+          <CardContent className="p-4">
+            <div className="space-y-1">
+              <p className="text-sm text-gray-600">Takım Üyesi</p>
+              <p className="text-sm font-medium text-gray-900">24</p>
             </div>
           </CardContent>
         </Card>
 
+        <Card>
+          <CardContent className="p-4">
+            <div className="space-y-1">
+              <p className="text-sm text-gray-600">Performans</p>
+              <p className="text-sm font-medium text-gray-900">89%</p>
+            </div>
+          </CardContent>
+        </Card>
+
+        <Card>
+          <CardContent className="p-4">
+            <div className="space-y-1">
+              <p className="text-sm text-gray-600">Aktif Proje</p>
+              <p className="text-sm font-medium text-gray-900">7</p>
+            </div>
+          </CardContent>
+        </Card>
+
+        <Card>
+          <CardContent className="p-4">
+            <div className="space-y-1">
+              <p className="text-sm text-gray-600">Hedef Tamamlama</p>
+              <p className="text-sm font-medium text-gray-900">92%</p>
+            </div>
+          </CardContent>
+        </Card>
       </div>
+
+      {/* Team Performance */}
+      <Card>
+        <CardHeader>
+          <CardTitle className="text-sm font-medium text-gray-600">Takım Performansı</CardTitle>
+        </CardHeader>
+        <CardContent>
+          <div className="space-y-3">
+            {[
+              { name: "Ahmet Yılmaz", position: "Yazılım Geliştirici", performance: 95, tasks: 8, completed: 7 },
+              { name: "Ayşe Demir", position: "UI/UX Designer", performance: 88, tasks: 6, completed: 5 },
+              { name: "Mehmet Kaya", position: "Backend Developer", performance: 92, tasks: 10, completed: 9 },
+              { name: "Fatma Özkan", position: "QA Engineer", performance: 90, tasks: 7, completed: 6 }
+            ].map((member, index) => (
+              <div key={index} className="border rounded-lg p-3 space-y-2">
+                <div className="flex items-center justify-between">
+                  <div className="space-y-1">
+                    <h3 className="text-sm font-medium text-gray-900">{member.name}</h3>
+                    <p className="text-xs text-gray-600">{member.position}</p>
+                    <div className="flex items-center gap-2">
+                      <Badge className={`text-xs ${
+                        member.performance >= 90 ? 'bg-green-100 text-green-800' :
+                        member.performance >= 80 ? 'bg-yellow-100 text-yellow-800' :
+                        'bg-red-100 text-red-800'
+                      }`}>
+                        %{member.performance} Performans
+                      </Badge>
+                      <span className="text-xs text-gray-600">{member.completed}/{member.tasks} görev</span>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            ))}
+          </div>
+        </CardContent>
+      </Card>
+
+      {/* Active Projects */}
+      <Card>
+        <CardHeader>
+          <CardTitle className="text-sm font-medium text-gray-600">Aktif Projeler</CardTitle>
+        </CardHeader>
+        <CardContent>
+          <div className="space-y-3">
+            {[
+              { name: "E-ticaret Platformu", progress: 75, deadline: "15 Aralık", team: 5, status: "progress" },
+              { name: "Mobil Uygulama", progress: 45, deadline: "30 Aralık", team: 3, status: "progress" },
+              { name: "API Geliştirme", progress: 90, deadline: "10 Aralık", team: 4, status: "nearly_complete" },
+              { name: "Database Optimizasyonu", progress: 25, deadline: "20 Aralık", team: 2, status: "early" }
+            ].map((project, index) => (
+              <div key={index} className="border rounded-lg p-3 space-y-2">
+                <div className="flex items-center justify-between">
+                  <div className="space-y-1">
+                    <h3 className="text-sm font-medium text-gray-900">{project.name}</h3>
+                    <div className="flex items-center gap-2">
+                      <Badge className={`text-xs ${
+                        project.status === 'nearly_complete' ? 'bg-green-100 text-green-800' :
+                        project.status === 'progress' ? 'bg-yellow-100 text-yellow-800' :
+                        'bg-gray-100 text-gray-800'
+                      }`}>
+                        %{project.progress} Tamamlandı
+                      </Badge>
+                      <span className="text-xs text-gray-600">{project.team} kişi</span>
+                      <span className="text-xs text-gray-600">Son: {project.deadline}</span>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            ))}
+          </div>
+        </CardContent>
+      </Card>
+
+      {/* Recent Activities */}
+      <Card>
+        <CardHeader>
+          <CardTitle className="text-sm font-medium text-gray-600">Son Aktiviteler</CardTitle>
+        </CardHeader>
+        <CardContent>
+          <div className="space-y-3">
+            {[
+              { activity: "Proje toplantısı tamamlandı", person: "Tüm takım", time: "2 saat önce", type: "meeting" },
+              { activity: "Kod incelemesi yapıldı", person: "Ahmet Yılmaz", time: "4 saat önce", type: "review" },
+              { activity: "Yeni özellik dağıtıldı", person: "Mehmet Kaya", time: "1 gün önce", type: "deployment" },
+              { activity: "Bug düzeltildi", person: "Fatma Özkan", time: "2 gün önce", type: "fix" }
+            ].map((activity, index) => (
+              <div key={index} className="border rounded-lg p-3 space-y-2">
+                <div className="flex items-center justify-between">
+                  <div className="space-y-1">
+                    <Badge className={`text-xs ${
+                      activity.type === 'deployment' ? 'bg-green-100 text-green-800' :
+                      activity.type === 'meeting' ? 'bg-blue-100 text-blue-800' :
+                      activity.type === 'review' ? 'bg-yellow-100 text-yellow-800' :
+                      'bg-gray-100 text-gray-800'
+                    }`}>
+                      {activity.activity}
+                    </Badge>
+                    <p className="text-sm text-gray-900">{activity.person}</p>
+                    <p className="text-xs text-gray-600">{activity.time}</p>
+                  </div>
+                </div>
+              </div>
+            ))}
+          </div>
+        </CardContent>
+      </Card>
+
+      {/* Quick Actions */}
+      <Card>
+        <CardHeader>
+          <CardTitle className="text-sm font-medium text-gray-600">Hızlı İşlemler</CardTitle>
+        </CardHeader>
+        <CardContent>
+          <div className="grid grid-cols-2 md:grid-cols-4 gap-3">
+            <Button className="h-16 bg-red-600 hover:bg-red-700 flex flex-col items-center justify-center space-y-1">
+              <Users className="h-4 w-4" />
+              <span className="text-xs">Takım Yönet</span>
+            </Button>
+            <Button className="h-16 bg-red-600 hover:bg-red-700 flex flex-col items-center justify-center space-y-1">
+              <Target className="h-4 w-4" />
+              <span className="text-xs">Hedef Belirle</span>
+            </Button>
+            <Button className="h-16 bg-red-600 hover:bg-red-700 flex flex-col items-center justify-center space-y-1">
+              <BarChart3 className="h-4 w-4" />
+              <span className="text-xs">Rapor Görüntüle</span>
+            </Button>
+            <Button className="h-16 bg-red-600 hover:bg-red-700 flex flex-col items-center justify-center space-y-1">
+              <Calendar className="h-4 w-4" />
+              <span className="text-xs">Toplantı Planla</span>
+            </Button>
+          </div>
+        </CardContent>
+      </Card>
+
     </div>
   );
 }

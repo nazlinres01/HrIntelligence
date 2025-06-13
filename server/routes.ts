@@ -1438,9 +1438,9 @@ export async function registerRoutes(app: Express): Promise<Server> {
       const timeEntry = await storage.createTimeEntry({
         userId: userId,
         date: new Date().toISOString().split('T')[0],
-        type: type,
-        description: description,
-        hours: parseFloat(hours),
+        startTime: "09:00",
+        endTime: "18:00",
+        description: description || "Mesai kaydı",
         status: 'pending'
       });
 
