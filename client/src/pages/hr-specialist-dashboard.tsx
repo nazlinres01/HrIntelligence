@@ -1,303 +1,341 @@
-import { useState } from "react";
-import { Link, useLocation } from "wouter";
-import { useAuth } from "@/hooks/useAuth";
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
-import { Button } from "@/components/ui/button";
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
-import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
+import { Button } from "@/components/ui/button";
+import { Progress } from "@/components/ui/progress";
+import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
+import { useQuery } from "@tanstack/react-query";
 import { 
-  Users, 
-  Calendar, 
-  BarChart3, 
-  BookOpen, 
-  Settings, 
-  Bell,
-  Home,
-  UserCheck,
-  Clock,
-  FileText,
-  UserPlus,
-  CheckCircle,
-  LogOut,
-  ChevronLeft,
-  ChevronRight,
-  ClipboardList
+  Users, Clock, FileText, TrendingUp, 
+  Calendar, CheckCircle, AlertCircle, Star,
+  BookOpen, Target, Award, MessageSquare
 } from "lucide-react";
 
-interface SidebarProps {
-  isCollapsed: boolean;
-  onToggle: () => void;
-}
-
-function Sidebar({ isCollapsed, onToggle }: SidebarProps) {
-  const [location, setLocation] = useLocation();
-
-  const menuItems = [
-    { icon: Home, label: "Dashboard", path: "/hr-specialist" },
-    { icon: UserPlus, label: "Çalışan İşlemleri", path: "/hr-specialist/employees" },
-    { icon: Calendar, label: "İzin İşlemleri", path: "/hr-specialist/leaves" },
-    { icon: BarChart3, label: "Performans Takibi", path: "/hr-specialist/performance" },
-    { icon: BookOpen, label: "Eğitim Desteği", path: "/hr-specialist/trainings" },
-    { icon: ClipboardList, label: "Döküman Yönetimi", path: "/hr-specialist/documents" },
-    { icon: FileText, label: "Rapor Hazırlama", path: "/hr-specialist/reports" },
-    { icon: Settings, label: "Ayarlar", path: "/hr-specialist/settings" },
-  ];
-
-  return (
-    <div className={`${isCollapsed ? 'w-16' : 'w-64'} bg-gradient-to-b from-orange-500 to-orange-700 text-white h-screen fixed left-0 top-0 transition-all duration-300 z-50 shadow-2xl`}>
-      {/* Header */}
-      <div className="p-4 border-b border-orange-400/30">
-        <div className="flex items-center justify-between">
-          {!isCollapsed && (
-            <div>
-              <h1 className="text-xl font-bold text-white">İK Uzmanı</h1>
-              <p className="text-green-200 text-sm">Operasyonel Panel</p>
-            </div>
-          )}
-          <Button
-            variant="ghost"
-            size="sm"
-            onClick={onToggle}
-            className="text-white hover:bg-green-700/50"
-          >
-            {isCollapsed ? <ChevronRight className="h-4 w-4" /> : <ChevronLeft className="h-4 w-4" />}
-          </Button>
-        </div>
-      </div>
-
-      {/* Navigation */}
-      <nav className="mt-6 px-2">
-        {menuItems.map((item) => {
-          const Icon = item.icon;
-          const isActive = location === item.path;
-          
-          return (
-            <Link key={item.path} href={item.path}>
-              <div className={`flex items-center px-3 py-3 mb-1 rounded-lg transition-all cursor-pointer group ${
-                isActive 
-                  ? 'bg-orange-500 text-white shadow-lg' 
-                  : 'text-orange-100 hover:bg-orange-600/50 hover:text-white'
-              }`}>
-                <Icon className="h-5 w-5 flex-shrink-0" />
-                {!isCollapsed && (
-                  <span className="ml-3 font-medium">{item.label}</span>
-                )}
-                {isCollapsed && (
-                  <div className="absolute left-16 bg-gray-900 text-white px-2 py-1 rounded shadow-lg opacity-0 group-hover:opacity-100 transition-opacity whitespace-nowrap z-50">
-                    {item.label}
-                  </div>
-                )}
-              </div>
-            </Link>
-          );
-        })}
-      </nav>
-
-      {/* User Section */}
-      <div className="absolute bottom-0 left-0 right-0 p-4 border-t border-orange-400/30">
-        <div className="flex items-center space-x-3">
-          <Avatar className="h-8 w-8">
-            <AvatarImage src="/placeholder-avatar.jpg" />
-            <AvatarFallback className="bg-orange-500 text-white">İU</AvatarFallback>
-          </Avatar>
-          {!isCollapsed && (
-            <div className="flex-1 min-w-0">
-              <p className="text-sm font-medium text-white truncate">İK Uzmanı</p>
-              <p className="text-xs text-green-200 truncate">specialist@company.com</p>
-            </div>
-          )}
-        </div>
-        
-        <div className="mt-3 flex space-x-2">
-          <Button
-            variant="ghost"
-            size="sm"
-            className="flex-1 text-green-200 hover:bg-green-700/50 hover:text-white"
-          >
-            <Settings className="h-4 w-4" />
-            {!isCollapsed && <span className="ml-2">Ayarlar</span>}
-          </Button>
-          <Button
-            variant="ghost"
-            size="sm"
-            onClick={() => window.location.href = '/api/logout'}
-            className="text-green-200 hover:bg-red-500/20 hover:text-red-300"
-          >
-            <LogOut className="h-4 w-4" />
-          </Button>
-        </div>
-      </div>
-    </div>
-  );
-}
-
 export default function HRSpecialistDashboard() {
-  const { user } = useAuth();
-  const [isSidebarCollapsed, setIsSidebarCollapsed] = useState(false);
+  const { data: stats } = useQuery({
+    queryKey: ["/api/stats/hr-specialist"],
+  });
+
+  const { data: tasks } = useQuery({
+    queryKey: ["/api/tasks/hr-specialist"],
+  });
+
+  const { data: applications } = useQuery({
+    queryKey: ["/api/job-applications"],
+  });
+
+  const { data: trainings } = useQuery({
+    queryKey: ["/api/trainings"],
+  });
 
   return (
-    <div className="min-h-screen bg-gray-50">
-      <Sidebar 
-        isCollapsed={isSidebarCollapsed} 
-        onToggle={() => setIsSidebarCollapsed(!isSidebarCollapsed)} 
-      />
-      
-      <div className={`${isSidebarCollapsed ? 'ml-16' : 'ml-64'} transition-all duration-300`}>
+    <div className="min-h-screen bg-gradient-to-br from-orange-50 to-orange-100">
+      <div className="container mx-auto p-6 space-y-8">
+        
         {/* Header */}
-        <header className="bg-white shadow-sm border-b">
-          <div className="px-6 py-4">
-            <div className="flex items-center justify-between">
-              <div>
-                <h1 className="text-2xl font-bold text-gray-900">İK Uzmanı Dashboard</h1>
-                <p className="text-gray-600">Hoş geldiniz, {user?.firstName || 'İK Uzmanı'}</p>
+        <div className="bg-gradient-to-r from-orange-500 via-orange-600 to-orange-700 rounded-2xl p-8 text-white shadow-2xl">
+          <div className="flex items-center justify-between">
+            <div>
+              <h1 className="text-4xl font-bold mb-2">İK Uzmanı Dashboard</h1>
+              <p className="text-orange-100 text-lg">Günlük işlerinizi takip edin ve yönetin</p>
+            </div>
+            <div className="hidden md:flex items-center space-x-4">
+              <div className="text-center">
+                <div className="text-3xl font-bold">85%</div>
+                <div className="text-orange-200 text-sm">Tamamlanan</div>
               </div>
-              <div className="flex items-center space-x-4">
-                <Button variant="outline" size="sm">
-                  <Bell className="h-4 w-4 mr-2" />
-                  Bildirimler
-                  <Badge variant="destructive" className="ml-2">5</Badge>
-                </Button>
+              <div className="text-center">
+                <div className="text-3xl font-bold">12</div>
+                <div className="text-orange-200 text-sm">Aktif Görev</div>
               </div>
             </div>
           </div>
-        </header>
+        </div>
 
-        {/* Main Content */}
-        <main className="p-6">
-          {/* Stats Cards */}
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-8">
-            <Card className="bg-white border-gray-200 hover:shadow-md transition-shadow">
-              <CardHeader className="pb-2">
-                <CardTitle className="text-sm font-medium text-gray-600">Güncel İzin Talepleri</CardTitle>
-              </CardHeader>
-              <CardContent>
-                <div className="text-3xl font-bold text-gray-900">15</div>
-                <div className="text-sm text-gray-500">İşlenmeli</div>
-              </CardContent>
-            </Card>
-
-            <Card className="bg-white border-gray-200 hover:shadow-md transition-shadow">
-              <CardHeader className="pb-2">
-                <CardTitle className="text-sm font-medium text-gray-600">Yeni Başvurular</CardTitle>
-              </CardHeader>
-              <CardContent>
-                <div className="text-3xl font-bold text-gray-900">7</div>
-                <div className="text-sm text-gray-500">Bu hafta</div>
-              </CardContent>
-            </Card>
-
-            <Card className="bg-white border-gray-200 hover:shadow-md transition-shadow">
-              <CardHeader className="pb-2">
-                <CardTitle className="text-sm font-medium text-gray-600">Tamamlanan Eğitimler</CardTitle>
-              </CardHeader>
-              <CardContent>
-                <div className="text-3xl font-bold text-gray-900">24</div>
-                <div className="text-sm text-gray-500">Bu ay</div>
-              </CardContent>
-            </Card>
-
-            <Card className="bg-white border-gray-200 hover:shadow-md transition-shadow">
-              <CardHeader className="pb-2">
-                <CardTitle className="text-sm font-medium text-gray-600">Bekleyen Görevler</CardTitle>
-              </CardHeader>
-              <CardContent>
-                <div className="text-3xl font-bold text-gray-900">11</div>
-                <div className="text-sm text-gray-500">Yüksek öncelik</div>
-              </CardContent>
-            </Card>
-          </div>
-
-          {/* Quick Actions */}
-          <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 mb-8">
-            <Card>
-              <CardHeader>
-                <CardTitle className="flex items-center">
-                  <CheckCircle className="h-5 w-5 mr-2 text-green-600" />
-                  Hızlı İşlemler
-                </CardTitle>
-                <CardDescription>Günlük operasyonel görevler</CardDescription>
-              </CardHeader>
-              <CardContent className="space-y-3">
-                <Button className="w-full justify-start bg-green-50 text-green-700 hover:bg-green-100">
-                  <Calendar className="h-4 w-4 mr-2" />
-                  İzin Onaylama
-                </Button>
-                <Button className="w-full justify-start bg-blue-50 text-blue-700 hover:bg-blue-100">
-                  <UserPlus className="h-4 w-4 mr-2" />
-                  Yeni Çalışan Kaydı
-                </Button>
-                <Button className="w-full justify-start bg-orange-50 text-orange-700 hover:bg-orange-100">
-                  <FileText className="h-4 w-4 mr-2" />
-                  Döküman Hazırlama
-                </Button>
-                <Button className="w-full justify-start bg-purple-50 text-purple-700 hover:bg-purple-100">
-                  <BarChart3 className="h-4 w-4 mr-2" />
-                  Performans Girişi
-                </Button>
-              </CardContent>
-            </Card>
-
-            <Card>
-              <CardHeader>
-                <CardTitle className="flex items-center">
-                  <Clock className="h-5 w-5 mr-2 text-green-600" />
-                  Günün Görevleri
-                </CardTitle>
-                <CardDescription>Bugün tamamlanması gereken işler</CardDescription>
-              </CardHeader>
-              <CardContent className="space-y-4">
-                <div className="flex items-center space-x-3">
-                  <div className="w-2 h-2 bg-red-500 rounded-full"></div>
-                  <div className="flex-1">
-                    <p className="text-sm font-medium">İzin onayları (5 adet)</p>
-                    <p className="text-xs text-gray-500">Bugün son</p>
-                  </div>
-                </div>
-                <div className="flex items-center space-x-3">
-                  <div className="w-2 h-2 bg-orange-500 rounded-full"></div>
-                  <div className="flex-1">
-                    <p className="text-sm font-medium">Yeni çalışan özlük dosyası</p>
-                    <p className="text-xs text-gray-500">Yarın teslim</p>
-                  </div>
-                </div>
-                <div className="flex items-center space-x-3">
-                  <div className="w-2 h-2 bg-green-500 rounded-full"></div>
-                  <div className="flex-1">
-                    <p className="text-sm font-medium">Eğitim katılım raporu</p>
-                    <p className="text-xs text-gray-500">Bu hafta</p>
-                  </div>
-                </div>
-              </CardContent>
-            </Card>
-          </div>
-
-          {/* Current Tasks */}
-          <Card>
-            <CardHeader>
-              <CardTitle className="flex items-center">
-                <ClipboardList className="h-5 w-5 mr-2 text-green-600" />
-                Devam Eden İşlemler
-              </CardTitle>
-              <CardDescription>Aktif olarak takip edilen süreçler</CardDescription>
+        {/* Quick Stats */}
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
+          <Card className="border-orange-200 bg-gradient-to-br from-orange-50 to-white">
+            <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
+              <CardTitle className="text-sm font-medium text-orange-700">Başvurular</CardTitle>
+              <FileText className="h-4 w-4 text-orange-600" />
             </CardHeader>
             <CardContent>
-              <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-                <div className="text-center p-4 bg-green-50 rounded-lg">
-                  <div className="text-2xl font-bold text-green-600">8</div>
-                  <div className="text-sm text-gray-600">İzin Onay Süreçleri</div>
-                </div>
-                <div className="text-center p-4 bg-blue-50 rounded-lg">
-                  <div className="text-2xl font-bold text-blue-600">3</div>
-                  <div className="text-sm text-gray-600">İşe Alım Süreçleri</div>
-                </div>
-                <div className="text-center p-4 bg-orange-50 rounded-lg">
-                  <div className="text-2xl font-bold text-orange-600">12</div>
-                  <div className="text-sm text-gray-600">Eğitim Koordinasyonu</div>
-                </div>
-              </div>
+              <div className="text-2xl font-bold text-orange-800">24</div>
+              <p className="text-xs text-orange-600">Bu hafta +3</p>
             </CardContent>
           </Card>
-        </main>
+
+          <Card className="border-orange-200 bg-gradient-to-br from-orange-50 to-white">
+            <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
+              <CardTitle className="text-sm font-medium text-orange-700">Mülakatlar</CardTitle>
+              <Calendar className="h-4 w-4 text-orange-600" />
+            </CardHeader>
+            <CardContent>
+              <div className="text-2xl font-bold text-orange-800">8</div>
+              <p className="text-xs text-orange-600">Bu hafta</p>
+            </CardContent>
+          </Card>
+
+          <Card className="border-orange-200 bg-gradient-to-br from-orange-50 to-white">
+            <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
+              <CardTitle className="text-sm font-medium text-orange-700">Eğitimler</CardTitle>
+              <BookOpen className="h-4 w-4 text-orange-600" />
+            </CardHeader>
+            <CardContent>
+              <div className="text-2xl font-bold text-orange-800">5</div>
+              <p className="text-xs text-orange-600">Aktif program</p>
+            </CardContent>
+          </Card>
+
+          <Card className="border-orange-200 bg-gradient-to-br from-orange-50 to-white">
+            <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
+              <CardTitle className="text-sm font-medium text-orange-700">Performans</CardTitle>
+              <TrendingUp className="h-4 w-4 text-orange-600" />
+            </CardHeader>
+            <CardContent>
+              <div className="text-2xl font-bold text-orange-800">92%</div>
+              <p className="text-xs text-orange-600">Hedef başarı</p>
+            </CardContent>
+          </Card>
+        </div>
+
+        {/* Main Content Tabs */}
+        <Tabs defaultValue="tasks" className="space-y-6">
+          <TabsList className="grid w-full grid-cols-4 bg-white border border-orange-200">
+            <TabsTrigger value="tasks" className="data-[state=active]:bg-orange-500 data-[state=active]:text-white">
+              Görevler
+            </TabsTrigger>
+            <TabsTrigger value="applications" className="data-[state=active]:bg-orange-500 data-[state=active]:text-white">
+              Başvurular
+            </TabsTrigger>
+            <TabsTrigger value="trainings" className="data-[state=active]:bg-orange-500 data-[state=active]:text-white">
+              Eğitimler
+            </TabsTrigger>
+            <TabsTrigger value="analytics" className="data-[state=active]:bg-orange-500 data-[state=active]:text-white">
+              Analitik
+            </TabsTrigger>
+          </TabsList>
+
+          <TabsContent value="tasks" className="space-y-6">
+            <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+              
+              {/* Today's Tasks */}
+              <Card className="border-orange-200 bg-gradient-to-br from-orange-50 to-white">
+                <CardHeader>
+                  <CardTitle className="text-orange-700 flex items-center gap-2">
+                    <CheckCircle className="h-5 w-5" />
+                    Bugünkü Görevler
+                  </CardTitle>
+                </CardHeader>
+                <CardContent className="space-y-4">
+                  {[
+                    { task: "CV incelemesi tamamla", priority: "Yüksek", progress: 75 },
+                    { task: "Mülakat programını düzenle", priority: "Orta", progress: 100 },
+                    { task: "Eğitim materyali hazırla", priority: "Düşük", progress: 25 },
+                    { task: "Performans raporları gözden geçir", priority: "Yüksek", progress: 50 }
+                  ].map((item, index) => (
+                    <div key={index} className="space-y-2">
+                      <div className="flex items-center justify-between">
+                        <span className="text-sm font-medium text-gray-800">{item.task}</span>
+                        <Badge variant={
+                          item.priority === "Yüksek" ? "destructive" : 
+                          item.priority === "Orta" ? "default" : "secondary"
+                        }>
+                          {item.priority}
+                        </Badge>
+                      </div>
+                      <Progress value={item.progress} className="h-2" />
+                      <div className="text-xs text-gray-600">{item.progress}% tamamlandı</div>
+                    </div>
+                  ))}
+                </CardContent>
+              </Card>
+
+              {/* Recent Activities */}
+              <Card className="border-orange-200 bg-gradient-to-br from-orange-50 to-white">
+                <CardHeader>
+                  <CardTitle className="text-orange-700 flex items-center gap-2">
+                    <Clock className="h-5 w-5" />
+                    Son Aktiviteler
+                  </CardTitle>
+                </CardHeader>
+                <CardContent className="space-y-4">
+                  {[
+                    { action: "Yeni başvuru incelendi", time: "5 dakika önce", type: "application" },
+                    { action: "Mülakat planlandı", time: "15 dakika önce", type: "interview" },
+                    { action: "Eğitim tamamlandı", time: "1 saat önce", type: "training" },
+                    { action: "Performans değerlendirmesi", time: "2 saat önce", type: "performance" }
+                  ].map((activity, index) => (
+                    <div key={index} className="flex items-center space-x-3 p-3 bg-white rounded-lg border border-orange-100">
+                      <div className={`p-2 rounded-full ${
+                        activity.type === 'application' ? 'bg-blue-100 text-blue-600' :
+                        activity.type === 'interview' ? 'bg-green-100 text-green-600' :
+                        activity.type === 'training' ? 'bg-purple-100 text-purple-600' :
+                        'bg-orange-100 text-orange-600'
+                      }`}>
+                        {activity.type === 'application' && <FileText className="h-4 w-4" />}
+                        {activity.type === 'interview' && <Calendar className="h-4 w-4" />}
+                        {activity.type === 'training' && <BookOpen className="h-4 w-4" />}
+                        {activity.type === 'performance' && <Star className="h-4 w-4" />}
+                      </div>
+                      <div className="flex-1">
+                        <p className="text-sm font-medium text-gray-900">{activity.action}</p>
+                        <p className="text-xs text-gray-500">{activity.time}</p>
+                      </div>
+                    </div>
+                  ))}
+                </CardContent>
+              </Card>
+            </div>
+          </TabsContent>
+
+          <TabsContent value="applications" className="space-y-6">
+            <Card className="border-orange-200 bg-gradient-to-br from-orange-50 to-white">
+              <CardHeader>
+                <CardTitle className="text-orange-700">İş Başvuruları</CardTitle>
+              </CardHeader>
+              <CardContent>
+                <div className="space-y-4">
+                  {[
+                    { name: "Ahmet Yılmaz", position: "Frontend Developer", status: "İnceleniyor", date: "2024-01-15" },
+                    { name: "Mehmet Demir", position: "Backend Developer", status: "Mülakat", date: "2024-01-14" },
+                    { name: "Ayşe Kaya", position: "UI/UX Designer", status: "Son Aşama", date: "2024-01-13" },
+                    { name: "Fatma Özkan", position: "DevOps Engineer", status: "Değerlendirme", date: "2024-01-12" }
+                  ].map((app, index) => (
+                    <div key={index} className="flex items-center justify-between p-4 bg-white rounded-lg border border-orange-100">
+                      <div>
+                        <h3 className="font-medium text-gray-900">{app.name}</h3>
+                        <p className="text-sm text-gray-600">{app.position}</p>
+                        <p className="text-xs text-gray-500">{app.date}</p>
+                      </div>
+                      <div className="flex items-center space-x-3">
+                        <Badge variant="outline" className="border-orange-200 text-orange-700">
+                          {app.status}
+                        </Badge>
+                        <Button size="sm" className="bg-orange-600 hover:bg-orange-700">
+                          İncele
+                        </Button>
+                      </div>
+                    </div>
+                  ))}
+                </div>
+              </CardContent>
+            </Card>
+          </TabsContent>
+
+          <TabsContent value="trainings" className="space-y-6">
+            <Card className="border-orange-200 bg-gradient-to-br from-orange-50 to-white">
+              <CardHeader>
+                <CardTitle className="text-orange-700">Eğitim Programları</CardTitle>
+              </CardHeader>
+              <CardContent>
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                  {[
+                    { title: "Liderlik Geliştirme", participants: 15, completion: 75, duration: "4 hafta" },
+                    { title: "Teknik Beceri Eğitimi", participants: 22, completion: 60, duration: "6 hafta" },
+                    { title: "İletişim Becerileri", participants: 18, completion: 90, duration: "2 hafta" },
+                    { title: "Proje Yönetimi", participants: 12, completion: 45, duration: "8 hafta" }
+                  ].map((training, index) => (
+                    <div key={index} className="p-4 bg-white rounded-lg border border-orange-100">
+                      <h3 className="font-medium text-gray-900 mb-2">{training.title}</h3>
+                      <div className="space-y-2">
+                        <div className="flex justify-between text-sm">
+                          <span className="text-gray-600">Katılımcı: {training.participants}</span>
+                          <span className="text-gray-600">{training.duration}</span>
+                        </div>
+                        <Progress value={training.completion} className="h-2" />
+                        <div className="text-xs text-gray-500">{training.completion}% tamamlandı</div>
+                      </div>
+                    </div>
+                  ))}
+                </div>
+              </CardContent>
+            </Card>
+          </TabsContent>
+
+          <TabsContent value="analytics" className="space-y-6">
+            <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+              <Card className="border-orange-200 bg-gradient-to-br from-orange-50 to-white">
+                <CardHeader>
+                  <CardTitle className="text-orange-700">Başvuru Analitikleri</CardTitle>
+                </CardHeader>
+                <CardContent>
+                  <div className="space-y-4">
+                    <div className="flex justify-between items-center">
+                      <span className="text-sm text-gray-600">Bu ay toplam başvuru</span>
+                      <span className="font-bold text-orange-700">156</span>
+                    </div>
+                    <div className="flex justify-between items-center">
+                      <span className="text-sm text-gray-600">Kabul edilen</span>
+                      <span className="font-bold text-green-600">34</span>
+                    </div>
+                    <div className="flex justify-between items-center">
+                      <span className="text-sm text-gray-600">Reddedilen</span>
+                      <span className="font-bold text-red-600">89</span>
+                    </div>
+                    <div className="flex justify-between items-center">
+                      <span className="text-sm text-gray-600">Bekleyen</span>
+                      <span className="font-bold text-yellow-600">33</span>
+                    </div>
+                  </div>
+                </CardContent>
+              </Card>
+
+              <Card className="border-orange-200 bg-gradient-to-br from-orange-50 to-white">
+                <CardHeader>
+                  <CardTitle className="text-orange-700">Eğitim İstatistikleri</CardTitle>
+                </CardHeader>
+                <CardContent>
+                  <div className="space-y-4">
+                    <div className="flex justify-between items-center">
+                      <span className="text-sm text-gray-600">Aktif eğitim</span>
+                      <span className="font-bold text-orange-700">12</span>
+                    </div>
+                    <div className="flex justify-between items-center">
+                      <span className="text-sm text-gray-600">Tamamlanan</span>
+                      <span className="font-bold text-green-600">45</span>
+                    </div>
+                    <div className="flex justify-between items-center">
+                      <span className="text-sm text-gray-600">Ortalama tamamlama</span>
+                      <span className="font-bold text-blue-600">78%</span>
+                    </div>
+                    <div className="flex justify-between items-center">
+                      <span className="text-sm text-gray-600">Memnuniyet oranı</span>
+                      <span className="font-bold text-purple-600">4.6/5</span>
+                    </div>
+                  </div>
+                </CardContent>
+              </Card>
+            </div>
+          </TabsContent>
+        </Tabs>
+
+        {/* Quick Actions */}
+        <Card className="border-orange-200 bg-gradient-to-br from-orange-50 to-white">
+          <CardHeader>
+            <CardTitle className="text-orange-700">Hızlı İşlemler</CardTitle>
+          </CardHeader>
+          <CardContent>
+            <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
+              <Button className="h-20 bg-orange-600 hover:bg-orange-700 flex flex-col items-center justify-center space-y-2">
+                <FileText className="h-6 w-6" />
+                <span className="text-sm">Yeni Başvuru</span>
+              </Button>
+              <Button className="h-20 bg-orange-600 hover:bg-orange-700 flex flex-col items-center justify-center space-y-2">
+                <Calendar className="h-6 w-6" />
+                <span className="text-sm">Mülakat Planla</span>
+              </Button>
+              <Button className="h-20 bg-orange-600 hover:bg-orange-700 flex flex-col items-center justify-center space-y-2">
+                <BookOpen className="h-6 w-6" />
+                <span className="text-sm">Eğitim Oluştur</span>
+              </Button>
+              <Button className="h-20 bg-orange-600 hover:bg-orange-700 flex flex-col items-center justify-center space-y-2">
+                <Star className="h-6 w-6" />
+                <span className="text-sm">Değerlendirme</span>
+              </Button>
+            </div>
+          </CardContent>
+        </Card>
+
       </div>
     </div>
   );

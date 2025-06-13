@@ -481,10 +481,7 @@ export default function Payroll() {
 
   const createPayrollMutation = useMutation({
     mutationFn: async (data: PayrollFormData) => {
-      return apiRequest("/api/payroll", {
-        method: "POST",
-        body: JSON.stringify(data)
-      });
+      return apiRequest("/api/payroll", "POST", data);
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ["/api/payroll"] });
@@ -506,9 +503,7 @@ export default function Payroll() {
 
   const deletePayrollMutation = useMutation({
     mutationFn: async (id: string) => {
-      return apiRequest(`/api/payroll/${id}`, {
-        method: "DELETE"
-      });
+      return apiRequest(`/api/payroll/${id}`, "DELETE");
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ["/api/payroll"] });
@@ -627,7 +622,7 @@ export default function Payroll() {
                                 </SelectTrigger>
                               </FormControl>
                               <SelectContent className="bg-white">
-                                {employees.map((employee: any) => (
+                                {Array.isArray(employees) && employees.map((employee: any) => (
                                   <SelectItem key={employee.id} value={employee.id}>
                                     {employee.firstName} {employee.lastName}
                                   </SelectItem>

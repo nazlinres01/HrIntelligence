@@ -328,7 +328,7 @@ export default function EnterpriseSidebar() {
           "p-6 shadow-lg",
           userRole === 'hr_manager' 
             ? "bg-gradient-to-r from-teal-600 via-teal-700 to-emerald-700" 
-            : userRole === 'hr_specialist' || userRole === 'ik_uzmanı'
+            : userRole === 'hr_specialist'
             ? "bg-gradient-to-r from-orange-500 via-orange-600 to-orange-700"
             : userRole === 'department_manager'
             ? "bg-gradient-to-r from-red-600 via-red-700 to-rose-700"
