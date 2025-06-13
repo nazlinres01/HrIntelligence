@@ -1715,6 +1715,322 @@ export async function registerRoutes(app: Express): Promise<Server> {
     }
   });
 
+  // HR Specialist specific endpoints
+  app.get('/api/stats/hr-specialist', requireAuth, async (req: any, res) => {
+    try {
+      const userId = req.user.claims.sub;
+      
+      // Get HR specialist stats
+      const stats = {
+        totalApplications: 156,
+        processedApplications: 124,
+        pendingInterviews: 18,
+        activeTrainings: 12,
+        completedTasks: 89,
+        pendingTasks: 7,
+        monthlyHires: 8,
+        employeesSupportedThisMonth: 45
+      };
+
+      res.json(stats);
+    } catch (error) {
+      console.error("Error fetching HR specialist stats:", error);
+      res.status(500).json({ message: "İK uzmanı istatistikleri alınamadı" });
+    }
+  });
+
+  app.get('/api/tasks/hr-specialist', isAuthenticated, async (req: any, res) => {
+    try {
+      const userId = req.user.claims.sub;
+      
+      // Get HR specialist tasks
+      const tasks = [
+        {
+          id: 1,
+          title: "Yeni işe giriş evrakları hazırla",
+          description: "3 yeni çalışan için evrak hazırlığı",
+          priority: "high",
+          dueDate: "2024-12-15",
+          status: "pending",
+          category: "onboarding"
+        },
+        {
+          id: 2,
+          title: "İzin belgesi işle",
+          description: "5 adet izin talebi belgesi hazırla",
+          priority: "medium",
+          dueDate: "2024-12-14",
+          status: "in_progress",
+          category: "leave_management"
+        },
+        {
+          id: 3,
+          title: "Performans formları gözden geçir",
+          description: "Q4 performans değerlendirme formları",
+          priority: "high",
+          dueDate: "2024-12-20",
+          status: "pending",
+          category: "performance"
+        },
+        {
+          id: 4,
+          title: "Eğitim koordinasyonu",
+          description: "Liderlik eğitimi katılımcı listesi hazırla",
+          priority: "low",
+          dueDate: "2024-12-18",
+          status: "completed",
+          category: "training"
+        }
+      ];
+
+      res.json(tasks);
+    } catch (error) {
+      console.error("Error fetching HR specialist tasks:", error);
+      res.status(500).json({ message: "İK uzmanı görevleri alınamadı" });
+    }
+  });
+
+  app.get('/api/hr-processes', requireAuth, async (req: any, res) => {
+    try {
+      const userId = req.user.claims.sub;
+      
+      // Get HR processes
+      const processes = [
+        {
+          id: 1,
+          name: "İşe Alım Süreci",
+          description: "Yeni çalışan işe alım prosedürleri",
+          steps: [
+            "Başvuru değerlendirme",
+            "İlk mülakat",
+            "Teknik değerlendirme", 
+            "Referans kontrolü",
+            "Teklif sunma",
+            "İşe başlama işlemleri"
+          ],
+          averageDuration: "14 gün",
+          currentCases: 8
+        },
+        {
+          id: 2,
+          name: "İzin Yönetim Süreci",
+          description: "Çalışan izin talep ve onay süreçleri",
+          steps: [
+            "İzin talebi oluşturma",
+            "Departman müdürü onayı",
+            "İK kontrolü",
+            "Bordro bilgilendirme",
+            "İzin belgesi hazırlama"
+          ],
+          averageDuration: "3 gün",
+          currentCases: 12
+        },
+        {
+          id: 3,
+          name: "Performans Değerlendirme",
+          description: "Çalışan performans değerlendirme süreci",
+          steps: [
+            "Hedef belirleme",
+            "Dönemsel takip",
+            "360 derece değerlendirme",
+            "Sonuç analizi",
+            "Gelişim planı oluşturma"
+          ],
+          averageDuration: "30 gün",
+          currentCases: 25
+        }
+      ];
+
+      res.json(processes);
+    } catch (error) {
+      console.error("Error fetching HR processes:", error);
+      res.status(500).json({ message: "İK süreçleri alınamadı" });
+    }
+  });
+
+  app.get('/api/personnel-affairs', requireAuth, async (req: any, res) => {
+    try {
+      const userId = req.user.claims.sub;
+      
+      // Get personnel affairs data
+      const affairs = [
+        {
+          id: 1,
+          employeeName: "Ahmet Yılmaz",
+          type: "Bordro Düzeltme",
+          description: "Ekim ayı fazla mesai eklenmesi",
+          status: "pending",
+          submittedDate: "2024-12-10",
+          priority: "medium"
+        },
+        {
+          id: 2,
+          employeeName: "Ayşe Demir",
+          type: "Adres Değişikliği",
+          description: "İkamet adres güncelleme talebi",
+          status: "completed",
+          submittedDate: "2024-12-08",
+          priority: "low"
+        },
+        {
+          id: 3,
+          employeeName: "Mehmet Kaya",
+          type: "Sağlık Raporu",
+          description: "10 günlük hastalık raporu kayıt",
+          status: "in_review",
+          submittedDate: "2024-12-11",
+          priority: "high"
+        },
+        {
+          id: 4,
+          employeeName: "Fatma Özkan",
+          type: "Terfi Başvurusu",
+          description: "Senior pozisyona terfi talebi",
+          status: "pending",
+          submittedDate: "2024-12-09",
+          priority: "high"
+        }
+      ];
+
+      res.json(affairs);
+    } catch (error) {
+      console.error("Error fetching personnel affairs:", error);
+      res.status(500).json({ message: "Özlük işleri alınamadı" });
+    }
+  });
+
+  app.post('/api/complete-task', requireAuth, async (req: any, res) => {
+    try {
+      const userId = req.user.claims.sub;
+      const { taskId, notes } = req.body;
+      
+      // Complete task
+      const result = {
+        id: taskId,
+        status: 'completed',
+        completedBy: userId,
+        completedAt: new Date().toISOString(),
+        notes: notes || ""
+      };
+
+      // Create audit log
+      await storage.createAuditLog({
+        action: "task_completed",
+        resource: "hr_task",
+        details: `İK görevi tamamlandı: ${notes}`,
+        userId: userId,
+        companyId: 753
+      });
+
+      res.json(result);
+    } catch (error) {
+      console.error("Error completing task:", error);
+      res.status(500).json({ message: "Görev tamamlanamadı" });
+    }
+  });
+
+  app.get('/api/training-coordination', requireAuth, async (req: any, res) => {
+    try {
+      const userId = req.user.claims.sub;
+      
+      // Get training coordination data
+      const coordination = {
+        activePrograms: [
+          {
+            id: 1,
+            title: "Liderlik Geliştirme Programı",
+            description: "Orta seviye yöneticiler için liderlik becerileri geliştirme",
+            instructor: "Dr. Mehmet Özkan",
+            startDate: "2024-12-20",
+            endDate: "2025-01-15",
+            duration: "4 hafta",
+            participants: 15,
+            maxCapacity: 20,
+            location: "Eğitim Salonu A",
+            status: "enrollment_open",
+            budget: "45.000 TL",
+            materials: ["Liderlik El Kitabı", "Vaka Analizi Dokümanları", "Değerlendirme Formları"],
+            schedule: [
+              { day: "Pazartesi", time: "09:00-12:00", topic: "Liderlik Temelleri" },
+              { day: "Çarşamba", time: "14:00-17:00", topic: "Takım Yönetimi" },
+              { day: "Cuma", time: "09:00-12:00", topic: "İletişim Becerileri" }
+            ]
+          },
+          {
+            id: 2,
+            title: "Dijital Dönüşüm Eğitimi",
+            description: "Tüm çalışanlar için dijital araçlar ve süreçler eğitimi",
+            instructor: "Ayşe Kara",
+            startDate: "2024-12-25",
+            endDate: "2025-01-10",
+            duration: "3 hafta",
+            participants: 32,
+            maxCapacity: 35,
+            location: "Online",
+            status: "ongoing",
+            budget: "25.000 TL",
+            materials: ["Dijital Araçlar Rehberi", "Online Platform Erişimi", "Sertifika"],
+            schedule: [
+              { day: "Salı", time: "10:00-12:00", topic: "Dijital Araçlara Giriş" },
+              { day: "Perşembe", time: "14:00-16:00", topic: "Süreç Otomasyonu" },
+              { day: "Cumartesi", time: "09:00-11:00", topic: "Veri Analizi Temelleri" }
+            ]
+          },
+          {
+            id: 3,
+            title: "İletişim Becerileri Atölyesi",
+            description: "Etkili iletişim teknikleri ve sunum becerileri",
+            instructor: "Prof. Dr. Zeynep Yıldız",
+            startDate: "2025-01-05",
+            endDate: "2025-01-20",
+            duration: "2 hafta",
+            participants: 18,
+            maxCapacity: 25,
+            location: "Eğitim Salonu B",
+            status: "planning",
+            budget: "30.000 TL",
+            materials: ["İletişim Teknikleri Kitabı", "Uygulama Videoları", "Geri Bildirim Formları"],
+            schedule: [
+              { day: "Pazartesi", time: "13:00-16:00", topic: "Etkili Dinleme" },
+              { day: "Çarşamba", time: "13:00-16:00", topic: "Beden Dili" },
+              { day: "Cuma", time: "13:00-16:00", topic: "Sunum Teknikleri" }
+            ]
+          }
+        ],
+        upcomingPrograms: [
+          {
+            id: 4,
+            title: "Proje Yönetimi Sertifikasyonu",
+            plannedStartDate: "2025-02-01",
+            estimatedDuration: "6 hafta",
+            targetParticipants: 20,
+            status: "planning"
+          },
+          {
+            id: 5,
+            title: "Satış Teknikleri Eğitimi",
+            plannedStartDate: "2025-02-15",
+            estimatedDuration: "3 hafta",
+            targetParticipants: 15,
+            status: "budget_approval"
+          }
+        ],
+        statistics: {
+          totalParticipants: 65,
+          completionRate: 87,
+          satisfactionScore: 4.6,
+          totalBudgetUsed: "100.000 TL",
+          totalBudgetAllocated: "150.000 TL"
+        }
+      };
+
+      res.json(coordination);
+    } catch (error) {
+      console.error("Error fetching training coordination:", error);
+      res.status(500).json({ message: "Eğitim koordinasyonu verileri alınamadı" });
+    }
+  });
+
   // Training routes
   app.get('/api/training', requireAuth, async (req: any, res) => {
     try {
