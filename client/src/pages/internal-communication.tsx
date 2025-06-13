@@ -407,7 +407,7 @@ export default function InternalCommunicationPage() {
 
                     <div className="flex justify-between items-center pt-2">
                       <div className="flex gap-2">
-                        <Button variant="outline" size="sm">
+                        <Button variant="outline" size="sm" className="border-orange-600 text-orange-600 hover:bg-orange-50">
                           <Reply className="h-4 w-4 mr-1" />
                           Yanıtla
                         </Button>
