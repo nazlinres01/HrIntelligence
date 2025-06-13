@@ -370,22 +370,22 @@ export default function HRStrategyPage() {
               <Card>
                 <CardHeader>
                   <CardTitle className="flex items-center gap-2">
-                    <Calendar className="w-5 h-5 text-teal-600" />
+                    <Calendar className="w-5 h-5 text-gray-600" />
                     Q2 2024
                   </CardTitle>
                 </CardHeader>
                 <CardContent>
                   <div className="space-y-3">
                     <div className="flex items-center gap-2">
-                      <CheckCircle className="w-4 h-4 text-green-600" />
+                      <CheckCircle className="w-4 h-4 text-gray-600" />
                       <span className="text-sm">Performans sistemi launch</span>
                     </div>
                     <div className="flex items-center gap-2">
-                      <Activity className="w-4 h-4 text-blue-600" />
+                      <Activity className="w-4 h-4 text-gray-600" />
                       <span className="text-sm">Wellness programı pilot</span>
                     </div>
                     <div className="flex items-center gap-2">
-                      <AlertCircle className="w-4 h-4 text-yellow-600" />
+                      <AlertCircle className="w-4 h-4 text-gray-600" />
                       <span className="text-sm">Hibrit model geliştirme</span>
                     </div>
                   </div>
@@ -395,22 +395,22 @@ export default function HRStrategyPage() {
               <Card>
                 <CardHeader>
                   <CardTitle className="flex items-center gap-2">
-                    <Calendar className="w-5 h-5 text-teal-600" />
+                    <Calendar className="w-5 h-5 text-gray-600" />
                     Q3 2024
                   </CardTitle>
                 </CardHeader>
                 <CardContent>
                   <div className="space-y-3">
                     <div className="flex items-center gap-2">
-                      <Activity className="w-4 h-4 text-blue-600" />
+                      <Activity className="w-4 h-4 text-gray-600" />
                       <span className="text-sm">AI işe alım sistemi</span>
                     </div>
                     <div className="flex items-center gap-2">
-                      <Activity className="w-4 h-4 text-blue-600" />
+                      <Activity className="w-4 h-4 text-gray-600" />
                       <span className="text-sm">Dijital onboarding</span>
                     </div>
                     <div className="flex items-center gap-2">
-                      <AlertCircle className="w-4 h-4 text-yellow-600" />
+                      <AlertCircle className="w-4 h-4 text-gray-600" />
                       <span className="text-sm">Yetenek analizi platformu</span>
                     </div>
                   </div>
@@ -420,22 +420,22 @@ export default function HRStrategyPage() {
               <Card>
                 <CardHeader>
                   <CardTitle className="flex items-center gap-2">
-                    <Calendar className="w-5 h-5 text-teal-600" />
+                    <Calendar className="w-5 h-5 text-gray-600" />
                     Q4 2024
                   </CardTitle>
                 </CardHeader>
                 <CardContent>
                   <div className="space-y-3">
                     <div className="flex items-center gap-2">
-                      <AlertCircle className="w-4 h-4 text-yellow-600" />
+                      <AlertCircle className="w-4 h-4 text-gray-600" />
                       <span className="text-sm">Global expansion İK</span>
                     </div>
                     <div className="flex items-center gap-2">
-                      <AlertCircle className="w-4 h-4 text-yellow-600" />
+                      <AlertCircle className="w-4 h-4 text-gray-600" />
                       <span className="text-sm">Sürdürülebilirlik programı</span>
                     </div>
                     <div className="flex items-center gap-2">
-                      <Activity className="w-4 h-4 text-blue-600" />
+                      <Activity className="w-4 h-4 text-gray-600" />
                       <span className="text-sm">2025 strateji planlama</span>
                     </div>
                   </div>
