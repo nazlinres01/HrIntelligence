@@ -38,7 +38,8 @@ import {
   Layers,
   Activity,
   Cpu,
-  Star
+  Star,
+  FolderOpen
 } from "lucide-react";
 import { useState } from "react";
 
@@ -157,6 +158,38 @@ const getRoleBasedNavigation = (userRole: UserRole): NavigationSection[] => {
         }
       ];
 
+    case 'department_manager':
+      return [
+        {
+          title: "Departman Yönetim Merkezi",
+          color: "from-red-600 to-rose-600",
+          items: [
+            { name: "Departman Panosu", href: "/", icon: LayoutDashboard, show: true, description: "Departman genel bakış ve yönetim" },
+            { name: "Departman Analizi", href: "/admin/analytics", icon: BarChart3, show: true, description: "Departman performans analizleri" },
+          ]
+        },
+        {
+          title: "Ekip Yönetimi",
+          color: "from-blue-600 to-indigo-600",
+          items: [
+            { name: "Ekip Üyeleri", href: "/employees", icon: Users, show: true, description: "Departman çalışanları yönetimi" },
+            { name: "İzin Onayları", href: "/leaves", icon: Calendar, show: true, description: "Departman izin taleplerini onayla" },
+            { name: "Performans Değerlendirme", href: "/performance", icon: TrendingUp, show: true, description: "Ekip performans değerlendirmeleri" },
+            { name: "Hedef Takibi", href: "/goals", icon: Target, show: true, description: "Departman hedeflerini takip et" },
+          ]
+        },
+        {
+          title: "Operasyonel İşlemler",
+          color: "from-emerald-600 to-teal-600",
+          items: [
+            { name: "Proje Yönetimi", href: "/projects", icon: FolderOpen, show: true, description: "Departman projelerini yönet" },
+            { name: "Toplantı Planları", href: "/meetings", icon: Calendar, show: true, description: "Ekip toplantıları planla" },
+            { name: "Departman Raporları", href: "/reports", icon: FileText, show: true, description: "Departman raporları oluştur" },
+            { name: "Bildirimler", href: "/notifications", icon: Bell, show: true, description: "Departman bildirimleri" },
+          ]
+        }
+      ];
+
     default:
       return [
         {
@@ -214,8 +247,8 @@ export default function EnterpriseSidebar() {
           "p-6 shadow-lg",
           userRole === 'hr_manager' 
             ? "bg-gradient-to-r from-teal-600 via-teal-700 to-emerald-700" 
-            : userRole === 'hr_specialist' || userRole === 'ik_uzmanı'
-            ? "bg-gradient-to-r from-orange-600 via-orange-700 to-red-700"
+            : userRole === 'department_manager'
+            ? "bg-gradient-to-r from-red-600 via-red-700 to-rose-700"
             : "bg-gradient-to-r from-blue-600 via-blue-700 to-indigo-700"
         )}>
           <div className="flex items-center justify-between">
