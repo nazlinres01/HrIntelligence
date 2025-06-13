@@ -185,7 +185,7 @@ export default function Employees() {
           </div>
           <Dialog open={isDialogOpen} onOpenChange={setIsDialogOpen}>
             <DialogTrigger asChild>
-              <Button className="bg-blue-600 hover:bg-blue-700 text-white">
+              <Button className="bg-orange-600 hover:bg-orange-700 text-white">
                 <Plus className="h-4 w-4 mr-2" />
                 Yeni Çalışan
               </Button>
@@ -377,7 +377,7 @@ export default function Employees() {
                     <Button 
                       type="submit" 
                       disabled={createEmployeeMutation.isPending}
-                      className="bg-blue-600 hover:bg-blue-700 text-white"
+                      className="bg-orange-600 hover:bg-orange-700 text-white"
                     >
                       {createEmployeeMutation.isPending ? "Ekleniyor..." : "Çalışan Ekle"}
                     </Button>
@@ -522,10 +522,10 @@ export default function Employees() {
                     {departmentOptions.find(d => d.value === employee.department)?.label || employee.department}
                   </Badge>
                   <div className="flex space-x-2">
-                    <Button variant="ghost" size="sm" className="text-blue-600 hover:bg-blue-50">
+                    <Button variant="ghost" size="sm" className="text-orange-600 hover:bg-orange-50">
                       <Eye className="h-4 w-4" />
                     </Button>
-                    <Button variant="ghost" size="sm" className="text-gray-600 hover:bg-gray-50">
+                    <Button variant="ghost" size="sm" className="text-orange-600 hover:bg-orange-50">
                       <Edit className="h-4 w-4" />
                     </Button>
                     <Button 
