@@ -39,14 +39,14 @@ export const getRoleTheme = (role: UserRole) => {
     },
     employee: {
       name: 'Çalışan',
-      primary: 'from-blue-500 to-blue-700',
-      secondary: 'from-blue-50 to-blue-100',
-      accent: 'blue-600',
-      text: 'text-blue-700',
-      button: 'bg-blue-600 hover:bg-blue-700',
-      border: 'border-blue-200',
-      card: 'bg-gradient-to-br from-blue-50 to-blue-100',
-      sidebar: 'from-blue-600 via-blue-700 to-indigo-700'
+      primary: 'from-gray-600 to-gray-800',
+      secondary: 'from-gray-50 to-gray-100',
+      accent: 'gray-600',
+      text: 'text-gray-700',
+      button: 'bg-gray-600 hover:bg-gray-700',
+      border: 'border-gray-200',
+      card: 'bg-gradient-to-br from-gray-50 to-gray-100',
+      sidebar: 'from-gray-600 via-gray-700 to-gray-800'
     },
     admin: {
       name: 'Yönetici',
