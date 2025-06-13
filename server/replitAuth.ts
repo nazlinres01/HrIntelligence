@@ -119,18 +119,46 @@ export async function setupAuth(app: Express) {
   });
 
   app.get("/api/logout", (req, res) => {
+    // Mark session as logged out before destroying
+    if (req.session) {
+      (req.session as any).loggedOut = true;
+    }
     req.logout(() => {
-      res.redirect(
-        client.buildEndSessionUrl(config, {
-          client_id: process.env.REPL_ID!,
-          post_logout_redirect_uri: `${req.protocol}://${req.hostname}`,
-        }).href
-      );
+      req.session.destroy((err) => {
+        res.clearCookie('connect.sid');
+        res.redirect(
+          client.buildEndSessionUrl(config, {
+            client_id: process.env.REPL_ID!,
+            post_logout_redirect_uri: `${req.protocol}://${req.hostname}`,
+          }).href
+        );
+      });
     });
+  });
+
+  app.post("/api/auth/logout", (req, res) => {
+    // Mark session as logged out before destroying
+    if (req.session) {
+      (req.session as any).loggedOut = true;
+      req.session.save(() => {
+        req.logout(() => {
+          res.json({ success: true, message: "Logged out successfully" });
+        });
+      });
+    } else {
+      req.logout(() => {
+        res.json({ success: true, message: "Logged out successfully" });
+      });
+    }
   });
 }
 
 export const isAuthenticated: RequestHandler = async (req, res, next) => {
+  // Check if user explicitly logged out
+  if (req.session && (req.session as any).loggedOut) {
+    return res.status(401).json({ message: "Unauthorized" });
+  }
+
   // For development, create a mock authenticated user for the HR system to work
   if (!req.user) {
     req.user = {

@@ -94,6 +94,7 @@ import JobPostings from "@/pages/job-postings";
 import InterviewScheduling from "@/pages/interview-scheduling";
 import TalentPool from "@/pages/talent-pool";
 
+import Landing from "@/pages/Landing";
 import Login from "@/pages/login";
 import Register from "@/pages/register";
 import NotFound from "@/pages/not-found";

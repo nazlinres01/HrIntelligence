@@ -299,7 +299,10 @@ export default function EnterpriseSidebar() {
         title: "Çıkış Yapıldı",
         description: "Güvenli çıkış başarıyla tamamlandı.",
       });
-      window.location.href = "/login";
+      // Clear any cached data and redirect to main logout URL
+      localStorage.clear();
+      sessionStorage.clear();
+      window.location.href = "/api/logout";
     },
     onError: () => {
       toast({
