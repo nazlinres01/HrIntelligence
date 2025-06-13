@@ -333,7 +333,8 @@ export default function Jobs() {
           <Button
             type="submit"
             disabled={createJob.isPending || updateJob.isPending}
-            className="flex-1 bg-teal-600 hover:bg-teal-700"
+            variant="outline"
+            className="flex-1 border-gray-300 text-gray-700 hover:bg-gray-50"
           >
             {job ? "İlanı Güncelle" : "İlan Oluştur"}
           </Button>
@@ -360,7 +361,7 @@ export default function Jobs() {
         <div className="flex items-center gap-2">
           <Dialog>
             <DialogTrigger asChild>
-              <Button className="bg-teal-600 hover:bg-teal-700">
+              <Button variant="outline" className="border-gray-300 text-gray-700 hover:bg-gray-50">
                 <Plus className="w-4 h-4 mr-2" />
                 Yeni İş İlanı
               </Button>

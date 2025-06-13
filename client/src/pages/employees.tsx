@@ -185,7 +185,7 @@ export default function Employees() {
           </div>
           <Dialog open={isDialogOpen} onOpenChange={setIsDialogOpen}>
             <DialogTrigger asChild>
-              <Button className="bg-orange-600 hover:bg-orange-700 text-white">
+              <Button variant="outline" className="border-gray-300 text-gray-700 hover:bg-gray-50">
                 <Plus className="h-4 w-4 mr-2" />
                 Yeni Çalışan
               </Button>
@@ -522,16 +522,16 @@ export default function Employees() {
                     {departmentOptions.find(d => d.value === employee.department)?.label || employee.department}
                   </Badge>
                   <div className="flex space-x-2">
-                    <Button variant="ghost" size="sm" className="text-orange-600 hover:bg-orange-50">
+                    <Button variant="outline" size="sm" className="border-gray-300 text-gray-700 hover:bg-gray-50">
                       <Eye className="h-4 w-4" />
                     </Button>
-                    <Button variant="ghost" size="sm" className="text-orange-600 hover:bg-orange-50">
+                    <Button variant="outline" size="sm" className="border-gray-300 text-gray-700 hover:bg-gray-50">
                       <Edit className="h-4 w-4" />
                     </Button>
                     <Button 
-                      variant="ghost" 
+                      variant="outline" 
                       size="sm" 
-                      className="text-red-600 hover:bg-red-50"
+                      className="border-gray-300 text-gray-700 hover:bg-gray-50"
                       onClick={() => deleteEmployeeMutation.mutate(employee.id)}
                     >
                       <Trash2 className="h-4 w-4" />
