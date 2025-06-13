@@ -437,7 +437,7 @@ export default function HRManagerDashboard() {
         <Card className="mt-6">
           <CardHeader>
             <CardTitle className="flex items-center gap-2">
-              <Award className="w-5 h-5 text-teal-600" />
+              <Award className="w-5 h-5 text-gray-600" />
               İK Yönetim Özeti
             </CardTitle>
             <CardDescription>
@@ -446,16 +446,16 @@ export default function HRManagerDashboard() {
           </CardHeader>
           <CardContent>
             <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-              <div className="text-center p-4 bg-teal-50 rounded-lg">
-                <div className="text-2xl font-bold text-teal-600">89%</div>
+              <div className="text-center p-4 bg-gray-50 rounded-lg">
+                <div className="text-2xl font-bold text-gray-900">89%</div>
                 <div className="text-sm text-gray-600">Çalışan Memnuniyeti</div>
               </div>
-              <div className="text-center p-4 bg-green-50 rounded-lg">
-                <div className="text-2xl font-bold text-green-600">95%</div>
+              <div className="text-center p-4 bg-gray-50 rounded-lg">
+                <div className="text-2xl font-bold text-gray-900">95%</div>
                 <div className="text-sm text-gray-600">İşe Devam Oranı</div>
               </div>
-              <div className="text-center p-4 bg-blue-50 rounded-lg">
-                <div className="text-2xl font-bold text-blue-600">92%</div>
+              <div className="text-center p-4 bg-gray-50 rounded-lg">
+                <div className="text-2xl font-bold text-gray-900">92%</div>
                 <div className="text-sm text-gray-600">Eğitim Tamamlama</div>
               </div>
             </div>

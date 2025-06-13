@@ -327,7 +327,7 @@ export default function EnterpriseSidebar() {
         <div className={cn(
           "p-6 shadow-lg",
           userRole === 'hr_manager' 
-            ? "bg-gradient-to-r from-teal-600 via-teal-700 to-emerald-700" 
+            ? "bg-white border-b border-gray-200" 
             : userRole === 'hr_specialist'
             ? "bg-gradient-to-r from-orange-500 via-orange-600 to-orange-700"
             : userRole === 'department_manager'
@@ -339,15 +339,29 @@ export default function EnterpriseSidebar() {
           <div className="flex items-center justify-between">
             <div className={cn("flex items-center space-x-3", isCollapsed && "justify-center")}>
               <div className="relative">
-                <div className="p-2 bg-white/20 backdrop-blur rounded-xl">
-                  <Building2 className="h-8 w-8 text-white" />
+                <div className={cn(
+                  "p-2 rounded-xl",
+                  userRole === 'hr_manager' 
+                    ? "bg-green-100" 
+                    : "bg-white/20 backdrop-blur"
+                )}>
+                  <Building2 className={cn(
+                    "h-8 w-8",
+                    userRole === 'hr_manager' ? "text-green-600" : "text-white"
+                  )} />
                 </div>
                 <div className="absolute -top-1 -right-1 w-3 h-3 bg-green-400 rounded-full border-2 border-white"></div>
               </div>
               {!isCollapsed && (
                 <div>
-                  <h1 className="text-2xl font-bold text-white">Enterprise İK Hub</h1>
-                  <p className="text-orange-100 text-sm">Kurumsal İnsan Kaynakları Yönetim Sistemi</p>
+                  <h1 className={cn(
+                    "text-2xl font-bold",
+                    userRole === 'hr_manager' ? "text-gray-900" : "text-white"
+                  )}>Enterprise İK Hub</h1>
+                  <p className={cn(
+                    "text-sm",
+                    userRole === 'hr_manager' ? "text-gray-600" : "text-orange-100"
+                  )}>Kurumsal İnsan Kaynakları Yönetim Sistemi</p>
                 </div>
               )}
             </div>
