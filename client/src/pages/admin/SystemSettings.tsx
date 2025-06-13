@@ -225,13 +225,14 @@ export default function SystemSettings() {
           </div>
           <div className="flex items-center gap-3">
             <Button 
-              variant="outline"
+              variant="lightgray"
               onClick={() => queryClient.invalidateQueries({ queryKey: ["/api/system"] })}
             >
               <RefreshCw className="w-4 h-4 mr-2" />
               Yenile
             </Button>
             <Button 
+              variant="lightgray"
               onClick={() => createBackup.mutate()}
               disabled={createBackup.isPending}
             >
@@ -403,7 +404,7 @@ export default function SystemSettings() {
                       />
                     </div>
 
-                    <Button type="submit" disabled={updateSystemConfig.isPending}>
+                    <Button type="submit" variant="lightgray" disabled={updateSystemConfig.isPending}>
                       <Save className="w-4 h-4 mr-2" />
                       Ayarları Kaydet
                     </Button>
@@ -628,16 +629,15 @@ export default function SystemSettings() {
                     </div>
 
                     <div className="flex gap-3">
-                      <Button type="submit" disabled={updateEmailConfig.isPending} variant="outline" className="border-gray-300 text-gray-700 hover:bg-gray-50">
+                      <Button type="submit" disabled={updateEmailConfig.isPending} variant="lightgray">
                         <Save className="w-4 h-4 mr-2" />
                         E-posta Ayarları Kaydet
                       </Button>
                       <Button 
                         type="button" 
-                        variant="outline"
+                        variant="lightgray"
                         onClick={() => testEmailConnection.mutate()}
                         disabled={testEmailConnection.isPending}
-                        className="border-gray-300 text-gray-700 hover:bg-gray-50"
                       >
                         <Mail className="w-4 h-4 mr-2" />
                         Bağlantıyı Test Et

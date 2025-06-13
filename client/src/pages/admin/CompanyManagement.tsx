@@ -228,8 +228,7 @@ export default function CompanyManagement() {
           <Dialog>
             <DialogTrigger asChild>
               <Button 
-                variant="outline"
-                className="border-gray-300 text-gray-700 hover:bg-gray-50"
+                variant="lightgray"
                 onClick={() => {
                   setIsEditMode(false);
                   setSelectedCompany(null);
