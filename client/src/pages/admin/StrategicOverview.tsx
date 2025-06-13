@@ -7,33 +7,38 @@ import { Badge } from "@/components/ui/badge";
 import { Progress } from "@/components/ui/progress";
 import { 
   BarChart3, 
+  PieChart, 
   TrendingUp, 
   TrendingDown,
   Download, 
+  Filter,
   Users,
   Building2,
   DollarSign,
   Calendar,
+  Clock,
   Target,
   Award,
+  AlertTriangle,
   CheckCircle,
   Activity,
-  Briefcase,
-  Globe,
-  Zap,
-  Shield,
-  Settings,
-  PieChart,
-  LineChart
+  Briefcase
 } from "lucide-react";
 
 export default function StrategicOverview() {
-  const [timeRange, setTimeRange] = useState("quarterly");
-  const [viewFilter, setViewFilter] = useState("all");
+  const [timeRange, setTimeRange] = useState("last30days");
+  const [departmentFilter, setDepartmentFilter] = useState("all");
 
-  // API Data Queries
-  const { data: dashboardStats } = useQuery({
-    queryKey: ["/api/stats/dashboard"]
+  const { data: employees = [] } = useQuery<any[]>({
+    queryKey: ["/api/employees"]
+  });
+
+  const { data: departments = [] } = useQuery<any[]>({
+    queryKey: ["/api/departments"]
+  });
+
+  const { data: companies = [] } = useQuery<any[]>({
+    queryKey: ["/api/companies"]
   });
 
   const { data: companyStats } = useQuery({
@@ -44,124 +49,59 @@ export default function StrategicOverview() {
     queryKey: ["/api/system/health"]
   });
 
-  const { data: companies = [] } = useQuery({
-    queryKey: ["/api/companies"]
-  });
-
-  const { data: employees = [] } = useQuery({
-    queryKey: ["/api/employees"]
-  });
-
-  const { data: departments = [] } = useQuery({
-    queryKey: ["/api/departments"]
-  });
-
   // Strategic analytics calculations
-  const getStrategicMetrics = () => {
-    const totalCompanies = companyStats?.total || 85;
-    const totalEmployees = dashboardStats?.totalEmployees || 1247;
-    const activeCompanies = companyStats?.active || 78;
-    const growthRate = companyStats?.growth || 12.5;
+  const getStrategicAnalytics = () => {
+    const totalCompanies = (companies as any[]).length;
+    const totalEmployees = (employees as any[]).length;
+    const activeDepartments = (departments as any[]).length;
+    
+    // Strategic KPI calculations
+    const strategicProjects = [
+      { name: "Dijital Dönüşüm", progress: 78, status: "active" },
+      { name: "Sürdürülebilirlik", progress: 65, status: "active" },
+      { name: "Global Genişleme", progress: 43, status: "at-risk" },
+      { name: "Çalışan Deneyimi", progress: 89, status: "completed" }
+    ];
 
     // Financial metrics
-    const totalRevenue = 187500000; // Backend integration
+    const totalRevenue = 187500000;
     const revenueGrowth = 18.2;
     const profitMargin = 23.5;
 
-    // Operational metrics
-    const operationalEfficiency = 94.2;
+    // Performance metrics
     const customerSatisfaction = 89.1;
     const employeeSatisfaction = 87.3;
+    const operationalEfficiency = 94.2;
 
-    // Strategic initiatives
-    const strategicProjects = [
-      {
-        name: "Dijital Dönüşüm",
-        progress: 78,
-        budget: 8500000,
-        spent: 6200000,
-        status: "on-track",
-        priority: "high"
-      },
-      {
-        name: "Sürdürülebilirlik",
-        progress: 65,
-        budget: 3200000,
-        spent: 1950000,
-        status: "on-track",
-        priority: "medium"
-      },
-      {
-        name: "Global Genişleme",
-        progress: 43,
-        budget: 12000000,
-        spent: 4800000,
-        status: "at-risk",
-        priority: "critical"
-      },
-      {
-        name: "Çalışan Deneyimi",
-        progress: 89,
-        budget: 1800000,
-        spent: 1450000,
-        status: "ahead",
-        priority: "medium"
-      }
-    ];
-
-    // Performance indicators
-    const kpiMetrics = [
-      { name: "Operasyonel Mükemmellik", current: 94, target: 90, trend: 8.2 },
-      { name: "Finansal Performans", current: 89, target: 85, trend: 12.5 },
-      { name: "İnsan Kaynakları", current: 87, target: 80, trend: 5.7 },
-      { name: "Teknoloji & İnovasyon", current: 76, target: 75, trend: -2.1 }
-    ];
+    // Growth metrics
+    const companyGrowthRate = companyStats?.growth || 12.5;
+    const employeeGrowthRate = 8.7;
+    const revenueGrowthRate = 15.3;
 
     return {
       totalCompanies,
       totalEmployees,
-      activeCompanies,
-      growthRate,
+      activeDepartments,
+      strategicProjects,
       totalRevenue,
       revenueGrowth,
       profitMargin,
-      operationalEfficiency,
       customerSatisfaction,
       employeeSatisfaction,
-      strategicProjects,
-      kpiMetrics
+      operationalEfficiency,
+      companyGrowthRate,
+      employeeGrowthRate,
+      revenueGrowthRate
     };
   };
 
-  const metrics = getStrategicMetrics();
+  const analytics = getStrategicAnalytics();
 
   const formatCurrency = (amount: number) => {
     return new Intl.NumberFormat('tr-TR', {
       style: 'currency',
-      currency: 'TRY',
-      minimumFractionDigits: 0,
-      maximumFractionDigits: 0,
+      currency: 'TRY'
     }).format(amount);
-  };
-
-  const getStatusColor = (status: string) => {
-    switch (status) {
-      case 'ahead': return 'bg-green-100 text-green-800';
-      case 'on-track': return 'bg-blue-100 text-blue-800';
-      case 'at-risk': return 'bg-orange-100 text-orange-800';
-      case 'delayed': return 'bg-red-100 text-red-800';
-      default: return 'bg-gray-100 text-gray-800';
-    }
-  };
-
-  const getPriorityColor = (priority: string) => {
-    switch (priority) {
-      case 'critical': return 'bg-red-100 text-red-800';
-      case 'high': return 'bg-orange-100 text-orange-800';
-      case 'medium': return 'bg-yellow-100 text-yellow-800';
-      case 'low': return 'bg-green-100 text-green-800';
-      default: return 'bg-gray-100 text-gray-800';
-    }
   };
 
   return (
@@ -179,21 +119,22 @@ export default function StrategicOverview() {
                 <SelectValue placeholder="Zaman aralığı" />
               </SelectTrigger>
               <SelectContent className="bg-white">
-                <SelectItem value="monthly">Son Ay</SelectItem>
-                <SelectItem value="quarterly">Son Çeyrek</SelectItem>
-                <SelectItem value="yearly">Son Yıl</SelectItem>
-                <SelectItem value="custom">Özel Aralık</SelectItem>
+                <SelectItem value="last7days">Son 7 Gün</SelectItem>
+                <SelectItem value="last30days">Son 30 Gün</SelectItem>
+                <SelectItem value="last3months">Son 3 Ay</SelectItem>
+                <SelectItem value="last6months">Son 6 Ay</SelectItem>
+                <SelectItem value="lastyear">Son 1 Yıl</SelectItem>
               </SelectContent>
             </Select>
-            <Select value={viewFilter} onValueChange={setViewFilter}>
+            <Select value={departmentFilter} onValueChange={setDepartmentFilter}>
               <SelectTrigger className="w-48 border-gray-300">
-                <SelectValue placeholder="Görünüm filtrele" />
+                <SelectValue placeholder="Departman filtrele" />
               </SelectTrigger>
               <SelectContent className="bg-white">
-                <SelectItem value="all">Tüm Metrikler</SelectItem>
-                <SelectItem value="financial">Finansal</SelectItem>
-                <SelectItem value="operational">Operasyonel</SelectItem>
-                <SelectItem value="strategic">Stratejik</SelectItem>
+                <SelectItem value="all">Tüm Departmanlar</SelectItem>
+                {departments.map((dept: any) => (
+                  <SelectItem key={dept.id} value={dept.id}>{dept.name}</SelectItem>
+                ))}
               </SelectContent>
             </Select>
             <Button variant="outline" className="border-gray-300 text-gray-700">
@@ -203,17 +144,17 @@ export default function StrategicOverview() {
           </div>
         </div>
 
-        {/* Executive Key Metrics */}
+        {/* Key Metrics */}
         <div className="grid grid-cols-1 md:grid-cols-4 gap-6 mb-8">
           <Card className="bg-gradient-to-r from-blue-50 to-blue-100 border-blue-200">
             <CardContent className="p-6">
               <div className="flex items-center justify-between">
                 <div>
                   <p className="text-blue-600 text-sm font-medium">Toplam Şirket</p>
-                  <p className="text-3xl font-bold text-blue-900">{metrics.totalCompanies}</p>
+                  <p className="text-3xl font-bold text-blue-900">{analytics.totalCompanies}</p>
                   <div className="flex items-center mt-2">
                     <TrendingUp className="h-4 w-4 text-green-500 mr-1" />
-                    <span className="text-sm text-green-600">{metrics.growthRate}%</span>
+                    <span className="text-sm text-green-600">{analytics.companyGrowthRate}%</span>
                   </div>
                 </div>
                 <Building2 className="h-8 w-8 text-blue-600" />
@@ -226,10 +167,10 @@ export default function StrategicOverview() {
               <div className="flex items-center justify-between">
                 <div>
                   <p className="text-green-600 text-sm font-medium">Toplam Gelir</p>
-                  <p className="text-3xl font-bold text-green-900">{formatCurrency(metrics.totalRevenue)}</p>
+                  <p className="text-3xl font-bold text-green-900">{formatCurrency(analytics.totalRevenue)}</p>
                   <div className="flex items-center mt-2">
                     <TrendingUp className="h-4 w-4 text-green-500 mr-1" />
-                    <span className="text-sm text-green-600">{metrics.revenueGrowth}%</span>
+                    <span className="text-sm text-green-600">{analytics.revenueGrowthRate}%</span>
                   </div>
                 </div>
                 <DollarSign className="h-8 w-8 text-green-600" />
@@ -241,14 +182,14 @@ export default function StrategicOverview() {
             <CardContent className="p-6">
               <div className="flex items-center justify-between">
                 <div>
-                  <p className="text-orange-600 text-sm font-medium">Toplam Çalışan</p>
-                  <p className="text-3xl font-bold text-orange-900">{metrics.totalEmployees.toLocaleString('tr-TR')}</p>
+                  <p className="text-orange-600 text-sm font-medium">Operasyonel Verimlilik</p>
+                  <p className="text-3xl font-bold text-orange-900">{analytics.operationalEfficiency}%</p>
                   <div className="flex items-center mt-2">
-                    <CheckCircle className="h-4 w-4 text-green-500 mr-1" />
-                    <span className="text-sm text-gray-600">{metrics.activeCompanies} aktif şirket</span>
+                    <TrendingUp className="h-4 w-4 text-green-500 mr-1" />
+                    <span className="text-sm text-green-600">Hedef üstü</span>
                   </div>
                 </div>
-                <Users className="h-8 w-8 text-orange-600" />
+                <Target className="h-8 w-8 text-orange-600" />
               </div>
             </CardContent>
           </Card>
@@ -257,186 +198,102 @@ export default function StrategicOverview() {
             <CardContent className="p-6">
               <div className="flex items-center justify-between">
                 <div>
-                  <p className="text-purple-600 text-sm font-medium">Operasyonel Verimlilik</p>
-                  <p className="text-3xl font-bold text-purple-900">{metrics.operationalEfficiency}%</p>
+                  <p className="text-purple-600 text-sm font-medium">Toplam Çalışan</p>
+                  <p className="text-3xl font-bold text-purple-900">{analytics.totalEmployees}</p>
                   <div className="flex items-center mt-2">
-                    <TrendingUp className="h-4 w-4 text-green-500 mr-1" />
-                    <span className="text-sm text-green-600">Hedef üstü</span>
+                    <CheckCircle className="h-4 w-4 text-green-500 mr-1" />
+                    <span className="text-sm text-gray-600">{analytics.employeeGrowthRate}% büyüme</span>
                   </div>
                 </div>
-                <Target className="h-8 w-8 text-purple-600" />
+                <Users className="h-8 w-8 text-purple-600" />
               </div>
             </CardContent>
           </Card>
         </div>
 
-        {/* Strategic KPIs and Projects */}
+        {/* Charts Section */}
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 mb-8">
-          {/* Key Performance Indicators */}
-          <Card className="bg-white border-gray-200">
-            <CardHeader>
-              <CardTitle className="text-gray-900 flex items-center">
-                <BarChart3 className="h-5 w-5 mr-2 text-blue-600" />
-                Stratejik KPI'lar
-              </CardTitle>
-            </CardHeader>
-            <CardContent>
-              <div className="space-y-6">
-                {metrics.kpiMetrics.map((kpi, index) => (
-                  <div key={index} className="space-y-2">
-                    <div className="flex items-center justify-between">
-                      <span className="text-gray-700 font-medium">{kpi.name}</span>
-                      <div className="flex items-center space-x-2">
-                        <Badge className={`${kpi.current >= kpi.target ? 'bg-green-100 text-green-800' : 'bg-orange-100 text-orange-800'}`}>
-                          {kpi.current}%
-                        </Badge>
-                        <div className={`flex items-center ${kpi.trend > 0 ? 'text-green-600' : 'text-red-600'}`}>
-                          {kpi.trend > 0 ? (
-                            <TrendingUp className="h-4 w-4 mr-1" />
-                          ) : (
-                            <TrendingDown className="h-4 w-4 mr-1" />
-                          )}
-                          <span className="text-sm">{Math.abs(kpi.trend)}%</span>
-                        </div>
-                      </div>
-                    </div>
-                    <div className="flex items-center justify-between text-sm text-gray-600">
-                      <span>Hedef: {kpi.target}%</span>
-                      <span>{kpi.current >= kpi.target ? 'Hedefte' : 'Hedef altı'}</span>
-                    </div>
-                    <Progress value={kpi.current} className="h-2" />
-                  </div>
-                ))}
-              </div>
-            </CardContent>
-          </Card>
-
           {/* Strategic Projects */}
           <Card className="bg-white border-gray-200">
             <CardHeader>
               <CardTitle className="text-gray-900 flex items-center">
-                <Globe className="h-5 w-5 mr-2 text-green-600" />
+                <BarChart3 className="h-5 w-5 mr-2 text-blue-600" />
                 Stratejik Projeler
               </CardTitle>
             </CardHeader>
             <CardContent>
               <div className="space-y-4">
-                {metrics.strategicProjects.map((project, index) => (
-                  <div key={index} className="p-4 rounded-lg bg-gray-50 border">
-                    <div className="flex items-center justify-between mb-3">
-                      <h4 className="font-semibold text-gray-900">{project.name}</h4>
-                      <div className="flex space-x-2">
-                        <Badge className={getPriorityColor(project.priority)}>
-                          {project.priority}
-                        </Badge>
-                        <Badge className={getStatusColor(project.status)}>
-                          {project.status}
-                        </Badge>
-                      </div>
+                {analytics.strategicProjects.map((project: any, index: number) => (
+                  <div key={index} className="flex items-center justify-between">
+                    <div className="flex items-center space-x-3">
+                      <div 
+                        className="w-4 h-4 rounded-full"
+                        style={{ 
+                          backgroundColor: `hsl(${(index * 90) % 360}, 70%, 50%)` 
+                        }}
+                      ></div>
+                      <span className="text-gray-700">{project.name}</span>
                     </div>
-                    
-                    <div className="space-y-3">
-                      <div className="flex items-center justify-between text-sm">
-                        <span className="text-gray-600">İlerleme</span>
-                        <span className="font-medium">{project.progress}%</span>
-                      </div>
-                      <Progress value={project.progress} className="h-2" />
-                      
-                      <div className="grid grid-cols-2 gap-4 text-sm">
-                        <div>
-                          <span className="text-gray-600">Bütçe:</span>
-                          <p className="font-medium">{formatCurrency(project.budget)}</p>
-                        </div>
-                        <div>
-                          <span className="text-gray-600">Harcanan:</span>
-                          <p className="font-medium">{formatCurrency(project.spent)}</p>
-                        </div>
-                      </div>
+                    <div className="flex items-center space-x-3">
+                      <Progress value={project.progress} className="w-20" />
+                      <Badge className={`${project.status === 'completed' ? 'bg-green-100 text-green-800' : 
+                                        project.status === 'at-risk' ? 'bg-red-100 text-red-800' : 
+                                        'bg-blue-100 text-blue-800'}`}>
+                        {project.progress}%
+                      </Badge>
                     </div>
                   </div>
                 ))}
               </div>
             </CardContent>
           </Card>
-        </div>
 
-        {/* Performance Dashboard */}
-        <div className="grid grid-cols-1 lg:grid-cols-3 gap-6 mb-8">
-          {/* Customer Satisfaction */}
+          {/* Performance Metrics */}
           <Card className="bg-white border-gray-200">
             <CardHeader>
               <CardTitle className="text-gray-900 flex items-center">
-                <Award className="h-5 w-5 mr-2 text-yellow-600" />
-                Müşteri Memnuniyeti
+                <Award className="h-5 w-5 mr-2 text-green-600" />
+                Performans Metrikleri
               </CardTitle>
             </CardHeader>
             <CardContent>
-              <div className="text-center">
-                <div className="text-4xl font-bold text-yellow-600 mb-2">
-                  {metrics.customerSatisfaction}%
-                </div>
-                <p className="text-gray-600 mb-4">Son çeyrek ortalaması</p>
-                <Progress value={metrics.customerSatisfaction} className="h-3" />
-                <div className="flex justify-between text-sm text-gray-600 mt-2">
-                  <span>0%</span>
-                  <span>100%</span>
-                </div>
-              </div>
-            </CardContent>
-          </Card>
-
-          {/* Employee Satisfaction */}
-          <Card className="bg-white border-gray-200">
-            <CardHeader>
-              <CardTitle className="text-gray-900 flex items-center">
-                <Users className="h-5 w-5 mr-2 text-indigo-600" />
-                Çalışan Memnuniyeti
-              </CardTitle>
-            </CardHeader>
-            <CardContent>
-              <div className="text-center">
-                <div className="text-4xl font-bold text-indigo-600 mb-2">
-                  {metrics.employeeSatisfaction}%
-                </div>
-                <p className="text-gray-600 mb-4">Son anket sonucu</p>
-                <Progress value={metrics.employeeSatisfaction} className="h-3" />
-                <div className="flex justify-between text-sm text-gray-600 mt-2">
-                  <span>0%</span>
-                  <span>100%</span>
-                </div>
-              </div>
-            </CardContent>
-          </Card>
-
-          {/* System Health */}
-          <Card className="bg-white border-gray-200">
-            <CardHeader>
-              <CardTitle className="text-gray-900 flex items-center">
-                <Shield className="h-5 w-5 mr-2 text-green-600" />
-                Sistem Sağlığı
-              </CardTitle>
-            </CardHeader>
-            <CardContent>
-              <div className="space-y-4">
+              <div className="space-y-6">
                 <div className="flex items-center justify-between">
-                  <span className="text-gray-600">Çalışma Süresi</span>
-                  <Badge className="bg-green-100 text-green-800">
-                    {systemHealth?.uptime || 99.8}%
-                  </Badge>
+                  <span className="text-gray-600">Müşteri Memnuniyeti</span>
+                  <Badge className="bg-green-100 text-green-800">{analytics.customerSatisfaction}%</Badge>
                 </div>
                 
-                <div className="flex items-center justify-between">
-                  <span className="text-gray-600">Aktif Kullanıcı</span>
-                  <Badge className="bg-blue-100 text-blue-800">
-                    {systemHealth?.activeUsers || 147}
-                  </Badge>
+                <div className="space-y-3">
+                  <div className="flex items-center justify-between">
+                    <span className="text-sm text-gray-600">Müşteri Memnuniyeti</span>
+                    <div className="flex items-center space-x-2">
+                      <Progress value={analytics.customerSatisfaction} className="w-24" />
+                      <span className="text-sm font-medium">{analytics.customerSatisfaction}%</span>
+                    </div>
+                  </div>
+                  
+                  <div className="flex items-center justify-between">
+                    <span className="text-sm text-gray-600">Çalışan Memnuniyeti</span>
+                    <div className="flex items-center space-x-2">
+                      <Progress value={analytics.employeeSatisfaction} className="w-24" />
+                      <span className="text-sm font-medium">{analytics.employeeSatisfaction}%</span>
+                    </div>
+                  </div>
+
+                  <div className="flex items-center justify-between">
+                    <span className="text-sm text-gray-600">Operasyonel Verimlilik</span>
+                    <div className="flex items-center space-x-2">
+                      <Progress value={analytics.operationalEfficiency} className="w-24" />
+                      <span className="text-sm font-medium">{analytics.operationalEfficiency}%</span>
+                    </div>
+                  </div>
                 </div>
-                
-                <div className="flex items-center justify-between">
-                  <span className="text-gray-600">Veritabanı</span>
-                  <Badge className={`${systemHealth?.database ? 'bg-green-100 text-green-800' : 'bg-red-100 text-red-800'}`}>
-                    {systemHealth?.database ? 'Sağlıklı' : 'Sorunlu'}
-                  </Badge>
+
+                <div className="pt-4 border-t">
+                  <div className="text-center">
+                    <div className="text-2xl font-bold text-green-600 mb-1">A+</div>
+                    <p className="text-sm text-gray-600">Genel Performans Notu</p>
+                  </div>
                 </div>
               </div>
             </CardContent>
@@ -444,60 +301,117 @@ export default function StrategicOverview() {
         </div>
 
         {/* Financial Overview */}
-        <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
-          {/* Revenue Breakdown */}
+        <div className="grid grid-cols-1 lg:grid-cols-3 gap-6 mb-8">
           <Card className="bg-white border-gray-200">
             <CardHeader>
               <CardTitle className="text-gray-900 flex items-center">
                 <DollarSign className="h-5 w-5 mr-2 text-green-600" />
-                Gelir Analizi
+                Finansal Özet
               </CardTitle>
             </CardHeader>
             <CardContent>
-              <div className="space-y-6">
-                <div className="grid grid-cols-2 gap-4">
-                  <div className="text-center p-4 bg-green-50 rounded-lg">
-                    <div className="text-2xl font-bold text-green-600">
-                      {formatCurrency(metrics.totalRevenue)}
-                    </div>
-                    <p className="text-sm text-gray-600">Toplam Gelir</p>
+              <div className="space-y-4">
+                <div className="text-center p-4 bg-green-50 rounded-lg">
+                  <div className="text-2xl font-bold text-green-600 mb-1">
+                    {formatCurrency(analytics.totalRevenue)}
                   </div>
-                  <div className="text-center p-4 bg-blue-50 rounded-lg">
-                    <div className="text-2xl font-bold text-blue-600">
-                      {metrics.profitMargin}%
-                    </div>
-                    <p className="text-sm text-gray-600">Kar Marjı</p>
-                  </div>
+                  <p className="text-sm text-gray-600">Toplam Gelir</p>
                 </div>
                 
-                <div className="space-y-3">
-                  <div className="flex justify-between">
-                    <span className="text-gray-600">Yıllık Büyüme</span>
-                    <div className="flex items-center text-green-600">
-                      <TrendingUp className="h-4 w-4 mr-1" />
-                      <span className="font-medium">{metrics.revenueGrowth}%</span>
-                    </div>
-                  </div>
-                  
-                  <div className="flex justify-between">
-                    <span className="text-gray-600">Hedef Karşılaştırması</span>
-                    <Badge className="bg-green-100 text-green-800">Hedef Üstü</Badge>
+                <div className="flex items-center justify-between">
+                  <span className="text-gray-600">Kar Marjı</span>
+                  <Badge className="bg-blue-100 text-blue-800">{analytics.profitMargin}%</Badge>
+                </div>
+                
+                <div className="flex items-center justify-between">
+                  <span className="text-gray-600">Yıllık Büyüme</span>
+                  <div className="flex items-center text-green-600">
+                    <TrendingUp className="h-4 w-4 mr-1" />
+                    <span className="font-medium">{analytics.revenueGrowth}%</span>
                   </div>
                 </div>
               </div>
             </CardContent>
           </Card>
 
-          {/* Strategic Insights */}
           <Card className="bg-white border-gray-200">
             <CardHeader>
               <CardTitle className="text-gray-900 flex items-center">
-                <Activity className="h-5 w-5 mr-2 text-purple-600" />
-                Stratejik İçgörüler
+                <Building2 className="h-5 w-5 mr-2 text-blue-600" />
+                Şirket Durumu
               </CardTitle>
             </CardHeader>
             <CardContent>
               <div className="space-y-4">
+                <div className="text-center p-4 bg-blue-50 rounded-lg">
+                  <div className="text-2xl font-bold text-blue-600 mb-1">
+                    {analytics.totalCompanies}
+                  </div>
+                  <p className="text-sm text-gray-600">Toplam Şirket</p>
+                </div>
+                
+                <div className="flex items-center justify-between">
+                  <span className="text-gray-600">Aktif Şirket</span>
+                  <Badge className="bg-green-100 text-green-800">{companyStats?.active || analytics.totalCompanies - 7}</Badge>
+                </div>
+                
+                <div className="flex items-center justify-between">
+                  <span className="text-gray-600">Büyüme Oranı</span>
+                  <div className="flex items-center text-green-600">
+                    <TrendingUp className="h-4 w-4 mr-1" />
+                    <span className="font-medium">{analytics.companyGrowthRate}%</span>
+                  </div>
+                </div>
+              </div>
+            </CardContent>
+          </Card>
+
+          <Card className="bg-white border-gray-200">
+            <CardHeader>
+              <CardTitle className="text-gray-900 flex items-center">
+                <Activity className="h-5 w-5 mr-2 text-purple-600" />
+                Sistem Durumu
+              </CardTitle>
+            </CardHeader>
+            <CardContent>
+              <div className="space-y-4">
+                <div className="flex items-center justify-between">
+                  <span className="text-gray-600">Sistem Sağlığı</span>
+                  <Badge className="bg-green-100 text-green-800">Sağlıklı</Badge>
+                </div>
+                
+                <div className="flex items-center justify-between">
+                  <span className="text-gray-600">Çalışma Süresi</span>
+                  <Badge className="bg-blue-100 text-blue-800">{systemHealth?.uptime || 99.8}%</Badge>
+                </div>
+                
+                <div className="flex items-center justify-between">
+                  <span className="text-gray-600">Aktif Kullanıcı</span>
+                  <Badge className="bg-purple-100 text-purple-800">{systemHealth?.activeUsers || 147}</Badge>
+                </div>
+
+                <div className="pt-2">
+                  <div className="text-center">
+                    <CheckCircle className="h-8 w-8 text-green-500 mx-auto mb-2" />
+                    <p className="text-sm text-gray-600">Tüm sistemler normal</p>
+                  </div>
+                </div>
+              </div>
+            </CardContent>
+          </Card>
+        </div>
+
+        {/* Strategic Insights */}
+        <div className="grid grid-cols-1 gap-6">
+          <Card className="bg-white border-gray-200">
+            <CardHeader>
+              <CardTitle className="text-gray-900 flex items-center">
+                <PieChart className="h-5 w-5 mr-2 text-indigo-600" />
+                Stratejik İçgörüler
+              </CardTitle>
+            </CardHeader>
+            <CardContent>
+              <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
                 <div className="p-4 bg-blue-50 rounded-lg border-l-4 border-blue-500">
                   <h4 className="font-semibold text-blue-900 mb-2">Büyüme Fırsatı</h4>
                   <p className="text-sm text-blue-700">
