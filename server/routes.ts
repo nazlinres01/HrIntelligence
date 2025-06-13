@@ -238,16 +238,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
   // Logout endpoint
   app.post('/api/auth/logout', requireAuth, async (req: any, res) => {
     try {
-      // Log logout activity
-      await storage.createAuditLog({
-        action: "logout",
-        resource: "user", 
-        resourceId: req.user.id,
-        userId: req.user.id,
-        companyId: req.user.companyId,
-        details: `Kullanıcı çıkış yaptı: ${req.user.email}`,
-        ipAddress: req.ip
-      });
+      // Skip audit log for now to avoid database issues
 
       // Destroy session
       req.session.destroy((err: any) => {
