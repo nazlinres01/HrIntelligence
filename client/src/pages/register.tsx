@@ -292,7 +292,7 @@ export default function Register() {
         </div>
 
         {/* Innovation Metrics */}
-        <div className="absolute bottom-1/4 left-8 space-y-2">
+        <div className="absolute bottom-12 left-8 space-y-2">
           <div className="bg-white/40 backdrop-blur-md text-white text-xs px-4 py-3 rounded-full shadow-xl animate-slide-in-left border border-white/50">
             <div className="flex items-center space-x-2">
               <span className="font-semibold text-white drop-shadow-lg">AI modeli aktif</span>
