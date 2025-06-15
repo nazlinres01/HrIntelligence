@@ -218,7 +218,7 @@ export default function MyPayroll() {
           <h1 className="text-2xl font-bold text-gray-900">Bordro & Maaş Bilgilerim</h1>
           <p className="text-gray-600">Maaş bilgilerinizi ve bordro geçmişinizi görüntüleyin</p>
         </div>
-        <Button className="bg-yellow-600 hover:bg-yellow-700">
+        <Button variant="lightgray">
           <Download className="w-4 h-4 mr-2" />
           Bu Ayın Bordrosu
         </Button>

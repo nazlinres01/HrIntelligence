@@ -240,7 +240,7 @@ export default function CompanyDirectory() {
           <h1 className="text-2xl font-bold text-gray-900">Şirket Rehberi</h1>
           <p className="text-gray-600">Çalışan bilgileri ve iletişim rehberi</p>
         </div>
-        <Button className="bg-yellow-600 hover:bg-yellow-700">
+        <Button variant="lightgray">
           <Download className="w-4 h-4 mr-2" />
           Rehberi İndir
         </Button>

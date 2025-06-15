@@ -229,7 +229,7 @@ export default function Messages() {
         </div>
         <Dialog open={isComposeOpen} onOpenChange={setIsComposeOpen}>
           <DialogTrigger asChild>
-            <Button className="bg-yellow-600 hover:bg-yellow-700">
+            <Button variant="lightgray">
               <Plus className="w-4 h-4 mr-2" />
               Yeni Mesaj
             </Button>
@@ -327,7 +327,7 @@ export default function Messages() {
                   <Button type="button" variant="outline" onClick={() => setIsComposeOpen(false)}>
                     İptal
                   </Button>
-                  <Button type="submit" className="bg-yellow-600 hover:bg-yellow-700">
+                  <Button type="submit" variant="lightgray">
                     <Send className="w-4 h-4 mr-2" />
                     Gönder
                   </Button>
