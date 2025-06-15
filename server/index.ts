@@ -3,6 +3,7 @@ import session from "express-session";
 import { registerRoutes } from "./routes";
 import { setupVite, serveStatic, log } from "./vite";
 import { seedDatabase } from "./seed";
+import { createDemoUsers } from "./create-demo-users";
 
 const app = express();
 app.use(express.json());
@@ -45,6 +46,7 @@ app.use((req, res, next) => {
     // Seed database on startup
     console.log("Starting server with database seeding...");
     await seedDatabase();
+    await createDemoUsers();
     console.log("Database seeding completed");
     
     const server = await registerRoutes(app);
