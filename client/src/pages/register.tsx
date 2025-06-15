@@ -598,7 +598,7 @@ export default function Register() {
                       </FormControl>
                       <div className="space-y-1 leading-none">
                         <FormLabel className="text-sm text-gray-600 dark:text-gray-400">
-                          <Link href="/terms" className="text-blue-600 hover:text-blue-500 underline">
+                          <Link href="/terms-of-service" className="text-blue-600 hover:text-blue-500 underline">
                             Kullanım şartlarını
                           </Link>{" "}
                           kabul ediyorum
@@ -622,7 +622,7 @@ export default function Register() {
                       </FormControl>
                       <div className="space-y-1 leading-none">
                         <FormLabel className="text-sm text-gray-600 dark:text-gray-400">
-                          <Link href="/privacy" className="text-blue-600 hover:text-blue-500 underline">
+                          <Link href="/privacy-policy" className="text-blue-600 hover:text-blue-500 underline">
                             Gizlilik politikasını
                           </Link>{" "}
                           kabul ediyorum
