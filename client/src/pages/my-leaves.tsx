@@ -171,7 +171,7 @@ export default function MyLeaves() {
         </div>
         <Dialog open={isDialogOpen} onOpenChange={setIsDialogOpen}>
           <DialogTrigger asChild>
-            <Button className="bg-yellow-600 hover:bg-yellow-700">
+            <Button variant="lightgray">
               <Plus className="w-4 h-4 mr-2" />
               Yeni İzin Talebi
             </Button>
@@ -257,7 +257,7 @@ export default function MyLeaves() {
                   <Button type="button" variant="outline" onClick={() => setIsDialogOpen(false)}>
                     İptal
                   </Button>
-                  <Button type="submit" className="bg-yellow-600 hover:bg-yellow-700">
+                  <Button type="submit" variant="lightgray">
                     Talep Oluştur
                   </Button>
                 </div>

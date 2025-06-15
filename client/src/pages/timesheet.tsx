@@ -207,7 +207,7 @@ export default function Timesheet() {
           {isTimerRunning ? (
             <Button 
               onClick={stopTimer}
-              className="bg-red-600 hover:bg-red-700"
+              variant="lightgray"
             >
               <Square className="w-4 h-4 mr-2" />
               Timer Durdur
@@ -215,7 +215,7 @@ export default function Timesheet() {
           ) : (
             <Button 
               onClick={() => startTimer("", "")}
-              className="bg-green-600 hover:bg-green-700"
+              variant="lightgray"
             >
               <Play className="w-4 h-4 mr-2" />
               Timer Başlat
@@ -223,7 +223,7 @@ export default function Timesheet() {
           )}
           <Dialog open={isDialogOpen} onOpenChange={setIsDialogOpen}>
             <DialogTrigger asChild>
-              <Button className="bg-yellow-600 hover:bg-yellow-700">
+              <Button variant="lightgray">
                 <Plus className="w-4 h-4 mr-2" />
                 Yeni Kayıt
               </Button>
