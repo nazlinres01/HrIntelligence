@@ -255,6 +255,113 @@ export async function registerRoutes(app: Express): Promise<Server> {
     }
   });
 
+  // Password reset request endpoint
+  app.post('/api/auth/forgot-password', async (req, res) => {
+    try {
+      const { email } = req.body;
+      
+      if (!email) {
+        return res.status(400).json({ message: "E-posta adresi gerekli" });
+      }
+
+      // Check if user exists
+      const user = await storage.getUserByEmail(email.toLowerCase());
+      if (!user) {
+        // Don't reveal if user exists or not for security
+        return res.json({ message: "E-posta adresinize şifre sıfırlama talimatları gönderildi" });
+      }
+
+      // Generate reset token
+      const crypto = await import('crypto');
+      const resetToken = crypto.randomBytes(32).toString('hex');
+      const resetTokenExpiry = new Date(Date.now() + 3600000); // 1 hour
+
+      // Save reset token to user
+      await storage.updateUser(user.id, {
+        resetToken,
+        resetTokenExpiry
+      });
+
+      // Log password reset request
+      await storage.createAuditLog({
+        action: "password_reset_requested",
+        resource: "user",
+        resourceId: user.id,
+        userId: user.id,
+        companyId: user.companyId,
+        details: `Şifre sıfırlama talep edildi: ${email}`,
+        ipAddress: req.ip
+      });
+
+      // In production, send email with reset link
+      // For now, just return success message
+      res.json({ 
+        message: "E-posta adresinize şifre sıfırlama talimatları gönderildi",
+        // In development, include token for testing
+        ...(process.env.NODE_ENV === 'development' && { resetToken })
+      });
+    } catch (error) {
+      console.error("Forgot password error:", error);
+      res.status(500).json({ message: "Şifre sıfırlama talebi başarısız" });
+    }
+  });
+
+  // Password reset endpoint
+  app.post('/api/auth/reset-password', async (req, res) => {
+    try {
+      const { token, newPassword } = req.body;
+      
+      if (!token || !newPassword) {
+        return res.status(400).json({ message: "Token ve yeni şifre gerekli" });
+      }
+
+      // Password strength validation
+      const passwordRegex = /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d).{8,}$/;
+      if (!passwordRegex.test(newPassword)) {
+        return res.status(400).json({ message: "Şifre güvenlik gereksinimlerini karşılamıyor" });
+      }
+
+      // Find user with valid reset token
+      const users = await storage.getAllUsers();
+      const user = users.find(u => 
+        u.resetToken === token && 
+        u.resetTokenExpiry && 
+        u.resetTokenExpiry > new Date()
+      );
+
+      if (!user) {
+        return res.status(400).json({ message: "Geçersiz veya süresi dolmuş token" });
+      }
+
+      // Hash new password
+      const bcrypt = await import('bcrypt');
+      const hashedPassword = await bcrypt.hash(newPassword, 12);
+
+      // Update user password and clear reset token
+      await storage.updateUser(user.id, {
+        password: hashedPassword,
+        resetToken: null,
+        resetTokenExpiry: null
+      });
+
+      // Log successful password reset
+      await storage.createAuditLog({
+        action: "password_reset_completed",
+        resource: "user",
+        resourceId: user.id,
+        userId: user.id,
+        companyId: user.companyId,
+        details: `Şifre başarıyla sıfırlandı: ${user.email}`,
+        ipAddress: req.ip
+      });
+
+      res.json({ message: "Şifre başarıyla güncellendi" });
+    } catch (error) {
+      console.error("Reset password error:", error);
+      res.status(500).json({ message: "Şifre sıfırlama başarısız" });
+    }
+  });
+
   // Check if this is the first user
   app.get('/api/check-first-user', async (req, res) => {
     try {
