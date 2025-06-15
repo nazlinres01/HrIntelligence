@@ -253,9 +253,9 @@ export default function Register() {
                 <div className="w-12 h-12 bg-gradient-to-br from-orange-400 to-red-600 rounded-xl flex items-center justify-center shadow-lg">
                   <Shield className="h-6 w-6 text-white" />
                 </div>
-                <div>
-                  <div className="font-semibold text-white">Advanced Security</div>
-                  <div className="text-sm text-purple-100">Zero-trust veri güvenliği</div>
+                <div className="flex-1">
+                  <div className="font-semibold text-white text-base mb-1">Advanced Security</div>
+                  <div className="text-sm text-white/90 font-medium">Zero-trust veri güvenliği</div>
                 </div>
               </div>
             </div>
