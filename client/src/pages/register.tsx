@@ -243,9 +243,9 @@ export default function Register() {
                 <div className="w-12 h-12 bg-gradient-to-br from-purple-400 to-pink-600 rounded-xl flex items-center justify-center shadow-lg">
                   <Calendar className="h-6 w-6 text-white" />
                 </div>
-                <div>
-                  <div className="font-semibold text-white">Automated Workflows</div>
-                  <div className="text-sm text-purple-100">Zero-touch HR süreçleri</div>
+                <div className="flex-1">
+                  <div className="font-semibold text-white text-base mb-1">Automated Workflows</div>
+                  <div className="text-sm text-white/90 font-medium">Zero-touch HR süreçleri</div>
                 </div>
               </div>
               
@@ -299,10 +299,10 @@ export default function Register() {
               <span className="font-medium drop-shadow-sm">AI modeli aktif</span>
             </div>
           </div>
-          <div className="bg-white/30 backdrop-blur-md text-white text-xs px-3 py-2 rounded-full shadow-xl animate-slide-in-left border border-white/40" style={{animationDelay: '0.3s'}}>
+          <div className="bg-white/40 backdrop-blur-md text-white text-xs px-4 py-3 rounded-full shadow-xl animate-slide-in-left border border-white/50" style={{animationDelay: '0.3s'}}>
             <div className="flex items-center space-x-2">
-              <div className="w-2 h-2 bg-purple-400 rounded-full animate-pulse shadow-sm"></div>
-              <span className="font-medium drop-shadow-sm">Otomatik süreçler</span>
+              <div className="w-2 h-2 bg-purple-300 rounded-full animate-pulse shadow-sm"></div>
+              <span className="font-semibold text-white drop-shadow-lg">Otomatik süreçler</span>
             </div>
           </div>
         </div>
