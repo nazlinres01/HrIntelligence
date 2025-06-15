@@ -337,7 +337,7 @@ export default function Timesheet() {
                     <Button type="button" variant="outline" onClick={() => setIsDialogOpen(false)}>
                       İptal
                     </Button>
-                    <Button type="submit" className="bg-yellow-600 hover:bg-yellow-700">
+                    <Button type="submit" variant="lightgray">
                       Kaydet
                     </Button>
                   </div>

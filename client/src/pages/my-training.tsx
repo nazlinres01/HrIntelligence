@@ -360,7 +360,7 @@ export default function MyTraining() {
 
                 <div className="flex gap-2">
                   {course.status === "in_progress" && (
-                    <Button size="sm" className="flex-1 bg-yellow-600 hover:bg-yellow-700">
+                    <Button size="sm" variant="lightgray" className="flex-1">
                       <Play className="w-4 h-4 mr-2" />
                       Devam Et
                     </Button>
