@@ -125,7 +125,7 @@ export default function EmployeeProfile() {
         </div>
         <Button 
           onClick={() => setIsEditing(!isEditing)}
-          className="bg-yellow-600 hover:bg-yellow-700"
+          variant="lightgray"
         >
           <Edit className="w-4 h-4 mr-2" />
           {isEditing ? "İptal" : "Düzenle"}
@@ -148,7 +148,8 @@ export default function EmployeeProfile() {
                   <DialogTrigger asChild>
                     <Button
                       size="sm"
-                      className="absolute -bottom-2 -right-2 rounded-full w-8 h-8 p-0 bg-yellow-600 hover:bg-yellow-700"
+                      className="absolute -bottom-2 -right-2 rounded-full w-8 h-8 p-0"
+                      variant="lightgray"
                     >
                       <Camera className="w-4 h-4" />
                     </Button>
@@ -169,7 +170,7 @@ export default function EmployeeProfile() {
                         <Button variant="outline" onClick={() => setIsPhotoDialogOpen(false)}>
                           İptal
                         </Button>
-                        <Button className="bg-yellow-600 hover:bg-yellow-700">
+                        <Button variant="lightgray">
                           Kaydet
                         </Button>
                       </div>
@@ -364,7 +365,7 @@ export default function EmployeeProfile() {
                       <Button type="button" variant="outline" onClick={() => setIsEditing(false)}>
                         İptal
                       </Button>
-                      <Button type="submit" className="bg-yellow-600 hover:bg-yellow-700">
+                      <Button type="submit" variant="lightgray">
                         <Save className="w-4 h-4 mr-2" />
                         Kaydet
                       </Button>
