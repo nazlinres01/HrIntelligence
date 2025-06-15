@@ -1,5 +1,7 @@
 import { useState } from "react";
 import { Link } from "wouter";
+import { useMutation } from "@tanstack/react-query";
+import { apiRequest } from "@/lib/queryClient";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
@@ -10,9 +12,30 @@ import { useToast } from "@/hooks/use-toast";
 
 export default function ForgotPassword() {
   const [email, setEmail] = useState("");
-  const [isLoading, setIsLoading] = useState(false);
   const [isSuccess, setIsSuccess] = useState(false);
   const { toast } = useToast();
+
+  // Forgot password mutation
+  const forgotPasswordMutation = useMutation({
+    mutationFn: async (email: string) => {
+      const response = await apiRequest("POST", "/api/auth/forgot-password", { email });
+      return response.json();
+    },
+    onSuccess: (data) => {
+      setIsSuccess(true);
+      toast({
+        title: "Başarılı",
+        description: data.message || "Şifre sıfırlama bağlantısı e-posta adresinize gönderildi.",
+      });
+    },
+    onError: (error: any) => {
+      toast({
+        title: "Hata",
+        description: error.message || "Bir hata oluştu. Lütfen tekrar deneyin.",
+        variant: "destructive",
+      });
+    },
+  });
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -25,17 +48,7 @@ export default function ForgotPassword() {
       return;
     }
 
-    setIsLoading(true);
-    
-    // Simulate API call
-    setTimeout(() => {
-      setIsLoading(false);
-      setIsSuccess(true);
-      toast({
-        title: "Başarılı",
-        description: "Şifre sıfırlama bağlantısı e-posta adresinize gönderildi.",
-      });
-    }, 2000);
+    forgotPasswordMutation.mutate(email);
   };
 
   if (isSuccess) {
@@ -120,9 +133,9 @@ export default function ForgotPassword() {
               type="submit" 
               variant="lightgray" 
               className="w-full" 
-              disabled={isLoading}
+              disabled={forgotPasswordMutation.isPending}
             >
-              {isLoading ? "Gönderiliyor..." : "Şifre Sıfırlama Bağlantısı Gönder"}
+              {forgotPasswordMutation.isPending ? "Gönderiliyor..." : "Şifre Sıfırlama Bağlantısı Gönder"}
             </Button>
           </form>
 
