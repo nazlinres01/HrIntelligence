@@ -5,7 +5,7 @@ import { setupAuth, isAuthenticated } from "./replitAuth";
 import session from "express-session";
 import connectPg from "connect-pg-simple";
 import { requireAuth, requireRole } from "./middleware/auth";
-import { insertEmployeeSchema, insertLeaveSchema, insertPerformanceSchema, insertPayrollSchema, insertDepartmentSchema, users } from "@shared/schema";
+import { insertEmployeeSchema, insertLeaveSchema, insertPerformanceSchema, insertPayrollSchema, insertDepartmentSchema, users, companies } from "@shared/schema";
 import { 
   sanitizeInput, 
   xssProtection, 
@@ -98,12 +98,24 @@ export async function registerRoutes(app: Express): Promise<Server> {
       const bcrypt = await import('bcrypt');
       const hashedPassword = await bcrypt.hash(password, 12);
 
-      // Create company first
-      const company = await storage.createCompany({
-        name: companyName,
-        industry: "",
-        email: email
-      });
+      // Check if company already exists or create new one
+      const existingCompanies = await db.select().from(companies).where(eq(companies.name, companyName)).limit(1);
+      
+      let companyRecord;
+      if (existingCompanies.length === 0) {
+        // Create new company
+        const [newCompany] = await db
+          .insert(companies)
+          .values({
+            name: companyName,
+            industry: "",
+            email: email
+          })
+          .returning();
+        companyRecord = newCompany;
+      } else {
+        companyRecord = existingCompanies[0];
+      }
 
       // Create user
       const crypto = await import('crypto');
@@ -112,7 +124,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
         email: email.toLowerCase(),
         firstName,
         lastName,
-        companyId: company.id,
+        companyId: companyRecord.id,
         role: role,
         password: hashedPassword,
         isActive: true
@@ -124,7 +136,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
         resource: "user",
         resourceId: user.id,
         userId: user.id,
-        companyId: company.id,
+        companyId: companyRecord.id,
         details: `Yeni kullanıcı kaydı: ${firstName} ${lastName} - ${companyName}`,
         ipAddress: clientIP
       });
